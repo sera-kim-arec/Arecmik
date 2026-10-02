@@ -1,0 +1,8 @@
+{
+  "name": "내 투두",
+  "short_name": "내 투두",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FEF7FA",
+  "theme_color": "#FEF7FA"
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>내 투두</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FEF7FA">
+<style>
+:root{--bg:#FEF7FA;--card:#fff;--ac:#D9739B;--ac2:#FBE3EC;--tx:#3b2f36;--mu:#9a8a92;--ln:#f1dfe6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#main,#login{max-width:640px;margin:0 auto;padding:16px}
+#login{text-align:center;padding-top:20vh}
+h1{font-size:20px;margin:0}
+h3{font-size:14px;color:var(--mu);margin:20px 0 8px;font-weight:600}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--ln);background:var(--card);border-radius:8px;padding:7px 12px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.pri,#gl,#add{background:var(--ac);border-color:var(--ac);color:#fff}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+nav{display:flex;gap:6px;margin-bottom:16px}
+nav button{flex:1;border-radius:20px}
+nav button.on{background:var(--ac2);border-color:var(--ac);color:var(--ac);font-weight:600}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+input,textarea{border:1px solid var(--ln);border-radius:8px;padding:8px 10px;background:var(--card)}
+#t{flex:1 1 160px}
+ul{list-style:none;margin:12px 0 0;padding:0}
+.it{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:9px 12px;margin-bottom:6px}
+.it span{flex:1;word-break:break-word}
+.it em{font-style:normal;font-size:12px;color:var(--ac);background:var(--ac2);border-radius:10px;padding:1px 8px}
+.it button{border:0;background:none;color:var(--mu);padding:0 4px;font-size:18px}
+.it input{width:18px;height:18px;accent-color:var(--ac)}
+.dn span{color:var(--mu);text-decoration:line-through}
+.em,.sep{color:var(--mu);font-size:13px;text-align:center;padding:8px}
+.sep{text-align:left;padding:12px 0 4px}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.w{font-style:normal;text-align:center;font-size:12px;color:var(--mu)}
+.c{position:relative;aspect-ratio:1;padding:2px;border-radius:10px}
+.c.td{border-color:var(--ac)}
+.c.s{background:var(--ac2);font-weight:600}
+.c u{position:absolute;right:4px;bottom:2px;font-size:10px;text-decoration:none;color:#fff;background:var(--ac);border-radius:8px;padding:0 5px}
+textarea{width:100%;min-height:200px;resize:vertical}
+</style>
+</head>
+<body>
+<div id="login"><h1>내 투두</h1><p style="color:var(--mu)">Google 계정으로 로그인하면 PC와 모바일이 동기화됩니다.</p><button id="gl">Google로 로그인</button></div>
+<div id="main" hidden>
+<header><h1>내 투두</h1><button id="out">로그아웃</button></header>
+<nav><button data-tab="todo">할일</button><button data-tab="cal">캘린더</button><button data-tab="log">업무일지</button></nav>
+<section id="v-todo">
+<div class="row"><input id="t" placeholder="할일 입력"><input id="d" type="date"><button id="add">추가</button></div>
+<ul id="lst"></ul>
+</section>
+<section id="v-cal" hidden>
+<div class="mh"><button id="pv">‹</button><b id="ml"></b><button id="nx">›</button></div>
+<div id="g" class="grid"></div>
+<h3 id="sl"></h3><ul id="sday"></ul>
+</section>
+<section id="v-log" hidden>
+<input id="ld" type="date">
+<h3>완료한 일</h3><ul id="dl"></ul>
+<h3>메모</h3><textarea id="memo" placeholder="업무 메모"></textarea>
+</section>
+</div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const app=initializeApp({
+  apiKey:"AIzaSyASyW3vWV3s7cgwEO_MenOZzX3qhgb852U",
+  authDomain:"arecmik-25699.firebaseapp.com",
+  projectId:"arecmik-25699",
+  storageBucket:"arecmik-25699.firebasestorage.app",
+  messagingSenderId:"952722999275",
+  appId:"1:952722999275:web:94b7c48055edd6e8d63bae"
+});
+const auth=getAuth(app);
+const db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
+
+const $=s=>document.querySelector(s);
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const md=s=>s.slice(5).replace('-','/');
+let U=null,todos=[],logs={},tab='todo',cm=new Date(),sel=ymd(new Date()),logDate=sel,unsubs=[];
+const tdoc=id=>doc(db,'users',U.uid,'todos',id);
+
+onAuthStateChanged(auth,u=>{
+  unsubs.forEach(f=>f());unsubs=[];U=u;
+  if(!u){todos=[];logs={};render();return}
+  unsubs.push(onSnapshot(collection(db,'users',u.uid,'todos'),s=>{todos=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
+  unsubs.push(onSnapshot(collection(db,'users',u.uid,'logs'),s=>{logs={};s.docs.forEach(d=>logs[d.id]=d.data().memo||'');render()}));
+});
+
+const item=t=>`<li class="it${t.done?' dn':''}"><input type="checkbox" data-a="tg" data-id="${t.id}" ${t.done?'checked':''}><span>${esc(t.title)}</span>${t.date?`<em>${md(t.date)}</em>`:''}<button data-a="rm" data-id="${t.id}" aria-label="삭제">×</button></li>`;
+const list=a=>a.map(item).join('');
+
+function lst(){
+  const o=todos.filter(t=>!t.done).sort((a,b)=>(a.date||'9')>(b.date||'9')?1:-1);
+  const d=todos.filter(t=>t.done).sort((a,b)=>b.doneDate>a.doneDate?1:-1).slice(0,20);
+  $('#lst').innerHTML=(list(o)||'<li class="em">등록된 할일이 없습니다</li>')+(d.length?'<li class="sep">완료</li>'+list(d):'');
+}
+function cal(){
+  const y=cm.getFullYear(),m=cm.getMonth(),today=ymd(new Date());
+  $('#ml').textContent=`${y}년 ${m+1}월`;
+  let h='일월화수목금토'.split('').map(w=>`<i class="w">${w}</i>`).join('');
+  const f=new Date(y,m,1).getDay(),n=new Date(y,m+1,0).getDate();
+  for(let i=0;i<f;i++)h+='<i></i>';
+  for(let d=1;d<=n;d++){
+    const k=ymd(new Date(y,m,d)),c=todos.filter(t=>t.date===k&&!t.done).length;
+    h+=`<button data-a="day" data-k="${k}" class="c${k===sel?' s':''}${k===today?' td':''}">${d}${c?`<u>${c}</u>`:''}</button>`;
+  }
+  $('#g').innerHTML=h;
+  $('#sl').textContent=md(sel)+' 할일';
+  $('#sday').innerHTML=list(todos.filter(t=>t.date===sel))||'<li class="em">일정이 없습니다</li>';
+}
+function log(){
+  $('#ld').value=logDate;
+  $('#dl').innerHTML=todos.filter(t=>t.doneDate===logDate).map(t=>`<li class="it dn"><span>${esc(t.title)}</span></li>`).join('')||'<li class="em">완료한 일이 없습니다</li>';
+  const m=$('#memo');if(document.activeElement!==m)m.value=logs[logDate]||'';
+}
+function render(){
+  $('#login').hidden=!!U;$('#main').hidden=!U;
+  if(!U)return;
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  ['todo','cal','log'].forEach(k=>$('#v-'+k).hidden=k!==tab);
+  ({todo:lst,cal,log})[tab]();
+}
+
+const add=()=>{
+  const t=$('#t').value.trim();if(!t)return;
+  addDoc(collection(db,'users',U.uid,'todos'),{title:t,date:$('#d').value||'',done:false,doneDate:'',created:Date.now()});
+  $('#t').value='';
+};
+$('#add').onclick=add;
+$('#t').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)add()};
+$('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인 실패: '+e.message));
+$('#out').onclick=()=>signOut(auth);
+$('#pv').onclick=()=>{cm=new Date(cm.getFullYear(),cm.getMonth()-1,1);render()};
+$('#nx').onclick=()=>{cm=new Date(cm.getFullYear(),cm.getMonth()+1,1);render()};
+$('#ld').onchange=e=>{logDate=e.target.value||ymd(new Date());render()};
+$('#memo').onchange=e=>setDoc(doc(db,'users',U.uid,'logs',logDate),{memo:e.target.value},{merge:true});
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('[data-tab]');if(b){tab=b.dataset.tab;render()}};
+document.body.addEventListener('click',e=>{
+  const a=e.target.closest('[data-a]');if(!a)return;
+  const{a:x,id,k}=a.dataset;
+  if(x==='tg'){const t=todos.find(v=>v.id===id),done=!t.done;updateDoc(tdoc(id),{done,doneDate:done?ymd(new Date()):''})}
+  if(x==='rm'&&confirm('삭제할까요?'))deleteDoc(tdoc(id));
+  if(x==='day'){sel=k;render()}
+});
+</script>
+</body>
+</html>
