@@ -502,6 +502,102 @@ body[data-th=navy] .nlog{border-radius:20px;box-shadow:0 3px 0 #D9B04A}
 .qph{flex-direction:column;align-items:stretch;gap:8px}.qph b{font-size:13.5px}
 .qph .seg{display:flex;width:100%}.qph .seg button{flex:1;height:28px;padding:0 6px;font-size:12.5px;white-space:nowrap}
 .seg button{white-space:nowrap}
+
+/* ===== 모바일 ===== */
+#mnav,#mfab{display:none}
+@media(max-width:820px){
+ body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+ #mnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-top:1px solid var(--ln);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+ #mnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border-radius:12px;color:var(--mu);font-size:11px;font-weight:600}
+ #mnav button b{font-size:19px;line-height:1;filter:grayscale(1);opacity:.6}
+ #mnav button.on{color:var(--ac);background:var(--ac2)}#mnav button.on b{filter:none;opacity:1}
+ #vw{display:none!important}
+ #main{padding:10px 12px 0}
+ .top{gap:6px;margin-bottom:10px}
+ #pv{order:1}#ml{order:2;margin:0 2px!important}#nx{order:3}.top .sp{order:4}#tdy{order:5}#setb{order:6}
+ #fchip{order:7;flex-basis:100%}#fchip:empty{display:none}
+ #sp{order:8}#rg{order:9;margin-left:auto}
+ .top .seg button{height:28px;padding:0 10px;font-size:12px}
+ .mN{font-size:28px!important}
+ /* 달력: 글자 대신 점·선 */
+ .grid{grid-auto-rows:minmax(64px,auto)}
+ .c{padding:4px 3px!important;min-height:64px}
+ .dn{font-size:13px!important;min-width:22px;height:22px!important;line-height:22px!important}
+ .hn,.cadd,.dnote{display:none!important}
+ .ci,.lci{margin:0!important;padding:0 1px!important;gap:2px;height:auto!important;flex-direction:row;flex-wrap:wrap}
+ .ci .it,.lci .it{font-size:0!important;height:6px;min-height:6px;width:6px;padding:0!important;margin:0!important;border-radius:50%!important;background:var(--mu2);flex:none;box-shadow:none!important}
+ .ci .it *,.lci .it *{display:none!important}.it::before{display:none!important}
+ .ci .it.ev,.lci .it.ev{background:var(--ac)}.ci .it.dn2,.lci .it.dn2{opacity:.35}
+ .ci .it.rg,.lci .it.rg{width:100%;border-radius:3px!important;height:5px}
+ .lci .it{background:var(--pc)}
+ .more{font-size:9px;line-height:8px;padding:0 1px}
+ .pbs{margin:2px -3px 2px!important;gap:2px}
+ .pb,.pb0{height:6px!important;line-height:0!important;font-size:0!important;padding:0!important;box-shadow:none!important}
+ .pb.s{margin-left:3px!important}.pb.e{margin-right:3px!important}.pb .rz{display:none}
+ #cal{min-height:0}
+ /* 탭별로 보이는 부분 */
+ #rp{margin-top:6px;border-top:0;padding:4px 12px 20px;background:transparent}
+ body[data-mt=cal] #rp .memo,body[data-mt=cal] #ptabs,body[data-mt=cal] .udh,body[data-mt=cal] #pday>.qa,body[data-mt=cal] #undated,body[data-mt=cal] #rp .hint,body[data-mt=cal] #pplist{display:none!important}
+ body[data-mt=cal] #pday{display:block!important}body[data-mt=cal] #rp .dh{margin-top:6px!important}
+ body[data-mt=cal] #rp{background:var(--sf);border-radius:20px;margin:10px 12px 0;padding:14px 14px 18px}
+ body[data-mt=todo] #main{display:none}body[data-mt=todo] #rp{padding-top:14px}
+ body[data-mt=proj] #rp,body[data-mt=note] #rp{display:none}
+ body[data-mt=cal] #mfab{display:grid;place-items:center;position:fixed;right:18px;bottom:calc(82px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;background:#F2C14E;color:#17203A;font-size:28px;box-shadow:0 4px 0 #C99A2A,0 10px 20px rgba(23,32,58,.2);z-index:70}
+ .toast{bottom:calc(86px + env(safe-area-inset-bottom))}
+ .pvadd{bottom:calc(86px + env(safe-area-inset-bottom))!important;right:18px!important}
+ #qp{left:10px!important;right:10px;width:auto!important;top:auto!important;bottom:calc(80px + env(safe-area-inset-bottom))}
+ .pvh h1{font-size:24px!important}.pvt{overflow-x:auto;max-width:100%;flex-wrap:nowrap;scrollbar-width:none}.pvt button{white-space:nowrap;flex:none}
+ body[data-mt=todo] #ptabs,#rp .hint{display:none!important}.pgrid{grid-template-columns:1fr 1fr;gap:10px}.pc{min-height:190px;padding:14px!important}
+ #nview{min-height:calc(100vh - 150px)}
+}
+@media(max-width:420px){.pgrid{grid-template-columns:1fr}}
+
+/* 프로젝트 화면: 진행상황만 */
+.pvh{flex-wrap:nowrap}.pvh h1{flex:none}
+.pvsb{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--sf);box-shadow:0 1px 3px rgba(var(--shc),.08);font-size:15px;flex:none}.pvsb.on{background:var(--ac2)}
+.pvs2{margin:-6px 0 14px}.pvs2 input{border:0;border-radius:999px;padding:10px 16px;box-shadow:0 1px 3px rgba(var(--shc),.08);font-size:13.5px}
+.pgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.pc2{background:var(--sf);border-radius:18px;padding:14px 16px 13px;box-shadow:0 3px 0 #E3E6EE,0 6px 16px rgba(var(--shc),.05);cursor:pointer;min-width:0;display:flex;flex-direction:column;gap:9px;transition:transform .15s}
+.pc2:hover{transform:translateY(-2px)}
+.pc2.feat{background:#FFF4D2;box-shadow:0 3px 0 #E8CF7A,0 6px 16px rgba(var(--shc),.06)}
+.pc2.off{opacity:.65}
+.p2h{display:flex;align-items:center;gap:8px;min-width:0}.p2h i{width:10px;height:10px;border-radius:50%;background:var(--pc);flex:none}
+.p2h b{flex:1;min-width:0;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p2h em{font-style:normal;flex:none;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--hv);color:var(--tx2)}.p2h em.urg{background:#FDE7E4;color:#B53A30}
+.pc2.feat .p2h em{background:var(--tx);color:#fff}.pc2.feat .p2h em.urg{background:#C8463D}
+.p2b{display:flex;align-items:center;gap:10px}.p2bar{flex:1;height:8px;border-radius:999px;background:#ECEEF3;overflow:hidden}.p2bar u{display:block;height:100%;border-radius:999px;background:var(--pc)}
+.pc2.feat .p2bar{background:rgba(23,32,58,.1)}
+.p2b span{font-size:12px;font-weight:700;color:var(--tx2);min-width:34px;text-align:right}
+.p2f{display:flex;gap:10px;align-items:baseline;font-size:12.5px;min-width:0}.p2l{flex:none;color:var(--mu);font-size:11.5px;font-weight:600}
+.p2n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}.p2n small{color:var(--mu)}
+@media(max-width:820px){.pgrid2{grid-template-columns:1fr}.pvh{margin:2px 0 14px;gap:10px}.pvh h1{font-size:22px!important}}
+.pprog small{min-width:0;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p2l{max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pcard,.pcard *{min-width:0}
+.srow .ssa,.sub .ssa,.it.sb .ssa{opacity:0;margin-left:auto}.srow:hover .ssa,.sub:hover .ssa,.it.sb:hover .ssa{opacity:1;display:block}
+.it.sb .ssa{display:none;width:16px;height:14px;font-size:10px;line-height:14px}.it.sb:hover .ssa{display:block}
+.sub .ssa{width:22px;height:22px;border-radius:6px;font-size:12px;color:var(--mu)}
+#dlb .sin2{margin-left:calc(var(--d,0)*22px)}
+@media(hover:none){.srow .ssa,.sub .ssa{opacity:1}}
+
+#ml{display:flex;align-items:baseline;gap:4px}.mS{display:inline-flex;gap:6px;align-items:baseline;font-size:14px;color:var(--mu);font-weight:600}
+body:not([data-th=navy]) .mN{font-size:21px;font-weight:800}body:not([data-th=navy]) .mS span:first-child{color:var(--tx);font-size:21px;font-weight:800;margin-left:-4px}
+body[data-th=navy] .mS{flex-direction:column;gap:0}body[data-th=navy] .mS span:first-child{font-size:11px}
+.ci{gap:3px}
+.ci .it:not(.ev):not(.er){background:var(--sf2);border-radius:7px;padding:1px 6px;line-height:19px}
+.ci .it:not(.ev):hover{background:var(--hv)}
+.ci .it.pi{background:color-mix(in srgb,var(--pc,#999) 10%,var(--sf));padding-left:9px}
+.ci .it.pi::before{left:3px;top:4px;bottom:4px;width:3px;border-radius:2px;opacity:1}
+.ci .it.dn2{opacity:.55}
+.ci .it.sb{background:none!important;padding-left:calc(14px + var(--d,0)*10px)!important}
+.pbs{margin-bottom:4px!important}
+#pday .dh{background:var(--sf2);border-radius:14px;padding:10px 14px;align-items:center}
+.dh .dprog{flex:1;height:6px;border-radius:999px;background:var(--ln);overflow:hidden;max-width:120px;margin-left:auto}.dh .dprog i{display:block;height:100%;background:var(--ac);border-radius:999px}
+.dh .dcnt{font-weight:700;color:var(--tx2)!important}
+#lists .rowg,#undated .rowg{border:0;margin-bottom:4px}
+#lists .row,#undated .row{border:0;background:var(--sf);box-shadow:0 0 0 1px var(--ln) inset;border-radius:12px;padding:9px 10px}
+#lists .row:hover,#undated .row:hover{box-shadow:0 0 0 1px var(--mu2) inset;background:var(--sf)}
+#lists .row.dn2,#undated .row.dn2{opacity:.6}
+#lists .srow,#undated .srow{padding-top:3px;padding-bottom:3px}
+#lists .gt,#undated .gt{margin-top:14px}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
@@ -521,6 +617,8 @@ body[data-th=navy] .nlog{border-radius:20px;box-shadow:0 3px 0 #D9B04A}
   <div id="nview" hidden><div id="nlist"><button class="nback" id="nhb" data-nhome>🏠 기록 홈</button><div class="nltop"><input id="nq" placeholder="🔍 기록 검색"></div><div id="nacts"></div><div id="ntree"></div></div><div id="ned"></div></div>
  </section>
  <div id="spl" title="끌어서 오른쪽 패널 너비 조절 · 두 번 누르면 원래대로"></div>
+ <nav id="mnav"><button data-mt="cal"><b>📅</b><span>달력</span></button><button data-mt="todo"><b>✅</b><span>할일</span></button><button data-mt="proj"><b>📁</b><span>프로젝트</span></button><button data-mt="note"><b>📝</b><span>기록</span></button></nav>
+ <button id="mfab" aria-label="이 날짜에 추가">＋</button>
  <aside id="rp">
   <div class="memo edw"><div class="mh"><label>잊지 말 것</label></div><div id="memo" aria-label="잊지 말 것"></div><div id="mrs" title="끌어서 높이 조절 · 두 번 누르면 내용에 맞춤"><i></i></div></div>
   <div class="seg ptabs" id="ptabs"><button data-pv="day">할일</button><button data-pv="plist">프로젝트</button></div>
@@ -586,8 +684,8 @@ const pEnd=p=>pst(p)==='done'?(p.doneDate&&(!p.end||p.doneDate<p.end)?p.doneDate
 const pOnCal=p=>vis(p)&&(pst(p)==='active'||pst(p)==='done');
 const pTodos=p=>todos.filter(t=>t.projectId===p.id);
 function goalCalc(p,G){const TB=p.tbl||{},FF=TB.fields||[];if(!(TB.on&&G&&G.f&&FF.some(f=>f.k===G.f)))return null;const RS=pRows(p),dn=G.done||[],isD=r=>dn.includes((r.v||{})[G.f]);
- if(G.by&&FF.some(f=>f.k===G.by)){const bf=FF.find(f=>f.k===G.by);const parts=(bf.o||[]).map(o=>{const n=+((G.targets||{})[o])||0,d=RS.filter(r=>(r.v||{})[G.by]===o&&isD(r)).length;return{o,d,n}}).filter(x=>x.n||x.d);
-  const n=parts.reduce((a,x)=>a+(x.n||x.d),0),d=parts.reduce((a,x)=>a+Math.min(x.d,x.n||x.d),0);return{d,n,pc:n?Math.min(100,Math.round(d/n*100)):0,label:parts.map(x=>`${x.o} ${x.d}/${x.n||'-'}`).join(' · ')||'목표 수를 적어 주세요'}}
+ if(G.by&&G.by!==G.f&&FF.some(f=>f.k===G.by)){const bf=FF.find(f=>f.k===G.by);const parts=(bf.o||[]).map(o=>{const n=+((G.targets||{})[o])||0,d=RS.filter(r=>(r.v||{})[G.by]===o&&isD(r)).length;return{o,d,n}}).filter(x=>x.n||x.d);
+  const n=parts.reduce((a,x)=>a+(x.n||x.d),0),d=parts.reduce((a,x)=>a+Math.min(x.d,x.n||x.d),0);return{d,n,pc:n?Math.min(100,Math.round(d/n*100)):0,label:parts.length?(parts.length<=2?parts.map(x=>`${x.o} ${x.d}/${x.n||'-'}`).join(' · '):`목표 ${d}/${n}`):'목표 수를 적어 주세요',parts}}
  const d=RS.filter(isD).length,n=+G.target||RS.length;return{d,n,pc:n?Math.min(100,Math.round(d/n*100)):0,label:`목표 ${d}/${n}`}}
 const pGoal=p=>p.prog==='tbl'?goalCalc(p,p.goal||{}):null;
 function pProg(p){const L=pTodos(p).filter(t=>!isEv(t));const d=L.filter(t=>t.done).length;return{d,n:L.length,pc:L.length?Math.round(d/L.length*100):0,label:`할일 ${d}/${L.length}`}}
@@ -613,9 +711,13 @@ function addItem(v,date,kind,end,projectId,row){v=v.trim();if(!v)return;const p=
 /* ---------- 하위 할일 ---------- */
 let subAdd=null,subD=0;
 const subsOf=t=>t.subs||[];
-function subLines(t,where){return subsOf(t).map((s,i)=>`<div class="${where==='c'?'it sb':'srow'}${s.done?' dn2':''}" data-id="${t.id}" style="--d:${s.d||0}"><input type="checkbox" data-sck="${t.id}|${i}"${s.done?' checked':''} aria-label="하위 완료"><span>${esc(s.t)}</span></div>`)}
-function subInput(t,where,k){return subAdd&&subAdd.id===t.id&&subAdd.w===where&&(!k||subAdd.k===k)?`<input class="sin2${where==='c'?' qin':''}" data-sin="${t.id}" style="--d:${subD}" placeholder="하위 할일 · Enter · Tab 들여쓰기">`:''}
-function addSub(id,v){const t=todos.find(x=>x.id===id);if(!t||!v.trim())return;up(id,{subs:[...subsOf(t),{t:v.trim(),done:false,d:subD}]})}
+const brEnd=(S,i)=>{let j=i;const d=S[i]?S[i].d||0:0;while(j+1<S.length&&(S[j+1].d||0)>d)j++;return j};
+const sinH=(t,where)=>`<input class="sin2${where==='c'?' qin':''}" data-sin="${t.id}" style="--d:${subD}" placeholder="하위 할일 · Enter · Tab 들여쓰기">`;
+function subLines(t,where,k){const S=subsOf(t),act=subAdd&&subAdd.id===t.id&&subAdd.w===where&&subAdd.at!=null&&(!k||subAdd.k===k),pos=act?brEnd(S,subAdd.at):-1;
+ const out=[];S.forEach((s,i)=>{out.push(`<div class="${where==='c'?'it sb':'srow'}${s.done?' dn2':''}" data-id="${t.id}" style="--d:${s.d||0}"><input type="checkbox" data-sck="${t.id}|${i}"${s.done?' checked':''} aria-label="하위 완료"><span>${esc(s.t)}</span><button class="isa ssa" data-sadd="${t.id}" data-w="${where}" data-at="${i}"${k?` data-k="${k}"`:''} aria-label="이 아래에 하위 추가" title="이 아래에 하위 추가">↳</button></div>`);if(i===pos)out.push(sinH(t,where))});return out}
+function subInput(t,where,k){return subAdd&&subAdd.id===t.id&&subAdd.w===where&&subAdd.at==null&&(!k||subAdd.k===k)?`<input class="sin2${where==='c'?' qin':''}" data-sin="${t.id}" style="--d:${subD}" placeholder="하위 할일 · Enter · Tab 들여쓰기">`:''}
+function addSub(id,v){const t=todos.find(x=>x.id===id);if(!t||!v.trim())return;const S=[...subsOf(t)],it={t:v.trim(),done:false,d:subD};
+ if(subAdd&&subAdd.id===id&&subAdd.at!=null&&S[subAdd.at]){const p=brEnd(S,subAdd.at)+1;S.splice(p,0,it);subAdd.at=p}else S.push(it);up(id,{subs:S})}
 function togSub(id,i,v){const t=todos.find(x=>x.id===id);if(!t)return;up(id,{subs:subsOf(t).map((s,j)=>j===i?{...s,done:v}:s)})}
 function refocusSub(){if(!subAdd)return;const q=$(`[data-sin="${subAdd.id}"]`);if(q&&document.activeElement!==q)q.focus()}
 
@@ -630,29 +732,26 @@ function itemHTML(t,k,inLane){const ev=isEv(t),rg=endOf(t)>t.date,cls=['it'];if(
  const showT=!rg||k===t.date||parse(k).getDay()===0;
  const ns='';
  const isE=!rg||k===endOf(t)||parse(k).getDay()===6;
- return `<div class="${cls.join(' ')}" data-id="${t.id}" data-dk="${k}"${t.projectId?` data-p="${t.projectId}"`:''}>${ev||!showT?'':`<input type="checkbox" data-ck="${t.id}"${t.done?' checked':''} aria-label="완료">`}${showT&&!inLane?pdot(t):''}${ev&&t.time&&showT?`<em>${t.time}</em>`:''}<span>${showT?esc(t.title):'&nbsp;'}</span>${showT?ns:''}${showT?`<button class="isa" data-sadd="${t.id}" data-w="c" data-k="${k}" aria-label="하위 할일 추가" title="하위 할일 추가">↳</button>`:''}${isE?'<i class="rz" title="끌어서 기간 늘리기"></i>':''}</div>`}
+ return `<div class="${cls.join(' ')}" data-id="${t.id}" data-dk="${k}"${t.projectId?` data-p="${t.projectId}" style="--pc:${(P(t.projectId)||{}).color||'#999'}"`:''}>${ev||!showT?'':`<input type="checkbox" data-ck="${t.id}"${t.done?' checked':''} aria-label="완료">`}${showT&&!inLane?pdot(t):''}${ev&&t.time&&showT?`<em>${t.time}</em>`:''}<span>${showT?esc(t.title):'&nbsp;'}</span>${showT?ns:''}${showT?`<button class="isa" data-sadd="${t.id}" data-w="c" data-k="${k}" aria-label="하위 할일 추가" title="하위 할일 추가">↳</button>`:''}${isE?'<i class="rz" title="끌어서 기간 늘리기"></i>':''}</div>`}
 const onCol=hx=>{const n=parseInt((hx||'#888').slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;return (0.299*r+0.587*g+0.114*b)>165?'#17203A':'#FFFFFF'};
 function pbar(p,k,w){if(!(p.start<=k&&pEnd(p)>=k))return '<div class="pb0"></div>';const st=k===p.start||w===0,en=k===pEnd(p)||w===6;
  return `<div class="pb${st?' s':''}${en?' e':''}${pst(p)==='done'?' pdn':''}" data-pid="${p.id}" data-p="${p.id}" data-dk="${k}" style="--pc:${p.color};--pt:${onCol(p.color)}">${st?esc(p.name):'&nbsp;'}${en&&pst(p)!=='done'?'<i class="rz" title="끌어서 기간 바꾸기"></i>':''}</div>`}
 const CAPF=()=>range==='w2'?8:2;let CAP=2,laneRows=[];
-function laneLines(p,k,L){const out=[];const DF=((p.tbl||{}).on?(p.tbl.fields||[]).filter(f=>f.t==='date'):[]);if(DF.length)pRows(p).forEach(r=>DF.forEach(f=>{if((r.v||{})[f.k]===k)out.push([{id:'r'+r.id},`<div class="it pi er" data-open="${p.id}" data-p="${p.id}" title="현황표"><span>📋 ${esc(r.title)} · ${esc(f.n)}</span></div>`])}));L.filter(t=>t.projectId===p.id&&on(t,k)).sort(ord).forEach(t=>{out.push([t,itemHTML(t,k,1)]);const showS=!(endOf(t)>t.date)||k===t.date;if(showS){if(range==='w2')subLines(t,'c').forEach(x=>out.push([t,x]));const si=subInput(t,'c',k);if(si)out.push([t,si,1])}});return out}
+function laneLines(p,k,L){const out=[];const DF=((p.tbl||{}).on?(p.tbl.fields||[]).filter(f=>f.t==='date'):[]);if(DF.length)pRows(p).forEach(r=>DF.forEach(f=>{if((r.v||{})[f.k]===k)out.push([{id:'r'+r.id},`<div class="it pi er" data-open="${p.id}" data-p="${p.id}" style="--pc:${p.color}" title="현황표"><span>📋 ${esc(r.title)} · ${esc(f.n)}</span></div>`])}));L.filter(t=>t.projectId===p.id&&on(t,k)).sort(ord).forEach(t=>{out.push([t,itemHTML(t,k,1)]);const showS=!(endOf(t)>t.date)||k===t.date;if(showS){if(range==='w2')subLines(t,'c',k).forEach(x=>out.push([t,x]));const si=subInput(t,'c',k);if(si)out.push([t,si,1])}});return out}
 function cal(){CAP=CAPF();const{s,n}=days(),L=todos.filter(vis),T=TODAY(),M=cur.getMonth(),rows=n/7;
- $('#ml').innerHTML=range==='w2'?`<span class="mN">${md(ymd(s))}</span><span class="mS">– ${md(ymd(addD(s,13)))}<br>${s.getFullYear()}</span>`:`<span class="mN">${M+1}</span><span class="mS">월<br>${cur.getFullYear()}</span>`;
+ $('#ml').innerHTML=range==='w2'?`<span class="mN">${md(ymd(s))}</span><span class="mS"><span>– ${md(ymd(addD(s,13)))}</span><span class="mY">${s.getFullYear()}</span></span>`:`<span class="mN">${M+1}</span><span class="mS"><span>월</span><span class="mY">${cur.getFullYear()}</span></span>`;
  const G=$('#grid');G.style.gridTemplateRows=`repeat(${rows},minmax(0,1fr))`;
  let h='',lanes=[];const PC=projects.filter(pOnCal);
  for(let i=0;i<n;i++){const d=addD(s,i),k=ymd(d),hn=hname(k),its=cellItems(k,L),w=d.getDay();
   if(i%7===0){const ws=k,we=ymd(addD(d,6));lanes=PC.filter(p=>p.start<=we&&pEnd(p)>=ws).sort((a,b)=>(pst(a)==='done')-(pst(b)==='done')||(a.start<b.start?-1:a.start>b.start?1:(a.created||0)-(b.created||0))).slice(0,range==='w2'?6:3);
    laneRows=lanes.map(p=>{let m=0;for(let j=0;j<7;j++)m=Math.max(m,laneLines(p,ymd(addD(d,j)),L).length);return Math.min(m,CAP)})}
   const inLane=new Set(lanes.map(p=>p.id));const its2=its.filter(t=>!inLane.has(t.projectId));
-  const used=laneRows.reduce((a,b)=>a+b,0)*.9+lanes.length*.75;
+  const used=lanes.length*.75;
   const lim=range==='w2'?99:Math.max(1,Math.round((rows>5?4:5)-used));
-  const pbs=lanes.map((p,j)=>{const LL=laneLines(p,k,L),nr=laneRows[j];let body='';
-   if(nr){let sh=LL;if(LL.length>nr){sh=LL.slice(0,nr-1);const rest=new Set(LL.slice(nr-1).map(x=>x[0].id)).size;sh.push([null,`<div class="more" data-more="${k}">＋${rest}개 더</div>`])}
-    body=`<div class="lci" data-lp="${p.id}" style="height:${nr*20}px;--pc:${p.color}">${sh.map(x=>x[1]).join('')}</div>`}
-   return pbar(p,k,w)+body}).join('');
+  const pbs=lanes.map(p=>pbar(p,k,w)).join('');
 
   const cls=['c'];if(w===0)cls.push('sun');if(w===6)cls.push('sat');if(hn)cls.push('hol');if(k===T)cls.push('td');if(k===sel)cls.push('sel');if(range==='m'&&d.getMonth()!==M)cls.push('out2');
-  const lines=[];its2.forEach(t=>{const showS=!(endOf(t)>t.date)||k===t.date;lines.push([t,itemHTML(t,k)]);if(showS){subLines(t,'c').forEach(x=>lines.push([t,x]));const si=subInput(t,'c',k);if(si)lines.push([t,si,1])}});
+  const lines=[];lanes.forEach(p=>laneLines(p,k,L).forEach(x=>lines.push(x)));its2.forEach(t=>{const showS=!(endOf(t)>t.date)||k===t.date;lines.push([t,itemHTML(t,k)]);if(showS){subLines(t,'c',k).forEach(x=>lines.push([t,x]));const si=subInput(t,'c',k);if(si)lines.push([t,si,1])}});
   let sh=lines.slice(0,lim);if(subAdd&&subAdd.k===k){const j=lines.findIndex(x=>x[2]);if(j>=lim)sh=lines.slice(0,j+1)}const more=new Set(lines.slice(sh.length).map(x=>x[0].id)).size;
   h+=`<div class="${cls.join(' ')}" data-k="${k}"><div class="ch"><span class="dn">${d.getDate()}</span>${hn?`<span class="hn">${hn}</span>`:''}${dayNotes(k).length?`<span class="dnote" data-onote="${dayNotes(k)[0].id}" title="${esc(dayNotes(k).map(n=>n.title).join(', '))}">📝${dayNotes(k).length>1?dayNotes(k).length:''}</span>`:''}<button class="cadd" data-add="${k}" aria-label="${md(k)}에 추가">＋</button></div>${lanes.length?`<div class="pbs">${pbs}</div>`:''}<div class="ci">${inl===k?`<input class="qin" data-qin="${k}" placeholder="할일 · Enter">`:''}${sh.map(x=>x[1]).join('')}${more>0?`<div class="more" data-more="${k}">＋${more}개 더</div>`:''}</div></div>`}
  G.innerHTML=h;G.classList.toggle('fx',!!focusP);if(focusP)qa('#grid [data-p]').forEach(x=>x.classList.toggle('on',x.dataset.p===focusP));
@@ -666,7 +765,8 @@ function rowHTML(t,opt={}){const ev=isEv(t),rg=endOf(t)>t.date,ns=(t.subs||[]).l
 function panel(){if(pv==='proj')pv='plist';qa('#ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.pv===pv));$('#pday').hidden=pv!=='day';$('#pplist').hidden=pv!=='plist';
  if(pv==='plist')return plistPanel();
  const k=sel,d=parse(k),hn=hname(k),T=TODAY();
- $('#dh').innerHTML=`<b>${md(k)} (${DOW[d.getDay()]})</b>${hn?`<small class="hl">${hn}</small>`:''}${k===T?'<small>오늘</small>':`<small><button data-goto="today" style="color:var(--ac)">오늘로</button></small>`}`;
+ const LD=todos.filter(t=>vis(t)&&on(t,k)&&!isEv(t)),dn=LD.filter(t=>t.done).length;
+ $('#dh').innerHTML=`<b>${md(k)} (${DOW[d.getDay()]})</b>${LD.length?`<span class="dprog"><i style="width:${Math.round(dn/LD.length*100)}%"></i></span><small class="dcnt">${dn}/${LD.length}</small>`:''}${hn?`<small class="hl">${hn}</small>`:''}${k===T?'<small>오늘</small>':`<small><button data-goto="today" style="color:var(--ac)">오늘로</button></small>`}`;
  const L=todos.filter(t=>vis(t)&&on(t,k)).sort(ord),E=L.filter(isEv),D=L.filter(t=>!isEv(t)&&!t.done),F=L.filter(t=>!isEv(t)&&t.done);
  const row=t=>rowHTML(t);
  let h='';
@@ -960,7 +1060,7 @@ function gpop(p,rect){closePops();const F=(p.tbl||{}).fields||[],S=F.filter(f=>f
  <div class="gq"><span>2</span>그 칸이 어떤 값이 되면 '됐다'고 셀까요?</div><div class="gdone"></div><div class="ghint"></div>
  <div class="gq"><span>3</span>목표는 몇 명(몇 건)인가요?</div>
  <label class="rad"><input type="radio" name="tm" value="sum"${G.by?'':' checked'}> 합쳐서 <input type="number" min="0" class="gt1" value="${G.target||''}" placeholder="전체"> 명</label>
- <label class="rad"><input type="radio" name="tm" value="by"${G.by?' checked':''}> 나눠서 <select class="gby">${opt(S,G.by||(S.find(f=>/포지션|직책|부서|구분/.test(f.n))||{}).k,'')}</select> 별로</label>
+ <label class="rad"><input type="radio" name="tm" value="by"${G.by?' checked':''}> 나눠서 <select class="gby">${opt(S.filter(f=>f.k!==(G.f||gf0)),G.by||(S.find(f=>/포지션|직책|부서|구분/.test(f.n))||{}).k,'')}</select> 별로</label>
  <div class="gtg"></div>
  <div class="gprev"></div>`:`<p class="gdesc">먼저 표에 <b>고르기</b> 속성을 하나 만들어 주세요. 예) 진행: 서류, 인터뷰, 입사완료</p>`}
  <div class="fpb">${on?'<button class="fdel goff">목표 끄기</button>':'<span></span>'}${S.length?'<button class="pri gok">적용</button>':''}</div>
@@ -976,7 +1076,7 @@ function gpop(p,rect){closePops();const F=(p.tbl||{}).fields||[],S=F.filter(f=>f
  const fillTg=()=>{const by=q('[name=tm]:checked').value==='by',b=S.find(x=>x.k===q('.gby').value);q('.gby').disabled=!by;q('.gt1').disabled=by;
   const old={};d.querySelectorAll('.gtg [data-o]').forEach(i=>{if(i.value!=='')old[i.dataset.o]=i.value});const tg={...(b&&b.k===G.by?G.targets||{}:{}),...old};
   q('.gtg').innerHTML=by&&b?(b.o||[]).map(o=>`<label class="tg">${esc(o)}<span><input type="number" min="0" data-o="${esc(o)}" value="${tg[o]!=null?tg[o]:''}"> 명</span></label>`).join(''):'';prev();d._pos&&d._pos()};
- if(S.length){fillDone();fillTg();q('.gf').onchange=fillDone;q('.gby').onchange=fillTg;d.querySelectorAll('[name=tm]').forEach(r=>r.onchange=fillTg);d.addEventListener('input',prev);d.addEventListener('change',e=>{if(e.target.closest('.gdone'))prev()});
+ if(S.length){fillDone();fillTg();q('.gf').onchange=()=>{const fk=q('.gf').value,cur=q('.gby').value;q('.gby').innerHTML=S.filter(f=>f.k!==fk).map(f=>`<option value="${f.k}"${f.k===cur?' selected':''}>${esc(f.n)}</option>`).join('');fillDone();fillTg()};q('.gby').onchange=fillTg;d.querySelectorAll('[name=tm]').forEach(r=>r.onchange=fillTg);d.addEventListener('input',prev);d.addEventListener('change',e=>{if(e.target.closest('.gdone'))prev()});
   q('.gok').onclick=()=>{const g=read();if(!g.done.length){toast("2번에서 '됐다'고 볼 값을 골라 주세요");return}upP(p.id,{prog:'tbl',goal:g});d.remove();toast('목표를 정했어요');setTimeout(render)}}
  if(on)q('.goff').onclick=()=>{upP(p.id,{prog:'todo'});d.remove();toast('목표를 껐어요. 할일 진행률만 보여요');setTimeout(render)};
  q('.tsave').onclick=()=>{const n=q('.tn2').value.trim();if(!n){toast('이름을 적어 주세요');return}if(!F.length){toast('저장할 속성이 아직 없어요');return}
@@ -1019,7 +1119,7 @@ function homePage(){const F=notes.filter(n=>n.isFolder&&NV(n)).sort((a,b)=>(a.cr
  return `<div class="nhome2"><h1>${space==='life'?'일상 기록':space==='work'?'업무 기록':'기록'}</h1><p class="nsub">글 ${PG.length}개 · 폴더 ${F.length}개</p>
  ${W?`<div class="nlog${log?' done':''}" ${log?`data-nid="${log.id}"`:'data-nwl'}><div><b>${log?'오늘 업무일지를 썼어요':'오늘 업무일지를 아직 안 썼어요'}</b><small>${md(T)} (${DOW[parse(T).getDay()]})${wk.length?` · 이번 주 ${wk.length}개 작성`:''}</small></div><span>${log?'열기':'쓰기'} ›</span></div>`:''}
  ${F.length?`<h3>폴더</h3><div class="nfgrid">${F.map(f=>{const L=PG.filter(n=>n.fid===f.id).sort((a,b)=>(b.updated||0)-(a.updated||0));return `<div class="nfc" data-nfo="${f.id}"><div class="nfi">${f.icon||'📁'}</div><b>${esc(f.title)}</b><small>${L.length}개</small>${L.slice(0,3).map(n=>`<div class="nfl">${esc(n.title||'제목 없음')}</div>`).join('')}</div>`}).join('')}</div>`:''}
- <h3>최근 글</h3>${rec.length?rec.map(ncard).join(''):'<div class="nemp">아직 글이 없어요. 왼쪽 ＋ 새 글로 시작해요.</div>'}</div>`}
+ <h3>최근 글</h3>${rec.length?rec.map(ncard).join(''):'<div class="nemp">아직 글이 없어요. ＋ 새 글로 시작해요.</div>'}</div>`}
 function folderPage(fid){const f=notes.find(x=>x.id===fid),L=notes.filter(n=>!n.isFolder&&NV(n)&&n.fid===fid).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.updated||0)-(a.updated||0));
  return `<div class="nhome2"><div class="nfph"><span class="nfi big">${f.icon||'📁'}</span><div><h1>${esc(f.title)}</h1><p class="nsub">글 ${L.length}개</p></div><button class="pri" data-nnewf>＋ 이 폴더에 새 글</button></div>
  ${L.length?L.map(ncard).join(''):'<div class="nemp">이 폴더에 아직 글이 없어요.</div>'}</div>`}
@@ -1069,28 +1169,31 @@ function icPop(fid,rect){closePops();const f=notes.find(x=>x.id===fid);if(!f)ret
 /* ---------- 프로젝트 화면 ---------- */
 let pvTab='active',pvQ='',pvSort='due';
 function dleft(p){if(!p.end)return null;return dayDiff(TODAY(),p.end)}
-function pcCard(p,feat){const g=pProg(p),G=pGoal(p),T=TODAY();const nxt=pTodos(p).filter(t=>!t.done&&(!isEv(t)||endOf(t)>=T)).sort((a,b)=>(!a.date)-(!b.date)||ord(a,b)).slice(0,3);
- const R=roster(p),lines=nxt.length?nxt.map(t=>`${t.date?md(t.date)+' ':''}${esc(t.title)}`):(R&&R.lines.length?R.lines.slice(0,3).map(x=>`${esc(x.o)} ${x.n}`):[]);
- const dl=dleft(p),S=pst(p),badge=S==='done'?'완료':S==='hold'?'보류':S==='arch'?'보관':dl===null?'상시':dl<0?`${-dl}일 지남`:dl===0?'오늘 마감':`${dl}일 남음`;
- const main=G||g,ini=(p.name||'?').trim().slice(0,1);
- return `<div class="pc${feat?' feat':''}${S==='done'||S==='arch'?' pdone':''}" data-open="${p.id}" style="--pc:${p.color};--pt:${onCol(p.color)}"><div class="pci">${esc(ini)}</div><button class="pcm" data-pcal="${p.id}" title="달력에서 이것만 보기" aria-label="달력에서 이것만 보기">📅</button>
- <h3>${esc(p.name)}</h3><div class="pcli">${lines.length?lines.map(l=>`<div>${l}</div>`).join(''):'<div class="pce">🌱 아직 할 일이 없어요</div>'}</div>
- <div class="pcpg"><small>${G?esc(G.label):main.pc+'%'}</small><div class="pcbar"><u style="width:${main.pc}%"></u></div>${G?`<div class="pcbar sub"><u style="width:${g.pc}%"></u></div>`:''}</div>
- <div class="pcf"><span>${md(p.start)}${p.end?' ~ '+md(p.end):''}</span><b class="${dl!==null&&dl<=3&&S==='active'?'urg':''}">${badge}</b></div></div>`}
-function projView(){const L=projects.filter(vis),cnt={active:0,hold:0,done:0,arch:0};L.forEach(p=>cnt[pst(p)]++);
- const TABS=[['active','진행 중'],['all','전체'],['hold','보류'],['done','완료'],['arch','보관']];
- let A=pvTab==='all'?L.filter(p=>pst(p)!=='arch'):L.filter(p=>pst(p)===pvTab);const q=pvQ.trim().toLowerCase();if(q)A=A.filter(p=>p.name.toLowerCase().includes(q));
- const key=p=>pvSort==='due'?(p.end||'9999'):pvSort==='prog'?String(100-pProg(p).pc).padStart(3,'0'):p.start;A.sort((a,b)=>key(a).localeCompare(key(b))||(a.created||0)-(b.created||0));
- const feat=pvTab==='active'||pvTab==='all'?(A.find(p=>pst(p)==='active'&&p.end&&dleft(p)>=0)||{}).id:'';
+function pcCard(p,feat){const g=pProg(p),G=pGoal(p),T=TODAY(),S=pst(p);
+ const nx=pTodos(p).filter(t=>!t.done&&(!isEv(t)||endOf(t)>=T)).sort((a,b)=>(!a.date)-(!b.date)||ord(a,b))[0];
+ const dl=dleft(p),badge=S==='done'?'완료':S==='hold'?'보류':S==='arch'?'보관':dl===null?'상시':dl<0?`${-dl}일 지남`:dl===0?'D-day':`D-${dl}`;
+ const main=G||g,lab=G?G.label:`할일 ${g.d}/${g.n}`;
+ return `<div class="pc2${feat?' feat':''}${S!=='active'?' off':''}" data-open="${p.id}" style="--pc:${p.color}">
+ <div class="p2h"><i></i><b>${esc(p.name)}</b><em class="${S==='active'&&dl!==null&&dl<=3?'urg':''}">${badge}</em></div>
+ <div class="p2b"><div class="p2bar"><u style="width:${main.pc}%"></u></div><span>${main.pc}%</span></div>
+ <div class="p2f"><span class="p2l">${esc(lab)}</span>${nx?`<span class="p2n">다음 · ${esc(nx.title)}${nx.date?` <small>${md(nx.date)}</small>`:''}</span>`:'<span class="p2n mu">다음 할 일 없음</span>'}</div></div>`}
+function projView(){const L=projects.filter(vis),act=L.filter(p=>pst(p)==='active'),off=L.filter(p=>pst(p)!=='active');
+ if(pvTab!=='active'&&pvTab!=='off')pvTab='active';
+ let A=pvTab==='active'?act:off;const q=pvQ.trim().toLowerCase();if(q)A=A.filter(p=>p.name.toLowerCase().includes(q));
+ A.sort((a,b)=>(a.end||'9999').localeCompare(b.end||'9999')||(a.created||0)-(b.created||0));
+ const feat=pvTab==='active'?(A.find(p=>p.end&&dleft(p)>=0)||{}).id:'';
  const W=$('#pview'),ae=document.activeElement,keep=ae&&ae.id==='pvq';
- W.innerHTML=`<div class="pvh"><h1>프로젝트</h1><div class="pvt">${TABS.map(([k,l])=>`<button data-pvt="${k}" class="${pvTab===k?'on':''}">${l}${k==='all'?'':`<i>${cnt[k]}</i>`}</button>`).join('')}</div>
- <div class="pvs"><input id="pvq" placeholder="🔍 프로젝트 찾기" value="${esc(pvQ)}"><select id="pvsort"><option value="due"${pvSort==='due'?' selected':''}>마감 가까운 순</option><option value="start"${pvSort==='start'?' selected':''}>시작한 순</option><option value="prog"${pvSort==='prog'?' selected':''}>진행 덜 된 순</option></select></div></div>
- ${A.length?`<div class="pgrid">${A.map(p=>pcCard(p,p.id===feat)).join('')}</div>`:`<div class="pvemp">${pvTab==='active'?'진행 중인 프로젝트가 없어요. 오른쪽 아래 ＋로 만들어 보세요.':'여기엔 아직 없어요.'}</div>`}
+ W.innerHTML=`<div class="pvh"><h1>프로젝트</h1><div class="pvt"><button data-pvt="active" class="${pvTab==='active'?'on':''}">진행 중 <i>${act.length}</i></button><button data-pvt="off" class="${pvTab==='off'?'on':''}">끝난 것 <i>${off.length}</i></button></div>
+ <button class="pvsb${pvQ||pvSearch?' on':''}" data-pvs aria-label="찾기">🔍</button></div>
+ ${pvSearch||pvQ?`<div class="pvs2"><input id="pvq" placeholder="프로젝트 이름으로 찾기" value="${esc(pvQ)}"></div>`:''}
+ ${A.length?`<div class="pgrid2">${A.map(p=>pcCard(p,p.id===feat)).join('')}</div>`:`<div class="pvemp">${pvTab==='active'?'진행 중인 프로젝트가 없어요. ＋로 만들어 보세요.':'끝난 프로젝트가 없어요.'}</div>`}
  <button class="pvadd" data-pvadd title="새 프로젝트" aria-label="새 프로젝트">＋</button>`;
- if(keep){const i=$('#pvq');i.focus();i.setSelectionRange(i.value.length,i.value.length)}}
+ if(keep||pvFocus){const i=$('#pvq');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}pvFocus=false}}
+let pvSearch=false,pvFocus=false;
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest('#pview'))return;
  const pc2=t.closest('[data-pcal]');if(pc2){e.stopPropagation();focusP=pc2.dataset.pcal;nv='cal';render();toast('달력에서 이 프로젝트만 진하게 보여요');return}
  const tb=t.closest('[data-pvt]');if(tb){pvTab=tb.dataset.pvt;projView();return}
+ if(t.closest('[data-pvs]')){pvSearch=!pvSearch;if(!pvSearch)pvQ='';else pvFocus=true;projView();return}
  if(t.closest('[data-pvadd]')){const n=prompt('새 프로젝트 이름');if(n&&n.trim()){const r=addProject(n,TODAY(),'');if(r)r.then(x=>{toast('프로젝트를 만들었어요');openProj(x.id)})}return}});
 document.addEventListener('input',e=>{if(e.target.id==='pvq'){pvQ=e.target.value;projView()}});
 document.addEventListener('change',e=>{if(e.target.id==='pvsort'){pvSort=e.target.value;projView()}});
@@ -1106,7 +1209,7 @@ function drawDlg(){FLUSH.forEach(f=>f());FLUSH.clear();const t=todos.find(x=>x.i
   <label>날짜<input type="date" data-f="date" value="${t.date||''}"></label>
   <label>끝나는 날 <small style="font-size:10.5px">(여러 날일 때)</small><input type="date" data-f="end" value="${t.end||''}" min="${t.date||''}"></label>${ev?`<label>시간<input type="time" data-f="time" value="${t.time||''}"></label>`:''}</div>
  <div class="fl">하위 할일</div>
- ${S.map((s,i)=>`<div class="sub${s.done?' dn2':''}" style="--d:${s.d||0}"><input type="checkbox" data-sck="${i}"${s.done?' checked':''}><span>${esc(s.t)}</span><button class="x" data-srm="${i}" aria-label="삭제">×</button></div>`).join('')}
+ ${(()=>{const act=subAdd&&subAdd.id===t.id&&subAdd.w==='d'&&subAdd.at!=null,pos=act?brEnd(S,subAdd.at):-1;return S.map((s,i)=>`<div class="sub${s.done?' dn2':''}" style="--d:${s.d||0}"><input type="checkbox" data-sck="${i}"${s.done?' checked':''}><span>${esc(s.t)}</span><button class="isa ssa" data-sadd="${t.id}" data-w="d" data-at="${i}" aria-label="이 아래에 하위 추가" title="이 아래에 하위 추가">↳</button><button class="x" data-srm="${i}" aria-label="삭제">×</button></div>${i===pos?sinH(t,'d'):''}`).join('')})()}
  <input id="sin" class="sin2" placeholder="＋ 하위 할일 · Enter · Tab 들여쓰기" style="margin-top:4px;--d:${subD}">
  <div class="fl">메모</div><div class="edw dme"><div id="dme"></div></div>
  <div class="bt"><button class="del" data-del>삭제</button><button class="pri" data-close>닫기</button></div>`;
@@ -1145,7 +1248,7 @@ document.addEventListener('pointermove',e=>{if(!DG)return;
  if(DG.col==='todos'){const el=document.elementFromPoint(e.clientX,e.clientY);if(el&&el.closest('#pday')&&!$('#pday').hidden){DG.toSide=true;$('#undated').classList.add('dropS');qa('.c.drop').forEach(x=>x.classList.remove('drop'));DG.to='side';DG.ghost.textContent=DG.title+' → 날짜 미정';return}}
  if(DG.col==='todos'&&DG.mode==='mv'){const el=document.elementFromPoint(e.clientX,e.clientY),tb=el&&el.closest('.pb[data-pid]');if(tb){DG.toP=tb.dataset.pid;qa(`.pb[data-pid="${DG.toP}"]`).forEach(x=>x.classList.add('dropP'))}}
  const c=cellAt(e.clientX,e.clientY);qa('.c.drop').forEach(x=>x.classList.remove('drop'));if(!c){DG.to=null;return}
- if(DG.col==='todos'&&DG.mode==='mv'&&!DG.toP){const T0=todos.find(x=>x.id===DG.id);if(T0&&T0.projectId){const el=document.elementFromPoint(e.clientX,e.clientY);DG.outP=!(el&&el.closest(`.pb[data-pid="${T0.projectId}"],.lci[data-lp="${T0.projectId}"]`))}}
+ if(DG.col==='todos'&&DG.mode==='mv'&&!DG.toP){const T0=todos.find(x=>x.id===DG.id);if(T0&&T0.projectId){const el=document.elementFromPoint(e.clientX,e.clientY);DG.outP=!(el&&el.closest(`.pb[data-pid="${T0.projectId}"],.lci[data-lp="${T0.projectId}"],.c [data-p="${T0.projectId}"]`))}}
  const to=c.dataset.k;DG.to=to;let s2,e2;
  if(!DG.S){s2=e2=to}else if(DG.mode==='rz'){s2=DG.S;e2=to<s2?s2:to}else{const d=dayDiff(DG.from,to);s2=ymd(addD(parse(DG.S),d));e2=DG.open?s2:ymd(addD(parse(DG.E),d))}
  DG.ns=s2;DG.ne=e2;qa('.c').forEach(x=>{if(x.dataset.k>=s2&&x.dataset.k<=e2)x.classList.add('drop')});
@@ -1212,7 +1315,7 @@ document.addEventListener('click',e=>{const t=e.target;
  if(t.closest('[data-pcol]')&&pid){const p=P(pid),i=PAL.indexOf(p.color);upP(pid,{color:PAL[(i+1)%PAL.length]});setTimeout(render);return}
  if(t.closest('[data-pdel]')&&pid){const p=P(pid),n=pTodos(p).length;if(confirm(`'${p.name}' 프로젝트를 지울까요?${n?`\n안에 있던 할일·일정 ${n}개는 지우지 않고 프로젝트에서만 빠져요.`:''}`)){pTodos(p).forEach(t=>up(t.id,{projectId:''}));deleteDoc(dc('projects',pid));if(focusP===pid)focusP='';$('#pdlg').close();pv='plist';toast('지웠어요');render()}return}
  const sc=t.closest('[data-sck]');if(sc&&sc.dataset.sck.includes('|')){const[id,i]=sc.dataset.sck.split('|');togSub(id,+i,sc.checked);return}
- const sa=t.closest('[data-sadd]');if(sa){subAdd={id:sa.dataset.sadd,w:sa.dataset.w,k:sa.dataset.k||''};subD=0;if(sa.dataset.k)sel=sa.dataset.k;render();return}
+ const sa=t.closest('[data-sadd]');if(sa){const at=sa.dataset.at!=null?+sa.dataset.at:null;subAdd={id:sa.dataset.sadd,w:sa.dataset.w,k:sa.dataset.k||'',at};const T0=todos.find(x=>x.id===subAdd.id);subD=at!=null&&T0?Math.min(4,((subsOf(T0)[at]||{}).d||0)+1):0;if(sa.dataset.k)sel=sa.dataset.k;if(subAdd.w==='d'){drawDlg();setTimeout(refocusSub)}else render();return}
  if(t.closest('.sin2'))return;
  const ad=t.closest('[data-add]');if(ad){const c=ad.closest('.c');sel=ad.dataset.add;render();openQP(sel,sel);return}
  if(t.closest('#qp'))return;
@@ -1230,9 +1333,9 @@ document.addEventListener('keydown',e=>{const q=e.target.closest&&e.target.close
  if(e.key==='Enter'&&!e.isComposing){const v=q.value;q.value='';if(v.trim()){addItem(v,q.dataset.qin,'todo');render()}else{inl='';render()}}});
 document.addEventListener('keydown',e=>{const q=e.target.closest&&e.target.closest('[data-sin]');if(!q)return;
  if(e.key==='Tab'){e.preventDefault();subD=e.shiftKey?Math.max(0,subD-1):Math.min(3,subD+1);q.style.setProperty('--d',subD);return}
- if(e.key==='Escape'){subAdd=null;render();return}
- if(e.key==='Enter'&&!e.isComposing){const v=q.value;q.value='';if(v.trim())addSub(q.dataset.sin,v);else{subAdd=null;render()}}});
-document.addEventListener('focusout',e=>{if(e.target.dataset&&e.target.dataset.sin)setTimeout(()=>{const a=document.activeElement;if(subAdd&&!(a&&a.dataset&&a.dataset.sin)){subAdd=null;render()}},150)});
+ if(e.key==='Escape'){e.preventDefault();const w=subAdd&&subAdd.w;subAdd=null;w==='d'?drawDlg():render();return}
+ if(e.key==='Enter'&&!e.isComposing){const v=q.value,w=subAdd&&subAdd.w;q.value='';if(v.trim()){addSub(q.dataset.sin,v);if(w==='d'){drawDlg();refocusSub()}}else{subAdd=null;w==='d'?drawDlg():render()}}});
+document.addEventListener('focusout',e=>{if(e.target.dataset&&e.target.dataset.sin)setTimeout(()=>{const a=document.activeElement;if(subAdd&&!(a&&a.dataset&&a.dataset.sin)){const w=subAdd.w;subAdd=null;w==='d'?drawDlg():render()}},150)});
 document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('qin'))setTimeout(()=>{if(inl&&!document.activeElement.classList.contains('qin')){inl='';cal()}},120)});
 $('#qi').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;const v=e.target.value;e.target.value='';if(v.trim()){addItem(v,'','todo');toast(/^\d{1,2}\/\d{1,2}\s/.test(v)?'그 날짜에 추가했어요':'날짜 미정에 추가했어요')}});
 $('#pv').onclick=()=>move(-1);$('#nx').onclick=()=>move(1);
@@ -1251,7 +1354,8 @@ $('#setb').onclick=e=>{e.stopPropagation();closePops();const d=document.createEl
 document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,dialog,[contenteditable]'))return;
  if(e.key==='ArrowLeft')move(-1);else if(e.key==='ArrowRight')move(1);else if(e.key==='t'){cur=new Date();sel=TODAY();render()}else if(e.key==='n'){e.preventDefault();$('#qi').focus()}});
 
-function render(){if(!U)return;
+let mt=LG('mt')||'cal';
+function render(){if(!U)return;document.body.dataset.mt=mt;qa('#mnav button').forEach(b=>b.classList.toggle('on',b.dataset.mt===mt));
  qa('#rg button').forEach(b=>b.classList.toggle('on',b.dataset.r===range));
  qa('#sp button').forEach(b=>b.classList.toggle('on',b.dataset.s===space));
  document.body.classList.toggle('vnote',nv==='note');document.body.classList.toggle('vproj',nv==='proj');$('#nview').hidden=nv!=='note';$('#pview').hidden=nv!=='proj';qa('#vw button').forEach(b=>b.classList.toggle('on',b.dataset.vw===nv));
@@ -1299,5 +1403,11 @@ async function backup(){toast('백업 파일을 만드는 중이에요…');
  const data={app:'Arecmik',version:2,exported:new Date().toISOString(),todos,projects,notes,rows,memos,imgs};
  const b=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`Arecmik-백업-${TODAY()}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);
  toast(`백업 완료 · 할일 ${todos.length} · 프로젝트 ${projects.length} · 글 ${notes.filter(n=>!n.isFolder).length} · 이미지 ${Object.keys(imgs).length}`)}
+
+/* 모바일 아래 탭 */
+$('#mnav').onclick=e=>{const b=e.target.closest('[data-mt]');if(!b)return;FLUSH.forEach(f=>f());mt=b.dataset.mt;nv=mt==='todo'?'cal':mt;pv='day';try{localStorage.setItem('mt',mt);localStorage.setItem('nv',nv)}catch(_){}render();scrollTo(0,0)};
+$('#mfab').onclick=()=>openQP(sel,sel);
+$('#vw').addEventListener('click',e=>{const b=e.target.closest('[data-vw]');if(b){mt=b.dataset.vw}},true);
+if(matchMedia('(max-width:820px)').matches){nv=mt==='todo'?'cal':mt}
 
 </script></body></html>
