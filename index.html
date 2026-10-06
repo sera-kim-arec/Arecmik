@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Arecmik"><meta name="theme-color" content="#F7F7FA">
+<title>Arecmik</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Arecmik"><meta name="theme-color" content="#F7F7FA">
 <style>
 :root{--bg:#F4F5F7;--sf:#FFFFFF;--sf2:#F7F8FA;--hv:#EEF0F5;--ln:#E1E4EA;--ln2:#ECEEF2;--tx:#17203A;--tx2:#3E4659;--mu:#7D8597;--mu2:#B8BDC8;--ac:#1F2E5C;--ac2:#E8EBF3;--ac3:#D9DEEB;--act:#16224A;--seg:#E7E9EF;--sel:#F7F9FD;--life:#B8860B;--life2:#FFF4D2;--lifet:#6B5000;--sun:#C8463D;--sat:#3D63A8;--memo:#FFEDB5;--memot:#5A4300;--memol:#E8CF7A;--warn:#FFEDB5;--warn2:#5A4300;--dark:#17203A;--shc:23,32,58;--r:10px}
 body[data-th=cloud]{--bg:#F5F7FA;--sf2:#F8FAFC;--hv:#EEF2F8;--ln:#E3E8EF;--ln2:#EDF1F6;--tx:#1D2433;--tx2:#434C5E;--mu:#8A94A6;--mu2:#C0C7D3;--ac:#3D6BE0;--ac2:#E8EEFC;--ac3:#D8E3FA;--act:#2550B8;--seg:#E8ECF2;--sel:#F5F8FF;--life2:#E6F5EF;--lifet:#1E6B52;--sun:#D64545;--sat:#3D6BE0;--memo:#FFF5D9;--memot:#6B5210;--memol:#EAD59A;--dark:#1D2433;--shc:30,45,80}
@@ -524,12 +524,19 @@ body[data-th=navy] .nlog{border-radius:20px;box-shadow:0 3px 0 #D9B04A}
  .c{padding:4px 3px!important;min-height:64px}
  .dn{font-size:13px!important;min-width:22px;height:22px!important;line-height:22px!important}
  .hn,.cadd,.dnote{display:none!important}
- .ci,.lci{margin:0!important;padding:0 1px!important;gap:2px;height:auto!important;flex-direction:row;flex-wrap:wrap}
- .ci .it,.lci .it{font-size:0!important;height:6px;min-height:6px;width:6px;padding:0!important;margin:0!important;border-radius:50%!important;background:var(--mu2);flex:none;box-shadow:none!important}
- .ci .it *,.lci .it *{display:none!important}.it::before{display:none!important}
- .ci .it.ev,.lci .it.ev{background:var(--ac)}.ci .it.dn2,.lci .it.dn2{opacity:.35}
- .ci .it.rg,.lci .it.rg{width:100%;border-radius:3px!important;height:5px}
- .lci .it{background:var(--pc)}
+ .ci,.lci{margin:0 -2px!important;padding:0!important;gap:2px;height:auto!important}
+ .ci .it,.lci .it{font-size:10px!important;line-height:15px;height:15px;min-height:15px;padding:0 3px!important;margin:0!important;border-radius:4px!important;background:var(--sf2);box-shadow:none!important;white-space:nowrap;overflow:hidden;letter-spacing:-.03em}
+ .ci .it input,.ci .it em,.ci .it .isa,.ci .it .rz,.ci .it .pdot,.ci .it small,.ci .it::before{display:none!important}
+ .ci .it span{overflow:hidden;text-overflow:clip}
+ .ci .it.ev{background:var(--ac);color:#fff}.ci .it.ev.l{background:#F2C14E;color:#17203A}
+ .ci .it.pi{background:color-mix(in srgb,var(--pc,#999) 22%,#fff)}
+ .ci .it.dn2{opacity:.4;text-decoration:line-through}
+ .ci .it.rg{border-radius:0!important}.ci .it.rg.s{border-radius:4px 0 0 4px!important}.ci .it.rg.e{border-radius:0 4px 4px 0!important}
+ .ci .it.sb{display:none!important}
+ .grid{grid-auto-rows:minmax(84px,auto)!important}
+ .dpj{display:flex;flex-direction:column;gap:6px;margin:10px 0 4px}
+ .dpj button{display:flex;align-items:center;gap:8px;text-align:left;background:color-mix(in srgb,var(--pc) 14%,#fff);border-radius:12px;padding:9px 12px;font-size:13.5px;font-weight:700;color:var(--tx)}
+ .dpj button i{width:9px;height:9px;border-radius:50%;background:var(--pc);flex:none}.dpj button small{margin-left:auto;font-weight:600;color:var(--mu);font-size:11.5px}
  .more{font-size:9px;line-height:8px;padding:0 1px}
  .pbs{margin:2px -3px 2px!important;gap:2px}
  .pb,.pb0{height:6px!important;line-height:0!important;font-size:0!important;padding:0!important;box-shadow:none!important}
@@ -603,15 +610,335 @@ body[data-th=navy] .mS{flex-direction:column;gap:0}body[data-th=navy] .mS span:f
 .dayp{width:300px;max-height:min(460px,80vh);padding:12px 12px 10px}
 .dpH{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}.dpH b{font-size:15px}.dpH small{color:var(--sun);font-size:11.5px}.dpx{margin-left:auto;color:var(--mu);font-size:17px;width:24px;height:24px;border-radius:6px}.dpx:hover{background:var(--hv)}
 .dpL .row{border-radius:10px;padding:7px 8px}.dpL .rowg{border:0}
+
+/* ===== 모노 (토스·현대카드 느낌) ===== */
+body:is([data-th=mono],[data-th=flow]){--bg:#F2F4F6;--sf:#FFFFFF;--sf2:#F9FAFB;--hv:#F2F4F6;--ln:#E5E8EB;--ln2:#F2F4F6;--tx:#191F28;--tx2:#4E5968;--mu:#8B95A1;--mu2:#B0B8C1;--ac:#191F28;--ac2:#F2F4F6;--ac3:#E5E8EB;--act:#191F28;--seg:#E5E8EB;--sel:#F9FAFB;--life2:#F2F4F6;--lifet:#191F28;--sun:#F04452;--sat:#6B7684;--memo:#FFFFFF;--memot:#191F28;--memol:#D1D6DB;--warn:#FFFFFF;--warn2:#191F28;--dark:#191F28;--shc:0,0,0}
+body:is([data-th=mono],[data-th=flow]) .top h2,body:is([data-th=mono],[data-th=flow]) .mN{font-weight:800;letter-spacing:-.03em}
+body:is([data-th=mono],[data-th=flow]) .seg{background:#E5E8EB;border-radius:12px;padding:3px}
+body:is([data-th=mono],[data-th=flow]) .seg button{border-radius:9px;font-weight:600;color:#8B95A1}
+body:is([data-th=mono],[data-th=flow]) .seg button.on{background:#fff;color:#191F28;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+body:is([data-th=mono],[data-th=flow]) .vsw button.on{background:#191F28;color:#fff}
+body:is([data-th=mono],[data-th=flow]) .tb{background:#191F28;color:#fff;border:0;border-radius:10px;font-weight:700}
+body:is([data-th=mono],[data-th=flow]) .pri{background:#191F28;border-radius:12px;font-weight:700}
+body:is([data-th=mono],[data-th=flow]) #cal,body:is([data-th=mono],[data-th=flow]) #nview{border:0;border-radius:20px;box-shadow:none}
+body:is([data-th=mono],[data-th=flow]) .dow{border-bottom:1px solid #F2F4F6}
+body:is([data-th=mono],[data-th=flow]) .dow b{color:#8B95A1;font-weight:600;font-size:12px;padding:10px}
+body:is([data-th=mono],[data-th=flow]) .c{border-color:#F2F4F6}
+body:is([data-th=mono],[data-th=flow]) .dn{font-weight:700}
+body:is([data-th=mono],[data-th=flow]) .c.td .dn{background:#191F28;color:#fff}
+body:is([data-th=mono],[data-th=flow]) .c.sel{background:#F9FAFB;box-shadow:inset 0 0 0 1.5px #191F28;border-radius:12px}
+body:is([data-th=mono],[data-th=flow]) .c.sun,body:is([data-th=mono],[data-th=flow]) .c.sat{background:#FCFCFD}
+body:is([data-th=mono],[data-th=flow]) .ci .it:not(.ev):not(.er){background:#F2F4F6;border-radius:8px}
+body:is([data-th=mono],[data-th=flow]) .it.ev{background:#191F28;color:#fff;font-weight:600}body:is([data-th=mono],[data-th=flow]) .it.ev em{color:#B0B8C1}
+body:is([data-th=mono],[data-th=flow]) input[type=checkbox]{appearance:none;-webkit-appearance:none;padding:0;margin:0;flex:none;width:18px;height:18px;border:1.8px solid #D1D6DB;border-radius:50%;background:#fff;display:inline-grid;place-items:center;transition:all .12s}
+body:is([data-th=mono],[data-th=flow]) .it input[type=checkbox]{width:14px;height:14px}
+body:is([data-th=mono],[data-th=flow]) input[type=checkbox]:checked{background:#191F28;border-color:#191F28}
+body:is([data-th=mono],[data-th=flow]) input[type=checkbox]:checked::after{content:'';width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+body:is([data-th=mono],[data-th=flow]) .pb,body:is([data-th=mono],[data-th=flow]) .pdot,body:is([data-th=mono],[data-th=flow]) .p2h i,body:is([data-th=mono],[data-th=flow]) .p2bar u,body:is([data-th=mono],[data-th=flow]) .pct i,body:is([data-th=mono],[data-th=flow]) .pcard .pbar u,body:is([data-th=mono],[data-th=flow]) .dpj button i,body:is([data-th=mono],[data-th=flow]) .fchip,body:is([data-th=mono],[data-th=flow]) .pcol,body:is([data-th=mono],[data-th=flow]) .tph i{filter:grayscale(1)}
+body:is([data-th=mono],[data-th=flow]) .dpj button{background:#fff;border:1px solid #E5E8EB}
+body:is([data-th=mono],[data-th=flow]) .pb{height:18px;line-height:18px;font-weight:700;font-size:11.5px;background:color-mix(in srgb,var(--pc) 30%,#fff);color:#191F28}
+body:is([data-th=mono],[data-th=flow]) .pb.s{border-left:0;border-radius:6px 0 0 6px;padding-left:8px}body:is([data-th=mono],[data-th=flow]) .pb.e{border-radius:0 6px 6px 0}body:is([data-th=mono],[data-th=flow]) .pb.s.e{border-radius:6px}
+body:is([data-th=mono],[data-th=flow]) .pb0{height:18px}
+body:is([data-th=mono],[data-th=flow]) .ci .it.pi{background:#F2F4F6}body:is([data-th=mono],[data-th=flow]) .ci .it.pi::before{background:#191F28}
+body:is([data-th=mono],[data-th=flow]) .memo{background:#fff;border:0;border-radius:20px;box-shadow:none;padding:16px 18px 10px}
+body:is([data-th=mono],[data-th=flow]) .memo label{color:#191F28;font-size:15px;font-weight:800}
+body:is([data-th=mono],[data-th=flow]) #mrs i{background:#E5E8EB}
+body:is([data-th=mono],[data-th=flow]) #rp{background:var(--bg)}
+body:is([data-th=mono],[data-th=flow]) #rp .qa input,body:is([data-th=mono],[data-th=flow]) #pni,body:is([data-th=mono],[data-th=flow]) #pti,body:is([data-th=mono],[data-th=flow]) #pri{border:0;background:#fff;border-radius:14px;padding:12px 14px}
+body:is([data-th=mono],[data-th=flow]) #undated .row,body:is([data-th=mono],[data-th=flow]) #lists .row{box-shadow:none;background:#fff;border-radius:14px;padding:12px 12px}
+body:is([data-th=mono],[data-th=flow]) .udh{font-size:13px;color:#191F28}
+body:is([data-th=mono],[data-th=flow]) .pc2{border-radius:20px;box-shadow:none;padding:18px 18px 16px}
+body:is([data-th=mono],[data-th=flow]) .pc2.feat{background:#191F28;color:#fff}body:is([data-th=mono],[data-th=flow]) .pc2.feat .p2n,body:is([data-th=mono],[data-th=flow]) .pc2.feat .p2l,body:is([data-th=mono],[data-th=flow]) .pc2.feat .p2b span{color:rgba(255,255,255,.7)}
+body:is([data-th=mono],[data-th=flow]) .pc2.feat .p2bar{background:rgba(255,255,255,.2)}body:is([data-th=mono],[data-th=flow]) .pc2.feat .p2bar u{background:#fff;filter:none}
+body:is([data-th=mono],[data-th=flow]) .pc2.feat .p2h em{background:#fff;color:#191F28}body:is([data-th=mono],[data-th=flow]) .p2h em.urg{background:#FFEEEE;color:#F04452}
+body:is([data-th=mono],[data-th=flow]) .p2bar{height:6px;background:#F2F4F6}body:is([data-th=mono],[data-th=flow]) .p2bar u{background:#191F28;filter:none}
+body:is([data-th=mono],[data-th=flow]) .pvt button.on{color:#191F28}body:is([data-th=mono],[data-th=flow]) .pvt button.on::after{background:#191F28}
+body:is([data-th=mono],[data-th=flow]) .pvadd,body:is([data-th=mono],[data-th=flow]) #mfab{background:#191F28!important;color:#fff!important;box-shadow:0 8px 20px rgba(0,0,0,.18)!important;border-radius:50%}
+body:is([data-th=mono],[data-th=flow]) .toast{background:#191F28;color:#fff;border-radius:999px;padding:10px 18px;font-weight:600}
+body:is([data-th=mono],[data-th=flow]) .pcard{border:0;border-radius:20px}
+body:is([data-th=mono],[data-th=flow]) dialog,body:is([data-th=mono],[data-th=flow]) .fpop,body:is([data-th=mono],[data-th=flow]) #qp,body:is([data-th=mono],[data-th=flow]) #tip{border-radius:20px;border:0;box-shadow:0 12px 40px rgba(0,0,0,.14)}
+body:is([data-th=mono],[data-th=flow]) .nfc,body:is([data-th=mono],[data-th=flow]) .nlog{border:0;border-radius:20px}body:is([data-th=mono],[data-th=flow]) .nlog{background:#191F28;color:#fff}body:is([data-th=mono],[data-th=flow]) .nlog.done{background:#fff;color:#191F28}
+body:is([data-th=mono],[data-th=flow]) #nacts .njo{background:#191F28;border-color:#191F28;color:#fff;border-radius:12px}
+body:is([data-th=mono],[data-th=flow]) .dh .dprog i{background:#191F28}
+body:is([data-th=mono],[data-th=flow]) #mnav button.on{color:#191F28;background:#F2F4F6}
+body:is([data-th=mono],[data-th=flow]) .ci .it.ev{background:#191F28!important;color:#fff}
+@media(max-width:820px){body:is([data-th=mono],[data-th=flow]) .ci .it.pi{background:#E5E8EB}body:is([data-th=mono],[data-th=flow]) .pb{height:5px!important;background:#8B95A1}}
+
+#stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:14px}
+#stats .st{display:flex;flex-direction:column;gap:4px;padding:4px 2px}
+#stats .st span{font-size:11px;color:var(--mu);white-space:nowrap}
+#stats .st b{font-size:22px;font-weight:400;letter-spacing:-.03em;color:var(--tx);line-height:1.1}
+#stats .st b small{font-size:12px;color:var(--mu);margin-left:2px;font-weight:400}
+/* ---- FLOW (FacilityFlow 레퍼런스) ---- */
+body[data-th=flow]{--bg:#EEEEEE;--sf:#FAFAFA;--sf2:#F5F5F5;--hv:#F2F2F2;--ln:#E6E6E6;--ln2:#EFEFEF;--tx:#111111;--tx2:#4A4A4A;--mu:#8E8E8E;--mu2:#B5B5B5;--ac:#111111;--ac2:#F0F0F0;--ac3:#E4E4E4;--act:#111111;--seg:#E6E6E6;--sel:#F5F5F5;--sun:#E5484D;--sat:#6B6B6B;--memo:#FAFAFA;--memot:#111;--memol:#D6D6D6;--dark:#111;--gr:#1DB77E;--gr2:#E3F6EE}
+body[data-th=flow] #vw{background:#111;border-radius:999px;padding:4px;gap:2px}
+body[data-th=flow] #vw button{height:30px;padding:0 16px;border-radius:999px;color:#fff;font-weight:500;font-size:13px;background:transparent}
+body[data-th=flow] #vw button.on{background:#fff;color:#111;box-shadow:inset 0 0 0 1.5px #111}
+body[data-th=flow] #vw button i,body[data-th=flow] .vsw button i{display:none}
+body[data-th=flow] .mN,body[data-th=flow] .mS span:first-child{font-weight:400!important;letter-spacing:-.04em}
+body[data-th=flow] .mY{font-weight:400;color:var(--mu)}
+body[data-th=flow] .seg{background:transparent;border:1px solid #DADADA;border-radius:999px;padding:3px}
+body[data-th=flow] .seg button{border-radius:999px;font-weight:500;color:#8E8E8E}
+body[data-th=flow] .seg button.on{background:#111;color:#fff;box-shadow:none}
+body[data-th=flow] #vw.seg{border:0}
+body[data-th=flow] .tb{border-radius:999px;background:transparent;color:#111;border:1px solid #CFCFCF;font-weight:500}
+body[data-th=flow] .nb{border-radius:50%;border:1px solid #DADADA;width:30px;height:30px;background:#FAFAFA}
+body[data-th=flow] #cal,body[data-th=flow] #nview,body[data-th=flow] .memo,body[data-th=flow] .pc2,body[data-th=flow] .pcard,body[data-th=flow] .nfc{background:#FAFAFA;border:1px solid #E4E4E4!important;border-radius:22px}
+body[data-th=flow] #rp{background:var(--bg);border-left:0}
+body[data-th=flow] #stats{background:#FAFAFA;border:1px solid #E4E4E4;border-radius:22px;padding:14px 16px 12px}
+body[data-th=flow] #stats .st:first-child b{color:var(--tx)}
+body[data-th=flow] .dow b{font-weight:400;color:#9A9A9A}
+body[data-th=flow] .dn{font-weight:400}
+body[data-th=flow] .c.td .dn{background:var(--gr);color:#fff;font-weight:600}
+body[data-th=flow] .c.sel{background:#fff;box-shadow:inset 0 0 0 1px #111;border-radius:14px}
+body[data-th=flow] .c.sun,body[data-th=flow] .c.sat{background:transparent}
+body[data-th=flow] .ci .it:not(.ev):not(.er){background:#F0F0F0;border-radius:8px;font-weight:400}
+body[data-th=flow] .it.ev,body[data-th=flow] .ci .it.ev{background:#fff!important;color:#111;font-weight:500;box-shadow:inset 0 0 0 1px #E0E0E0}
+body[data-th=flow] .it.ev em{color:var(--gr)!important;font-weight:600}
+body[data-th=flow] input[type=checkbox]:checked{background:var(--gr);border-color:var(--gr)}
+body[data-th=flow] .pb{background:#E9E9E9;font-weight:500;color:#333}
+body[data-th=flow] .memo label{font-weight:500;font-size:14px}
+body[data-th=flow] .udh,body[data-th=flow] .gt{font-weight:500;color:#8E8E8E}
+body[data-th=flow] .udh b,body[data-th=flow] .gt b{color:#111;font-weight:500}
+body[data-th=flow] #undated .row,body[data-th=flow] #lists .row{background:#FAFAFA;border:1px solid #E8E8E8;border-radius:16px}
+body[data-th=flow] #rp .qa input,body[data-th=flow] #pni,body[data-th=flow] #pti,body[data-th=flow] #pri{background:#FAFAFA;border:1px solid #E4E4E4;border-radius:999px;padding:11px 16px}
+body[data-th=flow] .pc2.feat{background:#111}
+body[data-th=flow] .p2bar u{background:var(--gr)!important}body[data-th=flow] .pc2.feat .p2bar u{background:var(--gr)!important}
+body[data-th=flow] .dh .dprog i{background:var(--gr)}
+body[data-th=flow] .pvadd,body[data-th=flow] #mfab{background:#111!important}
+body[data-th=flow] .toast{background:#111}
+body[data-th=flow] #mnav{background:rgba(250,250,250,.92);backdrop-filter:blur(12px);border-top:1px solid #E4E4E4}
+body[data-th=flow] #mnav button.on{background:#111;color:#fff;border-radius:999px}
+@media(min-width:821px){
+ body[data-th=flow] .top{gap:8px;margin-bottom:14px;padding:2px 2px 0}
+ body[data-th=flow] #ml{order:1;margin:0 10px 0 4px!important}
+ body[data-th=flow] .mN,body[data-th=flow] .mS span:first-child{font-size:30px!important}
+ body[data-th=flow] #pv{order:2}body[data-th=flow] #tdy{order:3}body[data-th=flow] #nx{order:4}body[data-th=flow] #fchip{order:5}body[data-th=flow] #rg{order:6}
+ body[data-th=flow] .top .sp{display:none}
+ body[data-th=flow] #vw{order:7;margin:0 auto!important}
+ body[data-th=flow] #sp{order:8}body[data-th=flow] #setb{order:9}
+}
+@media(max-width:820px){
+ body[data-th=flow] #stats{padding:12px 14px 10px;margin:4px 0 12px}
+ body[data-th=flow] #stats .st b{font-size:19px}
+ body[data-th=flow] .ci .it.pi{background:#E9E9E9}body[data-th=flow] .pb{height:5px!important;background:#BDBDBD}
+}
+body[data-th=flow] #stats{grid-template-columns:1fr 1fr;row-gap:14px}
+body[data-th=flow] #stats .st b{font-size:28px;font-weight:300}
+body[data-th=flow] .ci .it.pi::before{background:#C4C4C4!important}
+body[data-th=flow] #pview h1,body[data-th=flow] #nview h1{font-weight:400;letter-spacing:-.04em;font-size:30px}
+@media(max-width:820px){body[data-mt=cal] #stats{display:none}}
+
+/* ---- 정렬·넘침 다듬기 ---- */
+@media(min-width:821px){
+ .pb.s{overflow:visible;z-index:1}
+ .pbn{position:relative;z-index:2;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:calc(var(--n) * 100% + (var(--n) - 1) * 11px - 4px);pointer-events:none}
+}
+@media(max-width:820px){.pbn{display:none}}
+.row,.row *{min-width:0}
+.row span,.row .tt,.srow span,.ed,.p2n,.tpr,.dpj button{overflow-wrap:anywhere;word-break:keep-all}
+.ed a,.row a{word-break:break-all}
+.p2n small,.tpr small{white-space:nowrap}
+.p2f{overflow:hidden}
+.dpj button{min-width:0}
+.dpj button>span,.dpj button{overflow:hidden}
+@media(max-width:820px){
+ .ci .it span{-webkit-mask-image:linear-gradient(90deg,#000 72%,transparent);mask-image:linear-gradient(90deg,#000 72%,transparent);text-overflow:clip}
+ .ci .it{padding:0 3px}
+ .dpj button{white-space:nowrap}
+ .dpj button small{flex:none;margin-left:auto;padding-left:8px}
+ .dpj button b,.dpj button .dpn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+}
+.row>span:not(.tm){flex:1}.row>small,.row>input,.row>.tm{flex:none;white-space:nowrap}
+.p2n{display:flex;gap:5px;align-items:baseline}.p2t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p2n small{flex:none}
+@media(min-width:821px){#grid .c{overflow-x:visible;overflow-y:clip}}
+@media(min-width:821px){
+ body:is([data-rg=w1],[data-rg=w2]) .ci .it{white-space:normal;align-items:flex-start;height:auto;padding-top:2px;padding-bottom:2px}
+ body:is([data-rg=w1],[data-rg=w2]) .ci .it span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;white-space:normal;overflow-wrap:anywhere}
+ body:is([data-rg=w1],[data-rg=w2]) .ci .it input{margin-top:2px}
+ body[data-th=flow] #rg button{padding:0 9px}
+ body[data-th=flow] #vw button{padding:0 14px}
+ body:not([data-rg=m]) .mN,body:not([data-rg=m]) .mS span:first-child{font-size:24px!important}
+}
+@media(min-width:1180px){body[data-th=flow] .top{flex-wrap:nowrap}body[data-th=flow] .top>*{flex-shrink:0}}
+@media(max-width:820px){
+ body[data-rg=w1] #grid .c{min-height:190px}body[data-rg=w2] #grid .c{min-height:130px}body[data-rg=w3] #grid .c{min-height:100px}
+ body:is([data-rg=w1],[data-rg=w2]) .ci .it{white-space:normal;height:auto;align-items:flex-start;padding-top:1px;padding-bottom:1px}
+ body:is([data-rg=w1],[data-rg=w2]) .ci .it span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;white-space:normal;overflow-wrap:anywhere;-webkit-mask-image:none;mask-image:none;line-height:1.3}
+ body:not([data-rg=m]) .mN,body:not([data-rg=m]) .mS span:first-child{font-size:24px!important;font-weight:400!important}
+}
+
+/* ---- FLOW 전체 화면 통일 ---- */
+.mi{display:none}
+body[data-th=flow] #mnav b{display:none}body[data-th=flow] #mnav .mi{display:block;width:22px;height:22px;margin:0 auto 2px}
+body[data-th=flow] #mnav button{color:#9A9A9A;font-weight:500}
+body[data-th=flow] input,body[data-th=flow] select,body[data-th=flow] textarea{border-color:#E4E4E4;border-radius:12px;background:#fff}
+body[data-th=flow] input:focus,body[data-th=flow] select:focus,body[data-th=flow] textarea:focus{border-color:#111;box-shadow:none;outline:none}
+body[data-th=flow] input[type=checkbox]{border-radius:50%}
+body[data-th=flow] .pri,body[data-th=flow] #nacts .njo{background:#111;border-color:#111;color:#fff;border-radius:999px;font-weight:500}
+body[data-th=flow] dialog,body[data-th=flow] #qp,body[data-th=flow] .fpop,body[data-th=flow] #tip,body[data-th=flow] .slm,body[data-th=flow] .dayp{border:1px solid #E4E4E4;border-radius:22px;box-shadow:0 20px 50px rgba(0,0,0,.12)}
+body[data-th=flow] dialog{border-radius:28px}
+body[data-th=flow] dialog::backdrop{background:rgba(17,17,17,.28);backdrop-filter:blur(2px)}
+body[data-th=flow] .pdl #pni,body[data-th=flow] .pdl .pname{background:transparent!important;border:0!important;border-radius:0;padding:2px 0!important;font-weight:500;font-size:24px;letter-spacing:-.03em}
+body[data-th=flow] .pdl .pname{font-weight:500;font-size:24px;letter-spacing:-.03em;background:transparent}
+body[data-th=flow] .pcl{border-radius:999px;border-color:#DADADA;padding:5px 12px}
+body[data-th=flow] .pdl input[type=date],body[data-th=flow] .pdl select{border-radius:999px;padding:8px 14px}
+body[data-th=flow] #pme,body[data-th=flow] .pdl textarea{border-radius:16px;background:#fff}
+body[data-th=flow] .pdl .gt,body[data-th=flow] .pdl label,body[data-th=flow] .pdl h4{font-weight:500;color:#8E8E8E}
+body[data-th=flow] #qp{padding:16px}
+body[data-th=flow] #qp input:not([type=checkbox]){border-radius:999px;padding:10px 14px;border:1px solid #111}
+body[data-th=flow] #qp select{border-radius:999px;padding:6px 12px}
+body[data-th=flow] #qp b,body[data-th=flow] #qp h4{font-weight:500}
+body[data-th=flow] .slm{padding:6px;width:200px}
+body[data-th=flow] .slm button{border-radius:12px;padding:6px 8px}
+body[data-th=flow] .slm button i{border-radius:8px;background:#F3F3F3;border-color:#EBEBEB}
+body[data-th=flow] .slm button.on,body[data-th=flow] .slm button:hover{background:#F2F2F2}
+body[data-th=flow] #nlist{border-right:1px solid #EFEFEF}
+body[data-th=flow] .nback{font-weight:500;border-radius:12px}
+body[data-th=flow] .nltop input{border-radius:999px;padding:8px 14px}
+body[data-th=flow] #nacts button{border-radius:999px;border-color:#DADADA;background:transparent;padding:6px 12px;font-weight:500}
+body[data-th=flow] #nacts button:hover{border-color:#111;color:#111}
+body[data-th=flow] .npg,body[data-th=flow] .nfh{border-radius:10px}
+body[data-th=flow] .npg.on,body[data-th=flow] .nfh.on,body[data-th=flow] .nback.on{background:#111;color:#fff}
+body[data-th=flow] .npg.on small,body[data-th=flow] .nfh.on em{color:rgba(255,255,255,.6)}
+body[data-th=flow] .nhome2 h1,body[data-th=flow] .ntitle{font-weight:400;letter-spacing:-.04em}
+body[data-th=flow] .ntitle{font-size:30px}
+body[data-th=flow] .nlog{background:#111!important;color:#fff;border-radius:22px;border:0!important}
+body[data-th=flow] .nlog.done{background:#FAFAFA!important;color:#111;border:1px solid #E4E4E4!important}
+body[data-th=flow] .nfc{transition:border-color .15s}body[data-th=flow] .nfc:hover{border-color:#111!important}
+body[data-th=flow] .ed h1,body[data-th=flow] .ed h2{font-weight:600;letter-spacing:-.02em}
+body[data-th=flow] .ed blockquote{border-left:2px solid #111}
+body[data-th=flow] .ed a{color:#111;text-decoration-color:var(--gr)}
+body[data-th=flow] .pvt button{font-weight:500}
+body[data-th=flow] .pvt button em,body[data-th=flow] .pvt button b{font-weight:500}
+body[data-th=flow] .tbl,body[data-th=flow] table{border-radius:16px;overflow:hidden}
+body[data-th=flow] .tbl th,body[data-th=flow] table th{background:#F5F5F5;font-weight:500;color:#8E8E8E}
+body[data-th=flow] #setp,body[data-th=flow] .setp{border-radius:22px}
+body[data-th=flow] [data-th].sw,body[data-th=flow] button[data-th]{border-radius:14px}
+body[data-th=flow] .toast{font-weight:500}
+body[data-th=flow] .p2h b,body[data-th=flow] .pc2 .p2n,body[data-th=flow] .p2t{font-weight:400}
+body[data-th=flow] .pc2 .p2h b,body[data-th=flow] .pc2 h3{font-weight:500}
+body[data-th=flow] .dh b{font-weight:500}
+body[data-th=flow] .dpj button{font-weight:500;border-radius:16px;background:#FAFAFA;border-color:#E4E4E4}
+body[data-th=flow] #nacts .njo{background:#111!important;color:#fff!important;border-color:#111!important}
+body[data-th=flow] .ntitle,body[data-th=flow] .tin,body[data-th=flow] .ov,body[data-th=flow] .pname{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+body[data-th=flow] .tin:hover,body[data-th=flow] .ov:hover{background:#F2F2F2!important;border-radius:8px!important}
+body[data-th=flow] .npg.on,body[data-th=flow] .nfh.on,body[data-th=flow] .nback.on{background:#EAEAEA;color:#111}
+body[data-th=flow] .npg.on small,body[data-th=flow] .nfh.on em{color:#8E8E8E}
+/* ---- 뮤트 색 ---- */
+body[data-th=flow]{--gr:#6E8F80;--gr2:#E7EDE9;--sun:#B4756F;--sat:#8A8A8A;--tx2:#55585B;--mu:#8C8C8C}
+body[data-th=flow] .c.td .dn{background:var(--gr)}
+body[data-th=flow] input[type=checkbox]:checked{background:var(--gr);border-color:var(--gr)}
+body[data-th=flow] .it.ev em{color:var(--gr)!important}
+body[data-th=flow] .p2bar u,body[data-th=flow] .pc2.feat .p2bar u,body[data-th=flow] .dh .dprog i,body[data-th=flow] .pbar u{background:var(--gr)!important}
+body[data-th=flow] .c.sun .dn,body[data-th=flow] .hl,body[data-th=flow] .c.hol .dn{color:#B4756F}
+body[data-th=flow] .p2h em.urg{background:#F2E7E6;color:#A9655E}
+body[data-th=flow] .pdot,body[data-th=flow] .dpj button i,body[data-th=flow] .p2h i,body[data-th=flow] .pct i,body[data-th=flow] .pcol,body[data-th=flow] .tph i,body[data-th=flow] .fchip{filter:saturate(.72)}
+body[data-th=flow] .pb{background:color-mix(in srgb,var(--pc) 22%,#F7F7F7);color:#4A4A4A}
+body[data-th=flow] .ci .it.pi::before{background:color-mix(in srgb,var(--pc) 70%,#777)!important}
+body[data-th=flow] .ed a{text-decoration-color:var(--gr)}
+body[data-ac=slate]{--gr:#6B7F96}body[data-ac=clay]{--gr:#A3796B}body[data-ac=plum]{--gr:#8A7490}body[data-ac=ink]{--gr:#5A5A5A}
+.thp .ths{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}
+.thp .ths button{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid #E0E0E0;border-radius:999px;font-size:13px;font-weight:500;background:#fff}
+.thp .ths button i{display:block;width:12px;height:12px;border-radius:50%;overflow:hidden}
+.thp .ths button i b{display:block;width:100%;height:100%}
+.thp .ths button.on{border-color:#111;background:#111;color:#fff}
+.thp b{font-weight:500;font-size:13px;color:#8E8E8E}
+.thp .lo2{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:12px;font-size:13px}
+.thp .lo2:hover{background:#F2F2F2}
+/* ---- 정렬 다듬기 2 ---- */
+body[data-th=flow] #rp .pcard{background:#FAFAFA;border:1px solid #E4E4E4;border-radius:20px;padding:14px 16px 12px;margin-bottom:10px;box-shadow:none}
+body[data-th=flow] #rp .pcard:hover{border-color:#C9C9C9}
+body[data-th=flow] #rp .pcard.sel{border-color:#111;box-shadow:none}
+body[data-th=flow] .pct{gap:8px}
+body[data-th=flow] .pct i{width:7px;height:7px}
+body[data-th=flow] .pct b{font-weight:500;font-size:14px;letter-spacing:-.01em}
+body[data-th=flow] .pct small{flex:none;font-size:11px;color:#8E8E8E;background:#F0F0F0;border-radius:999px;padding:3px 9px;line-height:1.3}
+body[data-th=flow] .pfo{width:24px;height:24px;border-radius:50%;margin-left:0;color:#B5B5B5;display:grid;place-items:center}
+body[data-th=flow] .pfo:hover{background:#EDEDED;color:#111}
+body[data-th=flow] .pfo.on{background:#111;color:#fff}
+body[data-th=flow] .pprog{gap:10px;margin:10px 0 2px}
+body[data-th=flow] .pcard .pbar{height:4px;border-radius:999px;background:#E8E8E8;margin:0}
+body[data-th=flow] .pcard .pbar u{border-radius:999px}
+body[data-th=flow] .pprog small{font-size:11px;color:#8E8E8E;flex:none;font-variant-numeric:tabular-nums}
+body[data-th=flow] .pcard .pcx{border-top:1px solid #ECECEC;margin-top:12px;padding-top:8px}
+body[data-th=flow] .cxh{font-size:11px;font-weight:500;color:#9A9A9A;margin:6px 0 4px;letter-spacing:.01em}
+body[data-th=flow] .cxr{gap:9px;padding:4px 0;font-size:13px}
+body[data-th=flow] .cxr small{flex:none;font-size:11px;color:#9A9A9A;font-variant-numeric:tabular-nums}
+body[data-th=flow] .cxr .tm{color:var(--gr);font-weight:500;flex:none;font-size:11.5px;font-variant-numeric:tabular-nums}
+body[data-th=flow] .cxr input[type=checkbox]{width:15px;height:15px}
+body[data-th=flow] .cxe,body[data-th=flow] .cxm{font-size:12px;color:#9A9A9A}
+/* 날짜 칸 */
+body[data-th=flow] .dn{font-variant-numeric:tabular-nums}
+body[data-th=flow] .c{padding:6px 4px 4px}
+body[data-th=flow] .ci{padding:0 2px}
+body[data-th=flow] .pb{margin-top:1px}
+body[data-th=flow] .pb.s{margin-left:4px}body[data-th=flow] .pb.e{margin-right:4px}
+body[data-th=flow] .it .rz{display:none}
+body[data-th=flow] .hl{font-size:11px;font-weight:400}
+/* 오른쪽 패널 공통 */
+body[data-th=flow] .udh,body[data-th=flow] .gt{font-size:12px;letter-spacing:.01em;padding:0 4px;margin:14px 0 6px}
+body[data-th=flow] .udh .mu,body[data-th=flow] .gt .mu{font-size:11px}
+body[data-th=flow] #rp .row{padding:11px 14px;gap:10px;margin-bottom:6px;border-bottom:0}
+body[data-th=flow] #rp .rowg{border-bottom:0}
+body[data-th=flow] .dh{padding:11px 14px;background:#FAFAFA;border:1px solid #E4E4E4;border-radius:16px;margin-bottom:8px}
+body[data-th=flow] .dh b{font-size:14px}
+body[data-th=flow] .hint{font-size:11.5px;color:#9E9E9E;line-height:1.6;padding:0 4px;margin-top:14px}
+body[data-th=flow] .empty{font-size:12.5px;color:#9E9E9E;padding:4px}
+body[data-th=flow] #mrs i{background:#E0E0E0;width:28px;height:3px;border-radius:999px}
+body[data-th=flow] .memo{padding:16px 18px 8px}
+.ui{width:15px;height:15px;flex:none;display:inline-block;vertical-align:-2px}
+.njo .ui,.lo2 .ui{margin-right:7px}
+.nback .ui{width:14px;height:14px}
+.pvsb .ui{width:17px;height:17px}
+.nqw{position:relative;display:block}
+.nqw .ui{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#9A9A9A;pointer-events:none}
+body[data-th=flow] .nltop input{padding-left:36px}
+body[data-th=flow] .lo2{display:flex;align-items:center}
+body[data-th=flow] .njo{display:flex;align-items:center;justify-content:center}
+body[data-th=flow] .pvsb{width:36px;height:36px;border-radius:50%;border:1px solid #DADADA;display:grid;place-items:center;color:#6B6B6B}
+body[data-th=flow] .pvsb:hover,body[data-th=flow] .pvsb.on{background:#111;border-color:#111;color:#fff}
+body[data-th=flow] #setb{font-size:15px;color:#6B6B6B}
+/* ---- 강조 + 아이콘 ---- */
+body[data-th=flow] #vw button .ui{display:inline-block;width:15px;height:15px;margin-right:6px;vertical-align:-3px}
+body[data-th=flow] .nb .ui{width:16px;height:16px;vertical-align:-3px}
+body[data-th=flow] .ptabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+body[data-th=flow] .ptabs .ui{width:14px;height:14px}
+body[data-th=flow] .memo label{display:flex;align-items:center;gap:7px;font-weight:600;color:#111}
+body[data-th=flow] .memo label .ui{width:15px;height:15px;color:#9A9A9A}
+body[data-th=flow] .gt,body[data-th=flow] .cxh{display:flex;align-items:center;gap:6px}
+body[data-th=flow] .gt .ui,body[data-th=flow] .cxh .ui{width:14px;height:14px;color:#AEAEAE}
+body[data-th=flow] .gt b,body[data-th=flow] .cxh b{font-weight:600;color:#111;font-variant-numeric:tabular-nums}
+body[data-th=flow] .gt>.mu,body[data-th=flow] .gt>button{margin-left:auto}
+body[data-th=flow] .empty{display:flex;align-items:center;gap:8px;padding:10px 4px}
+body[data-th=flow] .empty .ui{width:15px;height:15px;color:#C4C4C4}
+/* 글씨 강조 */
+body[data-th=flow] .gt,body[data-th=flow] .udh{font-weight:500;color:#8E8E8E}
+body[data-th=flow] .dh b{font-weight:600;font-size:15px;color:#111}
+body[data-th=flow] .dcnt{font-weight:600;color:#111;font-variant-numeric:tabular-nums}
+body[data-th=flow] .row>span:not(.tm){font-weight:500;color:#1C1C1C}
+body[data-th=flow] .row.dn2>span{font-weight:400;color:#A5A5A5}
+body[data-th=flow] .cxr>span{font-weight:500}
+body[data-th=flow] .ci .it.ev span{font-weight:600}
+body[data-th=flow] .pb{font-weight:600}
+body[data-th=flow] .pct b{font-weight:600;font-size:14.5px}
+body[data-th=flow] .npg.on span,body[data-th=flow] .nfh span{font-weight:500}
+body[data-th=flow] .mY{color:#B0B0B0}
+body[data-th=flow] .tm{font-weight:600;color:var(--gr)}
+body[data-th=flow] .dpj button{font-weight:600}
+body[data-th=flow] .dpj button small{font-weight:500}
+body[data-th=flow] .tbh button{display:inline-flex;align-items:center;gap:5px;font-weight:500}
+body[data-th=flow] .tbh .ui{width:13px;height:13px;color:#AEAEAE}
+body[data-th=flow] .pdl .gt{font-size:12px}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
  <section id="main">
   <div class="top">
-   <span class="seg vsw" id="vw"><button data-vw="cal">📅 달력</button><button data-vw="proj">📁 프로젝트</button><button data-vw="note">📝 기록</button></span>
-   <button class="nb" id="pv" aria-label="이전">‹</button><button class="tb" id="tdy">오늘</button><button class="nb" id="nx" aria-label="다음">›</button>
+   <span class="seg vsw" id="vw"><button data-vw="cal"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>달력</button><button data-vw="proj"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M7.5 9h6M7.5 13h9M7.5 17h4"/></svg>프로젝트</button><button data-vw="note"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h8.5L19 8v12.5H6z"/><path d="M14 3.5V8h5M9 12.5h7M9 16h5"/></svg>기록</button></span>
+   <button class="nb" id="pv" aria-label="이전"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button><button class="tb" id="tdy">오늘</button><button class="nb" id="nx" aria-label="다음"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
    <h2 id="ml"></h2><span id="fchip"></span>
-   <span class="seg" id="rg"><button data-r="m">월</button><button data-r="w2">2주</button></span>
+   <span class="seg" id="rg"><button data-r="w1">1주</button><button data-r="w2">2주</button><button data-r="w3">3주</button><button data-r="w4">4주</button><button data-r="m">월</button></span>
    <span class="sp"></span>
    <span class="seg" id="sp"><button data-s="work">WORK</button><button data-s="life">LIFE</button><button data-s="all">전체</button></span>
    <button class="nb" id="setb" title="테마 · 로그아웃" aria-label="설정">⚙</button>
@@ -619,16 +946,16 @@ body[data-th=navy] .mS{flex-direction:column;gap:0}body[data-th=navy] .mS span:f
   <div id="cal"><div class="dow"><b>일</b><b>월</b><b>화</b><b>수</b><b>목</b><b>금</b><b>토</b></div><div class="grid" id="grid"></div></div>
   <div id="hspl" title="끌어서 달력 높이 조절 · 두 번 누르면 화면에 맞춤"><i></i></div>
   <div id="pview" hidden></div>
-  <div id="nview" hidden><div id="nlist"><button class="nback" id="nhb" data-nhome>🏠 기록 홈</button><div class="nltop"><input id="nq" placeholder="🔍 기록 검색"></div><div id="nacts"></div><div id="ntree"></div></div><div id="ned"></div></div>
+  <div id="nview" hidden><div id="nlist"><button class="nback" id="nhb" data-nhome><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5L12 4l8 6.5V20H4z"/></svg>기록 홈</button><div class="nltop"><span class="nqw"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="nq" placeholder="기록 검색"></span></div><div id="nacts"></div><div id="ntree"></div></div><div id="ned"></div></div>
  </section>
  <div id="spl" title="끌어서 오른쪽 패널 너비 조절 · 두 번 누르면 원래대로"></div>
- <nav id="mnav"><button data-mt="cal"><b>📅</b><span>달력</span></button><button data-mt="todo"><b>✅</b><span>할일</span></button><button data-mt="proj"><b>📁</b><span>프로젝트</span></button><button data-mt="note"><b>📝</b><span>기록</span></button></nav>
+ <nav id="mnav"><button data-mt="cal"><b>📅</b><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>달력</span></button><button data-mt="todo"><b>✅</b><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.2l2.6 2.6 4.9-5.3"/></svg><span>할일</span></button><button data-mt="proj"><b>📁</b><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M7.5 9h6M7.5 13h9M7.5 17h4"/></svg><span>프로젝트</span></button><button data-mt="note"><b>📝</b><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h8.5L19 8v12.5H6z"/><path d="M14 3.5V8h5M9 12.5h7M9 16h5"/></svg><span>기록</span></button></nav>
  <button id="mfab" aria-label="이 날짜에 추가">＋</button>
  <aside id="rp">
-  <div class="memo edw"><div class="mh"><label>잊지 말 것</label></div><div id="memo" aria-label="잊지 말 것"></div><div id="mrs" title="끌어서 높이 조절 · 두 번 누르면 내용에 맞춤"><i></i></div></div>
-  <div class="seg ptabs" id="ptabs"><button data-pv="day">할일</button><button data-pv="plist">프로젝트</button></div>
+  <div class="memo edw"><div class="mh"><label><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5h6l-.8 5.2 3.3 3.3H6.5l3.3-3.3z"/><path d="M12 12v8.5"/></svg>잊지 말 것</label></div><div id="memo" aria-label="잊지 말 것"></div><div id="mrs" title="끌어서 높이 조절 · 두 번 누르면 내용에 맞춤"><i></i></div></div>
+  <div class="seg ptabs" id="ptabs"><button data-pv="day"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.2l2.6 2.6 4.9-5.3"/></svg>할일</button><button data-pv="plist"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="3"/><path d="M7.5 9h6M7.5 13h9M7.5 17h4"/></svg>프로젝트</button></div>
   <div id="pday">
-  <div class="gt udh">날짜 미정 <b id="udn"></b><span class="mu">달력으로 끌면 날짜가 정해져요</span></div>
+  <div class="gt udh"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.5L6.5 5h11L20 13.5V19H4z"/><path d="M4 13.5h4l1 2.5h6l1-2.5h4"/></svg>날짜 미정 <b id="udn"></b><span class="mu">달력으로 끌면 날짜가 정해져요</span></div>
   <div class="qa"><input id="qi" placeholder="＋ 날짜 없이 할일 적기 · Enter"></div>
   <div id="undated" class="dropz"></div>
   <div class="dh" id="dh" style="margin-top:18px"></div>
@@ -666,7 +993,7 @@ const up=(id,v)=>updateDoc(dc('todos',id),v);
 
 const LG=k=>{try{return localStorage.getItem(k)}catch(_){return null}};
 let openF='',notes=[],nv=LG('nv')||'cal',openN='',nq='',nfx=new Set(),rows=[],tpls=[],projects=[],pv='day',pid='',focusP='',pk='todo';
-let U=null,todos=[],memos={},space=LG('sp')||'work',range=LG('rg')||'m',cur=new Date(),sel=TODAY(),qk='todo',inl='',dlgId='',unsubs=[];
+let U=null,todos=[],memos={},space=LG('sp')||'work',range=(['m','w1','w2','w3','w4'].includes(LG('rg'))?LG('rg'):'m'),cur=new Date(),sel=TODAY(),qk='todo',inl='',dlgId='',unsubs=[];
 const SP=o=>o.space||'work',vis=t=>space==='all'||SP(t)===space;
 const isEv=t=>t.kind==='event',endOf=t=>t.end&&t.end>t.date?t.end:t.date;
 const on=(t,k)=>t.date&&t.date<=k&&endOf(t)>=k;
@@ -682,7 +1009,7 @@ onAuthStateChanged(auth,u=>{unsubs.forEach(f=>f());unsubs=[];U=u;
 });
 
 /* ---------- 프로젝트 공통 ---------- */
-const PAL=['#E0B03C','#4C6FB8','#D9775B','#3E9C8A','#9A7BD0','#C55D7E','#7A8290'];
+const PAL=['#A89B7C','#7C8BA3','#B08E82','#7D9A8E','#8F86A3','#A88795','#8C9196'];
 const PST={active:'진행 중',hold:'보류',done:'완료',arch:'보관'};
 const pst=p=>p.status||'active',P=id=>projects.find(x=>x.id===id);
 const pEnd=p=>pst(p)==='done'?(p.doneDate&&(!p.end||p.doneDate<p.end)?p.doneDate:(p.end||p.doneDate||p.start)):(p.end||'9999-12-31');
@@ -727,7 +1054,8 @@ function togSub(id,i,v){const t=todos.find(x=>x.id===id);if(!t)return;up(id,{sub
 function refocusSub(){if(!subAdd)return;const q=$(`[data-sin="${subAdd.id}"]`);if(q&&document.activeElement!==q)q.focus()}
 
 /* ---------- 달력 ---------- */
-function days(){if(range==='w2'){const s=addD(parse(sel),-parse(sel).getDay());return{s,n:14}}
+const WK=()=>range==='m'?0:(+String(range).slice(1)||2);
+function days(){if(WK()){const s=addD(parse(sel),-parse(sel).getDay());return{s,n:7*WK()}}
  const f=new Date(cur.getFullYear(),cur.getMonth(),1),s=addD(f,-f.getDay()),last=new Date(cur.getFullYear(),cur.getMonth()+1,0);
  const n=Math.ceil((f.getDay()+last.getDate())/7)*7;return{s,n}}
 function cellItems(k,L){const a=L.filter(t=>on(t,k)).sort(ord);return a}
@@ -740,19 +1068,20 @@ function itemHTML(t,k,inLane){const ev=isEv(t),rg=endOf(t)>t.date,cls=['it'];if(
  return `<div class="${cls.join(' ')}" data-id="${t.id}" data-dk="${k}"${t.projectId?` data-p="${t.projectId}" style="--pc:${(P(t.projectId)||{}).color||'#999'}"`:''}>${ev||!showT?'':`<input type="checkbox" data-ck="${t.id}"${t.done?' checked':''} aria-label="완료">`}${showT&&!inLane?pdot(t):''}${ev&&t.time&&showT?`<em>${t.time}</em>`:''}<span>${showT?esc(t.title):'&nbsp;'}</span>${showT?ns:''}${showT?`<button class="isa" data-sadd="${t.id}" data-w="c" data-k="${k}" aria-label="하위 할일 추가" title="하위 할일 추가">↳</button>`:''}${isE?'<i class="rz" title="끌어서 기간 늘리기"></i>':''}</div>`}
 const onCol=hx=>{const n=parseInt((hx||'#888').slice(1),16),r=n>>16&255,g=n>>8&255,b=n&255;return (0.299*r+0.587*g+0.114*b)>165?'#17203A':'#FFFFFF'};
 function pbar(p,k,w){if(!(p.start<=k&&pEnd(p)>=k))return '<div class="pb0"></div>';const st=k===p.start||w===0,en=k===pEnd(p)||w===6;
- return `<div class="pb${st?' s':''}${en?' e':''}${pst(p)==='done'?' pdn':''}" data-pid="${p.id}" data-p="${p.id}" data-dk="${k}" style="--pc:${p.color};--pt:${onCol(p.color)}">${st?esc(p.name):'&nbsp;'}${en&&pst(p)!=='done'?'<i class="rz" title="끌어서 기간 바꾸기"></i>':''}</div>`}
-const CAPF=()=>range==='w2'?8:2;let CAP=2,laneRows=[];
+ let n=1;if(st){const pe=pEnd(p);for(let j=w+1;j<7&&ymd(addD(parse(k),j-w))<=pe;j++)n++}
+ return `<div class="pb${st?' s':''}${en?' e':''}${pst(p)==='done'?' pdn':''}" data-pid="${p.id}" data-p="${p.id}" data-dk="${k}" style="--pc:${p.color};--pt:${onCol(p.color)}">${st?`<span class="pbn" style="--n:${n}">${esc(p.name)}</span>`:'&nbsp;'}${en&&pst(p)!=='done'?'<i class="rz" title="끌어서 기간 바꾸기"></i>':''}</div>`}
+const CAPF=()=>{const w=WK();return !w||w>=4?2:w===3?4:8};let CAP=2,laneRows=[];
 function laneLines(p,k,L){const out=[];const DF=((p.tbl||{}).on?(p.tbl.fields||[]).filter(f=>f.t==='date'):[]);if(DF.length)pRows(p).forEach(r=>DF.forEach(f=>{if((r.v||{})[f.k]===k)out.push([{id:'r'+r.id},`<div class="it pi er" data-open="${p.id}" data-p="${p.id}" style="--pc:${p.color}" title="현황표"><span>📋 ${esc(r.title)} · ${esc(f.n)}</span></div>`])}));L.filter(t=>t.projectId===p.id&&on(t,k)).sort(ord).forEach(t=>{out.push([t,itemHTML(t,k,1)]);const showS=!(endOf(t)>t.date)||k===t.date;if(showS){if(range==='w2')subLines(t,'c',k).forEach(x=>out.push([t,x]));const si=subInput(t,'c',k);if(si)out.push([t,si,1])}});return out}
 function cal(){CAP=CAPF();const{s,n}=days(),L=todos.filter(vis),T=TODAY(),M=cur.getMonth(),rows=n/7;
- $('#ml').innerHTML=range==='w2'?`<span class="mN">${md(ymd(s))}</span><span class="mS"><span>– ${md(ymd(addD(s,13)))}</span><span class="mY">${s.getFullYear()}</span></span>`:`<span class="mN">${M+1}</span><span class="mS"><span>월</span><span class="mY">${cur.getFullYear()}</span></span>`;
+ $('#ml').innerHTML=WK()?`<span class="mN">${md(ymd(s))}</span><span class="mS"><span>– ${md(ymd(addD(s,7*WK()-1)))}</span><span class="mY">${s.getFullYear()}</span></span>`:`<span class="mN">${M+1}</span><span class="mS"><span>월</span><span class="mY">${cur.getFullYear()}</span></span>`;
  const G=$('#grid');G.style.gridTemplateRows=`repeat(${rows},minmax(0,1fr))`;
  let h='',lanes=[];const PC=projects.filter(pOnCal);
  for(let i=0;i<n;i++){const d=addD(s,i),k=ymd(d),hn=hname(k),its=cellItems(k,L),w=d.getDay();
-  if(i%7===0){const ws=k,we=ymd(addD(d,6));lanes=PC.filter(p=>p.start<=we&&pEnd(p)>=ws).sort((a,b)=>(pst(a)==='done')-(pst(b)==='done')||(a.start<b.start?-1:a.start>b.start?1:(a.created||0)-(b.created||0))).slice(0,range==='w2'?6:3);
+  if(i%7===0){const ws=k,we=ymd(addD(d,6));lanes=PC.filter(p=>p.start<=we&&pEnd(p)>=ws).sort((a,b)=>(pst(a)==='done')-(pst(b)==='done')||(a.start<b.start?-1:a.start>b.start?1:(a.created||0)-(b.created||0))).slice(0,!WK()||WK()>=4?3:WK()===3?4:6);
    laneRows=lanes.map(p=>{let m=0;for(let j=0;j<7;j++)m=Math.max(m,laneLines(p,ymd(addD(d,j)),L).length);return Math.min(m,CAP)})}
   const inLane=new Set(lanes.map(p=>p.id));const its2=its.filter(t=>!inLane.has(t.projectId));
   const used=lanes.length*.75;
-  const lim=range==='w2'?99:Math.max(1,Math.round((rows>5?4:5)-used));
+  const lim=WK()&&WK()<=2?99:WK()===3?Math.max(2,Math.round(7-used)):Math.max(1,Math.round((rows>5?4:5)-used));
   const pbs=lanes.map(p=>pbar(p,k,w)).join('');
 
   const cls=['c'];if(w===0)cls.push('sun');if(w===6)cls.push('sat');if(hn)cls.push('hol');if(k===T)cls.push('td');if(k===sel)cls.push('sel');if(range==='m'&&d.getMonth()!==M)cls.push('out2');
@@ -767,7 +1096,10 @@ function cal(){CAP=CAPF();const{s,n}=days(),L=todos.filter(vis),T=TODAY(),M=cur.
 function rowHTML(t,opt={}){const ev=isEv(t),rg=endOf(t)>t.date,ns=(t.subs||[]).length;
   return `<div class="rowg"><div class="row${t.done?' dn2':''}" data-id="${t.id}">${ev?`<span class="tm" style="flex:none">${t.time||'종일'}</span>`:`<input type="checkbox" data-ck="${t.id}"${t.done?' checked':''} aria-label="완료">`}${pdot(t)}<span>${esc(t.title)}</span>${opt.date?`<small>${t.date?md(t.date)+(rg?'~'+md(endOf(t)):''):'날짜 없음'}</small>`:rg?`<small>~${md(endOf(t))}</small>`:''}${ns?`<small>${t.subs.filter(s=>s.done).length}/${ns}</small>`:''}<button class="isa" data-sadd="${t.id}" data-w="p" aria-label="하위 할일 추가" title="하위 할일 추가">↳</button></div>${subLines(t,'p').join('')}${subInput(t,'p')}</div>`}
 
-function panel(){if(pv==='proj')pv='plist';qa('#ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.pv===pv));$('#pday').hidden=pv!=='day';$('#pplist').hidden=pv!=='plist';
+function stats(){const el=$('#stats');if(!el)return;const T=TODAY(),W=ymd(addD(parse(T),6));
+ const td=todos.filter(t=>vis(t)&&on(t,T)&&!isEv(t)),tdn=td.filter(t=>t.done).length,ev=todos.filter(t=>vis(t)&&isEv(t)&&t.date&&t.date<=W&&endOf(t)>=T).length,ud=todos.filter(t=>vis(t)&&!t.date&&!isEv(t)&&!t.done).length,pj=projects.filter(p=>pst(p)==='active').length;
+ el.innerHTML=`<div class="st"><span>오늘 할일</span><b>${td.length-tdn}<small>/${td.length}</small></b></div><div class="st"><span>7일 내 일정</span><b>${ev}</b></div><div class="st"><span>진행 중 프로젝트</span><b>${pj}</b></div><div class="st"><span>날짜 미정</span><b>${ud}</b></div>`}
+function panel(){stats();if(pv==='proj')pv='plist';qa('#ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.pv===pv));$('#pday').hidden=pv!=='day';$('#pplist').hidden=pv!=='plist';
  if(pv==='plist')return plistPanel();
  const k=sel,d=parse(k),hn=hname(k),T=TODAY();
  const LD=todos.filter(t=>vis(t)&&on(t,k)&&!isEv(t)),dn=LD.filter(t=>t.done).length;
@@ -775,12 +1107,14 @@ function panel(){if(pv==='proj')pv='plist';qa('#ptabs button').forEach(b=>b.clas
  const L=todos.filter(t=>vis(t)&&on(t,k)).sort(ord),E=L.filter(isEv),D=L.filter(t=>!isEv(t)&&!t.done),F=L.filter(t=>!isEv(t)&&t.done);
  const row=t=>rowHTML(t);
  let h='';
- if(E.length)h+=`<div class="gt">일정 ${E.length}</div>`+E.map(row).join('');
- h+=`<div class="gt">할일 ${D.length}</div>`+(D.length?D.map(row).join(''):'<div class="empty">남은 할일이 없어요</div>');
- if(F.length)h+=`<div class="gt">완료 ${F.length} <button data-fold>${showDone?'접기':'보기'}</button></div>`+(showDone?F.map(row).join(''):'');
+ if(E.length)h+=`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>일정 <b>${E.length}</b></div>`+E.map(row).join('');
+ h+=`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.2l2.6 2.6 4.9-5.3"/></svg>할일 <b>${D.length}</b></div>`+(D.length?D.map(row).join(''):'<div class="empty"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/></svg>남은 할일이 없어요</div>');
+ if(F.length)h+=`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5 10-10"/></svg>완료 <b>${F.length}</b> <button data-fold>${showDone?'접기':'보기'}</button></div>`+(showDone?F.map(row).join(''):'');
+ const PJ=projects.filter(p=>pOnCal(p)&&p.start<=k&&pEnd(p)>=k);
+ if(PJ.length)h=`<div class="dpj">${PJ.map(p=>`<button data-open="${p.id}" style="--pc:${p.color}"><i></i><span class="dpn">${esc(p.name)}</span><small>${esc((pGoal(p)||pProg(p)).label)}</small></button>`).join('')}</div>`+h;
  $('#lists').innerHTML=h;
  const UD=todos.filter(t=>vis(t)&&!t.date&&!isEv(t)).sort((a,b)=>(a.done-b.done)||((a.created||0)-(b.created||0))),U1=UD.filter(t=>!t.done),U2=UD.filter(t=>t.done);
- $('#undated').innerHTML=(U1.length?U1.map(t=>rowHTML(t)).join(''):'<div class="empty">날짜 없이 적어둘 할일이 없어요</div>')+(U2.length?`<div class="gt">완료 ${U2.length} <button data-fold2>${showDone2?'접기':'보기'}</button></div>`+(showDone2?U2.map(t=>rowHTML(t)).join(''):''):'');$('#udn').textContent=U1.length||'';
+ $('#undated').innerHTML=(U1.length?U1.map(t=>rowHTML(t)).join(''):'<div class="empty"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/></svg>날짜 없이 적어둘 할일이 없어요</div>')+(U2.length?`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5 10-10"/></svg>완료 <b>${U2.length}</b> <button data-fold2>${showDone2?'접기':'보기'}</button></div>`+(showDone2?U2.map(t=>rowHTML(t)).join(''):''):'');$('#udn').textContent=U1.length||'';
  refocusSub()}
 let showDone2=false;
 let showDone=false;
@@ -925,14 +1259,14 @@ function roster(p){const TB=p.tbl||{},FF=TB.fields||[],G=p.goal||{},sf=TB.on&&(F
 function cardBody(p){const T=TODAY(),L=pTodos(p).filter(t=>!t.done&&(!isEv(t)||endOf(t)>=T)).sort((a,b)=>(!a.date)-(!b.date)||ord(a,b));
  const li=t=>`<div class="cxr">${isEv(t)?`<span class="tm">${t.time||'일정'}</span>`:`<input type="checkbox" data-ck="${t.id}" aria-label="완료">`}<span>${esc(t.title)}</span><small>${t.date?md(t.date):''}</small></div>`;
  const R=roster(p),mt=(()=>{const D=document.createElement('div');D.innerHTML=p.memoH||'';return [...D.children].map(x=>x.textContent.trim()).filter(Boolean)})();
- return `<div class="pcx">${L.length?`<div class="cxh">남은 할일 ${L.length}</div>${L.slice(0,4).map(li).join('')}${L.length>4?`<div class="cxe">외 ${L.length-4}개</div>`:''}`:`<div class="cxe">${pTodos(p).length?'남은 할일이 없어요':'할일이 아직 없어요'}</div>`}
+ return `<div class="pcx">${L.length?`<div class="cxh"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.2l2.6 2.6 4.9-5.3"/></svg>남은 할일 <b>${L.length}</b></div>${L.slice(0,4).map(li).join('')}${L.length>4?`<div class="cxe">외 ${L.length-4}개</div>`:''}`:`<div class="cxe">${pTodos(p).length?'남은 할일이 없어요':'할일이 아직 없어요'}</div>`}
  ${R&&R.total?`<div class="cxh">현황표 · ${esc(R.f.n)} <span class="mu">전체 ${R.total}</span></div>${R.lines.map(x=>`<div class="cxl"><em>${esc(x.o)} ${x.n}</em><span>${x.names.map(esc).join(', ')}</span></div>`).join('')}`:''}
  ${mt.length?`<div class="cxh">메모</div><div class="cxm">${esc(mt.slice(0,2).join(' · '))}${mt.length>2?' …':''}</div>`:''}</div>`}
 function cardX(p){const T=TODAY(),L=pTodos(p).filter(t=>!t.done&&!isEv(t)).sort((a,b)=>(!a.date)-(!b.date)||ord(a,b)),E=pTodos(p).filter(t=>isEv(t)&&endOf(t)>=T).sort(ord);
  const TB=p.tbl||{},F=TB.fields||[],G=p.goal||{},sf=TB.on&&(F.find(f=>f.k===G.f)||F.find(f=>f.t==='sel')),RS=pRows(p);
  const mt=(()=>{const D=document.createElement('div');D.innerHTML=p.memoH||'';return [...D.children].map(x=>x.textContent.trim()).filter(Boolean).slice(0,4)})();
  const li=t=>`<div class="cxr${t.done?' dn2':''}">${isEv(t)?`<span class="tm">${t.time||'일정'}</span>`:`<input type="checkbox" data-ck="${t.id}"${t.done?' checked':''} aria-label="완료">`}<span>${esc(t.title)}</span><small>${t.date?md(t.date):'날짜 없음'}</small></div>`;
- return `<div class="pcx">${E.length?`<div class="cxh">다가오는 일정</div>${E.slice(0,3).map(li).join('')}`:''}<div class="cxh">남은 할일 ${L.length}</div>${L.slice(0,6).map(li).join('')||'<div class="cxe">없어요</div>'}${L.length>6?`<div class="cxe">외 ${L.length-6}개</div>`:''}
+ return `<div class="pcx">${E.length?`<div class="cxh">다가오는 일정</div>${E.slice(0,3).map(li).join('')}`:''}<div class="cxh"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.2l2.6 2.6 4.9-5.3"/></svg>남은 할일 <b>${L.length}</b></div>${L.slice(0,6).map(li).join('')||'<div class="cxe">없어요</div>'}${L.length>6?`<div class="cxe">외 ${L.length-6}개</div>`:''}
  ${sf?`<div class="cxh">현황표 · ${esc(sf.n)}</div><div class="cxs">${(sf.o||[]).map(o=>{const n=RS.filter(r=>(r.v||{})[sf.k]===o).length;return n?`<span>${esc(o)} <b>${n}</b></span>`:''}).join('')}<span>전체 <b>${RS.length}</b></span></div>`:''}
  ${mt.length?`<div class="cxh">메모</div>${mt.map(x=>`<div class="cxm">${esc(x)}</div>`).join('')}`:''}
  <button class="cxo" data-open="${p.id}">세부 내용 · 설정 열기</button></div>`}
@@ -942,12 +1276,12 @@ function plistPanel(){const L=projects.filter(vis).sort((a,b)=>(a.start<b.start?
  const act=document.activeElement&&document.activeElement.id==='pni';
  $('#pplist').innerHTML=`<div class="qa"><input id="pni" placeholder="＋ 새 프로젝트 이름 · Enter"></div>
  ${A.length?A.map(card).join(''):'<div class="empty">진행 중인 프로젝트가 없어요. 위에 이름을 적거나, 달력에서 여러 날을 끌어 프로젝트로 만들어요.</div>'}
- ${H.length?`<div class="gt">보류 ${H.length} <button data-fh>${showHold?'접기':'보기'}</button></div>${showHold?H.map(mini).join(''):''}`:''}
- ${D.length?`<div class="gt">완료·보관 ${D.length} <button data-fpd>${showPDone?'접기':'보기'}</button></div>${showPDone?D.map(mini).join(''):''}`:''}`;
+ ${H.length?`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M10 9.5v5M14 9.5v5"/></svg>보류 <b>${H.length}</b> <button data-fh>${showHold?'접기':'보기'}</button></div>${showHold?H.map(mini).join(''):''}`:''}
+ ${D.length?`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5 10-10"/></svg>완료·보관 <b>${D.length}</b> <button data-fpd>${showPDone?'접기':'보기'}</button></div>${showPDone?D.map(mini).join(''):''}`:''}`;
  if(act)$('#pni').focus()}
 function projPanel(){const p=P(pid);if(!p){if($('#pdlg').open)$('#pdlg').close();return}
  const TB=p.tbl||{},R=$('#pdb'),sig=pid+'|'+(TB.on?1:0);if(R._sig!==sig){FLUSH.forEach(f=>f());R._sig=sig;
-  R.innerHTML=`<div id="pph"></div><div class="padd"><input id="pti" placeholder="＋ 10/14 면접처럼 날짜도 · Enter"><span class="seg" id="pk"><button data-pk="todo">할일</button><button data-pk="event">일정</button></span></div><div id="ppl"></div>${TB.on?`<div class="gt tbh">현황표 <span class="sp"></span><button data-tset title="목표·구성 저장">🎯 목표 · 저장</button><button data-tbloff title="현황표 숨기기">숨기기</button></div><div id="ptb"></div><div class="padd"><input id="pri" placeholder="＋ 한 줄 추가 (이름) · Enter"></div>`:`<button class="tbon" data-tblon>＋ 현황표 켜기 <small>사람·물건을 한 줄씩 관리해요</small></button>`}<div class="gt">메모</div><div class="edw pme"><div id="pme"></div></div><button class="pdel" data-pdel>프로젝트 삭제</button>`;
+  R.innerHTML=`<div id="pph"></div><div class="padd"><input id="pti" placeholder="＋ 10/14 면접처럼 날짜도 · Enter"><span class="seg" id="pk"><button data-pk="todo">할일</button><button data-pk="event">일정</button></span></div><div id="ppl"></div>${TB.on?`<div class="gt tbh">현황표 <span class="sp"></span><button data-tset title="목표·구성 저장"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg>목표 · 저장</button><button data-tbloff title="현황표 숨기기">숨기기</button></div><div id="ptb"></div><div class="padd"><input id="pri" placeholder="＋ 한 줄 추가 (이름) · Enter"></div>`:`<button class="tbon" data-tblon>＋ 현황표 켜기 <small>사람·물건을 한 줄씩 관리해요</small></button>`}<div class="gt">메모</div><div class="edw pme"><div id="pme"></div></div><button class="pdel" data-pdel>프로젝트 삭제</button>`;
   mkEd($('#pme'),p.memoH||'',h=>upP(p.id,{memoH:h}),'이 프로젝트에서 기억할 것')}
  qa('#pk button').forEach(b=>b.classList.toggle('on',b.dataset.pk===pk));
  const ae=document.activeElement;
@@ -958,9 +1292,9 @@ function projPanel(){const p=P(pid);if(!p){if($('#pdlg').open)$('#pdlg').close()
   ${S==='done'?`<div class="pinfo">${md(p.doneDate||TODAY())}에 완료했어요. 달력에는 흐리게 남아요.</div>`:S==='hold'?'<div class="pinfo">보류 중이라 달력에서 숨겼어요.</div>':S==='arch'?'<div class="pinfo">보관했어요. 달력과 목록에서 숨겨져요.</div>':''}
   ${progHTML(p)}`}
  const L=pTodos(p).sort((a,b)=>(!a.date)-(!b.date)||ord(a,b)),E=L.filter(isEv),D=L.filter(t=>!isEv(t)&&!t.done),F=L.filter(t=>!isEv(t)&&t.done);
- let h='';if(E.length)h+=`<div class="gt">일정 ${E.length}</div>`+E.map(t=>rowHTML(t,{date:1})).join('');
- h+=`<div class="gt">할일 ${D.length}</div>`+(D.length?D.map(t=>rowHTML(t,{date:1})).join(''):'<div class="empty">남은 할일이 없어요</div>');
- if(F.length)h+=`<div class="gt">완료 ${F.length} <button data-fold>${showDone?'접기':'보기'}</button></div>`+(showDone?F.map(t=>rowHTML(t,{date:1})).join(''):'');
+ let h='';if(E.length)h+=`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>일정 <b>${E.length}</b></div>`+E.map(t=>rowHTML(t,{date:1})).join('');
+ h+=`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.3 12.2l2.6 2.6 4.9-5.3"/></svg>할일 <b>${D.length}</b></div>`+(D.length?D.map(t=>rowHTML(t,{date:1})).join(''):'<div class="empty"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/></svg>남은 할일이 없어요</div>');
+ if(F.length)h+=`<div class="gt"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5 10-10"/></svg>완료 <b>${F.length}</b> <button data-fold>${showDone?'접기':'보기'}</button></div>`+(showDone?F.map(t=>rowHTML(t,{date:1})).join(''):'');
  $('#ppl').innerHTML=h;if(TB.on)tblRender(p);refocusSub()}
 function openProj(id){if(pid!==id){pk='todo';$('#pdb')._sig=''}const d=$('#pdlg');if(!d.open)prevF=focusP;pid=id;focusP=id;projPanel();if(!d.open)d.showModal();render()}
 $('#pdlg').addEventListener('close',()=>{FLUSH.forEach(f=>f());FLUSH.clear();closePops();$('#pdb')._sig='';focusP=prevF;pid='';render()});
@@ -1107,7 +1441,7 @@ function noteView(){const F=notes.filter(n=>n.isFolder&&NV(n)).sort((a,b)=>(a.cr
  let PG=notes.filter(n=>!n.isFolder&&NV(n));if(Q)PG=PG.filter(n=>(n.title||'').toLowerCase().includes(Q)||nText(n).toLowerCase().includes(Q));
  PG.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.updated||0)-(a.updated||0));
  const W=space==='work'||space==='all',L=space==='life'||space==='all';
- $('#nhb').classList.toggle('on',!openN&&!openF);$('#nacts').innerHTML=`${W?'<button class="njo" data-nwl>📝 오늘 업무일지 쓰기</button>':''}<button data-nnew>＋ 새 글</button><button data-nfold>＋ 폴더</button>`;
+ $('#nhb').classList.toggle('on',!openN&&!openF);$('#nacts').innerHTML=`${W?'<button class="njo" data-nwl><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/></svg>오늘 업무일지 쓰기</button>':''}<button data-nnew>＋ 새 글</button><button data-nfold>＋ 폴더</button>`;
  const pg=n=>`<div class="npg${n.id===openN?' on':''}${n.fid&&F.some(f=>f.id===n.fid)?'':' top'}" data-nid="${n.id}" draggable="true"><span>${esc(n.title||'제목 없음')}</span><small>${n.date?md(n.date):''}</small></div>`;
  let h='';F.forEach(f=>{const L2=PG.filter(n=>n.fid===f.id),open=Q?L2.length>0:!nfx.has(f.id);if(Q&&!L2.length)return;
   h+=`<div class="nfh${openF===f.id&&!openN?' on':''}" data-nf="${f.id}"><span class="tw2" data-ntog="${f.id}">${open?'▾':'▸'}</span>${f.icon||'📁'} <span>${esc(f.title)}</span><em>${L2.length}</em><button class="nfm" data-nfm="${f.id}" title="폴더 이름·아이콘" aria-label="폴더 설정">⋯</button></div>${open?L2.map(pg).join(''):''}`});
@@ -1181,7 +1515,7 @@ function pcCard(p,feat){const g=pProg(p),G=pGoal(p),T=TODAY(),S=pst(p);
  return `<div class="pc2${feat?' feat':''}${S!=='active'?' off':''}" data-open="${p.id}" style="--pc:${p.color}">
  <div class="p2h"><i></i><b>${esc(p.name)}</b><em class="${S==='active'&&dl!==null&&dl<=3?'urg':''}">${badge}</em></div>
  <div class="p2b"><div class="p2bar"><u style="width:${main.pc}%"></u></div><span>${main.pc}%</span></div>
- <div class="p2f"><span class="p2l">${esc(lab)}</span>${nx?`<span class="p2n">다음 · ${esc(nx.title)}${nx.date?` <small>${md(nx.date)}</small>`:''}</span>`:'<span class="p2n mu">다음 할 일 없음</span>'}</div></div>`}
+ <div class="p2f"><span class="p2l">${esc(lab)}</span>${nx?`<span class="p2n"><span class="p2t">다음 · ${esc(nx.title)}</span>${nx.date?`<small>${md(nx.date)}</small>`:''}</span>`:'<span class="p2n mu">다음 할 일 없음</span>'}</div></div>`}
 function projView(){const L=projects.filter(vis),act=L.filter(p=>pst(p)==='active'),off=L.filter(p=>pst(p)!=='active');
  if(pvTab!=='active'&&pvTab!=='off')pvTab='active';
  let A=pvTab==='active'?act:off;const q=pvQ.trim().toLowerCase();if(q)A=A.filter(p=>p.name.toLowerCase().includes(q));
@@ -1189,7 +1523,7 @@ function projView(){const L=projects.filter(vis),act=L.filter(p=>pst(p)==='activ
  const feat=pvTab==='active'?(A.find(p=>p.end&&dleft(p)>=0)||{}).id:'';
  const W=$('#pview'),ae=document.activeElement,keep=ae&&ae.id==='pvq';
  W.innerHTML=`<div class="pvh"><h1>프로젝트</h1><div class="pvt"><button data-pvt="active" class="${pvTab==='active'?'on':''}">진행 중 <i>${act.length}</i></button><button data-pvt="off" class="${pvTab==='off'?'on':''}">끝난 것 <i>${off.length}</i></button></div>
- <button class="pvsb${pvQ||pvSearch?' on':''}" data-pvs aria-label="찾기">🔍</button></div>
+ <button class="pvsb${pvQ||pvSearch?' on':''}" data-pvs aria-label="찾기"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg></button></div>
  ${pvSearch||pvQ?`<div class="pvs2"><input id="pvq" placeholder="프로젝트 이름으로 찾기" value="${esc(pvQ)}"></div>`:''}
  ${A.length?`<div class="pgrid2">${A.map(p=>pcCard(p,p.id===feat)).join('')}</div>`:`<div class="pvemp">${pvTab==='active'?'진행 중인 프로젝트가 없어요. ＋로 만들어 보세요.':'끝난 프로젝트가 없어요.'}</div>`}
  <button class="pvadd" data-pvadd title="새 프로젝트" aria-label="새 프로젝트">＋</button>`;
@@ -1305,7 +1639,9 @@ document.addEventListener('pointerup',()=>{if(!DS)return;const g=DS;DS=null;docu
 
 /* ---------- 이벤트 ---------- */
 function toggle(id,v){up(id,{done:v,doneDate:v?TODAY():''})}
+const isMob=()=>matchMedia('(max-width:820px)').matches;
 document.addEventListener('click',e=>{const t=e.target;
+ if(isMob()&&t.closest('#grid')&&!t.closest('.qin,.sin2')){const c=t.closest('.c');if(c){const k=c.dataset.k,now=Date.now();if(lastC.k===k&&now-lastC.t<400){lastC={};openQP(k,k);return}lastC={k,t:now};sel=k;pv='day';render();const r=$('#rp');if(r&&r.getBoundingClientRect().top>innerHeight-120)r.scrollIntoView({behavior:'smooth',block:'start'})}return}
  const ck=t.closest('[data-ck]');if(ck){toggle(ck.dataset.ck,ck.checked);return}
  const tv=t.closest('[data-pv]');if(tv){pv=tv.dataset.pv;if(pv!=='proj'){pid=''}render();return}
  const pf=t.closest('[data-pfoc]');if(pf){focusP=focusP===pf.dataset.pfoc?'':pf.dataset.pfoc;render();return}
@@ -1345,15 +1681,15 @@ document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classLi
 $('#qi').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing)return;const v=e.target.value;e.target.value='';if(v.trim()){addItem(v,'','todo');toast(/^\d{1,2}\/\d{1,2}\s/.test(v)?'그 날짜에 추가했어요':'날짜 미정에 추가했어요')}});
 $('#pv').onclick=()=>move(-1);$('#nx').onclick=()=>move(1);
 $('#tdy').onclick=()=>{cur=new Date();sel=TODAY();render()};
-function move(n){if(range==='w2'){sel=ymd(addD(parse(sel),14*n));cur=parse(sel)}else{cur=new Date(cur.getFullYear(),cur.getMonth()+n,1);const k=ymd(cur);sel=k.slice(0,7)===TODAY().slice(0,7)?TODAY():k}render()}
+function move(n){if(WK()){sel=ymd(addD(parse(sel),7*WK()*n));cur=parse(sel)}else{cur=new Date(cur.getFullYear(),cur.getMonth()+n,1);const k=ymd(cur);sel=k.slice(0,7)===TODAY().slice(0,7)?TODAY():k}render()}
 $('#rg').onclick=e=>{const b=e.target.closest('button');if(!b)return;range=b.dataset.r;try{localStorage.setItem('rg',range)}catch(_){}render()};
 $('#sp').onclick=e=>{const b=e.target.closest('button');if(!b)return;FLUSH.forEach(f=>f());space=b.dataset.s;try{localStorage.setItem('sp',space)}catch(_){}syncMemo();render()};
 $('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인하지 못했어요: '+e.message));
-const TH={navy:['네이비 버터','#1F2E5C','#F2C14E','#F4F5F7'],cloud:['구름 블루','#3D6BE0','#FFF5D9','#F5F7FA'],peach:['피치 크림','#E8775E','#FFF2C9','#FCF8F5'],lilac:['라일락','#7C66D9','#FBF1D6','#F6F5F9'],ink:['먹','#2C2C30','#FAF1D8','#F4F4F2']};
-function setTh(t){if(!TH[t])t='navy';document.body.dataset.th=t;try{localStorage.setItem('th3',t)}catch(_){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=TH[t][3]}
-setTh(LG('th3')||'navy');
-$('#setb').onclick=e=>{e.stopPropagation();closePops();const d=document.createElement('div');d.className='fpop thp';const cur=document.body.dataset.th;
- d.innerHTML=`<b>테마</b><div class="ths">${Object.entries(TH).map(([k,[n,a,b2,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${a}"></b><b style="background:${b2}"></b><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><button class="lo2 bk">📦 데이터 백업 받기</button><button class="lo2">로그아웃</button>`;
+const AC={sage:['세이지','#6E8F80'],slate:['슬레이트','#6B7F96'],clay:['클레이','#A3796B'],plum:['플럼','#8A7490'],ink:['먹','#5A5A5A']};
+function setTh(t){if(!AC[t])t='sage';document.body.dataset.th='flow';document.body.dataset.ac=t;try{localStorage.setItem('ac1',t)}catch(_){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content='#EEEEEE'}
+setTh(LG('ac1')||'sage');
+$('#setb').onclick=e=>{e.stopPropagation();closePops();const d=document.createElement('div');d.className='fpop thp';const cur=document.body.dataset.ac;
+ d.innerHTML=`<b>포인트 색</b><div class="ths">${Object.entries(AC).map(([k,[n,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><button class="lo2 bk"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m0 0l-4-4m4 4l4-4M4.5 18.5h15"/></svg>데이터 백업 받기</button><button class="lo2">로그아웃</button>`;
  d.onclick=ev=>{const b=ev.target.closest('button[data-th]');if(b){setTh(b.dataset.th);d.querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x===b));return}if(ev.target.closest('.bk')){backup();return}if(ev.target.closest('.lo2')&&confirm('로그아웃할까요?'))signOut(auth)};
  popAt(d,$('#setb').getBoundingClientRect())};
 document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,dialog,[contenteditable]'))return;
@@ -1361,7 +1697,7 @@ document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,dial
 
 let mt=LG('mt')||'cal';
 function render(){if(!U)return;document.body.dataset.mt=mt;qa('#mnav button').forEach(b=>b.classList.toggle('on',b.dataset.mt===mt));
- qa('#rg button').forEach(b=>b.classList.toggle('on',b.dataset.r===range));
+ qa('#rg button').forEach(b=>b.classList.toggle('on',b.dataset.r===range));document.body.dataset.rg=range;
  qa('#sp button').forEach(b=>b.classList.toggle('on',b.dataset.s===space));
  document.body.classList.toggle('vnote',nv==='note');document.body.classList.toggle('vproj',nv==='proj');$('#nview').hidden=nv!=='note';$('#pview').hidden=nv!=='proj';qa('#vw button').forEach(b=>b.classList.toggle('on',b.dataset.vw===nv));
  if(nv==='note')noteView();else if(nv==='proj')projView();else cal();panel();if($('#pdlg').open)projPanel();const dp=document.querySelector('.dayp');if(dp&&dp._redraw&&!dp.contains(document.activeElement))dp._redraw()}
