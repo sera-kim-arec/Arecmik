@@ -931,14 +931,14 @@ body[data-th=flow] .tbh button{display:inline-flex;align-items:center;gap:5px;fo
 body[data-th=flow] .tbh .ui{width:13px;height:13px;color:#AEAEAE}
 body[data-th=flow] .pdl .gt{font-size:12px}
 /* ---- 색 살짝 더 ---- */
-body[data-th=flow] .pb{background:color-mix(in srgb,var(--pc) 46%,#FDFDFD);color:color-mix(in srgb,var(--pc) 82%,#101010)}
+body[data-th=flow] .pb{background:color-mix(in srgb,var(--pc) 22%,#FDFDFD);color:color-mix(in srgb,var(--pc) 60%,#1A1A1A)}
 body[data-th=flow] .pb.pdn{background:color-mix(in srgb,var(--pc) 14%,#FBFBFB)}
-body[data-th=flow] .ci .it.pi{background:color-mix(in srgb,var(--pc) 20%,#FBFBFB)}
+body[data-th=flow] .ci .it.pi{background:color-mix(in srgb,var(--pc) 11%,#FBFBFB)}
 body[data-th=flow] .ci .it.pi::before{background:var(--pc)!important}
 body[data-th=flow] .pb,body[data-th=flow] .p2bar u,body[data-th=flow] .pcard .pbar u,body[data-th=flow] .dpj button i,body[data-th=flow] .pdot,body[data-th=flow] .pct i,body[data-th=flow] .p2h i,body[data-th=flow] .cxr .pdot,body[data-th=flow] .pcol,body[data-th=flow] .tph i,body[data-th=flow] .fchip{filter:none}
 body[data-th=flow] .pcard .pbar u,body[data-th=flow] .pbar u{background:var(--pc)}
-body[data-th=flow] #rp .pcard{border-left:3px solid var(--pc)}
-body[data-th=flow] .dpj button{background:color-mix(in srgb,var(--pc) 10%,#FAFAFA);border-color:color-mix(in srgb,var(--pc) 28%,#E4E4E4)}
+body[data-th=flow] #rp .pcard{border-left:3px solid color-mix(in srgb,var(--pc) 70%,#fff)}
+body[data-th=flow] .dpj button{background:color-mix(in srgb,var(--pc) 7%,#FAFAFA);border-color:color-mix(in srgb,var(--pc) 20%,#E4E4E4)}
 body[data-th=flow] .it.ev,body[data-th=flow] .ci .it.ev{background:var(--gr2)!important;color:#1C1C1C;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gr) 28%,#fff)}
 body[data-th=flow] .cxr .tm,body[data-th=flow] .row .tm{color:var(--gr)}
 body[data-th=flow] .dh{background:#fff;border-color:#E4E4E4}
@@ -949,8 +949,8 @@ body[data-th=flow] .memo label .ui{color:var(--gr)}
 body[data-th=flow] .c.td{background:color-mix(in srgb,var(--gr) 7%,#fff)}
 body[data-th=flow] .c.sun .dn,body[data-th=flow] .c.hol .dn{color:#B4756F}
 @media(max-width:820px){
- body[data-th=flow] .ci .it.pi{background:color-mix(in srgb,var(--pc) 16%,#FAFAFA)}
- body[data-th=flow] .pb{height:5px!important;background:color-mix(in srgb,var(--pc) 78%,#fff)}
+ body[data-th=flow] .ci .it.pi{background:color-mix(in srgb,var(--pc) 10%,#FAFAFA)}
+ body[data-th=flow] .pb{height:5px!important;background:color-mix(in srgb,var(--pc) 48%,#fff)}
 }
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
@@ -1024,14 +1024,16 @@ const ord=(a,b)=>(isEv(b)-isEv(a))||((endOf(b)>b.date)-(endOf(a)>a.date))||(a.da
 onAuthStateChanged(auth,u=>{unsubs.forEach(f=>f());unsubs=[];U=u;
  $('#login').hidden=!!u;$('#app').hidden=!u;if(!u)return;
  unsubs.push(onSnapshot(col('todos'),s=>{todos=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
- unsubs.push(onSnapshot(col('projects'),s=>{projects=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
+ unsubs.push(onSnapshot(col('projects'),s=>{projects=s.docs.map(d=>({id:d.id,...d.data()})).map(p=>({...p,color:newCol(p.color)}));render()}));
  unsubs.push(onSnapshot(col('notes'),s=>{notes=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
  unsubs.push(onSnapshot(col('ents'),s=>{rows=s.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.pid);render()}));
  unsubs.push(onSnapshot(col('logs'),s=>{memos={};s.docs.forEach(d=>memos[d.id]=d.data());tpls=(memos.tplv2||{}).list||[];syncMemo();if($('#pdlg').open)projPanel()}));
 });
 
 /* ---------- 프로젝트 공통 ---------- */
-const PAL=['#A89B7C','#7C8BA3','#B08E82','#7D9A8E','#8F86A3','#A88795','#8C9196'];
+const PAL=['#6E8F80','#55707C','#8C9179','#6C7490','#8E8275','#49605C','#9AA3A0'];
+const OLDPAL=[['#A89B7C','#7C8BA3','#B08E82','#7D9A8E','#8F86A3','#A88795','#8C9196'],['#E0B03C','#4C6FB8','#D9775B','#3E9C8A','#9A7BD0','#C55D7E','#7A8290']];
+const newCol=c=>{for(const P of OLDPAL){const i=P.indexOf(c);if(i>=0)return PAL[i]}return c};
 const PST={active:'진행 중',hold:'보류',done:'완료',arch:'보관'};
 const pst=p=>p.status||'active',P=id=>projects.find(x=>x.id===id);
 const pEnd=p=>pst(p)==='done'?(p.doneDate&&(!p.end||p.doneDate<p.end)?p.doneDate:(p.end||p.doneDate||p.start)):(p.end||'9999-12-31');
