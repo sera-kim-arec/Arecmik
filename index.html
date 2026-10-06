@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Arecmik"><meta name="theme-color" content="#F7F7FA">
+<title>Arecmik</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Arecmik"><meta name="theme-color" content="#F7F7FA">
 <style>
 :root{--bg:#F4F5F7;--sf:#FFFFFF;--sf2:#F7F8FA;--hv:#EEF0F5;--ln:#E1E4EA;--ln2:#ECEEF2;--tx:#17203A;--tx2:#3E4659;--mu:#7D8597;--mu2:#B8BDC8;--ac:#1F2E5C;--ac2:#E8EBF3;--ac3:#D9DEEB;--act:#16224A;--seg:#E7E9EF;--sel:#F7F9FD;--life:#B8860B;--life2:#FFF4D2;--lifet:#6B5000;--sun:#C8463D;--sat:#3D63A8;--memo:#FFEDB5;--memot:#5A4300;--memol:#E8CF7A;--warn:#FFEDB5;--warn2:#5A4300;--dark:#17203A;--shc:23,32,58;--r:10px}
 body[data-th=cloud]{--bg:#F5F7FA;--sf2:#F8FAFC;--hv:#EEF2F8;--ln:#E3E8EF;--ln2:#EDF1F6;--tx:#1D2433;--tx2:#434C5E;--mu:#8A94A6;--mu2:#C0C7D3;--ac:#3D6BE0;--ac2:#E8EEFC;--ac3:#D8E3FA;--act:#2550B8;--seg:#E8ECF2;--sel:#F5F8FF;--life2:#E6F5EF;--lifet:#1E6B52;--sun:#D64545;--sat:#3D6BE0;--memo:#FFF5D9;--memot:#6B5210;--memol:#EAD59A;--dark:#1D2433;--shc:30,45,80}
@@ -8,7 +8,7 @@ body[data-th=peach]{--bg:#FCF8F5;--sf2:#FDF9F6;--hv:#FAF1EC;--ln:#F0E6DF;--ln2:#
 body[data-th=lilac]{--bg:#F6F5F9;--sf2:#F9F8FC;--hv:#F1EFF7;--ln:#E6E3EE;--ln2:#EFEDF4;--tx:#28252F;--tx2:#4D4957;--mu:#8D889A;--mu2:#C8C4D4;--ac:#7C66D9;--ac2:#EFEBFB;--ac3:#E2DCF8;--act:#5440B0;--seg:#ECEAF2;--sel:#FAF9FE;--life2:#E5F3EF;--lifet:#245E52;--sun:#CF4B5B;--sat:#4D6FA8;--memo:#FBF1D6;--memot:#6A5212;--memol:#E5D3A0;--dark:#28252F;--shc:40,30,70}
 body[data-th=ink]{--bg:#F4F4F2;--sf2:#F8F8F6;--hv:#EFEFEC;--ln:#E3E3DF;--ln2:#EEEEEA;--tx:#1C1C1E;--tx2:#46464A;--mu:#808084;--mu2:#BDBDBF;--ac:#2C2C30;--ac2:#ECECEA;--ac3:#E0E0DC;--act:#141416;--seg:#E8E8E5;--sel:#F9F9F7;--life2:#ECEFF4;--lifet:#34465E;--sun:#B8433A;--sat:#41618C;--memo:#FAF1D8;--memot:#5E4710;--memol:#E2D2A2;--dark:#1C1C1E;--shc:0,0,0}
 *{box-sizing:border-box}html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--tx);font:14px/1.5 'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--tx);font:14px/1.5 -apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard Variable',Pretendard,'Noto Sans KR','Malgun Gothic',sans-serif;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:0;padding:0}
 input,textarea,select{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:8px 10px;outline:none;width:100%}
@@ -952,6 +952,208 @@ body[data-th=flow] .c.sun .dn,body[data-th=flow] .c.hol .dn{color:#B4756F}
  body[data-th=flow] .ci .it.pi{background:color-mix(in srgb,var(--pc) 10%,#FAFAFA)}
  body[data-th=flow] .pb{height:5px!important;background:color-mix(in srgb,var(--pc) 48%,#fff)}
 }
+/* ---- 유리 질감 (선택) ---- */
+body[data-gl=on][data-th=flow]{background:
+ radial-gradient(1100px 700px at 12% -8%,color-mix(in srgb,var(--gr) 26%,#fff),transparent 62%),
+ radial-gradient(900px 620px at 92% 4%,#E8E4DC,transparent 58%),
+ radial-gradient(1000px 800px at 70% 108%,color-mix(in srgb,var(--gr) 18%,#fff),transparent 60%),
+ linear-gradient(160deg,#F7F7F5,#EFEFEC);
+ background-attachment:fixed}
+body[data-gl=on][data-th=flow] #cal,
+body[data-gl=on][data-th=flow] #nview,
+body[data-gl=on][data-th=flow] .memo,
+body[data-gl=on][data-th=flow] .pcard,
+body[data-gl=on][data-th=flow] .pc2,
+body[data-gl=on][data-th=flow] .nfc,
+body[data-gl=on][data-th=flow] .dh,
+body[data-gl=on][data-th=flow] #rp .row,
+body[data-gl=on][data-th=flow] #rp .qa input,
+body[data-gl=on][data-th=flow] #pni,
+body[data-gl=on][data-th=flow] #pti,
+body[data-gl=on][data-th=flow] #pri,
+body[data-gl=on][data-th=flow] .nltop input{
+ background:rgba(255,255,255,.55)!important;
+ backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+ border:1px solid rgba(255,255,255,.72)!important;
+ box-shadow:0 8px 26px rgba(80,90,86,.09)}
+body[data-gl=on][data-th=flow] #cal,body[data-gl=on][data-th=flow] #nview{box-shadow:0 18px 50px rgba(80,90,86,.11)}
+body[data-gl=on][data-th=flow] .c{border-color:rgba(255,255,255,.55)}
+body[data-gl=on][data-th=flow] .c.sel{background:rgba(255,255,255,.78)}
+body[data-gl=on][data-th=flow] .c.td{background:color-mix(in srgb,var(--gr) 10%,rgba(255,255,255,.6))}
+body[data-gl=on][data-th=flow] .dow{border-bottom-color:rgba(255,255,255,.6)}
+body[data-gl=on][data-th=flow] .ci .it:not(.ev):not(.er){background:rgba(255,255,255,.62)}
+body[data-gl=on][data-th=flow] .it.ev,body[data-gl=on][data-th=flow] .ci .it.ev{background:color-mix(in srgb,var(--gr) 16%,rgba(255,255,255,.72))!important}
+body[data-gl=on][data-th=flow] .pb{background:color-mix(in srgb,var(--pc) 24%,rgba(255,255,255,.72))}
+body[data-gl=on][data-th=flow] #rp{background:transparent}
+body[data-gl=on][data-th=flow] dialog,
+body[data-gl=on][data-th=flow] #qp,
+body[data-gl=on][data-th=flow] .fpop,
+body[data-gl=on][data-th=flow] .slm,
+body[data-gl=on][data-th=flow] .dayp,
+body[data-gl=on][data-th=flow] #tip{background:rgba(252,252,251,.82)!important;backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);border:1px solid rgba(255,255,255,.75)!important;box-shadow:0 24px 60px rgba(70,80,76,.16)}
+body[data-gl=on][data-th=flow] dialog::backdrop{background:rgba(120,126,122,.28);backdrop-filter:blur(3px)}
+body[data-gl=on][data-th=flow] .seg{background:rgba(255,255,255,.45);border-color:rgba(255,255,255,.7);backdrop-filter:blur(12px)}
+body[data-gl=on][data-th=flow] .nb,body[data-gl=on][data-th=flow] .tb{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.7);backdrop-filter:blur(12px)}
+body[data-gl=on][data-th=flow] #mnav{background:rgba(250,250,248,.72);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-top-color:rgba(255,255,255,.6)}
+body[data-gl=on][data-th=flow] #nlist{background:transparent;border-right-color:rgba(255,255,255,.6)}
+body[data-gl=on][data-th=flow] .npg.on,body[data-gl=on][data-th=flow] .nfh.on,body[data-gl=on][data-th=flow] .nback.on{background:rgba(255,255,255,.75)}
+body[data-gl=on][data-th=flow] .mi,body[data-gl=on][data-th=flow] .ui{opacity:.95}
+@media(max-width:820px){body[data-gl=on][data-th=flow] #cal{box-shadow:0 10px 30px rgba(80,90,86,.1)}}
+@media(prefers-reduced-transparency:reduce){body[data-gl=on][data-th=flow] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}
+/* 상단 토글을 포인트 색으로 */
+body[data-th=flow] #vw{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
+body[data-th=flow] #vw button.on{background:#fff;color:color-mix(in srgb,var(--gr) 75%,#111);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--gr) 70%,#111)}
+body[data-th=flow] .seg button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
+body[data-th=flow] .ptabs button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
+body[data-th=flow] #mnav button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
+body[data-th=flow] .pvadd,body[data-th=flow] #mfab{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)!important}
+body[data-th=flow] .pri,body[data-th=flow] #nacts .njo,body[data-th=flow] .nlog:not(.done){background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)!important;border-color:transparent!important}
+body[data-th=flow] .toast{background:color-mix(in srgb,var(--gr) 86%,#0D0D0D)}
+body[data-th=flow] .thp .ths button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D);border-color:transparent}
+body[data-gl=on][data-th=flow] #vw{background:color-mix(in srgb,var(--gr) 80%,#0D0D0D)}
+/* ---- 유리: 입체감 강화 ---- */
+body[data-gl=on][data-th=flow]{background:
+ radial-gradient(760px 540px at 8% -6%,color-mix(in srgb,var(--gr) 55%,#fff),transparent 60%),
+ radial-gradient(620px 460px at 88% 2%,#E2DCCE,transparent 58%),
+ radial-gradient(820px 620px at 72% 106%,color-mix(in srgb,var(--gr) 42%,#fff),transparent 62%),
+ radial-gradient(520px 420px at 34% 52%,#EDE7DD,transparent 64%),
+ linear-gradient(160deg,#F6F6F3,#E9EAE6);
+ background-attachment:fixed}
+body[data-gl=on][data-th=flow] #cal,
+body[data-gl=on][data-th=flow] #nview,
+body[data-gl=on][data-th=flow] .memo,
+body[data-gl=on][data-th=flow] .pcard,
+body[data-gl=on][data-th=flow] .pc2,
+body[data-gl=on][data-th=flow] .nfc,
+body[data-gl=on][data-th=flow] .dh,
+body[data-gl=on][data-th=flow] #rp .row,
+body[data-gl=on][data-th=flow] #rp .qa input,
+body[data-gl=on][data-th=flow] #pni,
+body[data-gl=on][data-th=flow] #pti,
+body[data-gl=on][data-th=flow] #pri,
+body[data-gl=on][data-th=flow] .nltop input{
+ background:linear-gradient(150deg,rgba(255,255,255,.80),rgba(255,255,255,.44))!important;
+ border:1px solid rgba(255,255,255,.55)!important;
+ border-top-color:rgba(255,255,255,.95)!important;
+ box-shadow:
+  inset 0 1px 0 rgba(255,255,255,.95),
+  inset 0 -1px 0 rgba(120,128,124,.10),
+  0 1px 2px rgba(74,84,80,.06),
+  0 10px 24px -6px rgba(74,84,80,.16)}
+body[data-gl=on][data-th=flow] #cal,body[data-gl=on][data-th=flow] #nview{
+ box-shadow:
+  inset 0 1px 0 rgba(255,255,255,.95),
+  0 2px 4px rgba(74,84,80,.05),
+  0 18px 36px -10px rgba(74,84,80,.20),
+  0 40px 70px -24px rgba(74,84,80,.22)}
+body[data-gl=on][data-th=flow] #rp .row,body[data-gl=on][data-th=flow] .pcard{transition:transform .14s ease,box-shadow .14s ease}
+body[data-gl=on][data-th=flow] #rp .row:hover,body[data-gl=on][data-th=flow] .pcard:hover{transform:translateY(-1.5px);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(74,84,80,.07),0 16px 30px -8px rgba(74,84,80,.22)}
+body[data-gl=on][data-th=flow] .c.sel{background:linear-gradient(150deg,rgba(255,255,255,.92),rgba(255,255,255,.66));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gr) 45%,#fff),0 6px 16px -4px rgba(74,84,80,.22)}
+body[data-gl=on][data-th=flow] .c.td .dn{box-shadow:0 3px 8px -2px color-mix(in srgb,var(--gr) 55%,transparent)}
+body[data-gl=on][data-th=flow] .ci .it:not(.ev):not(.er){background:linear-gradient(150deg,rgba(255,255,255,.78),rgba(255,255,255,.5));box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 2px rgba(74,84,80,.07)}
+body[data-gl=on][data-th=flow] .it.ev,body[data-gl=on][data-th=flow] .ci .it.ev{box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 5px -1px rgba(74,84,80,.14)}
+body[data-gl=on][data-th=flow] .pb{box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(74,84,80,.08)}
+body[data-gl=on][data-th=flow] dialog,
+body[data-gl=on][data-th=flow] #qp,
+body[data-gl=on][data-th=flow] .fpop,
+body[data-gl=on][data-th=flow] .slm,
+body[data-gl=on][data-th=flow] .dayp,
+body[data-gl=on][data-th=flow] #tip{
+ background:linear-gradient(150deg,rgba(255,255,255,.90),rgba(250,250,248,.70))!important;
+ border:1px solid rgba(255,255,255,.6)!important;border-top-color:rgba(255,255,255,.98)!important;
+ box-shadow:
+  inset 0 1px 0 rgba(255,255,255,.98),
+  0 4px 10px rgba(64,72,69,.08),
+  0 30px 60px -16px rgba(64,72,69,.30),
+  0 60px 110px -40px rgba(64,72,69,.26)}
+body[data-gl=on][data-th=flow] .seg,body[data-gl=on][data-th=flow] .nb,body[data-gl=on][data-th=flow] .tb{
+ background:linear-gradient(150deg,rgba(255,255,255,.72),rgba(255,255,255,.40));
+ border-color:rgba(255,255,255,.65);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 6px -1px rgba(74,84,80,.12)}
+body[data-gl=on][data-th=flow] .seg button.on,body[data-gl=on][data-th=flow] #vw button.on,body[data-gl=on][data-th=flow] .ptabs button.on{
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 3px 8px -2px rgba(64,72,69,.30)}
+body[data-gl=on][data-th=flow] #vw{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 6px 16px -4px color-mix(in srgb,var(--gr) 42%,transparent)}
+body[data-gl=on][data-th=flow] #vw button.on{background:linear-gradient(150deg,#fff,rgba(255,255,255,.86))}
+body[data-gl=on][data-th=flow] #mnav{box-shadow:0 -8px 24px -8px rgba(64,72,69,.18)}
+body[data-gl=on][data-th=flow] #mfab,body[data-gl=on][data-th=flow] .pvadd{
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 8px 18px -4px color-mix(in srgb,var(--gr) 55%,transparent),0 18px 34px -12px rgba(64,72,69,.34)!important}
+body[data-gl=on][data-th=flow] .toast{box-shadow:0 10px 26px -6px rgba(64,72,69,.34)}
+body[data-gl=on][data-th=flow] .memo{background:linear-gradient(150deg,rgba(255,255,255,.86),rgba(252,252,248,.52))!important}
+@media(prefers-reduced-transparency:reduce){body[data-gl=on][data-th=flow] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}
+/* ---- iOS 느낌 다듬기 ---- */
+body[data-th=flow] .seg{padding:2px;border-radius:12px;border:0;background:rgba(120,126,124,.12)}
+body[data-th=flow] .seg button{border-radius:10px;height:30px;padding:0 14px;font-weight:500;color:#5A5F5D;transition:background .18s,color .18s}
+body[data-th=flow] .seg button.on{color:#fff}
+body[data-th=flow] #vw{border-radius:13px;padding:3px}
+body[data-th=flow] #vw button{border-radius:10px;height:32px}
+body[data-th=flow] .nb,body[data-th=flow] .tb{min-height:32px}
+body[data-th=flow] .nb{border:0;background:rgba(120,126,124,.10)}
+body[data-th=flow] .tb{border:0;background:color-mix(in srgb,var(--gr) 14%,transparent);color:color-mix(in srgb,var(--gr) 78%,#111);font-weight:600;border-radius:999px;padding:0 15px}
+body[data-th=flow] #setb{width:32px;height:32px;border-radius:50%;background:rgba(120,126,124,.10);display:grid;place-items:center}
+/* 묶음 목록 (iOS 설정 앱 스타일) */
+@media(min-width:821px){
+ body[data-th=flow] #undated,body[data-th=flow] #lists .rowg,body[data-th=flow] #rp .row{margin:0}
+ body[data-th=flow] #undated{background:var(--sf);border:1px solid #E4E4E4;border-radius:18px;overflow:hidden}
+ body[data-th=flow] #undated .row{border-radius:0;border-bottom:1px solid #EFEFEF;margin:0;background:transparent!important;border-left:0;border-right:0;border-top:0;box-shadow:none!important}
+ body[data-th=flow] #undated .rowg:last-child .row{border-bottom:0}
+ body[data-th=flow] #undated .empty{padding:14px}
+}
+body[data-th=flow] .row{min-height:44px}
+body[data-th=flow] .row input[type=checkbox]{width:20px;height:20px}
+body[data-th=flow] .ptabs button{height:32px}
+/* 모바일: 시트처럼 */
+@media(max-width:820px){
+ body[data-th=flow] #qp{left:0!important;right:0;bottom:0!important;width:auto!important;border-radius:22px 22px 0 0!important;padding:20px 18px calc(22px + env(safe-area-inset-bottom))!important;border-bottom:0!important;box-shadow:0 -14px 40px rgba(64,72,69,.22)!important}
+ body[data-th=flow] #qp::before{content:'';display:block;width:38px;height:5px;border-radius:999px;background:rgba(120,126,124,.3);margin:-8px auto 14px}
+ body[data-th=flow] #qp input:not([type=checkbox]){height:44px}
+ body[data-th=flow] .dayp{left:0!important;right:0;bottom:0!important;width:auto!important;border-radius:22px 22px 0 0!important;max-height:72vh}
+ body[data-th=flow] dialog{border-radius:22px 22px 0 0!important;margin-bottom:0;max-height:92vh}
+ body[data-th=flow] .seg button{height:32px}
+ body[data-th=flow] .row{min-height:48px}
+ body[data-th=flow] #mnav button{padding-top:6px}
+}
+@media(max-width:820px){
+ body[data-th=flow] .top .seg button{padding:0 11px;font-size:12.5px}
+ body[data-th=flow] #rg button{padding:0 9px}
+}
+/* ---- 글자 정렬·굵기 ---- */
+body[data-th=flow]{font-feature-settings:'tnum' 0,'ss01' 1}
+body[data-th=flow] .mN,body[data-th=flow] .mS span:first-child{font-weight:600!important;letter-spacing:-.045em}
+body[data-th=flow] .mY{font-weight:500;letter-spacing:-.02em}
+body[data-th=flow] #pview h1,body[data-th=flow] #nview h1,body[data-th=flow] .nhome2 h1{font-weight:700;letter-spacing:-.035em}
+body[data-th=flow] .ntitle{font-weight:700;letter-spacing:-.03em}
+body[data-th=flow] .pdl #pni,body[data-th=flow] .pdl .pname{font-weight:700;letter-spacing:-.03em}
+body[data-th=flow] .dn{font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+body[data-th=flow] .c.td .dn{font-weight:700}
+body[data-th=flow] .dow b{font-weight:500;letter-spacing:0}
+body[data-th=flow] .row>span:not(.tm),body[data-th=flow] .cxr>span{font-weight:500;letter-spacing:-.012em}
+body[data-th=flow] .gt,body[data-th=flow] .udh,body[data-th=flow] .cxh{font-weight:600;letter-spacing:-.005em;color:#7E8481}
+body[data-th=flow] .gt b,body[data-th=flow] .cxh b,body[data-th=flow] .udh b{font-weight:700;color:#111}
+body[data-th=flow] .dh b{font-weight:700;letter-spacing:-.02em}
+body[data-th=flow] .pct b,body[data-th=flow] .pc2 .p2h b{font-weight:700;letter-spacing:-.02em}
+body[data-th=flow] .pb{font-weight:600;letter-spacing:-.01em}
+body[data-th=flow] .it.ev span,body[data-th=flow] .ci .it.ev span{font-weight:600}
+body[data-th=flow] .tm,body[data-th=flow] .it.ev em{font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+body[data-th=flow] .seg button{font-weight:600;letter-spacing:-.01em}
+body[data-th=flow] .seg button.on{font-weight:700}
+body[data-th=flow] .tb,body[data-th=flow] .pri,body[data-th=flow] #nacts button,body[data-th=flow] .njo{font-weight:600;letter-spacing:-.01em}
+body[data-th=flow] #mnav button span{font-weight:600;letter-spacing:-.01em;font-size:11px}
+body[data-th=flow] #mnav button.on span{font-weight:700}
+body[data-th=flow] .memo label{font-weight:700;letter-spacing:-.02em}
+body[data-th=flow] .hint,body[data-th=flow] .empty,body[data-th=flow] .nsub{font-weight:400;letter-spacing:-.005em}
+body[data-th=flow] small,body[data-th=flow] .mu,body[data-th=flow] .cxr small,body[data-th=flow] .row>small,body[data-th=flow] .pprog small{font-variant-numeric:tabular-nums;font-weight:500}
+body[data-th=flow] .dcnt{font-weight:700}
+/* 세로 정렬 */
+body[data-th=flow] .row,body[data-th=flow] .cxr,body[data-th=flow] .it,body[data-th=flow] .gt,body[data-th=flow] .udh,body[data-th=flow] .pct{align-items:center}
+body[data-th=flow] .row>span:not(.tm){line-height:1.45;padding:1px 0}
+body[data-th=flow] .dh{display:flex;align-items:center;gap:10px}
+body[data-th=flow] .dh .dprog{flex:1}
+body[data-th=flow] .dh small{flex:none}
+body[data-th=flow] .npg,body[data-th=flow] .nfh{align-items:center}
+body[data-th=flow] .ed{letter-spacing:-.01em;line-height:1.68}
+body[data-th=flow] .ed h1{font-weight:700;letter-spacing:-.03em}
+body[data-th=flow] .ed h2{font-weight:700;letter-spacing:-.025em}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
@@ -1711,6 +1913,7 @@ $('#sp').onclick=e=>{const b=e.target.closest('button');if(!b)return;FLUSH.forEa
 $('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인하지 못했어요: '+e.message));
 const AC={sage:['세이지','#6E8F80'],slate:['슬레이트','#6B7F96'],clay:['클레이','#A3796B'],plum:['플럼','#8A7490'],ink:['먹','#5A5A5A']};
 function setTh(t){if(!AC[t])t='sage';document.body.dataset.th='flow';document.body.dataset.ac=t;try{localStorage.setItem('ac1',t)}catch(_){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content='#EEEEEE'}
+document.body.dataset.gl='on';
 setTh(LG('ac1')||'sage');
 $('#setb').onclick=e=>{e.stopPropagation();closePops();const d=document.createElement('div');d.className='fpop thp';const cur=document.body.dataset.ac;
  d.innerHTML=`<b>포인트 색</b><div class="ths">${Object.entries(AC).map(([k,[n,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><button class="lo2 bk"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m0 0l-4-4m4 4l4-4M4.5 18.5h15"/></svg>데이터 백업 받기</button><button class="lo2">로그아웃</button>`;
