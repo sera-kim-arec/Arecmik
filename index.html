@@ -598,6 +598,11 @@ body[data-th=navy] .mS{flex-direction:column;gap:0}body[data-th=navy] .mS span:f
 #lists .row.dn2,#undated .row.dn2{opacity:.6}
 #lists .srow,#undated .srow{padding-top:3px;padding-bottom:3px}
 #lists .gt,#undated .gt{margin-top:14px}
+
+@media(min-width:821px){#pday .dh,#lists{display:none!important}}
+.dayp{width:300px;max-height:min(460px,80vh);padding:12px 12px 10px}
+.dpH{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}.dpH b{font-size:15px}.dpH small{color:var(--sun);font-size:11.5px}.dpx{margin-left:auto;color:var(--mu);font-size:17px;width:24px;height:24px;border-radius:6px}.dpx:hover{background:var(--hv)}
+.dpL .row{border-radius:10px;padding:7px 8px}.dpL .rowg{border:0}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
@@ -628,7 +633,7 @@ body[data-th=navy] .mS{flex-direction:column;gap:0}body[data-th=navy] .mS span:f
   <div id="undated" class="dropz"></div>
   <div class="dh" id="dh" style="margin-top:18px"></div>
   <div id="lists"></div>
-  <p class="hint">날짜가 정해진 건 달력 칸을 두 번 눌러 추가해요. 달력 항목을 여기로 끌면 날짜 미정, 막대 밖으로 끌면 프로젝트에서 빠져요.</p>
+  <p class="hint">날짜가 정해진 할일은 달력 칸을 두 번 눌러 추가해요. 여기 있는 할일을 달력 칸으로 끌면 날짜가 정해지고, 달력 항목을 여기로 끌면 날짜 미정이 돼요.</p>
   </div>
   <div id="pplist" hidden></div>
  </aside>
@@ -1320,7 +1325,7 @@ document.addEventListener('click',e=>{const t=e.target;
  const ad=t.closest('[data-add]');if(ad){const c=ad.closest('.c');sel=ad.dataset.add;render();openQP(sel,sel);return}
  if(t.closest('#qp'))return;
  if(t.closest('.qin'))return;
- const mo=t.closest('[data-more]');if(mo){sel=mo.dataset.more;render();if(matchMedia('(max-width:820px)').matches)$('#rp').scrollIntoView({behavior:'smooth'});return}
+ const mo=t.closest('[data-more]');if(mo){sel=mo.dataset.more;if(matchMedia('(max-width:820px)').matches){render();$('#rp').scrollIntoView({behavior:'smooth'})}else{const R0=mo.getBoundingClientRect();render();dayPop(sel,R0)}return}
  const it=t.closest('[data-id]');if(it&&!t.closest('#dlg')){openDlg(it.dataset.id);return}
  const c=t.closest('.c');if(c){const k=c.dataset.k,now=Date.now();if(lastC.k===k&&now-lastC.t<400){lastC={};openQP(k,k);return}lastC={k,t:now};sel=k;if(pv!=='day'){pv='day';pid=''}render();return}
  if(t.closest('[data-fold2]')){showDone2=!showDone2;panel();return}
@@ -1359,7 +1364,7 @@ function render(){if(!U)return;document.body.dataset.mt=mt;qa('#mnav button').fo
  qa('#rg button').forEach(b=>b.classList.toggle('on',b.dataset.r===range));
  qa('#sp button').forEach(b=>b.classList.toggle('on',b.dataset.s===space));
  document.body.classList.toggle('vnote',nv==='note');document.body.classList.toggle('vproj',nv==='proj');$('#nview').hidden=nv!=='note';$('#pview').hidden=nv!=='proj';qa('#vw button').forEach(b=>b.classList.toggle('on',b.dataset.vw===nv));
- if(nv==='note')noteView();else if(nv==='proj')projView();else cal();panel();if($('#pdlg').open)projPanel()}
+ if(nv==='note')noteView();else if(nv==='proj')projView();else cal();panel();if($('#pdlg').open)projPanel();const dp=document.querySelector('.dayp');if(dp&&dp._redraw&&!dp.contains(document.activeElement))dp._redraw()}
 
 /* 막대 미리보기 */
 let tipT=0;
@@ -1409,5 +1414,10 @@ $('#mnav').onclick=e=>{const b=e.target.closest('[data-mt]');if(!b)return;FLUSH.
 $('#mfab').onclick=()=>openQP(sel,sel);
 $('#vw').addEventListener('click',e=>{const b=e.target.closest('[data-vw]');if(b){mt=b.dataset.vw}},true);
 if(matchMedia('(max-width:820px)').matches){nv=mt==='todo'?'cal':mt}
+
+/* 하루 목록 작은 창 (달력 칸이 넘칠 때) */
+function dayPop(k,rect){closePops();const d=document.createElement('div');d.className='fpop dayp';const L=todos.filter(t=>vis(t)&&on(t,k)).sort(ord),hn=hname(k);
+ const draw=()=>{const L2=todos.filter(t=>vis(t)&&on(t,k)).sort(ord);d.innerHTML=`<div class="dpH"><b>${md(k)} (${DOW[parse(k).getDay()]})</b>${hn?`<small>${hn}</small>`:''}<button class="dpx" aria-label="닫기">×</button></div><div class="dpL">${L2.map(t=>rowHTML(t)).join('')||'<div class="empty">할 일이 없어요</div>'}</div>`;d.querySelector('.dpx').onclick=()=>d.remove()};
+ draw();d._redraw=draw;popAt(d,rect)}
 
 </script></body></html>
