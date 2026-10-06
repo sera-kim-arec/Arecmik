@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>내 달력</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F7F7FA">
+<title>Arecmik</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Arecmik"><meta name="theme-color" content="#F7F7FA">
 <style>
 :root{--bg:#F4F5F7;--sf:#FFFFFF;--sf2:#F7F8FA;--hv:#EEF0F5;--ln:#E1E4EA;--ln2:#ECEEF2;--tx:#17203A;--tx2:#3E4659;--mu:#7D8597;--mu2:#B8BDC8;--ac:#1F2E5C;--ac2:#E8EBF3;--ac3:#D9DEEB;--act:#16224A;--seg:#E7E9EF;--sel:#F7F9FD;--life:#B8860B;--life2:#FFF4D2;--lifet:#6B5000;--sun:#C8463D;--sat:#3D63A8;--memo:#FFEDB5;--memot:#5A4300;--memol:#E8CF7A;--warn:#FFEDB5;--warn2:#5A4300;--dark:#17203A;--shc:23,32,58;--r:10px}
 body[data-th=cloud]{--bg:#F5F7FA;--sf2:#F8FAFC;--hv:#EEF2F8;--ln:#E3E8EF;--ln2:#EDF1F6;--tx:#1D2433;--tx2:#434C5E;--mu:#8A94A6;--mu2:#C0C7D3;--ac:#3D6BE0;--ac2:#E8EEFC;--ac3:#D8E3FA;--act:#2550B8;--seg:#E8ECF2;--sel:#F5F8FF;--life2:#E6F5EF;--lifet:#1E6B52;--sun:#D64545;--sat:#3D6BE0;--memo:#FFF5D9;--memot:#6B5210;--memol:#EAD59A;--dark:#1D2433;--shc:30,45,80}
@@ -498,8 +498,12 @@ body[data-th=navy] .toast{animation:pop2 .35s cubic-bezier(.3,1.6,.5,1)}
 
 body[data-th=navy] .nfc{border-radius:20px;box-shadow:0 3px 0 #E3E6EE}
 body[data-th=navy] .nlog{border-radius:20px;box-shadow:0 3px 0 #D9B04A}
+
+.qph{flex-direction:column;align-items:stretch;gap:8px}.qph b{font-size:13.5px}
+.qph .seg{display:flex;width:100%}.qph .seg button{flex:1;height:28px;padding:0 6px;font-size:12.5px;white-space:nowrap}
+.seg button{white-space:nowrap}
 </style></head><body>
-<div id="login" hidden><h1>내 달력</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
+<div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
  <section id="main">
   <div class="top">
@@ -540,6 +544,8 @@ import{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,col
 const app=initializeApp({apiKey:"AIzaSyASyW3vWV3s7cgwEO_MenOZzX3qhgb852U",authDomain:"arecmik-25699.firebaseapp.com",projectId:"arecmik-25699",storageBucket:"arecmik-25699.firebasestorage.app",messagingSenderId:"952722999275",appId:"1:952722999275:web:94b7c48055edd6e8d63bae"});
 const auth=getAuth(app),db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
 const col=c=>collection(db,'users',U.uid,c),dc=(c,id)=>doc(db,'users',U.uid,c,id);
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 
 const $=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)];
@@ -1239,8 +1245,8 @@ const TH={navy:['네이비 버터','#1F2E5C','#F2C14E','#F4F5F7'],cloud:['구름
 function setTh(t){if(!TH[t])t='navy';document.body.dataset.th=t;try{localStorage.setItem('th3',t)}catch(_){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content=TH[t][3]}
 setTh(LG('th3')||'navy');
 $('#setb').onclick=e=>{e.stopPropagation();closePops();const d=document.createElement('div');d.className='fpop thp';const cur=document.body.dataset.th;
- d.innerHTML=`<b>테마</b><div class="ths">${Object.entries(TH).map(([k,[n,a,b2,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${a}"></b><b style="background:${b2}"></b><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><button class="lo2">로그아웃</button>`;
- d.onclick=ev=>{const b=ev.target.closest('[data-th]');if(b){setTh(b.dataset.th);d.querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x===b));return}if(ev.target.closest('.lo2')&&confirm('로그아웃할까요?'))signOut(auth)};
+ d.innerHTML=`<b>테마</b><div class="ths">${Object.entries(TH).map(([k,[n,a,b2,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${a}"></b><b style="background:${b2}"></b><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><button class="lo2 bk">📦 데이터 백업 받기</button><button class="lo2">로그아웃</button>`;
+ d.onclick=ev=>{const b=ev.target.closest('button[data-th]');if(b){setTh(b.dataset.th);d.querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x===b));return}if(ev.target.closest('.bk')){backup();return}if(ev.target.closest('.lo2')&&confirm('로그아웃할까요?'))signOut(auth)};
  popAt(d,$('#setb').getBoundingClientRect())};
 document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,dialog,[contenteditable]'))return;
  if(e.key==='ArrowLeft')move(-1);else if(e.key==='ArrowRight')move(1);else if(e.key==='t'){cur=new Date();sel=TODAY();render()}else if(e.key==='n'){e.preventDefault();$('#qi').focus()}});
@@ -1285,5 +1291,13 @@ function setMemoh(h){const m=$('#memo');if(!h){RT.style.removeProperty('--memoh'
 try{const m=+localStorage.getItem('memoh');if(m)setMemoh(m)}catch(_){}
 rsz($('#mrs'),'y',e=>{const top=$('#memo').getBoundingClientRect().top;curM=setMemoh(e.clientY-top-6)},()=>SV('memoh',curM));
 $('#mrs').addEventListener('dblclick',()=>{setMemoh(0);SV('memoh','');toast('잊지 말 것을 내용 길이에 맞췄어요')});
+
+/* 데이터 백업 (JSON 파일로 내려받기, 이미지 포함) */
+async function backup(){toast('백업 파일을 만드는 중이에요…');
+ const html=JSON.stringify([todos,projects,notes,memos]);const ids=[...new Set([...html.matchAll(/data-img=\\?"([^"\\]+)/g)].map(m=>m[1]))];const imgs={};
+ for(const id of ids){if(IMGC[id]){imgs[id]=IMGC[id];continue}try{const r=await getDoc(dc('imgs',id));if(r.exists())imgs[id]=r.data().d}catch(_){}}
+ const data={app:'Arecmik',version:2,exported:new Date().toISOString(),todos,projects,notes,rows,memos,imgs};
+ const b=new Blob([JSON.stringify(data)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`Arecmik-백업-${TODAY()}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);
+ toast(`백업 완료 · 할일 ${todos.length} · 프로젝트 ${projects.length} · 글 ${notes.filter(n=>!n.isFolder).length} · 이미지 ${Object.keys(imgs).length}`)}
 
 </script></body></html>
