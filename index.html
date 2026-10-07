@@ -826,7 +826,7 @@ body[data-th=flow] .tin:hover,body[data-th=flow] .ov:hover{background:#F2F2F2!im
 body[data-th=flow] .npg.on,body[data-th=flow] .nfh.on,body[data-th=flow] .nback.on{background:#EAEAEA;color:#111}
 body[data-th=flow] .npg.on small,body[data-th=flow] .nfh.on em{color:#8E8E8E}
 /* ---- 뮤트 색 ---- */
-body[data-th=flow]{--gr:#6E8F80;--gr2:#E7EDE9;--sun:#B4756F;--sat:#8A8A8A;--tx2:#55585B;--mu:#8C8C8C}
+body[data-th=flow]{--gr:#9EC3B0;--grt:#20362B;--gr2:#EAF3EE;--sun:#B4756F;--sat:#8A8A8A;--tx2:#55585B;--mu:#8C8C8C}
 body[data-th=flow] .c.td .dn{background:var(--gr)}
 body[data-th=flow] input[type=checkbox]:checked{background:var(--gr);border-color:var(--gr)}
 body[data-th=flow] .it.ev em{color:var(--gr)!important}
@@ -837,7 +837,7 @@ body[data-th=flow] .pdot,body[data-th=flow] .dpj button i,body[data-th=flow] .p2
 body[data-th=flow] .pb{background:color-mix(in srgb,var(--pc) 22%,#F7F7F7);color:#4A4A4A}
 body[data-th=flow] .ci .it.pi::before{background:color-mix(in srgb,var(--pc) 70%,#777)!important}
 body[data-th=flow] .ed a{text-decoration-color:var(--gr)}
-body[data-ac=slate]{--gr:#6B7F96}body[data-ac=clay]{--gr:#A3796B}body[data-ac=plum]{--gr:#8A7490}body[data-ac=ink]{--gr:#5A5A5A}
+body[data-ac=slate]{--gr:#A9C4DD;--grt:#1E2F3D;--gr2:#EAF1F7}body[data-ac=clay]{--gr:#E3BCA9;--grt:#452A1C;--gr2:#FAEEE8}body[data-ac=plum]{--gr:#C9B6D8;--grt:#352542;--gr2:#F3EDF8}body[data-ac=ink]{--gr:#CBCBC8;--grt:#242424;--gr2:#F0F0EE}
 .thp .ths{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}
 .thp .ths button{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid #E0E0E0;border-radius:999px;font-size:13px;font-weight:500;background:#fff}
 .thp .ths button i{display:block;width:12px;height:12px;border-radius:50%;overflow:hidden}
@@ -1001,16 +1001,16 @@ body[data-gl=on][data-th=flow] .mi,body[data-gl=on][data-th=flow] .ui{opacity:.9
 @media(max-width:820px){body[data-gl=on][data-th=flow] #cal{box-shadow:0 10px 30px rgba(80,90,86,.1)}}
 @media(prefers-reduced-transparency:reduce){body[data-gl=on][data-th=flow] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}
 /* 상단 토글을 포인트 색으로 */
-body[data-th=flow] #vw{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
+body[data-th=flow] #vw{background:var(--gr)}
 body[data-th=flow] #vw button.on{background:#fff;color:color-mix(in srgb,var(--gr) 75%,#111);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--gr) 70%,#111)}
-body[data-th=flow] .seg button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
-body[data-th=flow] .ptabs button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
-body[data-th=flow] #mnav button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)}
-body[data-th=flow] .pvadd,body[data-th=flow] #mfab{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)!important}
-body[data-th=flow] .pri,body[data-th=flow] #nacts .njo,body[data-th=flow] .nlog:not(.done){background:color-mix(in srgb,var(--gr) 88%,#0D0D0D)!important;border-color:transparent!important}
-body[data-th=flow] .toast{background:color-mix(in srgb,var(--gr) 86%,#0D0D0D)}
-body[data-th=flow] .thp .ths button.on{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D);border-color:transparent}
-body[data-gl=on][data-th=flow] #vw{background:color-mix(in srgb,var(--gr) 80%,#0D0D0D)}
+body[data-th=flow] .seg button.on{background:var(--gr)}
+body[data-th=flow] .ptabs button.on{background:var(--gr)}
+body[data-th=flow] #mnav button.on{background:var(--gr)}
+body[data-th=flow] .pvadd,body[data-th=flow] #mfab{background:var(--gr)!important}
+body[data-th=flow] .pri,body[data-th=flow] #nacts .njo,body[data-th=flow] .nlog:not(.done){background:var(--gr)!important;border-color:transparent!important}
+body[data-th=flow] .toast{background:var(--gr)}
+body[data-th=flow] .thp .ths button.on{background:var(--gr);border-color:transparent}
+body[data-gl=on][data-th=flow] #vw{background:var(--gr)}
 /* ---- 유리: 입체감 강화 ---- */
 body[data-gl=on][data-th=flow]{background:
  radial-gradient(760px 540px at 8% -6%,color-mix(in srgb,var(--gr) 55%,#fff),transparent 60%),
@@ -1194,12 +1194,32 @@ body[data-th=flow] .rfr:hover{transform:translateY(-1.5px)}
 .rfsv{font-size:11px;font-weight:600;color:#B0B0B0;margin-right:4px;transition:color .2s}
 .rfsv.on{color:var(--gr)}
 .rfx{font-size:12px;font-weight:600;color:#8E8E8E;padding:6px 14px;border-radius:999px;border:1px solid #DCDCDC}
-.rfx[data-rclose]{background:color-mix(in srgb,var(--gr) 88%,#0D0D0D);border-color:transparent;color:#fff}
+.rfx[data-rclose]{background:var(--gr);border-color:transparent;color:#fff}
 .rfx:hover{border-color:#111;color:#111}
 .rfti{width:100%;border:0!important;background:transparent!important;padding:2px 0!important;font-size:16px;font-weight:700;letter-spacing:-.025em;margin-bottom:4px}
 .rfti:focus{outline:none;box-shadow:none!important}
 .rfr.open .rfe{min-height:72px;font-size:13.5px;line-height:1.65}
 .rfr.open .rfe:focus{outline:none}
+/* 파스텔: 포인트 위 글씨는 어둡게 */
+body[data-th=flow] #vw button.on{color:var(--grt);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--grt) 22%,#fff)}
+body[data-th=flow] #vw button{color:var(--grt)}
+body[data-th=flow] .seg button.on,body[data-th=flow] .ptabs button.on,body[data-th=flow] #mnav button.on{color:var(--grt)}
+body[data-th=flow] .pri,body[data-th=flow] #nacts .njo,body[data-th=flow] .nlog:not(.done),body[data-th=flow] .rfx[data-rclose]{color:var(--grt)!important}
+body[data-th=flow] .nlog:not(.done) b,body[data-th=flow] .nlog:not(.done) small,body[data-th=flow] .nlog:not(.done) span{color:var(--grt)!important}
+body[data-th=flow] .pvadd,body[data-th=flow] #mfab{color:var(--grt)!important}
+body[data-th=flow] .toast{color:var(--grt)}
+body[data-th=flow] .thp .ths button.on{color:var(--grt)}
+body[data-th=flow] .c.td .dn{background:var(--gr);color:var(--grt);font-weight:700}
+body[data-th=flow] input[type=checkbox]:checked{background:var(--gr);border-color:color-mix(in srgb,var(--gr) 70%,#7A7A7A)}
+body[data-th=flow] input[type=checkbox]:checked::after{border-color:var(--grt)}
+body[data-th=flow] .tm,body[data-th=flow] .it.ev em,body[data-th=flow] .cxr .tm{color:color-mix(in srgb,var(--grt) 72%,var(--gr))}
+body[data-th=flow] .rfsv.on{color:color-mix(in srgb,var(--grt) 65%,var(--gr))}
+body[data-th=flow] .it.ev,body[data-th=flow] .ci .it.ev{background:var(--gr2)!important;color:#1C1C1C;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gr) 55%,#fff)}
+body[data-th=flow] .tb{background:var(--gr2);color:var(--grt)}
+body[data-th=flow] .p2bar u,body[data-th=flow] .pcard .pbar u,body[data-th=flow] .dh .dprog i,body[data-th=flow] .pbar u{background:color-mix(in srgb,var(--gr) 80%,#8A8A8A)!important}
+body[data-gl=on][data-th=flow] #vw{background:var(--gr)}
+body[data-gl=on][data-th=flow] #vw button.on{background:linear-gradient(150deg,#fff,rgba(255,255,255,.88))}
+body[data-gl=on][data-th=flow] #mfab,body[data-gl=on][data-th=flow] .pvadd{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 18px -4px color-mix(in srgb,var(--gr) 70%,transparent),0 18px 34px -12px rgba(64,72,69,.26)!important}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
@@ -1281,8 +1301,8 @@ onAuthStateChanged(auth,u=>{unsubs.forEach(f=>f());unsubs=[];U=u;
 });
 
 /* ---------- 프로젝트 공통 ---------- */
-const PAL=['#6E8F80','#55707C','#8C9179','#6C7490','#8E8275','#49605C','#9AA3A0'];
-const OLDPAL=[['#A89B7C','#7C8BA3','#B08E82','#7D9A8E','#8F86A3','#A88795','#8C9196'],['#E0B03C','#4C6FB8','#D9775B','#3E9C8A','#9A7BD0','#C55D7E','#7A8290']];
+const PAL=['#9EC3B0','#A9C4DD','#D8C9A6','#C9B6D8','#E3BCA9','#A7C7C2','#C7CBC8'];
+const OLDPAL=[['#6E8F80','#55707C','#8C9179','#6C7490','#8E8275','#49605C','#9AA3A0'],['#A89B7C','#7C8BA3','#B08E82','#7D9A8E','#8F86A3','#A88795','#8C9196'],['#E0B03C','#4C6FB8','#D9775B','#3E9C8A','#9A7BD0','#C55D7E','#7A8290']];
 const newCol=c=>{for(const P of OLDPAL){const i=P.indexOf(c);if(i>=0)return PAL[i]}return c};
 const PST={active:'진행 중',hold:'보류',done:'완료',arch:'보관'};
 const pst=p=>p.status||'active',P=id=>projects.find(x=>x.id===id);
@@ -1413,11 +1433,14 @@ function mkEd(ed,html,save,ph){ed.contentEditable='true';ed.classList.add('ed');
  const blk=()=>{const s=getSelection();if(!s.rangeCount)return null;let n=s.anchorNode;if(n===ed)n=ed.childNodes[s.anchorOffset]||ed.lastChild;while(n&&n.parentNode!==ed)n=n.parentNode;return n&&n.nodeType===1?n:null};
  const caret=(n,o)=>{const r=document.createRange();r.setStart(n,o);r.collapse(true);const s=getSelection();s.removeAllRanges();s.addRange(r)};
  const atStart=b=>{const s=getSelection();if(!s.rangeCount||!s.isCollapsed)return false;const r=document.createRange();r.selectNodeContents(b);r.setEnd(s.anchorNode,s.anchorOffset);return r.toString()===''};
+ const ARR=[[/->$/,'\u2192'],[/<-$/,'\u2190'],[/<=>$/,'\u21D4'],[/=>$/,'\u21D2'],[/<=$/,'\u21D0']];
+ const arrow=()=>{const s=getSelection();if(!s.rangeCount||!s.isCollapsed)return;const tn=s.anchorNode;if(!tn||tn.nodeType!==3)return;const off=s.anchorOffset,before=tn.textContent.slice(0,off);
+  for(const[re,ch]of ARR){const m=before.match(re);if(m){tn.textContent=tn.textContent.slice(0,off-m[0].length)+ch+tn.textContent.slice(off);caret(tn,off-m[0].length+ch.length);return}}};
  const setD=(b,d)=>{d=Math.max(0,Math.min(4,d));if(d)b.dataset.d=d;else delete b.dataset.d};
  const setT=(b,c)=>{b.className=c||''};
  ed.addEventListener('input',e=>{if(e.isComposing)return;norm();const b=blk();
   if(b){const tx=b.textContent,cc=b.className.split(' ')[0];for(const[re,c]of PAT){const m=tx.match(re);if(m&&c!==cc){const w=document.createTreeWalker(b,NodeFilter.SHOW_TEXT);const tn=w.nextNode();if(tn&&tn.textContent.length>=m[0].length){tn.textContent=tn.textContent.slice(m[0].length);setT(b,c);if(!b.textContent)b.innerHTML='<br>',caret(b,0);else caret(tn,0)}break}}}
-  emp();later();slashCheck(ed)});
+  arrow();emp();later();slashCheck(ed)});
  ed.addEventListener('compositionend',()=>{emp();later()});
  ed.addEventListener('keydown',e=>{if(SL&&slashKey(e))return;if(e.isComposing||e.keyCode===229)return;const b=blk();if(!b)return;const c=b.className.split(' ')[0];
   if(e.key==='Tab'){e.preventDefault();setD(b,(+b.dataset.d||0)+(e.shiftKey?-1:1));later();return}
@@ -1966,7 +1989,7 @@ function move(n){if(WK()){sel=ymd(addD(parse(sel),7*WK()*n));cur=parse(sel)}else
 $('#rg').onclick=e=>{const b=e.target.closest('button');if(!b)return;range=b.dataset.r;try{localStorage.setItem('rg',range)}catch(_){}render()};
 $('#sp').onclick=e=>{const b=e.target.closest('button');if(!b)return;FLUSH.forEach(f=>f());space=b.dataset.s;try{localStorage.setItem('sp',space)}catch(_){}syncMemo();render()};
 $('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인하지 못했어요: '+e.message));
-const AC={sage:['세이지','#6E8F80'],slate:['슬레이트','#6B7F96'],clay:['클레이','#A3796B'],plum:['플럼','#8A7490'],ink:['먹','#5A5A5A']};
+const AC={sage:['민트','#9EC3B0'],slate:['스카이','#A9C4DD'],clay:['피치','#E3BCA9'],plum:['라벤더','#C9B6D8'],ink:['그레이','#CBCBC8']};
 function setTh(t){if(!AC[t])t='sage';document.body.dataset.th='flow';document.body.dataset.ac=t;try{localStorage.setItem('ac1',t)}catch(_){}const m=document.querySelector('meta[name=theme-color]');if(m)m.content='#EEEEEE'}
 document.body.dataset.gl='on';
 setTh(LG('ac1')||'sage');
