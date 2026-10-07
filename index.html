@@ -1358,6 +1358,13 @@ body[data-th=flow] #sbtn .ui{width:16px;height:16px}
 .icp .icg button:hover{background:var(--gr2)}
 .icp .icnone{font-size:11.5px;color:#8E8E8E;padding:6px;border-radius:9px}
 .icp .icnone:hover{background:#F2F2F2;color:#111}
+.sw2{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:12px;font-size:12.5px;font-weight:600;color:#4A4A4A;text-align:left}
+.sw2:hover{background:#F2F2F2}
+.sw2 span{flex:1;min-width:0}
+.sw2 i{flex:none;width:36px;height:21px;border-radius:999px;background:#DCDCDC;position:relative;transition:background .18s}
+.sw2 i::after{content:'';position:absolute;left:2px;top:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .18s;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.sw2.on i{background:var(--gr)}
+.sw2.on i::after{transform:translateX(15px)}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
@@ -1442,7 +1449,7 @@ onAuthStateChanged(auth,u=>{unsubs.forEach(f=>f());unsubs=[];U=u;
  unsubs.push(onSnapshot(col('refs'),s=>{refs=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
  unsubs.push(onSnapshot(col('notes'),s=>{notes=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
  unsubs.push(onSnapshot(col('ents'),s=>{rows=s.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.pid);render()}));
- unsubs.push(onSnapshot(col('logs'),s=>{memos={};s.docs.forEach(d=>memos[d.id]=d.data());tpls=(memos.tplv2||{}).list||[];syncMemo();if($('#pdlg').open)projPanel()}));
+ unsubs.push(onSnapshot(col('logs'),s=>{memos={};s.docs.forEach(d=>memos[d.id]=d.data());tpls=(memos.tplv2||{}).list||[];syncMemo();setTimeout(carry,400);if($('#pdlg').open)projPanel()}));
 });
 
 /* ---------- 프로젝트 공통 ---------- */
@@ -1536,8 +1543,16 @@ function cal(){CAP=CAPF();const{s,n}=days(),L=todos.filter(vis),T=TODAY(),M=cur.
 /* ---------- 오른쪽 패널 ---------- */
 function rowHTML(t,opt={}){const ev=isEv(t),rg=endOf(t)>t.date,ns=(t.subs||[]).length;
   const dt=opt.date?(t.date?md(t.date)+(rg?'~'+md(endOf(t)):''):'날짜 없음'):(rg?'~'+md(endOf(t)):'');
-  const meta=[dt,ns?`${t.subs.filter(s=>s.done).length}/${ns}`:''].filter(Boolean).join(' · ');
+  const meta=[dt,t.from&&t.from!==t.date?`${md(t.from)}에서 밀림`:'',ns?`${t.subs.filter(s=>s.done).length}/${ns}`:''].filter(Boolean).join(' · ');
   return `<div class="rowg"><div class="row${t.done?' dn2':''}" data-id="${t.id}">${ev?'<span class="ckx"></span>':`<input type="checkbox" data-ck="${t.id}"${t.done?' checked':''} aria-label="완료">`}${pdot(t)}<span>${esc(t.title)}</span><small class="rt">${ev?`<b class="tm">${esc(t.time||'종일')}</b>`:''}${meta?`<i>${esc(meta)}</i>`:''}</small><button class="isa" data-sadd="${t.id}" data-w="p" aria-label="하위 할일 추가" title="하위 할일 추가">↳</button></div>${subLines(t,'p').join('')}${subInput(t,'p')}</div>`}
+
+/* 밀린 할일 자동 이월 */
+let carried='';
+function carry(){if(!U)return;const cfg=memos.cfg||{};if(!cfg.auto)return;const T=TODAY();if(carried===T)return;
+ const L=todos.filter(t=>vis(t)&&!t.done&&!isEv(t)&&t.date&&t.date<T&&!(t.end&&t.end>t.date));
+ carried=T;if(!L.length)return;
+ L.forEach(t=>up(t.id,{date:T,from:t.from||t.date}));
+ toast(`밀린 할일 ${L.length}개를 오늘로 옮겼어요`)}
 
 function stats(){const el=$('#stats');if(!el)return;const T=TODAY(),W=ymd(addD(parse(T),6));
  const td=todos.filter(t=>vis(t)&&on(t,T)&&!isEv(t)),tdn=td.filter(t=>t.done).length,ev=todos.filter(t=>vis(t)&&isEv(t)&&t.date&&t.date<=W&&endOf(t)>=T).length,ud=todos.filter(t=>vis(t)&&!t.date&&!isEv(t)&&!t.done).length,pj=projects.filter(p=>pst(p)==='active').length;
@@ -2257,8 +2272,9 @@ function setTh(t){if(!AC[t])t='sage';document.body.dataset.th='flow';document.bo
 document.body.dataset.gl='on';
 setTh(LG('ac1')||'sage');
 $('#setb').onclick=e=>{e.stopPropagation();closePops();const d=document.createElement('div');d.className='fpop thp';const cur=document.body.dataset.ac;
- d.innerHTML=`<b>포인트 색</b><div class="ths">${Object.entries(AC).map(([k,[n,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><button class="lo2 bk"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m0 0l-4-4m4 4l4-4M4.5 18.5h15"/></svg>데이터 백업 받기</button><button class="lo2">로그아웃</button>`;
- d.onclick=ev=>{const b=ev.target.closest('button[data-th]');if(b){setTh(b.dataset.th);d.querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x===b));return}if(ev.target.closest('.bk')){backup();return}if(ev.target.closest('.lo2'))ask('로그아웃할까요?',{ok:'로그아웃'}).then(ok=>{if(ok)signOut(auth)})};
+ const AU=!!(memos.cfg||{}).auto;
+ d.innerHTML=`<b>포인트 색</b><div class="ths">${Object.entries(AC).map(([k,[n,c]])=>`<button data-th="${k}" class="${cur===k?'on':''}"><i><b style="background:${c}"></b></i>${n}</button>`).join('')}</div><b>밀린 할일</b><button class="sw2${AU?' on':''}" data-auto><span>다음 날 자동으로 오늘로 옮기기</span><i></i></button><button class="lo2 bk"><svg class="ui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m0 0l-4-4m4 4l4-4M4.5 18.5h15"/></svg>데이터 백업 받기</button><button class="lo2">로그아웃</button>`;
+ d.onclick=ev=>{const b=ev.target.closest('button[data-th]');if(b){setTh(b.dataset.th);d.querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x===b));return}const au=ev.target.closest('[data-auto]');if(au){const nv2=!au.classList.contains('on');au.classList.toggle('on',nv2);setDoc(dc('logs','cfg'),{auto:nv2?1:0},{merge:true});if(nv2)setTimeout(carry,150);toast(nv2?'이제 밀린 할일은 다음 날 오늘로 옮겨져요':'자동 이월을 껐어요');return}if(ev.target.closest('.bk')){backup();return}if(ev.target.closest('.lo2'))ask('로그아웃할까요?',{ok:'로그아웃'}).then(ok=>{if(ok)signOut(auth)})};
  popAt(d,$('#setb').getBoundingClientRect())};
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();openSearch();return}
  if(e.target.closest('input,textarea,dialog,[contenteditable]'))return;
