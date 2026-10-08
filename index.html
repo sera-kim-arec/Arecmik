@@ -1446,6 +1446,32 @@ body[data-th=flow] .rsc.has i{font-style:normal;opacity:.6;margin-left:3px}
 .spr .spt:hover{background:var(--gr2)}
 .spr .spt em{font-style:normal;font-size:11px;color:#9A9A9A;margin-left:4px;font-variant-numeric:tabular-nums}
 .spr.dn2 .spt{color:#A5A5A5;text-decoration:line-through}
+
+/* ===== 스크롤이 끝까지 내려가게 ===== */
+@supports (height:100dvh){
+ #pdlg{max-height:90dvh}
+ .pdl{max-height:90dvh}
+ .fpop{max-height:calc(100dvh - 16px)}
+ .dayp{max-height:min(460px,80dvh)}
+ .srl{max-height:min(420px,56dvh)}
+ @media(max-width:820px){
+  body[data-th=flow] .dayp{max-height:72dvh}
+  body[data-th=flow] dialog{max-height:92dvh}
+  #nview{min-height:calc(100dvh - 150px)}
+  .srl{max-height:calc(100dvh - 90px)}
+ }
+}
+@media(max-width:820px){
+ /* 아래 탭바에 마지막 줄이 가리지 않도록 여백 */
+ #rp{padding-bottom:calc(86px + env(safe-area-inset-bottom))!important}
+ #pview{padding-bottom:calc(124px + env(safe-area-inset-bottom))!important}
+ #ned{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}
+ #nlist{padding-bottom:12px}
+ #main{padding-bottom:calc(14px + env(safe-area-inset-bottom))!important}
+ .pdl{padding-bottom:calc(34px + env(safe-area-inset-bottom))!important}
+ .srl,.pdl,#rp,#pview,#ned{overscroll-behavior:contain}
+ .fpop{max-height:calc(100dvh - 90px)}
+}
 </style></head><body>
 <div id="login" hidden><h1>Arecmik</h1><p>Google 계정으로 로그인하면 PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="pri">Google로 로그인</button></div>
 <div id="app" hidden>
