@@ -356,6 +356,74 @@ main{max-width:1280px;margin:0 auto;padding:8px 20px 60px}
 .sheet .rt.well{min-height:110px;background:rgba(0,0,0,.05);box-shadow:none}
 .subs{font-size:10.5px;font-weight:800;color:#777;margin-left:5px}
 .loading{padding:60px 0;text-align:center;color:#777;font-weight:700}
+
+/* ===== 1번 + 6번: 유리 바탕, 안은 문서처럼 ===== */
+body{color:#37352F}
+.g h2.ct,h2.ct{font-size:12px;font-weight:700;color:#8a8986;letter-spacing:0}
+.ck{width:16px!important;height:16px!important;border-radius:4px!important;background:rgba(255,255,255,.7)!important;box-shadow:inset 0 0 0 1.5px #37352F!important}
+.dn .ck{background:#37352F!important;box-shadow:none!important}
+.dn .ck::after{left:5px!important;top:2px!important}
+.it{padding:6px 0}
+.it .tt{color:#37352F}
+.dn .tt{color:#a5a4a0}
+.tg{background:none!important;color:#8a8986!important;padding:0!important;margin-left:6px!important;font-weight:600!important}
+.tg::before{content:'· '}
+.it.ev .tt{font-weight:600}
+.it em{color:#111}
+/* 7일: 상자 대신 선 */
+.days{gap:0!important}
+.d{background:none!important;box-shadow:none!important;border-radius:0!important;border-left:1px solid rgba(0,0,0,.07);padding:4px 12px 8px!important;min-height:150px!important}
+.d:first-child{border-left:0}
+.d.td{background:rgba(255,255,255,.55)!important;border-radius:14px!important;border-left-color:transparent}
+.d.td+.d{border-left-color:transparent}
+.d .dh b{font-size:20px}
+/* 주간 달력도 선으로 */
+.wkg{gap:0!important}
+.wc{background:none!important;box-shadow:none!important;border-radius:0!important;border-left:1px solid rgba(0,0,0,.07);border-top:1px solid rgba(0,0,0,.07)}
+.wc.td{background:rgba(255,255,255,.55)!important;border-radius:12px!important}
+.wc.sel{box-shadow:inset 0 0 0 1.5px #37352F!important;border-radius:12px!important}
+/* 월 달력 칸 가볍게 */
+.mc{background:transparent!important;box-shadow:none!important;border-radius:10px!important}
+.mc:hover{background:rgba(255,255,255,.35)!important}
+.mc.td{background:rgba(255,255,255,.6)!important}
+.mc.sel{box-shadow:inset 0 0 0 1.5px #37352F!important}
+.mc i{background:rgba(0,0,0,.04)!important;border-radius:4px!important}
+.mc i.e{background:#37352F!important}
+/* 입력칸 아래 안내 */
+.pv{margin-bottom:6px}
+main>.qwrap,.rw>.qwrap,main>.qwrap+*{margin-top:0}
+main>.qwrap{margin:4px 0 14px}
+.rw .qwrap{margin:4px 0 14px}
+/* 사진 버튼은 쓸 때만 */
+.lday .lrow{opacity:0;transition:opacity .15s}
+.lday:hover .lrow,.lday:focus-within .lrow{opacity:1}
+@media(hover:none){.lday .lrow{opacity:1}}
+/* ⋯ 메뉴 */
+.more{font-size:18px;line-height:1;flex:none}
+.pop{position:absolute;z-index:120;padding:6px;min-width:190px}
+.pop button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:10px;font-weight:600;font-size:14px;color:#37352F}
+.pop button:hover{background:rgba(0,0,0,.05)}
+.pop .danger{color:#A33A30}
+/* 현황: 한 줄 목록 */
+.hr{border-top:1px solid rgba(0,0,0,.07)}
+.hr:first-of-type{border-top:0}
+.hrl{display:flex;align-items:center;gap:10px;padding:10px 2px;cursor:pointer;min-width:0}
+.hrl b{font-weight:600;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+.chip{flex:none;border:0;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(55,53,47,.08);color:#37352F;white-space:nowrap}
+.chip:hover{background:rgba(55,53,47,.16)}
+.chip.em{color:#aaa}
+.hm{margin-left:auto;font-size:12.5px;color:#8a8986;font-weight:600;white-space:nowrap}
+.hr.open .hrl{padding-bottom:4px}
+.hrf{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px 12px;padding:6px 2px 14px}
+.hrf label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:700;color:#8a8986;min-width:0}
+.hrf input,.hrf select{border:0;border-radius:8px;padding:7px 9px;background:rgba(255,255,255,.75);font-size:13.5px;color:#37352F;min-width:0;width:100%}
+.hrf a{font-size:12px;font-weight:700;color:#37352F;margin-top:2px}
+.hrf .link{grid-column:1/-1;justify-self:start}
+.hadd2{margin-top:8px}
+.hadd2 input{width:100%;border:0;outline:0;background:none;padding:8px 2px;font-size:14px;color:#37352F;border-top:1px dashed rgba(0,0,0,.12)}
+.hadd2 input::placeholder{color:#9b9a97}
+.pg{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+@media(max-width:900px){.pg{grid-template-columns:minmax(0,1fr)!important}.d{border-left:0;border-top:1px solid rgba(0,0,0,.07);padding:12px 6px!important}.d:first-child{border-top:0}.wc{border-left:0}}
 </style></head><body>
 <div id="login" hidden><div class="g"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
@@ -490,7 +558,7 @@ function parseQ(v,fixedPid){let s=' '+v.trim()+' ',date='',time='',pid=fixedPid|
  return {title:s.replace(/\s+/g,' ').trim(),date,time,pid,newP,memo}}
 function previewHTML(v,fixedPid){if(!v.trim()&&!pend.length)return fixedPid?'<span class="h">날짜·시간을 같이 쓰면 일정이 돼요 · "- "로 시작하면 기록</span>':'<span class="h">예) 내일 3시 미팅 · #결혼 드레스 가봉 · - 오늘 있었던 일</span>';
  const r=parseQ(v,fixedPid),o=[];
- if(r.memo||pend.length)o.push('<span class="k">기록</span>');else{o.push(`<span class="k">${r.time?'일정':'할 일'}</span>`);o.push(`<span>${r.date?dLabel(r.date)+' '+md(r.date):(fixedPid?'날짜 없음':'오늘')}</span>`);if(r.time)o.push(`<span>${r.time}</span>`)}
+ if(r.memo||pend.length)o.push('<span class="k">기록</span>');else{o.push(`<span class="k">${r.time?'일정':'할 일'}</span>`);o.push(`<span>${r.date?dLabel(r.date)+' '+md(r.date):(fixedPid?'날짜 없음':U.tab==='cal'?dLabel(U.calSel)+' '+md(U.calSel):'오늘')}</span>`);if(r.time)o.push(`<span>${r.time}</span>`)}
  if(r.pid&&!fixedPid)o.push(`<span># ${esc(PJ(r.pid).name)}</span>`);if(r.newP)o.push(`<span>＋ 새 프로젝트 '${esc(r.newP)}'</span>`);return o.join('')}
 
 /* ================= 쓰기 ================= */
@@ -504,14 +572,12 @@ function nextRep(k,r){const d=P(k);if(r==='d')d.setDate(d.getDate()+1);else if(r
 let oneId='';
 function toggle(id){const t=D.todos.find(x=>x.id===id);if(!t)return;const v=!t.done;
  if(v&&t.rep&&t.date){const nd=nextRep(t.date,t.rep),ne=t.end&&t.end>t.date?nextRep(t.end,t.rep):'';const{id:_i,...rest}=t;addDoc(col('todos'),{...rest,date:nd,end:ne,done:false,doneDate:'',doneAt:0,note:'',subs:(t.subs||[]).map(x=>({...x,done:false})),created:Date.now()});upT(id,{done:true,doneDate:T(),doneAt:Date.now(),rep:''});toast(`다음 반복을 ${md(nd)}에 만들었어요`)}
- else upT(id,{done:v,doneDate:v?T():'',doneAt:v?Date.now():0});
- render();
- if(v){oneId=id;const o=$('#one');o.querySelector('.t').textContent=`'${t.title}' 끝! 한 줄 남길래요?`;o.querySelector('input').value=t.note||'';o.classList.add('on');setTimeout(()=>o.querySelector('input').focus({preventScroll:true}),40)}else $('#one').classList.remove('on')}
+ else upT(id,{done:v,doneDate:v?T():'',doneAt:v?Date.now():0});render()}
 function oneDone(saveIt){const o=$('#one'),v=o.querySelector('input').value.trim();if(saveIt&&oneId){upT(oneId,{note:v});render()}o.classList.remove('on');oneId=''}
 let pend=[];
 async function submitQ(inp,fixedPid){const v=inp.value;if(!v.trim()&&!pend.length)return;const r=parseQ(v,fixedPid);
  const go=async pid=>{if(r.memo||pend.length){await addMom({t:r.title,imgs:pend.slice(),pid});toast(pid?`「${PJ(pid).name}」에 기록했어요`:'기록했어요')}
-  else{if(!r.title){toast('내용을 적어 주세요');return}const t=addTodo({title:r.title,date:r.date||(fixedPid?'':T()),time:r.time,pid});toast(`${t.date?dLabel(t.date)+' ':''}${t.time?t.time+' ':''}${isEv(t)?'일정':'할 일'}로 넣었어요${pid&&!fixedPid?` · ${PJ(pid).name}`:''}`)}
+  else{if(!r.title){toast('내용을 적어 주세요');return}const t=addTodo({title:r.title,date:r.date||(fixedPid?'':U.tab==='cal'?U.calSel:T()),time:r.time,pid});toast(`${t.date?dLabel(t.date)+' ':''}${t.time?t.time+' ':''}${isEv(t)?'일정':'할 일'}로 넣었어요${pid&&!fixedPid?` · ${PJ(pid).name}`:''}`)}
   inp.value='';pend=[];render()};
  if(r.newP){const ok=await ask(`'${r.newP}' 프로젝트를 새로 만들까요?`,'만들기');if(ok){const id=await addProj(r.newP);D.projects.push({id,name:r.newP,space:U.sp,status:'active',start:T()});go(id)}else go('');return}
  go(r.pid)}
@@ -533,6 +599,15 @@ function editTodo(id){const t=D.todos.find(x=>x.id===id);if(!t)return;
  <div class="f"><span>한 줄 기록</span><input id="e-n" value="${esc(t.note||'')}" placeholder="안 써도 돼요"></div>
  <div class="bt"><button class="link" data-edel="${t.id}">지우기</button><button class="soft" data-sx="0">닫기</button><button class="ink" data-esave="${t.id}">저장</button></div>`)}
 
+/* ================= 공통 입력칸 ================= */
+function qbarHTML(){const pid=U.tab==='proj'&&U.pid&&PJ(U.pid)?U.pid:'';const ph=pid?`# ${PJ(pid).name}에 적기`:U.tab==='cal'?`${md(U.calSel)}에 적기`:'무엇이든 적기';
+ return `<div class="qwrap"><div class="qbar g"><input id="qi" ${pid?`data-pid="${pid}"`:''} placeholder="${esc(ph)}" autocomplete="off" enterkeyhint="done"><button class="cam${pend.length?' on':''}" data-cam aria-label="사진 붙이기"></button><button class="ink" data-qadd>추가</button></div>
+ ${pend.length?`<div class="att">${pend.map((x,i)=>`<span>${imgTag(x)}<button data-unatt="${i}" aria-label="빼기">×</button></span>`).join('')}</div>`:''}<div class="pv" id="qpv">${previewHTML('',pid||undefined)}</div></div>`}
+/* 작은 메뉴 */
+function popMenu(btn,items){$$('.pop').forEach(x=>x.remove());const d=document.createElement('div');d.className='pop g solid';d.innerHTML=items.map(([l,a,cls])=>`<button ${a}${cls?` class="${cls}"`:''}>${l}</button>`).join('');document.body.appendChild(d);
+ const r=btn.getBoundingClientRect(),W=d.offsetWidth;d.style.left=Math.max(8,Math.min(innerWidth-W-8,r.right-W))+'px';d.style.top=(r.bottom+6+scrollY)+'px'}
+document.addEventListener('click',e=>{if(!e.target.closest('.pop')&&!e.target.closest('[data-more]'))$$('.pop').forEach(x=>x.remove())},true);
+
 /* ================= 화면: 오늘 ================= */
 function itemHTML(t,o={}){const late=o.late&&!t.done&&t.date&&t.date<T()&&!isEv(t);const pj=t.projectId&&!o.noTag?PJ(t.projectId):null;const ns=(t.subs||[]).length;
  return `<div class="it${t.done?' dn':''}${isEv(t)?' ev':''}">${isEv(t)?'<span class="evd"></span>':`<button class="ck" data-ck="${t.id}" aria-label="${t.done?'완료 취소':'완료'}"></button>`}<span class="tt" data-edit="${t.id}">${t.time?`<em>${t.time}</em>`:''}${esc(t.title)}${pj?`<span class="tg">${esc(pj.name)}</span>`:''}${ns?`<span class="subs">${t.subs.filter(s=>s.done).length}/${ns}</span>`:''}${late?`<span class="late">${md(t.date)}부터</span>`:''}${t.loc?`<span class="nt">📍 ${esc(t.loc)}</span>`:''}${t.note?`<span class="nt">${esc(t.note)}</span>`:''}</span>${o.when?`<span class="when">${o.when}</span>`:''}</div>`}
@@ -542,16 +617,14 @@ function home(){const t=T(),d=new Date(),L=D.todos.filter(inSp);
  const late=L.filter(x=>!x.done&&x.date&&endOf(x)<t&&!isEv(x));
  const und=L.filter(x=>!x.date&&!x.done);
  const week=days.map(k=>{const items=L.filter(x=>onDay(x,k)).sort(ordT);const all=k===t?[...late,...items]:items;const h=hol(k);
-  return `<div class="d${k===t?' td':''}"><div class="dh"><b>${+k.slice(8)}</b><span class="${h||P(k).getDay()===0?'hol':''}">${DOW[P(k).getDay()]}${k===t?' · 오늘':''}${h?' · '+h:''}</span><button class="pl" data-addon="${k}" aria-label="${md(k)}에 추가">＋</button></div><div class="dy">${all.map(x=>itemHTML(x,{late:1})).join('')||'<div class="emp">비어 있어요</div>'}</div></div>`}).join('');
+  return `<div class="d${k===t?' td':''}"><div class="dh"><b>${+k.slice(8)}</b><span class="${h||P(k).getDay()===0?'hol':''}">${DOW[P(k).getDay()]}${k===t?' · 오늘':''}${h?' · '+h:''}</span></div><div class="dy">${all.map(x=>itemHTML(x,{late:1})).join('')||'<div class="emp">비어 있어요</div>'}</div></div>`}).join('');
  const LG=getLogs(U.sp),lg=LG[t];
  const recent=Object.keys(LG).filter(k=>k<t&&k.slice(0,7)===t.slice(0,7)&&!isEmptyH(LG[k].html)).sort().reverse().slice(0,2);
  const feed=[...L.filter(x=>x.done&&doneDay(x)===t).map(x=>({at:x.doneAt||0,h:`<div class="fd"><time>${x.doneAt?hm(x.doneAt):'—'}</time>${esc(x.title)}<small>완료</small>${x.note?`<q>${esc(x.note)}</q>`:''}</div>`})),
   ...D.moms.filter(m=>inSp(m)&&m.d===t).map(m=>({at:m.at,h:`<div class="fd me"><time>${hm(m.at)}</time>${esc(m.t)||'<span style="color:#888">사진</span>'}${m.pid&&PJ(m.pid)?`<span class="tg">${esc(PJ(m.pid).name)}</span>`:''}${momImgs(m).length?`<div class="pics sm">${momImgs(m).map(imgTag).join('')}</div>`:''}<button class="x" data-mdel="${m.id}" aria-label="지우기">×</button></div>`}))].sort((a,b)=>a.at-b.at);
  const AP=D.projects.filter(p=>inSp(p)&&!isDoneP(p));
  return `<div class="hhead"><h1>${d.getMonth()+1}월 ${d.getDate()}일<small>${DOW[d.getDay()]}요일</small></h1>
-  <div class="qwrap"><div class="qbar g"><input id="qi" placeholder="무엇이든 적기" autocomplete="off" enterkeyhint="done"><button class="cam${pend.length?' on':''}" data-cam aria-label="사진 붙이기"></button><button class="ink" data-qadd>추가</button></div>
-  ${pend.length?`<div class="att">${pend.map((s,i)=>`<span>${imgTag(s)}<button data-unatt="${i}" aria-label="빼기">×</button></span>`).join('')}</div>`:''}
-  <div class="pv" id="qpv">${previewHTML('')}</div></div></div>
+  ${qbarHTML()}</div>
  <section class="g box" style="margin-bottom:18px"><h2 class="ct">앞으로 7일<small>${md(t)} – ${md(days[6])}</small></h2><div class="days">${week}</div>
   ${und.length?`<div class="und"><h3>날짜 없음 ${und.length}</h3>${und.sort(ordT).map(x=>itemHTML(x)).join('')}</div>`:''}</section>
  <div class="hg"><div class="col">
@@ -569,17 +642,16 @@ function home(){const t=T(),d=new Date(),L=D.todos.filter(inSp);
 const wkStart=k=>add(k,-P(k).getDay());
 function calTitle(){const k=U.calSel;if(U.cv==='m'){const[y,m]=U.calCur.split('-').map(Number);return `${y}년 ${m}월`}
  if(U.cv==='d')return `${+k.slice(5,7)}월 ${+k.slice(8)}일 ${DOW[P(k).getDay()]}요일`;const a=wkStart(k),b=add(a,U.cv==='w2'?13:6);return `${md(a)} – ${md(b)}`}
-function calHead(){return `<div class="ch"><button class="ar" data-cm="-1" aria-label="이전">‹</button><h1>${calTitle()}</h1><button class="ar" data-cm="1" aria-label="다음">›</button><button class="soft" data-cm="0">오늘</button>
+function calHead(){return `${qbarHTML()}<div class="ch"><button class="ar" data-cm="-1" aria-label="이전">‹</button><h1>${calTitle()}</h1><button class="ar" data-cm="1" aria-label="다음">›</button><button class="soft" data-cm="0">오늘</button>
  <div class="seg g cvs">${[['m','월'],['w2','2주'],['w1','1주'],['d','하루']].map(([k,l])=>`<button data-cv="${k}" class="${U.cv===k?'on':''}">${l}</button>`).join('')}</div></div>`}
 function dayPanel(k,big){const L=D.todos.filter(x=>inSp(x)&&onDay(x,k)).sort(ordT),lg=getLogs(U.sp)[k];
  return `${big?'':`<h2 class="ct">${+k.slice(5,7)}월 ${+k.slice(8)}일 ${DOW[P(k).getDay()]}요일<small>${k===T()?'오늘':hol(k)}</small></h2>`}
-  <div class="qbar well" style="margin-bottom:10px;padding-left:14px"><input id="ci" placeholder="${md(k)}에 추가 · 3시 쓰면 일정" autocomplete="off"><button class="ink" data-cadd>추가</button></div>
-  ${L.map(x=>itemHTML(x)).join('')||'<div class="emp">이날은 비어 있어요</div>'}
+  ${L.map(x=>itemHTML(x)).join('')||'<div class="emp">이날은 비어 있어요 · 위 입력칸에 적으면 이날로 들어가요</div>'}
   ${lg&&!isEmptyH(lg.html)?`<div class="und"><h3>${LW(U.sp).t}</h3><div class="rt">${safeHTML(lg.html)}</div></div>`:''}`}
 function cal(){if(U.cv==='d')return calHead()+`<section class="g box dayv">${dayPanel(U.calSel,1)}</section>`;
  if(U.cv!=='m'){const L=D.todos.filter(inSp),t=T(),a=wkStart(U.calSel),n=U.cv==='w2'?14:7;
   return calHead()+`<section class="g wkg">${[...DOW].map((w,i)=>`<div class="w${i===0?' su':''}">${w}</div>`).join('')}${[...Array(n)].map((_,i)=>{const k=add(a,i),it=L.filter(x=>onDay(x,k)).sort(ordT),h=hol(k);
-   return `<div class="wc${k===t?' td':''}${k===U.calSel?' sel':''}"><div class="wh" data-day="${k}"><b class="${P(k).getDay()===0||h?'r':''}">${+k.slice(8)}</b><span>${DOW[P(k).getDay()]}${h?' · '+h:''}</span><button class="pl" data-addon="${k}" aria-label="${md(k)}에 추가">＋</button></div>${it.map(x=>itemHTML(x)).join('')||'<div class="emp">—</div>'}</div>`}).join('')}</section>`}
+   return `<div class="wc${k===t?' td':''}${k===U.calSel?' sel':''}"><div class="wh" data-day="${k}"><b class="${P(k).getDay()===0||h?'r':''}">${+k.slice(8)}</b><span>${DOW[P(k).getDay()]}${h?' · '+h:''}</span></div>${it.map(x=>itemHTML(x)).join('')||'<div class="emp">—</div>'}</div>`}).join('')}</section>`}
  const[y,m]=U.calCur.split('-').map(Number),s=new Date(y,m-1,1).getDay(),nd=new Date(y,m,0).getDate(),rows=Math.ceil((s+nd)/7),t=T(),L=D.todos.filter(inSp);
  let cells='';for(let i=0;i<rows*7;i++){const k=ymd(new Date(y,m-1,1-s+i)),o=k.slice(0,7)!==U.calCur,it=L.filter(x=>onDay(x,k)).sort(ordT),h=hol(k);
   cells+=`<button class="mc${o?' o':''}${k===t?' td':''}${k===U.calSel?' sel':''}${P(k).getDay()===0?' sun':''}${h?' hd':''}" data-day="${k}"><b>${+k.slice(8)}${h?`<small>${h}</small>`:''}</b>${it.slice(0,3).map(x=>`<i class="${isEv(x)?'e':''}${x.done?' dn':''}">${x.time?x.time+' ':''}${esc(x.title)}</i>`).join('')}${it.length>3?`<span class="more">+${it.length-3}</span>`:''}</button>`}
@@ -591,47 +663,45 @@ function projList(){const A=D.projects.filter(p=>inSp(p)&&!isDoneP(p)).sort((a,b
   return `<article class="g pcard" data-open="${p.id}"><h3>${esc(p.name)}<small>${isDoneP(p)?'끝남':p.status==='hold'?'보류':p.end?(diff(T(),p.end)>=0?'D-'+diff(T(),p.end):'기간 지남'):'상시'}</small></h3>
   <div class="mini">${L.filter(t=>t.date>=a&&t.date<=b).map(t=>`<i class="${t.done?'f':''}" style="left:${x(t.date)}%"></i>`).join('')}${T()>=a&&T()<=b?`<b style="left:${x(T())}%"></b>`:''}</div>
   <div class="n">${ptodos(p).filter(t=>t.done).length} / ${ptodos(p).length} 완료 · ${n?`다음 ${esc(n.title)} ${dLabel(n.date)}`:'다음 할 일 없음'}</div></article>`};
- return `<div class="ph"><h1>프로젝트</h1><button class="ink" data-newp>＋ 새 프로젝트</button></div>
+ return `${qbarHTML()}<div class="ph"><h1>프로젝트</h1><button class="soft" data-newp>＋ 새 프로젝트</button></div>
  <div class="pl2">${A.map(card).join('')||'<div class="g box emp">진행 중인 프로젝트가 없어요.</div>'}</div>
  ${Dn.length?`<h2 class="ct" style="margin:26px 4px 10px">끝난 프로젝트<small>${Dn.length}</small></h2><div class="pl2">${Dn.map(card).join('')}</div>`:''}`}
 let perOpen=false;
 function tlItems(p){const t=T(),TB=p.tbl||{},F=(TB.fields||[]).filter(f=>f.t==='date'),SF=(TB.fields||[]).find(f=>f.t==='sel');
- return [...ptodos(p).filter(x=>x.date).map(x=>({k:x.done?doneDay(x):x.date,c:x.done?'f':isEv(x)?'e':'',l:x.title,id:x.id})),
-  ...D.moms.filter(m=>m.pid===p.id).map(m=>({k:m.d,c:momImgs(m).length?'p':'m2',l:m.t||'사진',img:momImgs(m)[0]})),
+ return [...ptodos(p).filter(x=>x.date).map(x=>({k:x.done?doneDay(x):x.date,c:x.done?'f':isEv(x)?'e':'',l:x.title+(x.note?' — '+x.note:''),id:x.id})),
+  ...D.moms.filter(m=>m.pid===p.id).map(m=>({k:m.d,c:momImgs(m).length?'p':'m2',l:m.t||'사진',img:momImgs(m)[0],mid:m.id})),
+  ...D.notes.filter(n=>!n.isFolder&&!n.log&&n.pid===p.id).map(n=>({k:n.date||ymd(new Date(n.created||n.updated||Date.now())),c:'m2',l:'글 · '+(n.title||'제목 없음'),doc:n.id})),
   ...(TB.on?pRows(p).flatMap(r=>F.map(f=>{const v=String((r.v||{})[f.k]||'').slice(0,10);return v?{k:v,c:v<t?'f':'',l:`${r.title}${SF&&(r.v||{})[SF.k]?' · '+r.v[SF.k]:''}`}:null}).filter(Boolean)):[])].sort((a,b)=>a.k<b.k?-1:1)}
-function projView(p){const L=ptodos(p),t=T(),up=L.filter(x=>!x.done&&!(isEv(x)&&x.date&&endOf(x)<t)).sort((a,b)=>(!a.date)-(!b.date)||(a.date<b.date?-1:a.date>b.date?1:ordT(a,b)));
- const ev=[...L.filter(x=>x.done||(isEv(x)&&x.date&&endOf(x)<t)).map(x=>{const k=x.done?doneDay(x):x.date;return{k,at:x.doneAt||0,h:`<div class="fd"><time>${md(k)}</time><span class="tt" data-edit="${x.id}" style="cursor:pointer">${esc(x.title)}</span><small>${x.done?'완료':'일정'}</small>${x.note?`<q>${esc(x.note)}</q>`:''}</div>`}}),
-  ...D.moms.filter(m=>m.pid===p.id).map(m=>({k:m.d,at:m.at,h:`<div class="fd me"><time>${md(m.d)}</time>${esc(m.t)||'<span style="color:#888">사진</span>'}<small>기록</small>${momImgs(m).length?`<div class="pics">${momImgs(m).map(imgTag).join('')}</div>`:''}<button class="x" data-mdel="${m.id}" aria-label="지우기">×</button></div>`})),
-  ...D.notes.filter(n=>!n.isFolder&&!n.log&&n.pid===p.id).map(n=>{const k=n.date||ymd(new Date(n.created||n.updated||Date.now()));return{k,at:n.created||0,h:`<div class="fd me"><time>${md(k)}</time><span class="tt" data-odoc="${n.id}" style="cursor:pointer;font-weight:700">${esc(n.title||'제목 없음')}</span><small>글</small></div>`}})].filter(e=>e.k).sort((a,b)=>a.k<b.k?1:a.k>b.k?-1:(b.at||0)-(a.at||0));
- let last='',feed='';ev.forEach(e=>{const m=e.k.slice(0,7);if(m!==last){feed+=`<div class="mo">${m.slice(0,4)!==t.slice(0,4)?m.slice(0,4)+'년 ':''}${+m.slice(5)}월</div>`;last=m}feed+=e.h});
- const done=L.filter(x=>x.done).length,cost=pCost(p);
- return `<button class="back" data-tab="proj">‹ 프로젝트</button>
+let showDoneP=false;
+function projView(p){const L=ptodos(p),t=T(),up=L.filter(x=>!x.done).sort((a,b)=>(!a.date)-(!b.date)||(a.date<b.date?-1:a.date>b.date?1:ordT(a,b))),dn=L.filter(x=>x.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
+ const cost=pCost(p),hasMemo=!isEmptyH(p.memoH||'')||memoOpen===p.id;
+ return `${qbarHTML()}<button class="back" data-tab="proj">‹ 프로젝트</button>
  <div class="ph"><div style="flex:1;min-width:0"><input class="pname" data-pname="${p.id}" value="${esc(p.name)}" aria-label="프로젝트 이름">
-  <div class="meta">${p.end?`<span><b>${diff(t,p.end)>=0?'D-'+diff(t,p.end):'기간 지남'}</b> · ${md(p.end)}까지</span>`:'<span>상시</span>'}${p.start?`<span>${Math.max(1,diff(p.start,t)+1)}일째</span>`:''}<span>할 일 <b>${done}</b> / ${L.length}</span>${cost?`<span>들어간 비용 <b>${won(cost)}원</b></span>`:''}<button data-per>기간 바꾸기</button></div>
-  ${perOpen?`<div class="per"><label>시작<input type="date" data-pstart="${p.id}" value="${p.start||''}"></label><label>끝<input type="date" data-pend="${p.id}" value="${p.end||''}"></label><button class="link" data-pdel="${p.id}" style="color:#9A4A42">프로젝트 지우기</button></div>`:''}</div>
-  <button class="soft" data-pdone="${p.id}">${isDoneP(p)?'다시 진행하기':'끝냈어요'}</button></div>
- <div class="qbar g"><span class="tag"># ${esc(p.name)}</span><input id="pi" data-pid="${p.id}" placeholder="여기 적으면 이 프로젝트로 들어가요" autocomplete="off"><button class="cam${pend.length?' on':''}" data-cam aria-label="사진 붙이기"></button><button class="ink" data-padd>추가</button></div>
- ${pend.length?`<div class="att">${pend.map((s,i)=>`<span>${imgTag(s)}<button data-unatt="${i}" aria-label="빼기">×</button></span>`).join('')}</div>`:''}
- <div class="pv" id="ppv">${previewHTML('',p.id)}</div>
+  <div class="meta">${isDoneP(p)?'<span><b>끝남</b></span>':p.end?`<span><b>${diff(t,p.end)>=0?'D-'+diff(t,p.end):'기간 지남'}</b> · ${md(p.end)}까지</span>`:'<span>상시</span>'}${p.start?`<span>${Math.max(1,diff(p.start,t)+1)}일째</span>`:''}<span>할 일 <b>${dn.length}</b> / ${L.length}</span>${cost?`<span>들어간 비용 <b>${won(cost)}원</b></span>`:''}</div>
+  ${perOpen?`<div class="per"><label>시작<input type="date" data-pstart="${p.id}" value="${p.start||''}"></label><label>끝<input type="date" data-pend="${p.id}" value="${p.end||''}"></label><button class="link" data-per>닫기</button></div>`:''}</div>
+  <button class="ic more" data-more="proj" data-id="${p.id}" aria-label="더 보기">⋯</button></div>
  <section class="g tlc"><h2 class="ct">타임라인<span class="zoom"><button data-zoom="all" class="${U.zoom==='all'?'on':''}">전체</button><button data-zoom="near" class="${U.zoom==='near'?'on':''}">가까이</button></span></h2><div class="tlw" id="tlw"><div class="tl" id="tl"></div></div></section>
- <div class="pg"><section class="g box up"><h2 class="ct">앞으로<small>${up.length}</small></h2>${up.map(x=>itemHTML(x,{noTag:1,when:x.date?dLabel(x.date):'날짜 없음'})).join('')||'<div class="emp">남은 할 일이 없어요</div>'}</section>
- <section class="g box"><h2 class="ct">지나온 것<small>저절로 쌓여요</small></h2>${feed||'<div class="emp">할 일을 끝내거나 "- 메모"를 적으면 여기에 쌓여요</div>'}</section></div>
- <section class="g box" style="margin-top:18px">${tblHTML(p)}</section>
- <section class="g box pmemo"><h2 class="ct">메모<small>이 프로젝트에서 기억할 것</small></h2><div class="rt" contenteditable="true" data-pmemo="${p.id}" data-ph="적으면 바로 저장돼요">${safeHTML(p.memoH||'')}</div></section>`}
+ <div class="pg"><section class="g box up"><h2 class="ct">할 일<small>${up.length}</small></h2>${up.map(x=>itemHTML(x,{noTag:1,when:x.date?dLabel(x.date):''})).join('')||'<div class="emp">남은 할 일이 없어요</div>'}
+  ${dn.length?`<button class="link" data-pdn style="margin-top:10px">${showDoneP?'완료 접기':`완료 ${dn.length}개 보기`}</button>${showDoneP?dn.map(x=>itemHTML(x,{noTag:1,when:md(doneDay(x))})).join(''):''}`:''}</section>
+ <section class="g box">${tblHTML(p)}</section></div>
+ ${hasMemo?`<section class="g box pmemo"><h2 class="ct">메모</h2><div class="rt" contenteditable="true" data-pmemo="${p.id}" data-ph="이 프로젝트에서 기억할 것">${safeHTML(p.memoH||'')}</div></section>`:''}`}
+let memoOpen='';
 const FT={sel:'고르기',text:'글자',num:'숫자',date:'날짜',link:'링크'};
-function tblHTML(p){const TB=p.tbl||{};if(!TB.on)return `<h2 class="ct" style="margin:0">표<button class="link" data-ton="${p.id}">＋ 업체·사람을 표로 관리하기</button></h2>`;
- const F=TB.fields||[],R=pRows(p);
- const cell=(r,f)=>{const v=(r.v||{})[f.k]??'';
-  if(f.t==='sel')return `<td><select data-cell="${r.id}" data-k="${f.k}"><option value=""></option>${(f.o||[]).map(o=>`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}${v&&!(f.o||[]).includes(v)?`<option selected>${esc(v)}</option>`:''}</select></td>`;
-  if(f.t==='num')return `<td class="n"><input data-cell="${r.id}" data-k="${f.k}" inputmode="numeric" value="${v!==''&&!isNaN(parseFloat(String(v).replace(/,/g,'')))?won(parseFloat(String(v).replace(/,/g,''))):esc(v)}"></td>`;
-  if(f.t==='date')return `<td><input type="date" data-cell="${r.id}" data-k="${f.k}" value="${String(v).slice(0,10)}"></td>`;
-  if(f.t==='link')return `<td class="lk" style="display:flex;align-items:center"><input data-cell="${r.id}" data-k="${f.k}" value="${esc(v)}" placeholder="https://">${/^https?:\/\//.test(v)?`<a href="${esc(v)}" target="_blank" rel="noopener" aria-label="열기">↗</a>`:''}</td>`;
-  return `<td><input data-cell="${r.id}" data-k="${f.k}" value="${esc(v)}"></td>`};
- const sums=F.map(f=>f.t==='num'?R.reduce((a,r)=>a+(parseFloat(String((r.v||{})[f.k]||'').replace(/[^\d.-]/g,''))||0),0):null);
- return `<h2 class="ct">표<span><button class="link" data-tcols="${p.id}">칸 고치기</button> · <button class="link" data-toff="${p.id}">표 숨기기</button></span></h2>
- <div class="tbw"><table class="tbl"><thead><tr><th style="min-width:120px">이름</th>${F.map(f=>`<th style="${f.t==='num'?'text-align:right;':''}min-width:${f.t==='date'?150:f.t==='sel'?130:110}px">${esc(f.n)}</th>`).join('')}<th style="width:30px"></th></tr></thead>
- <tbody>${R.map(r=>`<tr><td><input data-rname="${r.id}" value="${esc(r.title)}"></td>${F.map(f=>cell(r,f)).join('')}<td><button class="del" data-trdel="${r.id}" aria-label="줄 지우기">×</button></td></tr>`).join('')}</tbody>
- <tfoot><tr><td><button class="link" data-trnew="${p.id}">＋ 한 줄</button></td>${sums.map(x=>`<td style="text-align:right">${x!==null?won(x):''}</td>`).join('')}<td></td></tr></tfoot></table></div>`}
+let rowOpen='';
+function tblHTML(p){const TB=p.tbl||{};if(!TB.on)return `<h2 class="ct">현황<small>없음</small></h2><div class="emp">업체나 사람을 한 줄씩 관리하고 싶으면 ⋯ › 현황 켜기</div>`;
+ const F=TB.fields||[],R=pRows(p),SF=F.find(f=>f.t==='sel'),DF=F.find(f=>f.t==='date'),NF=F.filter(f=>f.t==='num');
+ const num=v=>parseFloat(String(v||'').replace(/[^\d.-]/g,''))||0;
+ const row=r=>{const v=r.v||{},st=SF?v[SF.k]:'',dt=DF?String(v[DF.k]||'').slice(0,10):'',sum=NF.reduce((a,f)=>a+num(v[f.k]),0),open=rowOpen===r.id;
+  return `<div class="hr${open?' open':''}"><div class="hrl" data-hrow="${r.id}"><b>${esc(r.title)||'<span style="color:#999">이름 없음</span>'}</b>${SF?`<button class="chip${st?'':' em'}" data-next="${r.id}" title="누르면 다음 단계">${esc(st||SF.n)}</button>`:''}<span class="hm">${dt?dLabel(dt):''}${sum?`${dt?' · ':''}${won(sum)}원`:''}</span></div>
+  ${open?`<div class="hrf"><label><span>이름</span><input data-rname="${r.id}" value="${esc(r.title)}"></label>${F.map(f=>{const x=v[f.k]??'';
+   const inp=f.t==='sel'?`<select data-cell="${r.id}" data-k="${f.k}"><option value=""></option>${(f.o||[]).map(o=>`<option${o===x?' selected':''}>${esc(o)}</option>`).join('')}${x&&!(f.o||[]).includes(x)?`<option selected>${esc(x)}</option>`:''}</select>`
+    :f.t==='num'?`<input data-cell="${r.id}" data-k="${f.k}" inputmode="numeric" value="${x!==''&&num(x)?won(num(x)):''}">`
+    :f.t==='date'?`<input type="date" data-cell="${r.id}" data-k="${f.k}" value="${String(x).slice(0,10)}">`
+    :`<input data-cell="${r.id}" data-k="${f.k}" value="${esc(x)}"${f.t==='link'?' placeholder="https://"':''}>${f.t==='link'&&/^https?:\/\//.test(x)?`<a href="${esc(x)}" target="_blank" rel="noopener">열기</a>`:''}`;
+   return `<label><span>${esc(f.n)}</span>${inp}</label>`}).join('')}<button class="link" data-trdel="${r.id}" style="color:#9A4A42">이 줄 지우기</button></div>`:''}</div>`};
+ const tot=NF.length?R.reduce((a,r)=>a+NF.reduce((x,f)=>x+num((r.v||{})[f.k]),0),0):0;
+ return `<h2 class="ct">현황<small>${R.length}${tot?` · ${won(tot)}원`:''}</small></h2>${R.map(row).join('')||'<div class="emp">아직 없어요</div>'}
+ <div class="hadd2"><input id="hri" data-hp="${p.id}" placeholder="＋ 이름 적고 Enter" autocomplete="off"></div>`}
 function colsSheet(p){const F=(p.tbl||{}).fields||[];
  openSheet(`<h3>표 칸 고치기</h3><div id="fl">${F.map(f=>fRow(f)).join('')}</div><button class="link" data-fadd style="margin:4px 0 14px">＋ 칸 추가</button>
  <div class="bt"><button class="soft" data-sx="0">닫기</button><button class="ink" data-fsave="${p.id}">저장</button></div>`)}
@@ -646,7 +716,7 @@ function drawTL(p){const W=$('#tlw'),E=$('#tl');if(!W||!E)return;const t=T(),its
  h+='<div class="ax"></div>';if(p.start)h+=`<span class="fl" style="left:${X(p.start)}px" title="시작 ${md(p.start)}"></span>`;if(p.end)h+=`<span class="fl" style="left:${X(p.end)}px" title="끝 ${md(p.end)}"></span>`;
  const lanes=[],TOP=46,LH=30,MAX=12;
  its.forEach(i=>{const x=X(i.k),lw=(i.c==='p'?26:16)+MCV.measureText(md(i.k)+'  '+i.l).width+16;let L=lanes.findIndex(e=>e<x-6);if(L<0){if(lanes.length<MAX){lanes.push(0);L=lanes.length-1}else{L=lanes.indexOf(Math.min(...lanes));i.nl=1}}lanes[L]=i.nl?Math.max(lanes[L],x+14):x+lw+10;i.x=x;i.L=L});
- its.forEach(i=>{h+=`<div class="ti ${i.c}${i.nl?' nl':''}" style="left:${i.x-5}px;top:${TOP+i.L*LH}px" ${i.id?`data-edit="${i.id}"`:''} title="${md(i.k)} ${esc(i.l)}"><i${i.img?` data-bg="${i.img}"`:''}></i><span><u>${md(i.k)}</u>${esc(i.l)}</span></div>`});
+ its.forEach(i=>{h+=`<div class="ti ${i.c}${i.nl?' nl':''}" style="left:${i.x-5}px;top:${TOP+i.L*LH}px" ${i.id?`data-edit="${i.id}"`:i.doc?`data-odoc="${i.doc}"`:i.img?`data-zoomimg="${i.img}"`:''} title="${md(i.k)} ${esc(i.l)}"><i${i.img?` data-bg="${i.img}"`:''}></i><span><u>${md(i.k)}</u>${esc(i.l)}</span></div>`});
  const H=TOP+Math.max(1,lanes.length)*LH+28;h+=`<div class="now" style="left:${X(t)}px;height:${H-40}px"><b>오늘</b></div>`;
  E.style.width=Math.max(w,...lanes.map(e=>e+10))+'px';E.style.height=H+'px';E.innerHTML=h;
  E.querySelectorAll('[data-bg]').forEach(el=>{const id=el.dataset.bg,set=()=>el.style.backgroundImage=`url(${IMGC[id]})`;if(IMGC[id])set();else getDoc(dc('imgs',id)).then(r=>{if(r&&r.exists()){IMGC[id]=r.data().d;set()}}).catch(()=>{})});
@@ -656,7 +726,8 @@ function drawTL(p){const W=$('#tlw'),E=$('#tl');if(!W||!E)return;const t=T(),its
 const docs=()=>D.notes.filter(n=>!n.isFolder&&!n.log);
 const logFolderIds=()=>new Set(D.notes.filter(n=>n.isFolder&&D.notes.some(x=>x.log&&x.fid===n.id)&&!D.notes.some(x=>!x.isFolder&&!x.log&&x.fid===n.id)).map(n=>n.id));
 function folders(sp){const hide=logFolderIds();return D.notes.filter(n=>n.isFolder&&SPo(n)===sp&&!hide.has(n.id)).sort((a,b)=>(a.created||0)-(b.created||0))}
-function rec(){if(U.doc){const d=D.notes.find(x=>x.id===U.doc);if(d)return docView(d);U.doc=''}
+function rec(){return qbarHTML()+rec0()}
+function rec0(){if(U.doc){const d=D.notes.find(x=>x.id===U.doc);if(d)return docView(d);U.doc=''}
  const segs=`<div class="seg g sp" style="width:max-content">${[['log',LW(U.sp).t],['doc','글'],['ref','자료']].map(([k,l])=>`<button data-rt="${k}" class="${U.rt===k?'on':''}">${l}</button>`).join('')}</div>`;
  const body=U.q.trim()?searchView():U.rt==='log'?logView():U.rt==='doc'?docList():refList();
  return `<div class="rw${U.rt==='doc'&&!U.q.trim()?' wide':''}"><div class="rh"><h1>기록</h1>${segs}</div><div class="srch g"><input id="rq" placeholder="일지 · 글 · 자료 · 할 일 한 번에 찾기" value="${esc(U.q)}" autocomplete="off"></div>${body}</div>`}
@@ -680,7 +751,7 @@ function docList(){const F=folders(U.sp),ids=new Set(F.map(f=>f.id));const L=doc
  ${L.map(d=>`<div class="dr" data-odoc="${d.id}"><div><b>${esc(d.title||'제목 없음')}</b><span>${esc(txt(d.html).split('\n').find(x=>x.trim())||'')}</span></div><em>${d.fid&&ids.has(d.fid)&&!U.fold?esc(fname(d.fid))+' · ':''}${md(ymd(new Date(d.updated||d.created||Date.now())))}</em></div>`).join('')||'<div class="emp">글이 없어요</div>'}<button class="newd" data-newdoc>＋ 새 글</button></section></div>`}
 function docView(d){const F=folders(SPo(d)),ps=D.projects.filter(p=>SPo(p)===SPo(d));
  return `<div class="rw wide"><button class="back" data-closedoc>‹ 글 목록</button><div class="dsplit" style="margin-top:10px">${folderSide()}<article class="g doc"><input class="dt" data-dt="${d.id}" value="${esc(d.title||'')}" placeholder="제목">
- <div class="dm"><select data-dfold="${d.id}"><option value="">폴더 없음</option>${F.map(f=>`<option value="${f.id}"${f.id===d.fid?' selected':''}>${esc(f.title)}</option>`).join('')}</select><select data-dpj="${d.id}"><option value="">프로젝트 없음</option>${ps.map(p=>`<option value="${p.id}"${p.id===d.pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select><button class="link" data-dimg="${d.id}">＋ 사진</button><span style="font-size:12px;color:#888;font-weight:700">${md(ymd(new Date(d.updated||Date.now())))} 저장됨</span><button class="link" data-ddel="${d.id}" style="margin-left:auto;color:#9A4A42">지우기</button></div>
+ <div class="dm"><select data-dfold="${d.id}"><option value="">폴더 없음</option>${F.map(f=>`<option value="${f.id}"${f.id===d.fid?' selected':''}>${esc(f.title)}</option>`).join('')}</select><select data-dpj="${d.id}"><option value="">프로젝트 없음</option>${ps.map(p=>`<option value="${p.id}"${p.id===d.pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select><span style="font-size:12px;color:#888;font-weight:700">${md(ymd(new Date(d.updated||Date.now())))} 저장됨</span><button class="ic more" data-more="doc" data-id="${d.id}" aria-label="더 보기" style="margin-left:auto">⋯</button></div>
  <div class="rt db" contenteditable="true" data-db="${d.id}" data-ph="내용을 적어요">${safeHTML(d.html||'')}</div></article></div></div>`}
 function refList(){const L=D.refs.slice().sort((a,b)=>(!!b.fav-!!a.fav)||((b.updated||0)-(a.updated||0)));const mk='memo_'+U.sp,m=D.logs[mk]||{},mh=m.html!=null?m.html:t2h(m.text||'');
  return `<section class="g memo2"><h2 class="ct">잊지 말 것<small>${U.sp==='work'?'WORK':'LIFE'}</small></h2><div class="rt" contenteditable="true" data-memo="${mk}" data-ph="자꾸 까먹는 것을 적어 두세요">${safeHTML(mh)}</div></section>
@@ -700,21 +771,21 @@ let pendR=false,rq=0;
 function editing(){const a=document.activeElement;return a&&(a.isContentEditable||(a.tagName==='INPUT'&&a.closest('.tbl'))||a.classList.contains('dt')||a.classList.contains('pname'))}
 function renderQ(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(editing()||$('#scrim').classList.contains('on')){pendR=true;return}render()})}
 document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
-function render(){if(!ME)return;const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','pi','ci','rq'].includes(fid)?ae.value:null;
+function render(){if(!ME)return;const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri'].includes(fid)?ae.value:null;
  $$('[data-sp]').forEach(b=>b.classList.toggle('on',b.dataset.sp===U.sp));$$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===U.tab));
  if(!U.ready){$('#main').innerHTML='<div class="loading">불러오는 중…</div>';return}
  let h;if(U.tab==='home')h=home();else if(U.tab==='cal')h=cal();else if(U.tab==='proj'){const p=U.pid&&PJ(U.pid);h=p?projView(p):(U.pid='',projList())}else h=rec();
  $('#main').innerHTML=h;hydr($('#main'));
  if(U.tab==='proj'&&U.pid&&PJ(U.pid))drawTL(PJ(U.pid));
- if(fid){const f=document.getElementById(fid);if(f){if(keep!==null)f.value=keep;f.focus({preventScroll:true});try{f.setSelectionRange(fs,fs)}catch(_){}if(fid==='qi'||fid==='pi')updPv(f)}}
+ if(fid){const f=document.getElementById(fid);if(f){if(keep!==null)f.value=keep;f.focus({preventScroll:true});try{f.setSelectionRange(fs,fs)}catch(_){}if(fid==='qi')updPv(f)}}
  saveU()}
-function updPv(i){const v=$(i.id==='qi'?'#qpv':'#ppv');if(v)v.innerHTML=previewHTML(i.value,i.dataset.pid||undefined)}
+function updPv(i){const v=$('#qpv');if(v)v.innerHTML=previewHTML(i.value,i.dataset.pid||undefined)}
 function go(tab,o={}){U.tab=tab;Object.assign(U,o);if(tab!=='rec')U.doc='';pend=[];scrollTo(0,0);render()}
 
 /* ================= 이벤트 ================= */
 const debT={};const deb=(k,f,ms=500)=>{clearTimeout(debT[k]);debT[k]=setTimeout(f,ms)};
 document.addEventListener('input',e=>{const t=e.target;
- if(t.id==='qi'||t.id==='pi'){updPv(t);return}
+ if(t.id==='qi'){updPv(t);return}
  if(t.id==='rq'){U.q=t.value;deb('rq',()=>render(),200);return}
  const lg=t.closest&&t.closest('[data-log]');if(lg){setDay(U.sp,lg.dataset.log,outHTML(lg));return}
  const db=t.closest&&t.closest('[data-db]');if(db){const id=db.dataset.db;deb('d'+id,()=>{const n=D.notes.find(x=>x.id===id);const h=outHTML(db);if(n){n.html=h;n.updated=Date.now()}updateDoc(dc('notes',id),{html:h,updated:Date.now()})},600);return}
@@ -735,9 +806,8 @@ document.addEventListener('change',e=>{const t=e.target;
 document.addEventListener('keydown',e=>{const t=e.target;
  if(e.key==='Escape'){if($('#scrim').classList.contains('on'))closeSheet(false);else if($('#one').classList.contains('on'))oneDone(false);$('#lb').classList.remove('on');return}
  if(e.key!=='Enter'||e.isComposing)return;
- if(t.id==='qi'){e.preventDefault();submitQ(t);return}
- if(t.id==='pi'){e.preventDefault();submitQ(t,t.dataset.pid);return}
- if(t.id==='ci'){e.preventDefault();cAdd();return}
+ if(t.id==='qi'){e.preventDefault();submitQ(t,t.dataset.pid||undefined);return}
+ if(t.id==='hri'){e.preventDefault();const v=t.value.trim();if(!v)return;t.value='';const p=PJ(t.dataset.hp),SF=((p.tbl||{}).fields||[]).find(f=>f.t==='sel'),v0={};if(SF&&(SF.o||[])[0])v0[SF.k]=SF.o[0];addDoc(col('ents'),{pid:p.id,title:v,v:v0,created:Date.now()});setTimeout(()=>{const i=$('#hri');i&&i.focus()},200);return}
  if(t.closest&&t.closest('#one')){e.preventDefault();oneDone(true);return}
  if(t.id==='atx'){e.preventDefault();closeSheet(t.value.trim());return}
  if(t.closest&&t.closest('#sheet')&&t.tagName==='INPUT'&&!t.closest('.fe2')){const b=$('#sheet [data-esave]');if(b){e.preventDefault();b.click()}}
@@ -760,6 +830,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if((b=t.closest('[data-sx]'))){const v=b.dataset.sx;closeSheet(v==='t'?(($('#atx')||{}).value||'').trim():v==='1');return}
  if(t.id==='scrim'){closeSheet(false);return}
  if(t.closest('#lb')){$('#lb').classList.remove('on');return}
+ if((b=t.closest('[data-zoomimg]'))){const s0=IMGC[b.dataset.zoomimg];if(s0){$('#lb img').src=s0;$('#lb').classList.add('on')}return}
  if(t.matches('.pics img,.rt:not([contenteditable]) .img img')){$('#lb img').src=t.src;$('#lb').classList.add('on');return}
  if((b=t.closest('[data-one]'))){oneDone(b.dataset.one==='save');return}
  if((b=t.closest('[data-sp]'))){U.sp=b.dataset.sp;U.pid='';U.doc='';U.fold='';pend=[];render();return}
@@ -771,29 +842,36 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if((b=t.closest('[data-edel]'))){const id=b.dataset.edel;D.todos=D.todos.filter(y=>y.id!==id);deleteDoc(dc('todos',id));closeSheet();render();toast('지웠어요');return}
  if((b=t.closest('[data-edit]'))){editTodo(b.dataset.edit);return}
  if((b=t.closest('[data-mdel]'))){if(await ask('이 기록을 지울까요?','지우기'))deleteDoc(dc('moms',b.dataset.mdel));return}
- if(t.closest('[data-qadd]')){submitQ($('#qi'));return}
+ if(t.closest('[data-qadd]')){const i=$('#qi');submitQ(i,i.dataset.pid||undefined);return}
+ if((b=t.closest('[data-more]'))){const k=b.dataset.more,id=b.dataset.id;
+  if(k==='proj'){const p=PJ(id);popMenu(b,[['기간 바꾸기','data-per'],[isDoneP(p)?'다시 진행하기':'끝냈어요',`data-pdone="${id}"`],['메모 쓰기',`data-pmemoopen="${id}"`],[(p.tbl||{}).on?'현황 칸 고치기':'현황 켜기',(p.tbl||{}).on?`data-tcols="${id}"`:`data-ton="${id}"`],...((p.tbl||{}).on?[['현황 숨기기',`data-toff="${id}"`]]:[]),['프로젝트 지우기',`data-pdel="${id}"`,'danger']])}
+  if(k==='doc')popMenu(b,[['사진 넣기',`data-dimg="${id}"`],['글 지우기',`data-ddel="${id}"`,'danger']]);return}
+ if((b=t.closest('[data-pmemoopen]'))){$$('.pop').forEach(x=>x.remove());memoOpen=b.dataset.pmemoopen;render();setTimeout(()=>{const m=$('[data-pmemo]');m&&m.focus()},30);return}
+ if(t.closest('[data-pdn]')){showDoneP=!showDoneP;render();return}
+ if((b=t.closest('[data-next]'))){e.stopPropagation();const r=D.ents.find(x=>x.id===b.dataset.next),p=PJ(r.pid),SF=((p.tbl||{}).fields||[]).find(f=>f.t==='sel');if(!SF)return;const o=SF.o||[],i=o.indexOf((r.v||{})[SF.k]),nv=o[(i+1)%o.length]||'';const nvv={...(r.v||{}),[SF.k]:nv};r.v=nvv;updateDoc(dc('ents',r.id),{v:nvv});render();return}
+ if((b=t.closest('[data-hrow]'))){rowOpen=rowOpen===b.dataset.hrow?'':b.dataset.hrow;render();return}
  if(t.closest('[data-padd]')){const i=$('#pi');submitQ(i,i.dataset.pid);return}
  if(t.closest('[data-cadd]')){cAdd();return}
- if(t.closest('[data-cam]')){const im=await pickImgs();if(im.length){pend.push(...im);render();const i=$('#qi')||$('#pi');if(i){i.focus();updPv(i)}}return}
+ if(t.closest('[data-cam]')){const im=await pickImgs();if(im.length){pend.push(...im);render();const i=$('#qi');if(i){i.focus();updPv(i)}}return}
  if((b=t.closest('[data-unatt]'))){pend.splice(+b.dataset.unatt,1);render();return}
  if((b=t.closest('[data-addon]'))){const k=b.dataset.addon,v=await askText(`${md(k)} (${DOW[P(k).getDay()]})에 추가`,'3시 쓰면 일정 · #이름 쓰면 프로젝트');if(v){const r=parseQ(v);addTodo({title:r.title,date:r.date||k,time:r.time,pid:r.pid});render();toast(`${md(r.date||k)}에 넣었어요`)}return}
  if((b=t.closest('[data-logimg]'))){const k=b.dataset.logimg,ed=document.querySelector(`[data-log="${k}"]`);const F=await pickFiles();if(!F.length)return;toast('사진 올리는 중…');for(const f of F){try{const id=await upImg(f);const el=document.querySelector(`[data-log="${k}"]`)||ed;if(el)insertImg(el,id)}catch(_){toast('사진을 올리지 못했어요')}}return}
- if((b=t.closest('[data-dimg]'))){const ed=$('[data-db]');const F=await pickFiles();for(const f of F){try{insertImg(ed,await upImg(f))}catch(_){toast('사진을 올리지 못했어요')}}return}
+ if((b=t.closest('[data-dimg]'))){$$('.pop').forEach(x=>x.remove());const ed=$('[data-db]');if(!ed)return;const F=await pickFiles();for(const f of F){try{insertImg(ed,await upImg(f))}catch(_){toast('사진을 올리지 못했어요')}}return}
  if(t.closest('[data-golog]')){go('rec',{rt:'log',ry:+T().slice(0,4),rm:+T().slice(5,7),q:'',editLog:''});return}
  if((b=t.closest('[data-open]'))){perOpen=false;go('proj',{pid:b.dataset.open});return}
  if(t.closest('[data-newp]')){const n=await askText('새 프로젝트','예) 12월 제주 여행');if(n){const id=await addProj(n);D.projects.push({id,name:n,space:U.sp,status:'active',start:T(),created:Date.now()});go('proj',{pid:id});toast('만들었어요. 입력칸에 할 일을 적어 보세요')}return}
- if(t.closest('[data-per]')){perOpen=!perOpen;render();return}
- if((b=t.closest('[data-pdone]'))){const p=PJ(b.dataset.pdone),d=isDoneP(p);updateDoc(dc('projects',p.id),{status:d?'active':'done',doneDate:d?'':T()});toast(d?'다시 진행 중이에요':'끝낸 프로젝트로 옮겼어요');return}
- if((b=t.closest('[data-pdel]'))){if(await ask('프로젝트를 지울까요? 할 일은 남고 프로젝트 표시만 빠져요.','지우기')){const id=b.dataset.pdel;D.todos.filter(x=>x.projectId===id).forEach(x=>updateDoc(dc('todos',x.id),{projectId:''}));deleteDoc(dc('projects',id));go('proj',{pid:''})}return}
+ if(t.closest('[data-per]')){$$('.pop').forEach(x=>x.remove());perOpen=!perOpen;render();return}
+ if((b=t.closest('[data-pdone]'))){$$('.pop').forEach(x=>x.remove());const p=PJ(b.dataset.pdone),d=isDoneP(p);updateDoc(dc('projects',p.id),{status:d?'active':'done',doneDate:d?'':T()});toast(d?'다시 진행 중이에요':'끝낸 프로젝트로 옮겼어요');return}
+ if((b=t.closest('[data-pdel]'))){$$('.pop').forEach(x=>x.remove());if(await ask('프로젝트를 지울까요? 할 일은 남고 프로젝트 표시만 빠져요.','지우기')){const id=b.dataset.pdel;D.todos.filter(x=>x.projectId===id).forEach(x=>updateDoc(dc('todos',x.id),{projectId:''}));deleteDoc(dc('projects',id));go('proj',{pid:''})}return}
  if((b=t.closest('[data-zoom]'))){U.zoom=b.dataset.zoom;render();return}
- if((b=t.closest('[data-ton]'))){const p=PJ(b.dataset.ton),F=(p.tbl||{}).fields;updateDoc(dc('projects',p.id),{tbl:{...(p.tbl||{}),on:true,fields:F&&F.length?F:[{k:'f1',n:'단계',t:'sel',o:['알아보는 중','진행','완료']},{k:'f2',n:'금액',t:'num'},{k:'f3',n:'날짜',t:'date'},{k:'f4',n:'메모',t:'text'}]}});return}
- if((b=t.closest('[data-toff]'))){if(await ask('표를 숨길까요? 적은 내용은 지워지지 않아요.','숨기기')){const p=PJ(b.dataset.toff);updateDoc(dc('projects',p.id),{tbl:{...(p.tbl||{}),on:false}})}return}
- if((b=t.closest('[data-tcols]'))){colsSheet(PJ(b.dataset.tcols));return}
+ if((b=t.closest('[data-ton]'))){$$('.pop').forEach(x=>x.remove());const p=PJ(b.dataset.ton),F=(p.tbl||{}).fields;updateDoc(dc('projects',p.id),{tbl:{...(p.tbl||{}),on:true,fields:F&&F.length?F:[{k:'f1',n:'단계',t:'sel',o:['알아보는 중','진행','완료']},{k:'f2',n:'금액',t:'num'},{k:'f3',n:'날짜',t:'date'},{k:'f4',n:'메모',t:'text'}]}});return}
+ if((b=t.closest('[data-toff]'))){$$('.pop').forEach(x=>x.remove());if(await ask('표를 숨길까요? 적은 내용은 지워지지 않아요.','숨기기')){const p=PJ(b.dataset.toff);updateDoc(dc('projects',p.id),{tbl:{...(p.tbl||{}),on:false}})}return}
+ if((b=t.closest('[data-tcols]'))){$$('.pop').forEach(x=>x.remove());colsSheet(PJ(b.dataset.tcols));return}
  if(t.closest('[data-fadd]')){$('#fl').insertAdjacentHTML('beforeend',fRow({k:'f'+Date.now().toString(36),n:'',t:'text'}));$$('#fl .nm').pop().focus();return}
  if(t.closest('[data-frm]')){t.closest('.fe2').remove();return}
  if((b=t.closest('[data-fsave]'))){const p=PJ(b.dataset.fsave);const F=$$('#fl .fe2').map(r=>{const[n,ty,op]=[r.querySelector('.nm').value.trim(),r.querySelector('select').value,r.querySelector('.op').value];const f={k:r.dataset.fk,n:n||'칸',t:ty};if(ty==='sel')f.o=op.split(',').map(s=>s.trim()).filter(Boolean);return f});updateDoc(dc('projects',p.id),{tbl:{...(p.tbl||{}),on:true,fields:F}});closeSheet();toast('표를 바꿨어요');return}
  if((b=t.closest('[data-trnew]'))){await addDoc(col('ents'),{pid:b.dataset.trnew,title:'',v:{},created:Date.now()});setTimeout(()=>{const ins=$$('[data-rname]');if(ins.length)ins[ins.length-1].focus()},250);return}
- if((b=t.closest('[data-trdel]'))){if(await ask('이 줄을 지울까요?','지우기'))deleteDoc(dc('ents',b.dataset.trdel));return}
+ if((b=t.closest('[data-trdel]'))){if(await ask('이 줄을 지울까요?','지우기')){deleteDoc(dc('ents',b.dataset.trdel));rowOpen=''}return}
  if((b=t.closest('[data-cv]'))){U.cv=b.dataset.cv;U.calCur=U.calSel.slice(0,7);render();return}
  if((b=t.closest('[data-cm]'))){const n=+b.dataset.cm;if(!n){U.calCur=T().slice(0,7);U.calSel=T()}else if(U.cv==='m'){const[y,m]=U.calCur.split('-').map(Number);U.calCur=ymd(new Date(y,m-1+n,1)).slice(0,7)}else{U.calSel=add(U.calSel,n*(U.cv==='w2'?14:U.cv==='w1'?7:1));U.calCur=U.calSel.slice(0,7)}render();return}
  if((b=t.closest('[data-day]'))){const k=b.dataset.day;if(U.cv!=='m'&&b.classList.contains('wh')){U.calSel=k;U.cv='d';render();return}U.calSel=k;if(k.slice(0,7)!==U.calCur)U.calCur=k.slice(0,7);render();if(matchMedia('(max-width:900px)').matches){const c=$('.cg>section:last-child');c&&c.scrollIntoView({behavior:'smooth',block:'start'})}return}
@@ -810,7 +888,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if(t.closest('[data-newdoc]')){const v={title:'',html:'',space:U.sp,fid:U.fold&&U.fold!=='none'?U.fold:'',pid:'',date:'',created:Date.now(),updated:Date.now()};const x=await addDoc(col('notes'),v);if(!D.notes.find(n=>n.id===x.id))D.notes.push({id:x.id,...v});go('rec',{rt:'doc',doc:x.id});setTimeout(()=>{const i=$('.dt');i&&i.focus()},30);return}
  if((b=t.closest('[data-odoc]'))){const d=D.notes.find(x=>x.id===b.dataset.odoc);if(d){U.sp=SPo(d);go('rec',{rt:'doc',doc:d.id,q:''})}return}
  if(t.closest('[data-closedoc]')){cleanEmptyDoc();U.doc='';render();return}
- if((b=t.closest('[data-ddel]'))){if(await ask('이 글을 지울까요?','지우기')){deleteDoc(dc('notes',b.dataset.ddel));U.doc='';render()}return}
+ if((b=t.closest('[data-ddel]'))){$$('.pop').forEach(x=>x.remove());if(await ask('이 글을 지울까요?','지우기')){deleteDoc(dc('notes',b.dataset.ddel));U.doc='';render()}return}
  if((b=t.closest('[data-fav]'))){e.stopPropagation();const r=D.refs.find(x=>x.id===b.dataset.fav);updateDoc(dc('refs',r.id),{fav:!r.fav});return}
  if((b=t.closest('[data-copy]'))){e.stopPropagation();const r=D.refs.find(x=>x.id===b.dataset.copy);try{await navigator.clipboard.writeText(txt(r.html))}catch(_){}toast('복사했어요');return}
  if((b=t.closest('[data-oref]'))||t.closest('[data-newref]')){const r=b?D.refs.find(x=>x.id===b.dataset.oref):null;
