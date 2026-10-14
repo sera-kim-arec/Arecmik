@@ -1073,6 +1073,13 @@ button.evd:hover::before{box-shadow:0 0 0 3px rgba(55,53,47,.15)}
 .spm-t{display:block;font-size:10.5px;color:#b4b3b0;margin-top:4px}
 a.ropen{padding:6px 10px!important;font-size:12px!important;text-decoration:none;color:#37352F;white-space:nowrap}
 .nt a,.pmt a,.fbx a{color:#2F5E8C;text-decoration:underline;text-decoration-color:rgba(47,94,140,.35);word-break:break-all}
+/* 링크: 파란 글씨 대신 칩 */
+.rt a,.nt a,.pmt a,.fbx a{color:#37352F!important;text-decoration:underline;text-decoration-color:rgba(55,53,47,.3);text-underline-offset:3px}
+a.lk{display:inline-flex;align-items:center;gap:5px;vertical-align:baseline;max-width:100%;padding:0 8px 0 6px;margin:0 1px;border-radius:6px;background:rgba(55,53,47,.07);color:#37352F!important;text-decoration:none!important;font-size:.92em;font-weight:500;line-height:1.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal!important;cursor:pointer;transition:background .12s}
+a.lk::before{content:'';flex:none;width:14px;height:14px;border-radius:3px;background:var(--fav) center/14px no-repeat,rgba(55,53,47,.12)}
+a.lk:hover{background:rgba(55,53,47,.13)}
+.ilk{display:inline-flex;align-items:center;gap:3px;padding:0 7px;border-radius:6px;background:rgba(55,53,47,.06);color:#37352F!important;font-size:11.5px;text-decoration:none!important;line-height:1.7}
+.ilk:hover{background:rgba(55,53,47,.12)}
 </style></head><body>
 <div id="login" hidden><div class="g"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
@@ -2170,11 +2177,11 @@ document.addEventListener('keydown',e=>{if(e.target.id!=='e-lin'||e.key!=='Enter
  const di=$('#e-d');di.value=k;di.dispatchEvent(new Event('change',{bubbles:true}));toast(`음력 ${+m[1]}월 ${+m[2]}일은 ${k.slice(0,4)}년 ${md(k)}이에요`)},true);
 
 /* 글 속 링크: 자동 링크 · 누르면 열기/고치기/빼기 */
-const URLRX=()=>/(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+)/g;
-const isURL=t=>/^(https?:\/\/|www\.)\S+$/.test(t);
+const URLRX=()=>/(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+|[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}\/[^\s<]*)/gi;
+const isURL=t=>/^(https?:\/\/|www\.)\S+$/i.test(t)||/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}\/[^\s<]*$/i.test(t);
 const normURL=u=>/^https?:\/\//i.test(u)?u:'https://'+u;
-function linkify(t){return t.split('\n').map(line=>esc(line).replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+)/g,m=>{const tail=(m.match(/[.,)\]]+$/)||[''])[0],u=m.slice(0,m.length-tail.length);return `<a href="${normURL(u.replace(/&amp;/g,'&'))}" target="_blank" rel="noopener">${u}</a>${tail}`})).join('<br>')}
-function fixLinks(ed){ed.querySelectorAll('a[href]').forEach(a=>{a.target='_blank';a.rel='noopener'})}
+function linkify(t){return t.split('\n').map(line=>esc(line).replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+|[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}\/[^\s<]*)/gi,m=>{const tail=(m.match(/[.,)\]]+$/)||[''])[0],u=m.slice(0,m.length-tail.length);const h=normURL(u.replace(/&amp;/g,'&'));return `<a class="lk" href="${esc(h)}" target="_blank" rel="noopener" style="--fav:url('${favURL(h)}')">${esc(prettyURL(h))}</a>${tail}`})).join('<br>')}
+function fixLinks(ed){ed.querySelectorAll('a[href]').forEach(a=>{a.target='_blank';a.rel='noopener';chipA(a)})}
 let lpop=null;
 function lpClose(){if(lpop){lpop.el.remove();lpop=null}}
 function lpOpen(a){lpClose();const r=a.getBoundingClientRect(),d=document.createElement('div');d.className='lpop';
@@ -2182,9 +2189,9 @@ function lpOpen(a){lpClose();const r=a.getBoundingClientRect(),d=document.create
  document.body.appendChild(d);const w=d.offsetWidth;d.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+scrollX))+'px';d.style.top=(r.bottom+scrollY+6)+'px';lpop={el:d,a}}
 async function linkAsk(ed,b,a){const sel=getSelection();let rng=sel&&sel.rangeCount?sel.getRangeAt(0).cloneRange():null;
  const u=await askText(a?'링크 고치기':'링크 넣기','https://…',a?a.getAttribute('href'):'');if(u==null)return;const url=String(u).trim();
- if(a){if(!url){a.replaceWith(document.createTextNode(a.textContent))}else a.setAttribute('href',normURL(url))}
+ if(a){if(!url){a.replaceWith(document.createTextNode(a.textContent))}else{const was=a.classList.contains('lk');a.setAttribute('href',normURL(url));if(was){a.classList.remove('lk');a.textContent=normURL(url);chipA(a)}}}
  else if(url){const x=document.createElement('a');x.href=normURL(url);x.target='_blank';x.rel='noopener';
-  const txt=rng&&!rng.collapsed?rng.toString():'';x.textContent=txt||url;if(rng&&ed.contains(rng.startContainer)){rng.deleteContents();rng.insertNode(x);rng.setStartAfter(x)}else (b||ed).appendChild(x);
+  const txt=rng&&!rng.collapsed?rng.toString():'';x.textContent=txt||url;if(!txt)chipA(x);if(rng&&ed.contains(rng.startContainer)){rng.deleteContents();rng.insertNode(x);rng.setStartAfter(x)}else (b||ed).appendChild(x);
   x.after(document.createTextNode(' '))}
  ed.dispatchEvent(new Event('input',{bubbles:true}))}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let b;
@@ -2197,8 +2204,8 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let 
  if(a.closest('.pmt')){window.open(a.href,'_blank','noopener');return}
  lpOpen(a)},true);
 document.addEventListener('keydown',e=>{lpClose();const ed=e.target.closest&&e.target.closest('.rt[contenteditable="true"]');if(!ed||e.isComposing||(e.key!==' '&&e.key!=='Enter'))return;
- const sel=getSelection();if(!sel||!sel.isCollapsed)return;const n=sel.anchorNode;if(!n||n.nodeType!==3||n.parentElement.closest('a'))return;const pre=n.textContent.slice(0,sel.anchorOffset),m=pre.match(/(https?:\/\/\S+|www\.\S+\.\S+)$/);if(!m)return;
- const st=sel.anchorOffset-m[1].length,r=document.createRange();r.setStart(n,st);r.setEnd(n,sel.anchorOffset);const x=document.createElement('a');x.href=normURL(m[1]);x.target='_blank';x.rel='noopener';r.surroundContents(x);
+ const sel=getSelection();if(!sel||!sel.isCollapsed)return;const n=sel.anchorNode;if(!n||n.nodeType!==3||n.parentElement.closest('a'))return;const pre=n.textContent.slice(0,sel.anchorOffset),m=pre.match(/(https?:\/\/\S+|www\.\S+\.\S+|[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}\/\S*)$/i);if(!m)return;
+ const st=sel.anchorOffset-m[1].length,r=document.createRange();r.setStart(n,st);r.setEnd(n,sel.anchorOffset);const x=document.createElement('a');x.href=normURL(m[1]);x.target='_blank';x.rel='noopener';r.surroundContents(x);chipA(x);
  const r2=document.createRange();r2.setStartAfter(x);r2.collapse(true);sel.removeAllRanges();sel.addRange(r2);ed.dispatchEvent(new Event('input',{bubbles:true}))},true);
 window.addEventListener('scroll',lpClose,{passive:true});
 
@@ -2214,5 +2221,18 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  popMenu(b,SPN.map(n=>[n,`data-spcs="${id}" data-c="${n}"`]))},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-spcs]');if(!b)return;e.stopPropagation();$$('.pop').forEach(x=>x.remove());updateDoc(dc('exps',b.dataset.spcs),{cat:b.dataset.c});toast(`${b.dataset.c}(으)로 바꿨어요`)},true);
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('a.ropen'))e.stopPropagation()},true);
+
+/* 링크 칩: 사이트 아이콘 + 짧은 주소 */
+function prettyURL(u){try{const x=new URL(u);let h=x.hostname.replace(/^www\./,''),p=x.pathname.replace(/\/$/,'');if(p&&p.length<=16)h+=p;else if(p)h+=p.slice(0,12)+'…';return h}catch(_){return u}}
+function favURL(u){try{return 'https://www.google.com/s2/favicons?sz=32&domain='+new URL(u).hostname}catch(_){return ''}}
+function chipA(a){if(!a||a.classList.contains('lk'))return;const h=a.getAttribute('href')||'',t=a.textContent.trim();if(!h)return;
+ const bare=x=>x.replace(/^https?:\/\//i,'').replace(/^www\./,'').replace(/\/$/,'');if(t&&bare(t)!==bare(h)&&!/^(https?:\/\/|www\.)/i.test(t))return;
+ a.classList.add('lk');a.style.setProperty('--fav',`url('${favURL(h)}')`);a.textContent=prettyURL(normURL(h));a.target='_blank';a.rel='noopener'}
+let chipQ=0;new MutationObserver(()=>{if(chipQ)return;chipQ=requestAnimationFrame(()=>{chipQ=0;document.querySelectorAll('.rt a[href]:not(.lk),.nt a[href]:not(.lk):not(.ilk),.pmt a[href]:not(.lk),.fbx a[href]:not(.lk)').forEach(a=>{if(a.closest('[contenteditable="true"]')&&document.activeElement&&document.activeElement.contains(a))return;chipA(a)});linkTexts()})}).observe(document.body,{childList:true,subtree:true});
+
+/* 예전에 그냥 글자로 적어 둔 주소도 링크로 */
+function linkTexts(){const act=document.activeElement;document.querySelectorAll('.rt,.pmt').forEach(root=>{if(act&&root.contains(act)&&root.isContentEditable)return;
+ const W=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('a,code')?NodeFilter.FILTER_REJECT:(URLRX().test(n.textContent)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT)});
+ const L=[];while(W.nextNode())L.push(W.currentNode);L.forEach(n=>{const sp=document.createElement('span');sp.innerHTML=linkify(n.textContent);const f=document.createDocumentFragment();while(sp.firstChild)f.appendChild(sp.firstChild);n.replaceWith(f)})})}
 
 </script></body></html>
