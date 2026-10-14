@@ -917,6 +917,28 @@ body.rzing{user-select:none;cursor:grabbing}
 @media(max-width:600px){.lfb{grid-template-columns:38px minmax(0,1fr) auto;gap:8px;padding:7px 6px}.lfb .fbd{font-size:10.5px}}
 .ct [data-lfball],.ct label.link{white-space:nowrap}
 @media(max-width:420px){.box>.ct>span{flex-wrap:wrap;justify-content:flex-end;row-gap:4px}}
+/* 일지 아래 버튼: 마우스 올리지 않아도 보이게 */
+.lday .lrow{opacity:.6!important}
+.lday:hover .lrow,.lday:focus-within .lrow{opacity:1!important}
+/* 월 보기: 오른쪽에 날짜 칸 + 밀린/날짜 없는 할 일 상자 */
+.dcol{display:flex;flex-direction:column;gap:18px;min-width:0}
+.cv-m .dside{position:static;max-height:none}
+.dcol .undbox{margin:0!important}
+.dcol .undbox .ct small{white-space:normal;text-align:right}
+.cv-m .dside{position:sticky;top:12px;max-height:calc(100vh - 24px)}
+@media(max-width:900px){.cv-m .dside{position:static;max-height:none}}
+/* 선택한 날: 잘리지 않게 전부 보이기 */
+@media(min-width:901px){
+ .mc.sel i{white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;overflow-wrap:break-word}
+ .mc.sel i u.mtm{display:inline!important}
+ .mc.sel>b small{white-space:normal}
+}
+.wc.sel .it .tt,.wc.big .it .tt{-webkit-line-clamp:unset!important;display:block!important;overflow:visible!important}
+/* 월 보기 오른쪽 칸 높이 조절 */
+.dcol{display:flex;flex-direction:column;min-width:0;position:sticky;top:12px;align-self:start}
+.cv-m .dside{position:static!important;height:var(--dsh,auto);max-height:none!important;overflow:auto}
+.dcol .rzh{margin:6px 0 0}
+@media(max-width:900px){.dcol{position:static}.cv-m .dside{height:auto}.dcol .rzh{display:none}}
 </style></head><body>
 <div id="login" hidden><div class="g"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
@@ -1150,28 +1172,29 @@ function homeBottom(){const t=T(),d=new Date();const LG=getLogs(U.sp),lg=LG[t];
  </div><div class="rzv" data-rzv="hgr" title="끌어서 너비 조절"></div><div class="col">${U.sp==='life'?spendCard():''}${refsCard()}
 
  </div></div>`}
+function undBox(){const L=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);const late=D.todos.filter(x=>inSp(x)&&!x.done&&x.date&&endOf(x)<T()&&!isEv(x));return `<section class="g box undbox" data-dk="">${late.length?`<h2 class="ct">밀린 할 일<small>${late.length} · 끌어서 날짜로 옮겨요</small></h2>${late.sort(ordT).map(x=>itemHTML(x,{late:1})).join('')}`:''}<h2 class="ct"${late.length?' style="margin-top:14px"':''}>날짜 없는 할 일<small>${L.length?L.length+' · ':''}달력으로 끌면 날짜가 정해져요</small></h2>${L.sort(ordT).map(x=>itemHTML(x)).join('')}<input id="udi" class="sp-in" placeholder="＋ 날짜 없이 적기 · #프로젝트 · Enter" autocomplete="off"></section>`}
 function home(){const d=new Date();if(!['3','7','w2','m'].includes(U.cv))U.cv='7';if(!U.anc)U.anc=T();
  return `<div class="hhead"><h1>${d.getMonth()+1}월 ${d.getDate()}일<small>${DOW[d.getDay()]}요일</small></h1></div>
  ${calHead()}
- ${U.cv==='m'?`<div class="cg cv-m"><div class="cmain">${calGrid()}</div><div class="rzv" data-rzv="cgr" title="끌어서 너비 조절"></div><section class="g box dside">${dayPanel(U.calSel)}</section></div>`:`<div class="cfull">${calGrid()}</div>${(()=>{const L=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);const late=D.todos.filter(x=>inSp(x)&&!x.done&&x.date&&endOf(x)<T()&&!isEv(x));return `<section class="g box undbox" data-dk="">${late.length?`<h2 class="ct">밀린 할 일<small>${late.length} · 끌어서 날짜로 옮겨요</small></h2>${late.sort(ordT).map(x=>itemHTML(x,{late:1})).join('')}`:''}<h2 class="ct"${late.length?' style="margin-top:14px"':''}>날짜 없는 할 일<small>${L.length?L.length+' · ':''}달력으로 끌면 날짜가 정해져요</small></h2>${L.sort(ordT).map(x=>itemHTML(x)).join('')}<input id="udi" class="sp-in" placeholder="＋ 날짜 없이 적기 · #프로젝트 · Enter" autocomplete="off"></section>`})()}`}
+ ${U.cv==='m'?`<div class="cg cv-m"><div class="cmain">${calGrid()}</div><div class="rzv" data-rzv="cgr" title="끌어서 너비 조절"></div><div class="dcol"><section class="g box dside">${dayPanel(U.calSel)}</section><div class="rzh" data-rz="dsh" title="끌어서 높이 조절 · 두 번 누르면 원래대로"></div></div></div>${undBox()}`:`<div class="cfull">${calGrid()}</div>${undBox()}`}
  ${homeBottom()}`}
 const wkStart=k=>add(k,-P(k).getDay());
 function calStart(){return U.cv==='7'||U.cv==='3'?U.anc:wkStart(U.anc)}
 function calTitle(){if(U.cv==='m'){const[y,m]=U.calCur.split('-').map(Number);return `${y}년 ${m}월`}const a=calStart(),b=add(a,U.cv==='w2'?13:U.cv==='3'?2:6);return `${md(a)} – ${md(b)}`}
 function calHead(){return `<div class="ch"><button class="ar" data-cm="-1" aria-label="이전">‹</button><h2 class="cht">${calTitle()}</h2><button class="ar" data-cm="1" aria-label="다음">›</button><button class="soft" data-cm="0">오늘</button>
  <div class="seg g cvs">${[['3','3일'],['7','7일'],['w2','2주'],['m','월']].map(([k,l])=>`<button data-cv="${k}" class="${U.cv===k?'on':''}">${l}</button>`).join('')}</div></div>`}
-function dayPanel(k,big){const late=k===T()?D.todos.filter(x=>inSp(x)&&!x.done&&x.date&&endOf(x)<k&&!isEv(x)):[];const L=[...late,...D.todos.filter(x=>inSp(x)&&onDay(x,k)).sort(ordT)],lg=getLogs(U.sp)[k],und=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);
+function dayPanel(k,big){const L=[...D.todos.filter(x=>inSp(x)&&onDay(x,k)).sort(ordT)],lg=getLogs(U.sp)[k],und=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);
  return `${big?'':`<h2 class="ct">${+k.slice(5,7)}월 ${+k.slice(8)}일 ${DOW[P(k).getDay()]}요일<small>${k===T()?'오늘':hol(k)}</small></h2>`}
   <div class="dlist" data-dk="${k}">${L.map(x=>itemHTML(x,{late:1})).join('')||'<div class="emp">비어 있어요 · 위 입력칸에 적으면 이날로 들어가요</div>'}</div>
   ${lg&&!isEmptyH(lg.html)&&k!==T()?`<div class="und"><h3>${LW(U.sp).t}</h3><div class="rt">${safeHTML(lg.html)}</div></div>`:''}
-  <div class="und" data-dk=""><h3>날짜 없는 할 일 ${und.length||''}</h3>${und.sort(ordT).map(x=>itemHTML(x)).join('')}<input id="udi" class="sp-in" placeholder="＋ 날짜 없이 적기 · Enter" autocomplete="off"></div>`}
+`}
 function calGrid(){if(U.cv!=='m'){const L=D.todos.filter(inSp),t=T(),a=calStart(),n=U.cv==='w2'?14:U.cv==='3'?3:7;
   const sk=U.calSel||t,nw=innerWidth<1300,sw=U.cv==='3'?'1.7fr':U.cv==='7'?(nw?'1.6fr':'2.4fr'):(nw?'1.5fr':'2fr'),cols=U.cv==='w2'?[0,1,2,3,4,5,6].map(i=>i===P(sk).getDay()?`minmax(0,${sw})`:'minmax(0,1fr)'):[...Array(n)].map((_,i)=>add(a,i)===sk?`minmax(0,${sw})`:'minmax(0,1fr)');
   return `<section class="g wkg rzw${U.cv==='7'?' w7':U.cv==='3'?' w3':''}" style="--gtc:${cols.join(' ')}">${U.cv==='7'||U.cv==='3'?'':[...DOW].map((w,i)=>`<div class="w${i===0?' su':''}">${w}</div>`).join('')}${[...Array(n)].map((_,i)=>{const k=add(a,i),it=L.filter(x=>onDay(x,k)).sort(ordT),h=hol(k);
    return `<div class="wc${k===t?' td':''}${k===U.calSel?' sel big':''}" data-dk="${k}" data-pick="${k}"><div class="wh"><b class="${P(k).getDay()===0||h?'r':''}">${+k.slice(8)}</b><span>${DOW[P(k).getDay()]}${k===t?' · 오늘':''}${h?' · '+h:''}</span>${U.sp==='life'&&expDay(k).length?`<em class="xs">${won(expDay(k).reduce((a,e)=>a+expAmt(e),0))}원</em>`:''}<button class="cadd" data-cadd2="${k}" aria-label="${md(k)}에 추가" title="이 날짜에 추가">＋</button></div>${it.map(x=>itemHTML(x)).join('')}${cellAdd===k?`<div class="cin"><input data-cin="${k}" placeholder="3시 회의 · #프로젝트" autocomplete="off"></div>`:''}</div>`}).join('')}<div class="rzh" data-rz="wch" title="끌어서 높이 조절 · 두 번 누르면 원래대로"></div></section>`}
  const[y,m]=U.calCur.split('-').map(Number),s=new Date(y,m-1,1).getDay(),nd=new Date(y,m,0).getDate(),rows=Math.ceil((s+nd)/7),t=T(),L=D.todos.filter(inSp);
  let cells='';for(let i=0;i<rows*7;i++){const k=ymd(new Date(y,m-1,1-s+i)),o=k.slice(0,7)!==U.calCur,it=L.filter(x=>onDay(x,k)).sort(ordT),h=hol(k);
-  const xs=U.sp==='life'?expDay(k).reduce((a,e)=>a+expAmt(e),0):0;cells+=`<div data-dk="${k}" data-pick="${k}" role="button" tabindex="0" class="mc${o?' o':''}${k===t?' td':''}${k===U.calSel?' sel':''}${P(k).getDay()===0?' sun':''}${h?' hd':''}"><b>${+k.slice(8)}${h?`<small>${h}</small>`:''}</b>${it.slice(0,3).map(x=>`<i class="${isEv(x)?'e':''}${x.done?' dn':''}${x.projectId&&PJ(x.projectId)?' p':''}" style="--pc:${pcol(PJ(x.projectId))}">${x.time?`<u class="mtm">${x.time} </u>`:''}${esc(x.title)}${(x.subs||[]).length?` ${x.subs.filter(z=>z.done).length}/${x.subs.length}`:''}</i>`).join('')}${it.length>3?`<span class="more">+${it.length-3}</span>`:''}${xs?`<span class="xs">${won(xs)}원</span>`:''}<span class="cadd" data-cadd2="${k}" role="button" aria-label="${md(k)}에 추가" title="이 날짜에 추가">＋</span>${cellAdd===k?`<span class="cin"><input data-cin="${k}" placeholder="3시 회의" autocomplete="off"></span>`:''}</div>`}
+  const xs=U.sp==='life'?expDay(k).reduce((a,e)=>a+expAmt(e),0):0;cells+=`<div data-dk="${k}" data-pick="${k}" role="button" tabindex="0" class="mc${o?' o':''}${k===t?' td':''}${k===U.calSel?' sel':''}${P(k).getDay()===0?' sun':''}${h?' hd':''}"><b>${+k.slice(8)}${h?`<small>${h}</small>`:''}</b>${(k===U.calSel?it:it.slice(0,3)).map(x=>`<i class="${isEv(x)?'e':''}${x.done?' dn':''}${x.projectId&&PJ(x.projectId)?' p':''}" style="--pc:${pcol(PJ(x.projectId))}">${x.time?`<u class="mtm">${x.time} </u>`:''}${esc(x.title)}${(x.subs||[]).length?` ${x.subs.filter(z=>z.done).length}/${x.subs.length}`:''}</i>`).join('')}${it.length>3&&k!==U.calSel?`<span class="more">+${it.length-3}</span>`:''}${xs?`<span class="xs">${won(xs)}원</span>`:''}<span class="cadd" data-cadd2="${k}" role="button" aria-label="${md(k)}에 추가" title="이 날짜에 추가">＋</span>${cellAdd===k?`<span class="cin"><input data-cin="${k}" placeholder="3시 회의" autocomplete="off"></span>`:''}</div>`}
  return `<section class="g mg rzw">${[...DOW].map(w=>`<div class="w">${w}</div>`).join('')}${cells}<div class="rzh" data-rz="mch" title="끌어서 달력 크기 조절 · 두 번 누르면 원래대로"></div></section>`}
 
 /* ================= 화면: 프로젝트 ================= */
@@ -1546,10 +1569,10 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if(t.closest('[data-tempty]')){const L=D.trash.slice();closeSheet();if(await ask(`휴지통의 ${L.length}개를 완전히 지울까요? 되살릴 수 없어요.`,'완전히 지우기')){L.forEach(x=>deleteDoc(dc('trash',x.key)));toast('휴지통을 비웠어요')}return}});
 
 /* ================= 크기 조절 ================= */
-const RZ={dch:[150,90,700],mch:[100,56,320],wch:[150,80,700],cgr:[340,240,640],hgr:[380,260,640]};
+const RZ={dch:[150,90,700],mch:[100,56,320],wch:[150,80,700],cgr:[340,240,640],hgr:[380,260,640],dsh:[0,160,1600]};
 function rzLoad(){Object.keys(RZ).forEach(k=>{const v=LS('rz_'+k);if(v)document.documentElement.style.setProperty('--'+k,v+'px')})}rzLoad();
 let rzD=null;
-document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('[data-rz],[data-rzv]');if(!h)return;e.preventDefault();const k=h.dataset.rz||h.dataset.rzv,cur=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--'+k))||RZ[k][0];
+document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('[data-rz],[data-rzv]');if(!h)return;e.preventDefault();const k=h.dataset.rz||h.dataset.rzv,cur=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--'+k))||(k==='dsh'?($('.dside')||{}).offsetHeight||400:RZ[k][0]);
  const rows=k==='mch'?($$('.mc').length/7||5):k==='wch'?($$('.wc').length>7?2:1):1;rzD={k,v0:cur,x0:e.clientX,y0:e.clientY,rows,vert:!!h.dataset.rzv};h.setPointerCapture(e.pointerId);document.body.classList.add('rzing')});
 document.addEventListener('pointermove',e=>{if(!rzD)return;const[_,mn,mx]=RZ[rzD.k];let v=rzD.vert?rzD.v0-(e.clientX-rzD.x0):rzD.v0+(e.clientY-rzD.y0)/rzD.rows;v=Math.max(mn,Math.min(mx,v));document.documentElement.style.setProperty('--'+rzD.k,v+'px');rzD.v=v;if(U.tab==='proj'&&U.pid)return});
 document.addEventListener('pointerup',()=>{if(!rzD)return;if(rzD.v)LSS('rz_'+rzD.k,Math.round(rzD.v));rzD=null;document.body.classList.remove('rzing')});
