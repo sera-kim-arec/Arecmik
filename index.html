@@ -1049,6 +1049,10 @@ button.evd:hover::before{box-shadow:0 0 0 3px rgba(55,53,47,.15)}
 .tl .ti.h span{background:rgba(55,53,47,.06);box-shadow:none;color:#5f5e5a}
 .tl .ti.h span::after{content:'현황';margin-left:6px;font-size:10px;font-weight:700;color:#9b9a97}
 .tl .ti.hp{opacity:.55}
+/* 음력 반복 */
+.es-lu{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 0 10px 0;font-size:12.5px;color:#8a8986}
+.es-lu label{display:inline-flex;align-items:center;gap:6px;color:#6b6a66}
+.es-lu input{width:70px;border:0;background:rgba(55,53,47,.06);border-radius:7px;padding:5px 8px;font:inherit;font-size:13px;color:#37352F}
 </style></head><body>
 <div id="login" hidden><div class="g"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
@@ -1198,8 +1202,9 @@ function nextRep(k,r,t={}){const d=P(k);r=r||'';
  else if(r==='w')d.setDate(d.getDate()+7);else if(r==='w2')d.setDate(d.getDate()+14);else if(r==='m')d.setMonth(d.getMonth()+1);else if(r==='y')d.setFullYear(d.getFullYear()+1);
  else if(r==='c'){const n=Math.max(1,+t.repN||1),u=t.repU||'d';if(u==='d')d.setDate(d.getDate()+n);else if(u==='m')d.setMonth(d.getMonth()+n);else if(u==='y')d.setFullYear(d.getFullYear()+n);
   else{const W=(t.repW&&t.repW.length?t.repW:[d.getDay()]).slice().sort();const cur=d.getDay(),nx=W.find(x=>x>cur);if(nx!==undefined)d.setDate(d.getDate()+(nx-cur));else d.setDate(d.getDate()+(7-cur)+7*(n-1)+W[0])}}
+ else if(r==='ly')return lunNext(k);
  else return'';return ymd(d)}
-const REPL={'':'안 함',d:'매일',wd:'평일마다',w:'매주',w2:'2주마다',m:'매월',y:'매년',c:'직접 설정'};
+const REPL={'':'안 함',d:'매일',wd:'평일마다',w:'매주',w2:'2주마다',m:'매월',y:'매년',ly:'매년 (음력)',c:'직접 설정'};
 let oneId='';
 function toggle(id){const t=D.todos.find(x=>x.id===id);if(!t)return;const v=!t.done;if(!t.rep){const prev={done:t.done,doneDate:t.doneDate||'',doneAt:t.doneAt||0};setTimeout(()=>UNDO.push({label:'',fn:()=>{upT(id,prev);render()}}),0)}
  if(v&&t.rep&&t.date){const nd=nextRep(t.date,t.rep,t),ne=t.end&&t.end>t.date?add(nd,diff(t.date,t.end)):'';const{id:_i,...rest}=t;addDoc(col('todos'),{...rest,date:nd,end:ne,done:false,doneDate:'',doneAt:0,note:'',subs:(t.subs||[]).map(x=>({...x,done:false})),created:Date.now()});upT(id,{done:true,doneDate:T(),doneAt:Date.now(),rep:''});toast(`다음 반복을 ${md(nd)}에 만들었어요`)}
@@ -1232,6 +1237,7 @@ function editTodo(id){const t=D.todos.find(x=>x.id===id);if(!t)return;
   <label><span>시간</span><div class="es-tm"><input id="e-h" type="time" value="${t.time||''}">${t.time?'<button type="button" class="link" data-etclr>지우기</button>':'<em>비우면 할 일, 넣으면 일정</em>'}</div></label>
   <label><span>끝나는 날</span><input id="e-e" type="date" value="${t.end||''}"></label>
   <label><span>반복</span><select id="e-r">${Object.entries(REPL).map(([k,l])=>`<option value="${k}"${(t.rep||'')===k?' selected':''}>${l}</option>`).join('')}</select></label>
+  <div class="es-lu" id="e-lu"${t.rep==='ly'?'':' hidden'}><span id="e-lut">${t.date&&lunar(t.date)?`음력 ${lunar(t.date)} 기준으로 매년 반복돼요`:'날짜를 정하면 그날의 음력으로 반복돼요'}</span><label>음력으로 날짜 찾기 <input id="e-lin" placeholder="예) 3.5" inputmode="decimal"></label></div>
   <div class="es-rc" id="e-rc"${t.rep==='c'?'':' hidden'}><input id="e-rn" type="number" min="1" max="99" value="${t.repN||1}"><select id="e-ru">${[['d','일마다'],['w','주마다'],['m','개월마다'],['y','년마다']].map(([k,l])=>`<option value="${k}"${(t.repU||'w')===k?' selected':''}>${l}</option>`).join('')}</select><span class="es-wd" id="e-rw"${(t.repU||'w')==='w'?'':' hidden'}>${[1,2,3,4,5,6,0].map(i=>`<button type="button" class="dq${(t.repW||[]).includes(i)||(!(t.repW||[]).length&&t.date&&P(t.date).getDay()===i)?' on':''}" data-rw="${i}">${DOW[i]}</button>`).join('')}</span></div>
   <label><span>프로젝트</span><select id="e-p"><option value="">없음</option>${ps.map(p=>`<option value="${p.id}"${p.id===t.projectId?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
   <label><span>장소</span><div class="es-tm"><input id="e-l" value="${esc(t.loc||'')}" placeholder="주소나 지도 링크">${t.loc?`<a class="es-go" href="${esc(locHref(t.loc))}" target="_blank" rel="noopener">지도 ↗</a>`:''}</div></label>
@@ -1697,7 +1703,7 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let 
 document.addEventListener('keydown',e=>{const t=e.target;if(!t.dataset||!t.dataset.sin)return;if(e.key==='Escape'){subAdd='';render();return}if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();const v=t.value.trim(),x=D.todos.find(y=>y.id===t.dataset.sin);if(!v||!x){subAdd='';render();return}upT(x.id,{subs:[...(x.subs||[]),{t:v,done:false}]});t.value='';render();setTimeout(()=>{const i=$(`[data-sin="${x.id}"]`);i&&i.focus()},20)});
 document.addEventListener('focusout',e=>{if(e.target.dataset&&e.target.dataset.sin)setTimeout(()=>{const a=document.activeElement;if(subAdd&&!(a&&a.dataset&&a.dataset.sin)){subAdd='';render()}},150)});
 
-document.addEventListener('change',e=>{if(e.target.id==='e-r'){const c=$('#e-rc');if(c)c.hidden=e.target.value!=='c'}if(e.target.id==='e-ru'){const w=$('#e-rw');if(w)w.hidden=e.target.value!=='w'}});
+document.addEventListener('change',e=>{if(e.target.id==='e-r'){const c=$('#e-rc');if(c)c.hidden=e.target.value!=='c';const l=$('#e-lu');if(l)l.hidden=e.target.value!=='ly'}if(e.target.id==='e-d'){const l=$('#e-lut');if(l)l.textContent=e.target.value&&lunar(e.target.value)?`음력 ${lunar(e.target.value)} 기준으로 매년 반복돼요`:'날짜를 정하면 그날의 음력으로 반복돼요'}if(e.target.id==='e-ru'){const w=$('#e-rw');if(w)w.hidden=e.target.value!=='w'}});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-rw]');if(b)b.classList.toggle('on')});
 
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pcolor]');if(!b)return;$$('.pop').forEach(x=>x.remove());const id=b.dataset.pcolor,p=PJ(id);
@@ -2132,5 +2138,12 @@ document.addEventListener('focusout',e=>{if(ieCur&&e.target===ieCur.el)setTimeou
 
 /* 타임라인 현황 항목: 누르면 현황 줄 펼치기 */
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-tlh]');if(!b)return;e.stopPropagation();rowOpen=b.dataset.tlh;render();flash(`[data-hrow="${b.dataset.tlh}"]`,'.hr')},true);
+
+/* 음력 반복 */
+function lunFind(m,d,from,days=400){for(let i=0;i<=days;i++){const k=add(from,i);if(lunar(k)===`${m}.${d}`)return k}return ''}
+function lunNext(k){const L=lunar(k);if(!L)return add(k,365);const[m,d]=L.replace('윤','').split('.');let r=lunFind(m,d,add(k,300),130);if(!r&&+d===30)r=lunFind(m,29,add(k,300),130);return r||add(k,365)}
+document.addEventListener('keydown',e=>{if(e.target.id!=='e-lin'||e.key!=='Enter'||e.isComposing)return;e.preventDefault();e.stopPropagation();
+ const m=e.target.value.match(/(\d{1,2})\D+(\d{1,2})/);if(!m){toast('음력 날짜를 3.5처럼 적어 주세요');return}const k=lunFind(+m[1],+m[2],T());if(!k){toast('그 음력 날짜를 찾지 못했어요');return}
+ const di=$('#e-d');di.value=k;di.dispatchEvent(new Event('change',{bubbles:true}));toast(`음력 ${+m[1]}월 ${+m[2]}일은 ${k.slice(0,4)}년 ${md(k)}이에요`)},true);
 
 </script></body></html>
