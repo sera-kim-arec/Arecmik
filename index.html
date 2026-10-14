@@ -999,7 +999,7 @@ function homeBottom(){const t=T(),d=new Date();const LG=getLogs(U.sp),lg=LG[t];
 function home(){const d=new Date();if(!['3','7','w2','m'].includes(U.cv))U.cv='7';if(!U.anc)U.anc=T();
  return `<div class="hhead"><h1>${d.getMonth()+1}월 ${d.getDate()}일<small>${DOW[d.getDay()]}요일</small></h1></div>
  ${calHead()}
- ${U.cv==='m'?`<div class="cg cv-m"><div class="cmain">${calGrid()}</div><div class="rzv" data-rzv="cgr" title="끌어서 너비 조절"></div><section class="g box dside">${dayPanel(U.calSel)}</section></div>`:`<div class="cfull">${calGrid()}</div>${(()=>{const L=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);const late=D.todos.filter(x=>inSp(x)&&!x.done&&x.date&&endOf(x)<T()&&!isEv(x));return (late.length||L.length)?`<section class="g box undbox" data-dk="">${late.length?`<h2 class="ct">밀린 할 일<small>${late.length} · 끌어서 날짜로 옮겨요</small></h2>${late.sort(ordT).map(x=>itemHTML(x,{late:1})).join('')}`:''}${L.length?`<h2 class="ct"${late.length?' style="margin-top:14px"':''}>날짜 없음<small>${L.length}</small></h2>${L.sort(ordT).map(x=>itemHTML(x)).join('')}`:''}</section>`:''})()}`}
+ ${U.cv==='m'?`<div class="cg cv-m"><div class="cmain">${calGrid()}</div><div class="rzv" data-rzv="cgr" title="끌어서 너비 조절"></div><section class="g box dside">${dayPanel(U.calSel)}</section></div>`:`<div class="cfull">${calGrid()}</div>${(()=>{const L=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);const late=D.todos.filter(x=>inSp(x)&&!x.done&&x.date&&endOf(x)<T()&&!isEv(x));return `<section class="g box undbox" data-dk="">${late.length?`<h2 class="ct">밀린 할 일<small>${late.length} · 끌어서 날짜로 옮겨요</small></h2>${late.sort(ordT).map(x=>itemHTML(x,{late:1})).join('')}`:''}<h2 class="ct"${late.length?' style="margin-top:14px"':''}>날짜 없는 할 일<small>${L.length?L.length+' · ':''}달력으로 끌면 날짜가 정해져요</small></h2>${L.sort(ordT).map(x=>itemHTML(x)).join('')}<input id="udi" class="sp-in" placeholder="＋ 날짜 없이 적기 · #프로젝트 · Enter" autocomplete="off"></section>`})()}`}
  ${homeBottom()}`}
 const wkStart=k=>add(k,-P(k).getDay());
 function calStart(){return U.cv==='7'||U.cv==='3'?U.anc:wkStart(U.anc)}
@@ -1010,7 +1010,7 @@ function dayPanel(k,big){const late=k===T()?D.todos.filter(x=>inSp(x)&&!x.done&&
  return `${big?'':`<h2 class="ct">${+k.slice(5,7)}월 ${+k.slice(8)}일 ${DOW[P(k).getDay()]}요일<small>${k===T()?'오늘':hol(k)}</small></h2>`}
   <div class="dlist" data-dk="${k}">${L.map(x=>itemHTML(x,{late:1})).join('')||'<div class="emp">비어 있어요 · 위 입력칸에 적으면 이날로 들어가요</div>'}</div>
   ${lg&&!isEmptyH(lg.html)&&k!==T()?`<div class="und"><h3>${LW(U.sp).t}</h3><div class="rt">${safeHTML(lg.html)}</div></div>`:''}
-  ${und.length?`<div class="und" data-dk=""><h3>날짜 없음 ${und.length}</h3>${und.sort(ordT).map(x=>itemHTML(x)).join('')}</div>`:''}`}
+  <div class="und" data-dk=""><h3>날짜 없는 할 일 ${und.length||''}</h3>${und.sort(ordT).map(x=>itemHTML(x)).join('')}<input id="udi" class="sp-in" placeholder="＋ 날짜 없이 적기 · Enter" autocomplete="off"></div>`}
 function calGrid(){if(U.cv!=='m'){const L=D.todos.filter(inSp),t=T(),a=calStart(),n=U.cv==='w2'?14:U.cv==='3'?3:7;
   const sk=U.calSel||t,sw=U.cv==='3'?'1.7fr':U.cv==='7'?'2.4fr':'2fr',cols=U.cv==='w2'?[0,1,2,3,4,5,6].map(i=>i===P(sk).getDay()?`minmax(0,${sw})`:'minmax(0,1fr)'):[...Array(n)].map((_,i)=>add(a,i)===sk?`minmax(0,${sw})`:'minmax(0,1fr)');
   return `<section class="g wkg rzw${U.cv==='7'?' w7':U.cv==='3'?' w3':''}" style="--gtc:${cols.join(' ')}">${U.cv==='7'||U.cv==='3'?'':[...DOW].map((w,i)=>`<div class="w${i===0?' su':''}">${w}</div>`).join('')}${[...Array(n)].map((_,i)=>{const k=add(a,i),it=L.filter(x=>onDay(x,k)).sort(ordT),h=hol(k);
@@ -1136,7 +1136,7 @@ let pendR=false,rq=0;
 function editing(){const a=document.activeElement;return a&&(a.isContentEditable||(a.tagName==='INPUT'&&a.closest('.tbl'))||a.classList.contains('dt')||a.classList.contains('pname'))}
 function renderQ(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(editing()||$('#scrim').classList.contains('on')){pendR=true;return}render()})}
 document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
-function render(){if(!ME)return;const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';
+function render(){if(!ME)return;const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq','udi','spi'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';
  $$('[data-sp]').forEach(b=>b.classList.toggle('on',b.dataset.sp===U.sp));$$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===U.tab));
  if(!U.ready){$('#main').innerHTML='<div class="loading">불러오는 중…</div>';return}
  if(U.tab==='cal')U.tab='home';let h;if(U.tab==='home')h=home();else if(U.tab==='proj'){const p=U.pid&&PJ(U.pid);h=p?projView(p):(U.pid='',projList())}else h=rec();
@@ -1534,5 +1534,9 @@ document.addEventListener('keydown',e=>{if(e.target.id!=='qpq'||e.isComposing)re
 document.addEventListener('input',e=>{if(e.target.id==='qpe')QA.pe=e.target.value});
 
 document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.qm;if(k)QA.m[k]=e.target.value});document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.qm;if(k)QA.m[k]=e.target.value});
+
+document.addEventListener('keydown',async e=>{const t=e.target;if(t.id!=='udi'||e.key!=='Enter'||e.isComposing)return;e.preventDefault();const v=t.value.trim();if(!v)return;const r=parseQ(v);let pid=r.pid;
+ if(r.newP&&await ask(`'${r.newP}' 프로젝트를 새로 만들까요?`,'만들기')){pid=await addProj(r.newP);D.projects.push({id:pid,name:r.newP,space:U.sp,status:'active'})}
+ addTodo({title:r.title||v,date:r.date||'',time:r.time,pid});t.value='';render();toast(r.date?`${md(r.date)}에 넣었어요`:'날짜 없는 할 일에 넣었어요');setTimeout(()=>{const i=$('#udi');i&&i.focus()},30)});
 
 </script></body></html>
