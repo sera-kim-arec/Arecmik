@@ -1433,7 +1433,7 @@ function openQA(cell){$$('.qa').forEach(x=>x.remove());const d=document.createEl
  <div class="qa-seg"><button data-qt="todo" class="${QA.type==='todo'?'on':''}"><i class="qi-ck"></i>할 일</button><button data-qt="ev" class="${QA.type==='ev'?'on':''}"><i class="qi-ev"></i>일정</button><button data-qt="pj" class="${QA.type==='pj'?'on':''}"><i class="qi-pj"></i>프로젝트</button></div>
  ${QA.type==='pj'?`<div class="qa-in"><input id="qat" placeholder="프로젝트 이름 (예: 12월 제주 여행)" autocomplete="off" value="${esc(ttl)}"></div>
  <div class="qa-pjd"><label><span>시작</span><input id="qps" type="date" value="${QA.k}"></label><label><span>끝 <em>비우면 상시</em></span><input id="qpe" type="date" value="${QA.pe||''}"></label></div>
- <div class="qa-b"><span class="qa-hint">만든 뒤 할 일은 할 일 탭에서 골라 넣어요</span><button class="ink" data-qasave>만들기</button></div>`:`
+ <div class="qa-b"><span class="qa-hint">만들면 할 일 추가 때 고를 수 있어요</span><button class="ink" data-qasave>만들기</button></div>`:`
  <div class="qa-in"><input id="qat" placeholder="${QA.type==='ev'?'일정 이름':'할 일'}" autocomplete="off" value="${esc(ttl)}">${QA.type==='ev'?`<input id="qah" type="time" value="${QA.time||'09:00'}">`:''}</div>
  ${(()=>{const sp=QA.pid&&PJ(QA.pid);const q=(QA.pq||'').trim().toLowerCase();const L=AP.filter(p=>!q||p.name.toLowerCase().includes(q));
  return `<div class="qa-dd"><button class="qa-ddb${QA.dd?' open':''}" data-qdd style="--pc:${sp?pcol(sp):'transparent'}"><i class="${sp?'':'none'}"></i><span>${sp?esc(sp.name):'프로젝트 없음'}</span><em>▾</em></button>
@@ -1449,19 +1449,19 @@ function openQA(cell){$$('.qa').forEach(x=>x.remove());const d=document.createEl
   <label class="qa-subs"><span>하위 할 일</span><textarea data-qm="subs" rows="2" placeholder="한 줄에 하나씩">${esc(QA.m.subs||'')}</textarea></label>
  </div>`:''}
  <button class="link qa-mt" data-qmore>${QA.more?'자세히 접기 ▴':'＋ 끝나는 날 · 반복 · 장소 · 링크 · 하위 할 일'}</button>
- <div class="qa-b"><span class="qa-hint">Enter로 추가 · 이어서 적을 수 있어요</span><button class="ink" data-qasave>추가</button></div>`}`;
+ <div class="qa-b"><span class="qa-hint">Enter로 추가</span><button class="ink" data-qasave>추가</button></div>`}`;
   const r=cell?cell.getBoundingClientRect():{left:innerWidth/2-160,bottom:200,top:200};const W=d.offsetWidth,H=d.offsetHeight;let x=Math.min(innerWidth-W-12,Math.max(12,r.left));let y=r.bottom+6;if(y+H>innerHeight-12)y=Math.max(12,r.top-H-6);d.style.left=x+'px';d.style.top=(y+scrollY)+'px';
   if(!QA.dd)setTimeout(()=>{const i=$('#qat');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},10)};
  d._draw=draw;draw()}
 function closeQA(){$$('.qa').forEach(x=>x.remove())}
 function saveQA(){const i=$('#qat');if(!i)return;const v=i.value.trim();if(!v){i.focus();return}
- if(QA.type==='pj'){const st=($('#qps')||{}).value||QA.k,en=($('#qpe')||{}).value||'';(async()=>{const id=await addProj(v);updateDoc(dc('projects',id),{start:st,end:en&&en>=st?en:''});if(!PJ(id))D.projects.push({id,name:v,space:U.sp,status:'active',start:st,end:en,created:Date.now(),color:PAL[D.projects.length%PAL.length]});QA.pid=id;QA.type=LS('a2qt')==='ev'?'ev':'todo';QA.pe='';i.value='';const d=$('.qa');if(d&&d._draw)d._draw();toast(`'${v}' 프로젝트를 만들었어요 · 이어서 할 일을 넣어 보세요`);render()})();return}const r=parseQ(v);const time=QA.type==='ev'?(($('#qah')||{}).value||r.time||'09:00'):r.time;
+ if(QA.type==='pj'){const st=($('#qps')||{}).value||QA.k,en=($('#qpe')||{}).value||'';(async()=>{const id=await addProj(v);updateDoc(dc('projects',id),{start:st,end:en&&en>=st?en:''});if(!PJ(id))D.projects.push({id,name:v,space:U.sp,status:'active',start:st,end:en,created:Date.now(),color:PAL[D.projects.length%PAL.length]});QA.pid=id;QA.type=LS('a2qt')==='ev'?'ev':'todo';QA.pe='';closeQA();toast(`'${v}' 프로젝트를 만들었어요`);render()})();return}const r=parseQ(v);const time=QA.type==='ev'?(($('#qah')||{}).value||r.time||'09:00'):r.time;
  const M=QA.m||{},ex={};const dd=r.date||QA.k;
  if(M.end&&M.end>dd)ex.end=M.end;if(M.rep)ex.rep=M.rep;if(M.loc)ex.loc=M.loc.trim();if(M.link)ex.link=fixUrl(M.link.trim());if(M.note)ex.note=M.note.trim();
  if(M.subs&&M.subs.trim())ex.subs=M.subs.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>({t:x,done:false}));
  addTodo({title:r.title||v,date:dd,time,pid:QA.pid||r.pid,ex});
  QA.m={};if(time&&QA.type!=='ev'){}
- if($('#qah'))QA.time=$('#qah').value;i.value='';render();const cell=document.querySelector(`[data-pick="${QA.k}"]`);const d=$('.qa');if(d&&d._draw){d._draw()}toast(`${md(r.date||QA.k)} ${time?time+' 일정':'할 일'} 추가${QA.pid?' · '+PJ(QA.pid).name:''}`)}
+ if($('#qah'))QA.time=$('#qah').value;closeQA();QA.more=false;render();const fl=document.querySelector('.cfull,.dside');toast(`${md(r.date||QA.k)} ${time?time+' 일정':'할 일'} 추가${QA.pid?' · '+PJ(QA.pid).name:''}`)}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const d=t.closest('.qa');let b;
  if(!d){if($('.qa')&&!t.closest('[data-cadd2]')&&!t.closest('#scrim'))closeQA();return}
  if(t.closest('[data-qax]')){closeQA();return}
