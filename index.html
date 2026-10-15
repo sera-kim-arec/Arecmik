@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.15.2"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<title>Arecmik</title><meta name="application-version" content="2026.10.15.3"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -966,8 +966,18 @@ body.rzing{user-select:none;cursor:grabbing}
 .pmr{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:7px 0;border-top:1px solid rgba(0,0,0,.06)}
 .pmt{font-size:14px;line-height:1.5;color:#37352F;outline:none;min-width:0;word-break:keep-all;overflow-wrap:break-word;border-radius:6px}
 .pmt:focus{background:rgba(255,255,255,.6)}
-.pmr .es-x{opacity:0}.pmr:hover .es-x{opacity:1}
-@media(hover:none){.pmr .es-x{opacity:.6}}
+.pm-actions{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.pm-actions button{min-height:36px;padding:6px;font-size:11px}
+.pm-actions .es-x{opacity:.65}
+.pm-pin.on{color:#4d6855;font-weight:700}
+.pm-core{display:grid;gap:8px;margin-top:10px}
+.pm-core-row{display:flex;gap:8px;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.55)}
+.pm-core-open{flex:1;min-width:0;max-height:160px;overflow:hidden;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;border:0;background:none;color:inherit;font:inherit;cursor:pointer}
+.pm-core-open small{display:block;font-size:11px;color:#888;margin-bottom:4px}
+.pm-history-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:20px}
+.pm-history-head .pmh{margin:0;flex:1}
+.pm-history-head button{min-height:36px}
+@media(max-width:600px){.pmr{grid-template-columns:42px minmax(0,1fr);gap:6px}.pm-actions{grid-column:2}.pmh{flex-wrap:wrap}.pm-core-row .link{min-height:40px;flex:none}}
 /* 하위의 하위 */
 .sub.lv1{margin-left:18px}.sub.lv2{margin-left:36px}
 .sub .ssb{border:0;background:none;color:#9b9a97;font-size:12px;line-height:1;padding:2px 4px;margin-left:auto;border-radius:5px;opacity:0;flex:none}
@@ -1197,7 +1207,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
  <div class="tr"><button class="ic" data-search aria-label="찾기" title="전체 찾기 (Ctrl+K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.15.2</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.15.3</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
@@ -1842,9 +1852,9 @@ function undoLast(){const u=UNDO.pop();if(!u){toast('되돌릴 게 없어요');r
 document.addEventListener('keydown',e=>{if(!(e.metaKey||e.ctrlKey)||e.key.toLowerCase()!=='z'||e.shiftKey)return;const a=document.activeElement;if(a&&(a.isContentEditable||/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;e.preventDefault();undoLast()});
 const LBL={fbk:'피드백',exps:'지출',todos:'할 일',projects:'프로젝트',notes:'글',refs:'자료',ents:'현황',moms:'기록'};
 async function trashDel(c,id,extra={}){const src=(D[c]||[]).find(x=>x.id===id);if(!src)return;const{id:_i,...data}=src;const key=c+'_'+id;
- const name=data.title||data.name||data.t||'';await setDoc(dc('trash',key),{c,id,data,at:Date.now(),name,...extra});
- if(Array.isArray(D[c]))D[c]=D[c].filter(x=>x.id!==id);deleteDoc(dc(c,id));render();
- undoPush(`'${(name||LBL[c]||'').slice(0,18)}' 휴지통으로 옮겼어요`,()=>restore(key))}
+ if(localEdits()[c+':'+id]||autoBusy.has(c+':'+id)){toast('편집 내용을 먼저 저장해 주세요. 저장 상태나 임시 편집을 확인한 뒤 다시 삭제할 수 있어요.');return false}
+ const name=data.title||data.name||data.t||'',bat=writeBatch(db);bat.set(dc('trash',key),{c,id,data,at:Date.now(),name,...extra});bat.delete(dc(c,id));
+ try{await bat.commit();if(Array.isArray(D[c]))D[c]=D[c].filter(x=>x.id!==id);render();undoPush(`'${(name||LBL[c]||'').slice(0,18)}' 휴지통으로 옮겼어요`,()=>restore(key));return true}catch(_){toast('삭제하지 못했어요. 원래 기록을 그대로 유지했어요.');return false}}
 async function restore(key){const t=D.trash.find(x=>x.key===key)||(await getDoc(dc('trash',key)).then(r=>r&&r.exists()?{key,...r.data()}:null));if(!t)return false;const bat=writeBatch(db),links=(t.links||[]).filter(l=>{const row=(D[l.c]||[]).find(x=>x.id===l.id);return row&&(!l.after||Object.entries(l.after).every(([k,v])=>row[k]===v))});bat.set(dc(t.c,t.id),t.data);links.forEach(l=>bat.update(dc(l.c,l.id),l.v));bat.delete(dc('trash',key));try{await W(bat.commit());if(!D[t.c].some(x=>x.id===t.id))D[t.c].push({id:t.id,...t.data});links.forEach(l=>{const row=D[l.c].find(x=>x.id===l.id);if(row)Object.assign(row,l.v)});D.trash=D.trash.filter(x=>x.key!==key);render();toast('되살렸어요');return true}catch(_){toast('되살리지 못했어요. 휴지통에 보관된 내용은 그대로 남아 있어요.');return false}}
 
 function trashSheet(){const L=D.trash.slice().sort((a,b)=>b.at-a.at);
@@ -2190,20 +2200,28 @@ document.addEventListener('keydown',e=>{const t=e.target;if(t.id!=='pq-t'||e.key
  const pid=t.dataset.pqp,r=parseQ(v,pid),ev=PQ.k==='e',time=r.time||(ev?PQ.h:''),date=r.date||PQ.d||(ev||time?T():'');if(r.error){toast(r.error);return}
  addTodo({title:r.title||v,pid,date,time,ex:ev?{kind:'event'}:{}});toast(`${ev||time?'일정':'할 일'} · ${date?md(date):'날짜 없음'}에 넣었어요`);t.value='';render();setTimeout(()=>{const j=$('#pq-t');j&&j.focus()},60)},true);
 
-/* 프로젝트 메모: 전체 + 날짜별 */
-const pmDay={};
-function pMemoHTML(p){const L=D.moms.filter(m=>m.pid===p.id).sort((a,b)=>(b.d||'')<(a.d||'')?-1:(b.d||'')>(a.d||'')?1:(b.at||0)-(a.at||0));const dd=pmDay[p.id]||T();
- return `<section class="g box pmemo"><h2 class="ct">메모</h2>
- <div class="pmh">전체</div><div class="rt" contenteditable="true" data-pmemo="${p.id}" data-ph="이 프로젝트 전체에서 기억할 것">${safeHTML(p.memoH||'')}</div>
- <div class="pmh">날짜별<small>타임라인에도 보여요</small></div>
- ${L.map(m=>`<div class="pmr"><label class="pc-dt" title="날짜 바꾸기">${md(m.d||T())}<input type="date" data-mdd="${m.id}" value="${m.d||T()}"></label><div class="pmt rt" contenteditable="true" data-mt="${m.id}">${m.h?safeHTML(m.h):linkify(m.t||'')}</div><button class="es-x" data-mdel="${m.id}" aria-label="지우기">×</button></div>`).join('')}
- <div class="pc-in"><label class="pc-day" title="날짜 고르기">${dd===T()?'오늘':md(dd)}<input type="date" data-pmd="${p.id}" value="${dd}"></label><input class="sp-in" data-pmi="${p.id}" placeholder="＋ 이날 있었던 일 · Enter" autocomplete="off"></div></section>`}
+/* 핵심은 원본 기록을 고정하고, 진행 기록은 날짜별로 보관한다. */
+const pmDay={},pmLimit={},pmExpanded={},pmSaving=new Set();
+const projectLineKey=id=>ME?'arecmik:project-line:'+ME.uid+':'+id:'';
+function projectLineDraft(id){try{return JSON.parse(LS(projectLineKey(id))||'null')||{}}catch(_){return {}}}
+function persistProjectLine(id){const input=$(`[data-pmi="${id}"]`);if(input)LSS(projectLineKey(id),JSON.stringify({text:input.value,day:pmDay[id]||T()}))}
+function pMemoHTML(p){const L=D.moms.filter(m=>m.pid===p.id).sort((a,b)=>(b.d||'')<(a.d||'')?-1:(b.d||'')>(a.d||'')?1:(b.at||0)-(a.at||0));const draft=projectLineDraft(p.id),dd=pmDay[p.id]||draft.day||T();pmDay[p.id]=dd;
+ const limit=pmLimit[p.id]||12,pins=L.filter(m=>m.pinned),expanded=pmExpanded[p.id]!==false;
+ return `<section class="g box pmemo"><h2 class="ct">프로젝트 메모</h2>
+ <div class="pmh">핵심 메모<small>자주 확인할 정보와 중요한 결정</small></div><div class="rt" contenteditable="true" data-pmemo="${p.id}" data-ph="예산, 담당자 연락처, 최종 결정 등 요약해 두세요">${safeHTML(p.memoH||'')}</div>
+ <div class="pm-core">${pins.map(m=>`<div class="pm-core-row"><button class="pm-core-open" data-archive-open="mom" data-id="${m.id}"><small>${md(m.d||T())} · 원본 기록 열기</small>${esc(m.t||txt(m.h)||'사진 기록')}</button><button class="link" data-mpin="${m.id}" aria-label="핵심 고정 해제">고정 해제</button></div>`).join('')}</div>
+ <div class="pm-history-head"><div class="pmh">진행 기록<small>${L.length}개 · 날짜별로 쌓여요</small></div><button class="link" data-pmfold="${p.id}" aria-expanded="${expanded}">${expanded?'접기':'펼치기'}</button></div>
+ <p class="archive-help">상담 내용이나 변경 이유를 남기고, 자주 볼 기록은 ‘핵심 고정’을 눌러 주세요.</p>
+ <div class="pc-in"><label class="pc-day" title="날짜 고르기">${dd===T()?'오늘':md(dd)}<input type="date" data-pmd="${p.id}" value="${dd}"></label><input class="sp-in" data-pmi="${p.id}" value="${esc(draft.text||'')}" placeholder="＋ 진행 기록 적고 Enter" autocomplete="off"></div>
+ ${expanded?L.slice(0,limit).map(m=>`<div class="pmr"><label class="pc-dt" title="날짜 바꾸기">${md(m.d||T())}<input type="date" data-mdd="${m.id}" value="${m.d||T()}"></label><div class="pmt rt" contenteditable="true" data-mt="${m.id}">${m.h?safeHTML(m.h):linkify(m.t||'')}</div><div class="pm-actions"><button class="link pm-pin${m.pinned?' on':''}" data-mpin="${m.id}" aria-pressed="${!!m.pinned}">${m.pinned?'고정 해제':'핵심 고정'}</button><button class="es-x" data-mdel="${m.id}" aria-label="진행 기록 삭제">×</button></div></div>`).join('')+(L.length>limit?`<button class="soft" data-pmmore="${p.id}">이전 기록 더 보기 · ${L.length-limit}개 남음</button>`:''):''}</section>`}
 document.addEventListener('change',e=>{const t=e.target;if(!t.dataset)return;
- if(t.dataset.pmd){const id=t.dataset.pmd,v=($(`[data-pmi="${id}"]`)||{}).value||'';pmDay[id]=t.value||T();render();const i=$(`[data-pmi="${id}"]`);if(i){i.value=v;i.focus()}return}
- if(t.dataset.mdd&&t.value){updateDoc(dc('moms',t.dataset.mdd),{d:t.value});toast(`${md(t.value)}로 옮겼어요`)}});
-document.addEventListener('keydown',e=>{const t=e.target;if(!t.dataset||!t.dataset.pmi||e.key!=='Enter'||e.isComposing)return;e.preventDefault();e.stopPropagation();const v=t.value.trim();if(!v)return;
- const p=PJ(t.dataset.pmi);if(!p)return;addDoc(col('moms'),{d:pmDay[p.id]||T(),at:Date.now(),t:v,imgs:[],space:SPo(p),pid:p.id});t.value='';toast(`${md(pmDay[p.id]||T())} 메모를 남겼어요`);setTimeout(()=>{const i=$(`[data-pmi="${p.id}"]`);i&&i.focus()},120)},true);
-document.addEventListener('input',e=>{const t=e.target.closest&&e.target.closest('[data-mt]');if(!t)return;const id=t.dataset.mt;deb('mt'+id,()=>{const h=outHTML(t);updateDoc(dc('moms',id),{t:txt(h),h:isEmptyH(h)?'':h})},600)});
+ if(t.dataset.pmd){const id=t.dataset.pmd,v=($(`[data-pmi="${id}"]`)||{}).value||'';pmDay[id]=t.value||T();persistProjectLine(id);render();const i=$(`[data-pmi="${id}"]`);if(i){i.value=v;i.focus()}return}
+ if(t.dataset.mdd&&t.value){if(!validDate(t.value)){toast('날짜를 확인해 주세요');return}queuePatch('moms',t.dataset.mdd,{d:t.value})}});
+document.addEventListener('keydown',async e=>{const t=e.target;if(!t.dataset||!t.dataset.pmi||e.key!=='Enter'||e.isComposing)return;e.preventDefault();e.stopPropagation();const savingKey=projectLineKey(t.dataset.pmi);if(t.dataset.saving||pmSaving.has(savingKey))return;const v=t.value.trim();if(!v)return;
+ const p=PJ(t.dataset.pmi);if(!p)return;const day=pmDay[p.id]||T(),key=savingKey,raw=t.value,pending=beginLineSave(t),data={d:day,at:Date.now(),updated:Date.now(),t:v,imgs:[],space:SPo(p),pid:p.id};pmSaving.add(key);try{const ref=await addDoc(col('moms'),data);if(!D.moms.some(m=>m.id===ref.id))D.moms.push({id:ref.id,...data});if(projectLineDraft(p.id).text===raw)localStorage.removeItem(key);pending.complete();pmExpanded[p.id]=true;render();toast(`${md(day)} 진행 기록을 남겼어요`)}catch(_){toast('저장하지 못했어요. 입력 내용을 유지했어요')}finally{pmSaving.delete(key);pending.release()}},true);
+document.addEventListener('input',e=>{if(e.target.dataset?.pmi)persistProjectLine(e.target.dataset.pmi)});
+document.addEventListener('input',e=>{const t=e.target.closest&&e.target.closest('[data-mt]');if(!t)return;const h=outHTML(t);queuePatch('moms',t.dataset.mt,{t:txt(h),h:isEmptyH(h)?'':h})});
+document.addEventListener('click',async e=>{const b=e.target.closest?.('[data-mpin],[data-pmfold],[data-pmmore]');if(!b)return;if(b.dataset.pmfold){const id=b.dataset.pmfold;pmExpanded[id]=pmExpanded[id]===false;render();return}if(b.dataset.pmmore){const id=b.dataset.pmmore;pmLimit[id]=(pmLimit[id]||12)+12;render();return}if(b.disabled)return;const m=D.moms.find(m=>m.id===b.dataset.mpin);if(!m||!m.pid)return;const pinned=!m.pinned;b.disabled=true;try{await updateDoc(dc('moms',m.id),{pinned});m.pinned=pinned;render();toast(pinned?'핵심 메모에 고정했어요':'고정을 해제했어요. 진행 기록에는 남아 있어요.')}catch(_){toast('고정을 변경하지 못했어요. 다시 시도해 주세요.')}finally{b.disabled=false}});
 document.addEventListener('input',e=>{if(e.target.id==='e-n'){const a=e.target;a.style.height='auto';a.style.height=a.scrollHeight+'px'}});
 
 /* 하위의 하위 */
@@ -2489,7 +2507,7 @@ function queueAutoSave(data){if(!ME)return;const edits=localEdits(),old=edits[da
 function queuePatch(c,id,patch){const current=c==='logs'?D.logs[id]:(D[c]||[]).find(x=>x.id===id);queueAutoSave({key:c+':'+id,c,id,patch:{...patch,updated:Date.now()},space:c==='logs'?U.sp:current?recordSpace(current,c==='exps'?'expense':'doc'):U.sp,label:patch.title||current?.title||current?.name||'편집한 기록'});if(current)Object.assign(current,patch)}
 async function runAutoSave(key){clearTimeout(autoTimers.get(key));const data=autoPending.get(key);if(!data||autoBusy.has(key)||!ME||data.uid!==ME.uid)return;autoBusy.add(key);updateSaveStatus();try{if(data.day)await writeDay(data.space,data.day,data.html,data.uid);else if(data.c==='logs')await setDoc(dc(data.c,data.id),data.patch,{merge:true});else await updateDoc(dc(data.c,data.id),data.patch);const edits=localEdits(data.uid);if(edits[key]?.version===data.version){delete edits[key];storeEdits(edits,data.uid)}lastSaveComplete=true}catch(_){lastSaveComplete=false}finally{autoBusy.delete(key);if(autoPending.get(key)?.version===data.version)autoPending.delete(key);else if(autoPending.has(key))runAutoSave(key);updateSaveStatus()}}
 function flushAutoSaves(){for(const key of autoPending.keys())runAutoSave(key)}
-function showLocalRecovery(){const edits=Object.values(localEdits());openSheet(`<h3>이 기기에 남아 있는 편집</h3><p class="archive-help">저장이 끝나기 전에 닫았거나 전송에 실패한 내용이에요. 복구본을 새 글로 보관하면 원래 기록을 덮어쓰지 않아요.</p>${edits.map(d=>`<section class="recovery-item"><b>${esc(d.label||d.day||'편집한 기록')} · ${d.space==='life'?'LIFE':'WORK'}</b><div class="rt view recovery-preview">${safeHTML(d.html||d.patch?.html||d.patch?.memoH||t2h(d.patch?.title||d.patch?.name||''))}</div><button class="soft" data-recover-edit="${esc(d.key)}">복구본을 새 글로 보관</button></section>`).join('')||'<div class="emp">남아 있는 편집이 없어요.</div>'}<div class="bt"><button class="soft" data-sx="0">닫기</button></div>`)}
+function showLocalRecovery(){const edits=Object.values(localEdits());openSheet(`<h3>이 기기에 남아 있는 편집</h3><p class="archive-help">저장이 끝나기 전에 닫았거나 전송에 실패한 내용이에요. 복구본을 새 글로 보관하면 원래 기록을 덮어쓰지 않아요.</p>${edits.map(d=>`<section class="recovery-item"><b>${esc(d.label||d.day||'편집한 기록')} · ${d.space==='life'?'LIFE':'WORK'}</b><div class="rt view recovery-preview">${safeHTML(d.html||d.patch?.html||d.patch?.memoH||d.patch?.h||t2h(d.patch?.t||d.patch?.title||d.patch?.name||d.patch?.d||''))}</div><button class="soft" data-recover-edit="${esc(d.key)}">복구본을 새 글로 보관</button></section>`).join('')||'<div class="emp">남아 있는 편집이 없어요.</div>'}<div class="bt"><button class="soft" data-sx="0">닫기</button></div>`)}
 function captureLineInputs(){if(!renderedInputContext)return;const values={};$$('#main .sp-in,#main #qi').forEach((el,i)=>{values[lineInputKey(el,i)]=el.value});lineInputs.set(renderedInputContext,values)}
 const lineInputs=new Map();let renderedInputContext='';
 function lineInputKey(el,i){return el.id||JSON.stringify(Object.entries(el.dataset).filter(([key])=>key!=='saving').sort())||String(i)}
@@ -2505,7 +2523,7 @@ window.addEventListener('pagehide',()=>{persistRecordDraft();flushAutoSaves()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){persistRecordDraft();flushAutoSaves()}});
 document.addEventListener('input',e=>{if(e.target.closest?.('#record-body'))persistRecordDraft()});
 document.addEventListener('change',e=>{if(e.target.matches('#record-day,#record-project'))persistRecordDraft()});
-document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)return;if(t.closest('[data-local-recovery]')){showLocalRecovery();return}const b=t.closest('[data-recover-edit]');if(!b||b.disabled)return;const d=localEdits()[b.dataset.recoverEdit];if(!d)return;b.disabled=true;try{const now=Date.now(),value={title:'복구 · '+(d.label||d.day||'기록'),html:d.html||d.patch?.html||d.patch?.memoH||t2h(d.patch?.title||d.patch?.name||''),space:d.space||'work',pid:'',fid:'',created:now,updated:now};const ref=await addDoc(col('notes'),value);if(!D.notes.some(n=>n.id===ref.id))D.notes.push({id:ref.id,...value});const edits=localEdits();if(edits[d.key]?.version===d.version){delete edits[d.key];storeEdits(edits)}closeSheet();U.sp=value.space;go('rec',{rt:'doc',doc:ref.id,q:''});updateSaveStatus();toast('임시 편집을 새 글로 보관했어요')}catch(_){toast('복구하지 못했어요. 임시 편집은 이 기기에 남아 있어요')}finally{b.disabled=false}});
+document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)return;if(t.closest('[data-local-recovery]')){showLocalRecovery();return}const b=t.closest('[data-recover-edit]');if(!b||b.disabled)return;const d=localEdits()[b.dataset.recoverEdit];if(!d)return;b.disabled=true;try{const now=Date.now(),value={title:'복구 · '+(d.label||d.day||'기록'),html:d.html||d.patch?.html||d.patch?.memoH||d.patch?.h||t2h(d.patch?.t||d.patch?.title||d.patch?.name||d.patch?.d||''),space:d.space||'work',pid:'',fid:'',created:now,updated:now};const ref=await addDoc(col('notes'),value);if(!D.notes.some(n=>n.id===ref.id))D.notes.push({id:ref.id,...value});const edits=localEdits();if(edits[d.key]?.version===d.version){delete edits[d.key];storeEdits(edits)}closeSheet();U.sp=value.space;go('rec',{rt:'doc',doc:ref.id,q:''});updateSaveStatus();toast('임시 편집을 새 글로 보관했어요')}catch(_){toast('복구하지 못했어요. 임시 편집은 이 기기에 남아 있어요')}finally{b.disabled=false}});
 
 /* ================= 나의 기록: 공간별 보관함과 공통 탐색 ================= */
 const archiveState={work:{kind:'',month:'',pid:'',limit:40},life:{kind:'',month:'',pid:'',limit:40}};
