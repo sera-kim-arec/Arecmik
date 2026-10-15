@@ -1103,6 +1103,18 @@ a.lk:hover{background:rgba(55,53,47,.13)}
 .rt .tgc{padding-left:24px!important;margin-left:0;border-left:0}
 .rt .tgc.hid{display:none}
 .rt .tgl:not(.open)+.tgc:not(.hid){display:none}
+/* 비용 메모 */
+.xmt{border:0;background:none;color:#9b9a97;font-size:11px;font-weight:700;padding:1px 6px;margin-left:6px;border-radius:5px;cursor:pointer;vertical-align:1px}
+.xmt:hover,.xmt.on{background:rgba(55,53,47,.08);color:#37352F}
+.xmt.add{opacity:0}.pc-r:hover .xmt.add{opacity:1}
+@media(hover:none){.xmt.add{opacity:.55}}
+.xmemo{margin:-2px 0 8px 46px;padding:8px 12px;border-radius:8px;background:rgba(55,53,47,.045);font-size:12.5px;line-height:1.55;color:#55534e;white-space:pre-line;cursor:default}
+.xmemo.in{margin-left:66px}
+.hrp{grid-column:1/-1;margin:6px 0 8px;padding:10px 12px;border-radius:10px;background:rgba(55,53,47,.04)}
+.hrp-h{display:flex;justify-content:space-between;font-size:12px;color:#8a8986;font-weight:700;margin-bottom:4px}.hrp-h b{color:#37352F}
+.hrp-r{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:8px;align-items:baseline;font-size:13px;padding:3px 0}
+.hrp-r em{font-style:normal;font-size:11.5px;color:#9b9a97}.hrp-r small{display:block;font-size:11.5px;color:#9b9a97}
+#x-m{width:100%;resize:vertical}
 </style></head><body>
 <div id="login" hidden><div class="g"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
@@ -1417,7 +1429,7 @@ function tblHTML(p){const TB=p.tbl||{};if(!TB.on)return `<h2 class="ct">현황<s
     :f.t==='num'?`<input data-cell="${r.id}" data-k="${f.k}" inputmode="numeric" value="${x!==''&&num(x)?won(num(x)):''}">`
     :f.t==='date'?`<input type="date" data-cell="${r.id}" data-k="${f.k}" value="${String(x).slice(0,10)}">`
     :`<input data-cell="${r.id}" data-k="${f.k}" value="${esc(x)}"${f.t==='link'?' placeholder="https://"':''}>${f.t==='link'&&/^https?:\/\//.test(x)?`<a href="${esc(x)}" target="_blank" rel="noopener">열기</a>`:''}`;
-   return `<label><span>${esc(f.n)}</span>${inp}</label>`}).join('')}<button class="link" data-trdel="${r.id}" style="color:#9A4A42">이 줄 지우기</button></div>`:''}</div>`};
+   return `<label><span>${esc(f.n)}</span>${inp}</label>`}).join('')}${hrPays(p,r)}<button class="link" data-trdel="${r.id}" style="color:#9A4A42">이 줄 지우기</button></div>`:''}</div>`};
  const tot=NF.length?R.reduce((a,r)=>a+NF.reduce((x,f)=>x+num((r.v||{})[f.k]),0),0):0;
  return `<h2 class="ct">현황<span class="tch"><small>${R.length}${tot?` · ${won(tot)}원`:''}</small><button class="link" data-tcols="${p.id}">칸 · 단계 고치기</button></span></h2>${R.map(row).join('')||'<div class="emp">아직 없어요</div>'}
  <div class="hadd2"><input id="hri" data-hp="${p.id}" placeholder="＋ 이름 적고 Enter" autocomplete="off"></div>`}
@@ -2013,7 +2025,7 @@ const pExps=p=>D.exps.filter(e=>e.pid===p.id);
 const pExpSum=p=>pExps(p).reduce((a,e)=>a+expAmt(e),0);
 function pCostHTML(p){const M=pMods(p),L=pExps(p).sort((a,b)=>(b.d||'')<(a.d||'')?-1:(b.d||'')>(a.d||'')?1:(b.created||0)-(a.created||0)),sum=L.reduce((a,e)=>a+expAmt(e),0),B=M.budget,left=B-sum;
  const G={};L.forEach(e=>{const g=(e.c||'').trim();(G[g]=G[g]||[]).push(e)});const names=Object.keys(G).filter(Boolean).sort((a,b)=>G[b].reduce((x,e)=>x+expAmt(e),0)-G[a].reduce((x,e)=>x+expAmt(e),0)),grouped=names.length>0;
- const row=e=>{const td=e.tid&&D.todos.find(x=>x.id===e.tid);return `<div class="sp-r pc-r${grouped?' in':''}" draggable="true" data-xdrag="${e.id}"><label class="pc-dt" title="날짜 바꾸기">${md(e.d||T())}<input type="date" data-xd="${e.id}" value="${e.d||T()}"></label><span class="xe" data-xedit="${e.id}"><span class="ttx" data-ie="exps|${e.id}|t">${esc(e.t||'비용')}</span>${td&&td.title!==e.t?`<small>${esc(td.title)}</small>`:''}</span><b class="xe" data-xedit="${e.id}" data-ie="exps|${e.id}|a">${won(expAmt(e))}</b><button class="es-x" data-xdel="${e.id}" aria-label="지우기">×</button></div>`};
+ const row=e=>{const td=e.tid&&D.todos.find(x=>x.id===e.tid);return `<div class="sp-r pc-r${grouped?' in':''}" draggable="true" data-xdrag="${e.id}"><label class="pc-dt" title="날짜 바꾸기">${md(e.d||T())}<input type="date" data-xd="${e.id}" value="${e.d||T()}"></label><span class="xe" data-xedit="${e.id}"><span class="ttx" data-ie="exps|${e.id}|t">${esc(e.t||'비용')}</span>${e.memo?`<button class="xmt${pcOpen.has(e.id)?' on':''}" data-xmt="${e.id}" title="메모 보기">${pcOpen.has(e.id)?'▾':'▸'} 메모</button>`:`<button class="xmt add" data-xma="${e.id}" title="메모 달기">＋ 메모</button>`}${td&&td.title!==e.t?`<small>${esc(td.title)}</small>`:''}</span><b class="xe" data-xedit="${e.id}" data-ie="exps|${e.id}|a">${won(expAmt(e))}</b><button class="es-x" data-xdel="${e.id}" aria-label="지우기">×</button></div>${xMemoHTML(e,grouped)}`};
  const grp=g=>{const A=G[g]||[],tot=A.reduce((x,e)=>x+expAmt(e),0),fold=pcFold.has(p.id+'|'+g);return `<div class="pcg" data-pcgd="${p.id}" data-g="${esc(g)}"><button class="pcg-t" data-pcgf="${esc(p.id+'|'+g)}">${fold?'▸':'▾'}</button><b class="pcg-n"${g?` data-pcgr="${p.id}" data-g="${esc(g)}" title="이름 바꾸기"`:''}>${g?esc(g):'분류 없음'}</b><span>${A.length}건</span><b class="pcg-s">${won(tot)}</b></div>${fold?'':A.map(row).join('')}`};
  const sel=pcGrp[p.id]||'';
  return `<section class="g box pcost"><h2 class="ct">비용<button class="link" data-pbud="${p.id}">${B?`예산 ${won(B)}원`:'예산 정하기'}</button></h2>
@@ -2155,12 +2167,13 @@ document.addEventListener('dragend',()=>{if(xDrag){xDrag='';$$('.pcdrop,.draggin
 function xSheet(x){const p=x.pid?PJ(x.pid):null,names=p?[...new Set(pExps(p).map(e=>(e.c||'').trim()).filter(Boolean))]:[];
  openSheet(`<h3>${p?esc(p.name)+' · ':''}비용 고치기</h3><div class="f"><span>내용</span><input id="x-t" value="${esc(x.t||'')}"></div><div class="f"><span>금액</span><input id="x-a" inputmode="numeric" value="${won(expAmt(x))}"></div><div class="f"><span>날짜</span><input id="x-d" type="date" value="${x.d||T()}"></div>
  ${p?`<div class="f"><span>분류</span><input id="x-c" list="x-cl" value="${esc(x.c||'')}" placeholder="비우면 분류 없음"><datalist id="x-cl">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>`:''}
+ <div class="f"><span>메모</span><textarea id="x-m" rows="3" placeholder="포함 내역, 옵션, 결제수단, 영수증 링크…">${esc(x.memo||'')}</textarea></div>
  <div class="bt"><button class="link" data-xsdel="${x.id}">지우기</button><button class="soft" data-sx="0">닫기</button><button class="ink" data-xsave="${x.id}">저장</button></div>`)}
 document.addEventListener('input',e=>{if(e.target.id==='x-a'){const v=e.target.value.replace(/[^\d]/g,'');e.target.value=v?won(+v):''}});
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let b;
  if((b=t.closest('[data-xedit]'))&&!t.closest('[data-ie],button')){e.stopPropagation();const x=D.exps.find(q=>q.id===b.dataset.xedit);if(x)xSheet(x);return}
  if((b=t.closest('[data-xsave]'))){const x=D.exps.find(q=>q.id===b.dataset.xsave);if(!x)return;const a=+$('#x-a').value.replace(/[^\d]/g,'');if(!a){$('#x-a').focus();return}
-  const v={t:$('#x-t').value.trim()||'비용',a,d:$('#x-d').value||x.d||T()};if($('#x-c'))v.c=$('#x-c').value.trim();updateDoc(dc('exps',x.id),v);closeSheet();toast('고쳤어요');return}
+  const v={t:$('#x-t').value.trim()||'비용',a,d:$('#x-d').value||x.d||T(),memo:($('#x-m')||{value:''}).value.trim()};if(v.memo)pcOpen.add(x.id);if($('#x-c'))v.c=$('#x-c').value.trim();updateDoc(dc('exps',x.id),v);closeSheet();toast('고쳤어요');return}
  if((b=t.closest('[data-xsdel]'))){closeSheet();trashDel('exps',b.dataset.xsdel);return}
  if((b=t.closest('[data-sxt]'))){e.stopPropagation();subEd=b.dataset.sxt+':'+b.dataset.si;render();setTimeout(()=>{const i=$('[data-sed]');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},20);return}},true);
 function subSave(i0,keep){const x=D.todos.find(y=>y.id===i0.dataset.sed);subEd='';if(!x){render();return}const S=(x.subs||[]).map(z=>({...z})),i=+i0.dataset.si,v=i0.value.trim();
@@ -2289,5 +2302,14 @@ document.addEventListener('mousedown',e=>{const t=e.target.closest&&e.target.clo
 /* -> 를 → 로 (노션처럼) */
 document.addEventListener('input',e=>{const ed=e.target.closest&&e.target.closest('.rt[contenteditable="true"],.pmt');if(!ed||e.isComposing)return;const s=getSelection();if(!s||!s.isCollapsed)return;const n=s.anchorNode;if(!n||n.nodeType!==3)return;
  const o=s.anchorOffset,pre=n.textContent.slice(0,o);const M=[['->','→'],['<-','←'],['=>','⇒']];for(const[a,b]of M){if(pre.endsWith(a)){n.textContent=pre.slice(0,-a.length)+b+n.textContent.slice(o);const r=document.createRange();r.setStart(n,o-a.length+1);r.collapse(true);s.removeAllRanges();s.addRange(r);ed.dispatchEvent(new Event('input',{bubbles:true}));return}}});
+
+/* 비용 메모 */
+const pcOpen=new Set();
+function xMemoHTML(e,grouped){if(!e.memo||!pcOpen.has(e.id))return '';return `<div class="xmemo${grouped?' in':''}" data-xedit="${e.id}" title="두 번 눌러 고치기">${linkify(e.memo)}</div>`}
+function hrPays(p,r){const nm=(r.title||'').trim();if(!nm)return '';const L=D.exps.filter(e=>e.pid===p.id&&((e.c||'').trim()===nm||(e.t||'').includes(nm))).sort((a,b)=>(a.d||'')<(b.d||'')?-1:1);if(!L.length)return '';
+ const sum=L.reduce((a,e)=>a+expAmt(e),0);return `<div class="hrp"><div class="hrp-h"><span>낸 돈</span><b>${won(sum)}원</b></div>${L.map(e=>`<div class="hrp-r"><em>${md(e.d||T())}</em><span>${esc(e.t||'비용')}${e.memo?`<small>${esc(e.memo.split('\n')[0]).slice(0,60)}</small>`:''}</span><b>${won(expAmt(e))}</b></div>`).join('')}</div>`}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let b;
+ if((b=t.closest('[data-xmt]'))){e.stopPropagation();e.preventDefault();const id=b.dataset.xmt;pcOpen.has(id)?pcOpen.delete(id):pcOpen.add(id);render();return}
+ if((b=t.closest('[data-xma]'))){e.stopPropagation();e.preventDefault();const x=D.exps.find(q=>q.id===b.dataset.xma);if(x){xSheet(x);setTimeout(()=>{const m=$('#x-m');m&&m.focus()},60)}return}},true);
 
 </script></body></html>
