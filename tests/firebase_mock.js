@@ -3,11 +3,14 @@ const clone = value => JSON.parse(JSON.stringify(value));
 const store = window.__store;
 const listeners = new Map();
 const persist = () => sessionStorage.setItem('mock-db', JSON.stringify(store));
+// A Firestore document ID and a data field named id are independent.
+function documentData(row) {
+  const {id, __fieldId, ...data} = row;
+  if (Object.hasOwn(row, '__fieldId')) data.id = __fieldId;
+  return clone(data);
+}
 function snapshot(name) {
-  return {docs: (store[name] || []).map(row => ({id: row.id, data: () => {
-    const {id, ...data} = row;
-    return clone(data);
-  }}))};
+  return {docs: (store[name] || []).map(row => ({id: row.id, data: () => documentData(row)}))};
 }
 function emit(name) {
   queueMicrotask(() => (listeners.get(name) || []).forEach(fn => fn(snapshot(name))));
@@ -25,7 +28,9 @@ function write(ref, data, merge = false, notify = true) {
   checkWrite(ref);
   const rows = store[ref.name] ||= [];
   const index = rows.findIndex(row => row.id === ref.id);
-  const row = {id: ref.id, ...(merge && index >= 0 ? rows[index] : {}), ...clone(data)};
+  const fields = clone(data);
+  const row = {...(merge && index >= 0 ? rows[index] : {}), ...fields, id: ref.id};
+  if (Object.hasOwn(fields, 'id')) row.__fieldId = fields.id;
   if (index >= 0) rows[index] = row; else rows.push(row);
   (window.__writes ||= []).push({collection: ref.name, id: ref.id, data: clone(data)});
   persist();
@@ -65,7 +70,7 @@ export function onSnapshot(ref, callback) {
 }
 export async function getDoc(ref) {
   const row = (store[ref.name] || []).find(row => row.id === ref.id);
-  return {exists: () => !!row, data: () => clone(row || {})};
+  return {exists: () => !!row, data: () => row ? documentData(row) : undefined};
 }
 export async function getDocs(ref) {
   if (window.__failRead === ref.name)
@@ -77,10 +82,15 @@ export function writeBatch() {
   return {
     set: (ref, data) => actions.push({ref, data, merge: false}),
     update: (ref, data) => actions.push({ref, data, merge: true}),
+    delete: ref => actions.push({ref, remove: true}),
     commit: async () => {
       await delayWrite();
       actions.forEach(a => checkWrite(a.ref, a.merge));
-      actions.forEach(a => write(a.ref, a.data, a.merge, false));
+      actions.forEach(a => {
+        if (a.remove) store[a.ref.name] = (store[a.ref.name] || []).filter(row => row.id !== a.ref.id);
+        else write(a.ref, a.data, a.merge, false);
+      });
+      persist();
       new Set(actions.map(a => a.ref.name)).forEach(emit);
     },
   };
