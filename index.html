@@ -1682,7 +1682,7 @@ document.addEventListener('drop',e=>{if(!dragId)return;const z=e.target.closest&
  const prev={date:t.date,end:t.end||''};const tid=t.id;const v={date:k};if(t.end&&t.end>t.date&&k){v.end=add(k,diff(t.date,t.end))}else if(!k)v.end='';if(t.from)v.from='';upT(t.id,v);render();undoPush(k?`${md(k)}로 옮겼어요`:'날짜 없음으로 옮겼어요',()=>{upT(tid,prev);render()})});
 
 /* ================= 글 서식 (노션처럼) ================= */
-const BLK=[['글','',''],['큰 제목','h1','#'],['작은 제목','h2','##'],['목록','li','-'],['번호 목록','num','1.'],['체크','todo','[]'],['인용','qt','>'],['강조 상자','co','!'],['구분선','hr','---'],['토글','tgl','>>'],['링크','link',''],['사진','img','']];
+const BLK=[['글','',''],['큰 제목','h1','#'],['작은 제목','h2','##'],['목록','li','-'],['번호 목록','num','1.'],['체크','todo','[]'],['인용','qt','"'],['강조 상자','co','!'],['구분선','hr','---'],['토글','tgl','>'],['링크','link',''],['사진','img','']];
 const BCLS=['h1','h2','li','num','todo','qt','co','cite','src','tgl','tgc','open','hid'];
 function curBlk(ed){const s=getSelection();if(!s.rangeCount)return null;let n=s.anchorNode;if(!n||!ed.contains(n)||n===ed)return null;while(n&&n.parentNode!==ed)n=n.parentNode;if(!n)return null;
  if(n.nodeType===3||(n.nodeType===1&&/^(SPAN|B|I|U|A|STRONG|EM|BR)$/.test(n.tagName))){const off=s.anchorOffset,an=s.anchorNode;let st=n;while(st.previousSibling&&(st.previousSibling.nodeType===3||/^(SPAN|B|I|U|A|STRONG|EM)$/.test(st.previousSibling.tagName||'')))st=st.previousSibling;
@@ -1719,7 +1719,7 @@ document.addEventListener('keydown',e=>{const ed=e.target.closest&&e.target.clos
 document.addEventListener('input',e=>{const ed=e.target.closest&&e.target.closest('.rt[contenteditable]');if(!ed)return;const b=curBlk(ed);if(!b)return;const t=b.textContent;
  if(slash){const k=t.lastIndexOf('/');if(k<0){slashClose();return}slash.q=t.slice(k+1);if(/\s/.test(slash.q)){slashClose();return}slashDraw();return}
  if(/(^|\s)\/$/.test(t)){slashOpen(ed,b);return}
- const MD=[[/^#\s/,'h1'],[/^##\s/,'h2'],[/^[-*•]\s/,'li'],[/^1[.)]\s/,'num'],[/^\[\s?\]\s/,'todo'],[/^>>\s/,'tgl'],[/^>\s/,'qt'],[/^!\s/,'co']];
+ const MD=[[/^#\s/,'h1'],[/^##\s/,'h2'],[/^[-*•]\s/,'li'],[/^1[.)]\s/,'num'],[/^\[\s?\]\s/,'todo'],[/^>>?\s/,'tgl'],[/^["“]\s/,'qt'],[/^!\s/,'co']];
  if(!BCLS.some(c=>b.classList.contains(c)))for(const[re,c]of MD){if(re.test(t.replace(/ /g,' '))){b.textContent=t.replace(/ /g,' ').replace(re,'');setBlk(ed,b,c);return}}
  if(/^---$/.test(t)){b.textContent='';setBlk(ed,b,'hr')}});
 document.addEventListener('click',e=>{const tb=e.target.closest&&e.target.closest('.rt .todo');if(!tb)return;const r=tb.getBoundingClientRect();if(e.clientX-r.left<24){tb.classList.toggle('on');const ed=tb.closest('.rt');if(ed&&ed.isContentEditable)fire(ed);else{const host=ed&&ed.closest('[data-elog]');}}});
@@ -2285,5 +2285,9 @@ document.addEventListener('dragend',()=>{if(opD){opD.classList.remove('dragging'
 /* 토글 (접었다 펴기) */
 function tglSet(t,open){t.classList.toggle('open',open);let n=t.nextElementSibling;while(n&&n.classList.contains('tgc')){n.classList.toggle('hid',!open);n=n.nextElementSibling}}
 document.addEventListener('mousedown',e=>{const t=e.target.closest&&e.target.closest('.rt .tgl');if(!t)return;const r=t.getBoundingClientRect();if(e.clientX-r.left>22)return;e.preventDefault();e.stopPropagation();tglSet(t,!t.classList.contains('open'));const ed=t.closest('.rt[contenteditable="true"]');if(ed)fire(ed)},true);
+
+/* -> 를 → 로 (노션처럼) */
+document.addEventListener('input',e=>{const ed=e.target.closest&&e.target.closest('.rt[contenteditable="true"],.pmt');if(!ed||e.isComposing)return;const s=getSelection();if(!s||!s.isCollapsed)return;const n=s.anchorNode;if(!n||n.nodeType!==3)return;
+ const o=s.anchorOffset,pre=n.textContent.slice(0,o);const M=[['->','→'],['<-','←'],['=>','⇒']];for(const[a,b]of M){if(pre.endsWith(a)){n.textContent=pre.slice(0,-a.length)+b+n.textContent.slice(o);const r=document.createRange();r.setStart(n,o-a.length+1);r.collapse(true);s.removeAllRanges();s.addRange(r);ed.dispatchEvent(new Event('input',{bubbles:true}));return}}});
 
 </script></body></html>
