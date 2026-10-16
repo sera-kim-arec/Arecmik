@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.16.3"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<title>Arecmik</title><meta name="application-version" content="2026.10.16.4"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -1220,7 +1220,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
  <div class="tr"><button class="ic" data-search aria-label="찾기" title="전체 찾기 (Ctrl+K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-widget-install>안드로이드 월 달력 위젯</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.16.3</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-widget-install>안드로이드 월 달력 위젯</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.16.4</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
@@ -1229,7 +1229,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
 <div id="rt-indent-bar" hidden aria-label="메모 들여쓰기"><button type="button" data-rt-indent="out" title="내어쓰기 · Shift+Tab">⇤</button><button type="button" data-rt-indent="in" title="들여쓰기 · Tab">⇥</button></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithCredential,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,addDoc as _addDoc,setDoc as _setDoc,updateDoc as _updateDoc,deleteDoc as _deleteDoc,writeBatch,onSnapshot as _onSnapshot,getDoc as _getDoc,getDocs as _getDocs}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyASyW3vWV3s7cgwEO_MenOZzX3qhgb852U",authDomain:"arecmik-25699.firebaseapp.com",projectId:"arecmik-25699",storageBucket:"arecmik-25699.firebasestorage.app",messagingSenderId:"952722999275",appId:"1:952722999275:web:94b7c48055edd6e8d63bae"});
 const auth=getAuth(app),db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
@@ -1668,8 +1668,8 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if(!t.closest('#menu')&&!t.closest('[data-menu]'))$('#menu').classList.remove('on');
  if((b=t.closest('[data-menu]'))){const m=$('#menu');m.classList.toggle('on');if(m.classList.contains('on')){const r=b.getBoundingClientRect();m.style.top=(r.bottom+8+scrollY)+'px';m.style.left=Math.max(8,r.right-m.offsetWidth)+'px';m.style.right='auto'}return}
  if(t.closest('[data-old]')){location.href='old.html';return}
- if(t.closest('[data-logout]')){$('#menu').classList.remove('on');signOut(auth);return}
- if(t.closest('[data-widget-install]')){location.href='widget.html';return}
+ if(t.closest('[data-logout]')){$('#menu').classList.remove('on');if(nativeApp)nativeApp.logout();else signOut(auth);return}
+ if(t.closest('[data-widget-install]')){if(nativeApp)nativeApp.settings();else location.href='widget.html';return}
  if(t.closest('[data-backup]')){$('#menu').classList.remove('on');backup();return}
  if(t.closest('[data-wipe]')){$('#menu').classList.remove('on');wipe();return}
  if((b=t.closest('[data-sx]'))){const v=b.dataset.sx;closeSheet(v==='t'?(($('#atx')||{}).value||'').trim():v==='1');return}
@@ -1760,7 +1760,7 @@ async function backup(){
  if(Object.keys(localEdits()).length){showLocalRecovery();toast('저장되지 않은 편집을 먼저 확인해 주세요.');return}
  toast('백업 파일을 만드는 중…');const uid=ME.uid,out={app:'Arecmik',version:1,at:new Date().toISOString(),counts:{}};
  try{for(const c of COLS){const snap=await getDocs(collection(db,'users',uid,c));if(!snap||!Array.isArray(snap.docs))throw new Error('Incomplete backup');out[c]=snap.docs.map(d=>({id:d.id,...d.data()}));out.counts[c]=out[c].length}
- if(ME?.uid!==uid)return;out.complete=true;const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Arecmik-백업-${T()}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast(`전체 백업을 완료했어요 · 글 ${out.notes.length} · 지출 ${out.exps.length} · 사진 ${out.imgs.length}`)
+ if(ME?.uid!==uid)return;out.complete=true;if(nativeApp){nativeApp.backup(`Arecmik-백업-${T()}.json`,JSON.stringify(out));return}const blob=new Blob([JSON.stringify(out)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Arecmik-백업-${T()}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast(`전체 백업을 완료했어요 · 글 ${out.notes.length} · 지출 ${out.exps.length} · 사진 ${out.imgs.length}`)
  }catch(_){toast('백업에 실패했어요. 일부 데이터가 빠진 파일은 만들지 않았어요. 다시 시도해 주세요.')}
 }
 async function wipe(){if(!await ask('전체 데이터를 초기화할까요? 할 일, 프로젝트, 일지, 글, 자료, 가계부, 사진이 모두 지워지고 되돌릴 수 없어요. 먼저 ⚙ › 백업 받기를 해 두세요.','계속'))return;
@@ -1769,7 +1769,11 @@ async function wipe(){if(!await ask('전체 데이터를 초기화할까요? 할
  toast(`전체 데이터를 초기화했어요 (${n}개)`);go('home')}
 
 /* ================= 시작 ================= */
-$('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인하지 못했어요: '+e.message));
+const {setupAndroidApp}=await import('./android-app.js');
+const nativeApp=setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,signOut,loginButton:$('#gl'),notify:toast,onBack:()=>{
+ if($('.qa')){closeQA();return true}if($('#scrim').classList.contains('on')){closeSheet(false);return true}if($('#one').classList.contains('on')){oneDone(false);return true}if($('#lb').classList.contains('on')){$('#lb').classList.remove('on');return true}if($('#srch')?.classList.contains('on')){closeSearch();return true}if($('#menu').classList.contains('on')){$('#menu').classList.remove('on');return true}if(U.doc){cleanEmptyDoc();U.doc='';render();return true}persistRecordDraft();flushAutoSaves();return false;
+}});
+if(!nativeApp)$('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인하지 못했어요: '+e.message));
 onAuthStateChanged(auth,u=>{if(ME?.uid!==u?.uid){persistRecordDraft();flushAutoSaves();for(const timer of autoTimers.values())clearTimeout(timer);autoPending.clear();lineInputs.clear();renderedInputContext='';closeSheet(false)}unsubs.forEach(f=>f());unsubs=[];ME=u;window.ME=u;
  $('#login').hidden=!!u;$('#app').hidden=!u;if(!u)return;
  if(PREVIEW)$('#pvnote').hidden=false;

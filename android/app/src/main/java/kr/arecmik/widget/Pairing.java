@@ -11,10 +11,11 @@ import javax.crypto.spec.*;
 
 final class Pairing {
     static final String SITE="https://sera-kim-arec.github.io/Arecmik/";
-    static String start(Context c) throws Exception {
+    static String start(Context c) throws Exception {return start(c,false);}
+    static String start(Context c,boolean app) throws Exception {
         KeyPairGenerator gen=KeyPairGenerator.getInstance("EC");gen.initialize(new ECGenParameterSpec("secp256r1"));KeyPair pair=gen.generateKeyPair();
         byte[] nonce=new byte[24];new SecureRandom().nextBytes(nonce);long expires=System.currentTimeMillis()+10*60*1000;
-        JSONObject request=new JSONObject().put("v",1).put("nonce",SecureStore.b64(nonce)).put("expires",expires).put("publicKey",SecureStore.b64(pair.getPublic().getEncoded()));
+        JSONObject request=new JSONObject().put("v",1).put("nonce",SecureStore.b64(nonce)).put("expires",expires).put("publicKey",SecureStore.b64(pair.getPublic().getEncoded())).put("app",app);
         SecureStore.put(c,"pairing",new JSONObject(request.toString()).put("privateKey",SecureStore.b64(pair.getPrivate().getEncoded())));
         return SITE+"widget-connect.html#pair="+SecureStore.b64(request.toString().getBytes(StandardCharsets.UTF_8));
     }
@@ -28,6 +29,7 @@ final class Pairing {
         JSONObject account=new JSONObject(new String(clear,StandardCharsets.UTF_8));
         if(!BuildConfigData.PROJECT.equals(account.optString("projectId"))||!account.optString("uid").matches("[A-Za-z0-9_-]{1,128}")||account.optString("refreshToken").length()<40)throw new Exception("계정 연결 정보를 확인해 주세요");
         // Consume the one-time key before any network operation; captured callbacks cannot be replayed.
+        if(pending.optBoolean("app")&&account.optString("googleIdToken").isEmpty()&&account.optString("googleAccessToken").isEmpty())throw new Exception("앱 로그인 정보가 없어요. 다시 연결해 주세요");
         SecureStore.put(c,"pairing",null);return account;
     }
 }

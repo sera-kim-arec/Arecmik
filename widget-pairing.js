@@ -4,7 +4,7 @@ export function unb64(text){if(typeof text!=='string'||!/^[A-Za-z0-9_-]+$/.test(
 export function readRequest(fragment,now=Date.now()){
  if(!fragment.startsWith('#pair=')||fragment.length>1500)throw new Error('위젯 앱에서 ‘브라우저에서 계정 연결’을 눌러 시작해 주세요.');
  const request=JSON.parse(new TextDecoder().decode(unb64(fragment.slice(6))));
- if(request.v!==1||typeof request.nonce!=='string'||!/^[A-Za-z0-9_-]{32}$/.test(request.nonce)||!Number.isSafeInteger(request.expires)||request.expires<=now||request.expires>now+630000||typeof request.publicKey!=='string'||unb64(request.publicKey).length!==91)throw new Error('연결 주소가 만료되었거나 올바르지 않아요. 위젯 앱에서 다시 시작해 주세요.');
+ if(request.v!==1||(request.app!==undefined&&typeof request.app!=='boolean')||typeof request.nonce!=='string'||!/^[A-Za-z0-9_-]{32}$/.test(request.nonce)||!Number.isSafeInteger(request.expires)||request.expires<=now||request.expires>now+630000||typeof request.publicKey!=='string'||unb64(request.publicKey).length!==91)throw new Error('연결 주소가 만료되었거나 올바르지 않아요. 위젯 앱에서 다시 시작해 주세요.');
  return request;
 }
 export async function sealAccount(request,account){

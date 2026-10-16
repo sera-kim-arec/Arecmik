@@ -1,6 +1,6 @@
-# Arecmik 안드로이드 월 달력 위젯
+# Arecmik 안드로이드 앱 · 월 달력 위젯
 
-Android 8(API 26) 이상에서 월 달력을 보고, 날짜를 선택해 일정·할 일을 확인하고 완료 체크하는 개인 설치용 앱입니다. `../widget.html`의 설치 안내에서 APK를 받을 수 있습니다.
+Android 8(API 26) 이상에서 기존 웹앱을 앱 창으로 사용하고, 홈 화면의 월 달력에서 일정·할 일을 완료 체크하는 개인 설치용 앱입니다. v1.1.0(versionCode 2)은 기존 위젯 APK와 패키지·서명 키가 같아 삭제 없이 업데이트합니다. `../widget.html`의 설치 안내에서 APK를 받을 수 있습니다.
 
 ## 개발·검증
 
@@ -24,11 +24,19 @@ python3 scripts/sign-apk.py
 
 서명 키와 비밀번호는 기본적으로 **저장소 밖**의 `../arecmik-signing`에 만들며 `ARECMIK_SIGNING_DIR`로 바꿀 수 있습니다. 이 디렉터리는 비공개로 보관하고 백업해야 같은 앱을 업데이트할 수 있습니다. 저장소·웹 페이지·APK 배포 디렉터리에 복사하지 마세요. 서명된 APK와 SHA-256만 `../downloads/`에 배포합니다. 플레이스토어 계정이나 등록비는 필요 없습니다.
 
+## 앱 화면
+
+`AppActivity`는 기존 GitHub Pages 앱을 WebView 안에 표시합니다. 앱 위쪽의 ‘위젯 · 설정’에서 연결·위젯 추가·수동 동기화를 엽니다. 외부 링크는 브라우저로 보내며, 사진은 Android 문서 선택기, JSON 백업은 문서 저장 선택기를 사용합니다. 저장소 전체 접근 권한은 요청하지 않습니다. 뒤로 가기는 열린 입력창·검색부터 닫고, 마지막에는 화면을 보존한 채 앱을 백그라운드로 이동합니다. 웹 화면의 첫 로드에는 인터넷 연결이 필요합니다.
+
+날짜는 17sp, 목록 제목은 16sp, 보조 글씨는 13sp입니다. 각 날짜의 작은 점은 해당 WORK/LIFE에 일정이 있다는 표시이고 제목은 선택한 날의 목록에서 표시합니다. 권장 위젯 크기는 4×5 이상이며 280×480dp에서 기본 글꼴 배치와 320×540dp에서 글꼴 1.3배를 검사합니다.
+
 ## 계정 연결
 
-Google 로그인을 WebView에 넣지 않습니다. Android 앱이 일회용 P-256 키와 10분 기한의 난수를 만들고, 기존 GitHub Pages의 `widget-connect.html`을 기본 브라우저에서 엽니다. 사용자가 같은 Google 계정으로 로그인하고 명시적으로 연결을 누르면 Firebase 세션을 ECDH·SHA-256·AES-GCM으로 암호화하여 이 휴대폰 앱으로 전달합니다.
+Google 로그인을 WebView에 넣지 않습니다. Android 앱이 일회용 P-256 키와 10분 기한의 난수를 만들고, 기존 GitHub Pages의 `widget-connect.html`을 기본 브라우저에서 엽니다. 사용자가 같은 Google 계정으로 로그인하고 명시적으로 연결을 누르면 Firebase 세션을 ECDH·SHA-256·AES-GCM으로 암호화하여 이 휴대폰 앱으로 전달합니다. 앱 연결 모드에서는 버튼 클릭으로 `signInWithPopup`을 실행하여 Google OAuth 자격도 함께 암호화합니다. 네이티브는 Firebase refresh 응답의 UID를 검증한 뒤 OAuth 자격을 별도 암호화 레코드에 최대 10분간 보관합니다. 기존 1.0.0 위젯 전용 연결 흐름도 호환됩니다.
 
-연결 주소에는 공개 키와 난수만 있고, 응답 주소에는 암호문만 있습니다. Android는 세션 난수·기한·Firebase 프로젝트·서버에서 확인한 UID를 대조하고, 일회용 키를 소모합니다. 장기 연결 정보와 남아 있는 연결 키는 Android Keystore의 AES-GCM 키로 암호화합니다. 앱 백업을 비활성화했고, 평문 토큰을 주소·로그·웹 저장소·APK에 넣지 않습니다. Firebase 공개 클라이언트 설정은 인증 비밀키가 아닙니다.
+연결 주소에는 공개 키와 난수만 있고, 응답 주소에는 암호문만 있습니다. Android는 세션 난수·기한·Firebase 프로젝트·서버에서 확인한 UID를 대조하고, 일회용 키를 소모합니다. 장기 연결 정보와 남아 있는 연결 키는 Android Keystore의 AES-GCM 키로 암호화합니다. 앱 백업을 비활성화했고, 평문 토큰을 주소·로그·APK에 넣지 않습니다. 브라우저 연결 페이지는 토큰을 별도 웹 저장소에 기록하지 않습니다. 앱 내부 로그인은 Firebase SDK의 정상 인증 영속 저장소를 사용합니다. 앱은 정확한 GitHub Pages origin과 `/Arecmik/`, `/Arecmik/index.html`에만 Android `WebMessagePort`를 연결합니다. 파일·content URL 접근, 혼합 콘텐츠, 서드파티 쿠키, JavaScript Java 인터페이스는 사용하지 않습니다. iframe이 만든 채널은 거부합니다. 웹은 전달받은 Google OAuth 자격을 공식 Firebase `signInWithCredential`로 교환하고 예상 UID를 확인한 뒤 완료를 응답하며, 네이티브는 일회용 자격을 지웁니다. Firebase 내부 저장소 형식을 조작하거나 WebView에서 Google OAuth를 실행하지 않습니다. 로그아웃·기기 연결 해제는 앱과 위젯에 함께 적용합니다.
+
+Firebase 공개 클라이언트 설정은 인증 비밀키가 아닙니다.
 
 Native 앱은 기존 Firebase ID 토큰과 보안 규칙을 사용하는 HTTPS REST API로 사용자 자신의 `users/<uid>/todos`에만 접근합니다. 관리자 키, 공개 ICS 피드, 별도 서버·Cloud Functions·Firebase 요금제 변경은 사용하지 않습니다. 실제 Google 계정 로그인·보안 규칙·기기별 홈 화면과 절전 동작은 설치 후 확인해야 합니다.
 

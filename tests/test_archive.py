@@ -84,7 +84,7 @@ class ArchiveTests(unittest.TestCase):
                 name = Path(url.path).name
                 modules = {
                     "firebase-app.js": "export const initializeApp = () => ({});",
-                    "firebase-auth.js": "export const getAuth=()=>({}); export const GoogleAuthProvider=class {}; export const signInWithPopup=async()=>{}; export const signOut=async()=>{}; export const onAuthStateChanged=(auth,cb)=>setTimeout(()=>cb({uid:'ui-test'}),0);",
+                    "firebase-auth.js": "export const getAuth=()=>({}); export const GoogleAuthProvider=class {}; export const signInWithPopup=async()=>{}; export const signInWithCredential=async()=>{}; export const signOut=async()=>{}; export const onAuthStateChanged=(auth,cb)=>setTimeout(()=>cb({uid:'ui-test'}),0);",
                     "firebase-firestore.js": firestore,
                 }
                 self.assertIn(name, modules)

@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.net.Uri;
 import android.graphics.Color;
 import android.widget.RemoteViews;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import org.json.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -41,10 +45,14 @@ public final class CalendarWidget extends AppWidgetProvider {
         v.setOnClickPendingIntent(R.id.space_work,button(c,id,"work",null));v.setOnClickPendingIntent(R.id.space_life,button(c,id,"life",null));v.setTextColor(R.id.space_work,Color.parseColor(space.equals("work")?"#36533E":"#A0A29E"));v.setTextColor(R.id.space_life,Color.parseColor(space.equals("life")?"#36533E":"#A0A29E"));
         v.setOnClickPendingIntent(R.id.widget_refresh,button(c,id,"refresh",null));v.setOnClickPendingIntent(R.id.widget_settings,PendingIntent.getActivity(c,0,new Intent(c,MainActivity.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE));
         List<LocalDate> days=CalendarData.monthDays(month);for(int i=0;i<42;i++) {
-            LocalDate date=days.get(i);String key=date.toString();List<JSONObject> entries=CalendarData.forDay(tasks,key,space);StringBuilder text=new StringBuilder(String.valueOf(date.getDayOfMonth()));if(entries.size()>1)text.append(" · ").append(entries.size());
-            if(!entries.isEmpty())text.append('\n').append(entries.get(0).optBoolean("done")?"✓ ":"").append(entries.get(0).optString("title","일정"));
+            LocalDate date=days.get(i);String key=date.toString();List<JSONObject> entries=CalendarData.forDay(tasks,key,space);String label=String.valueOf(date.getDayOfMonth());
+            SpannableString text=new SpannableString(label+(entries.isEmpty()?"":"•"));
+            if(!entries.isEmpty()){
+                text.setSpan(new RelativeSizeSpan(0.5f),label.length(),text.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                text.setSpan(new ForegroundColorSpan(Color.parseColor("#526B59")),label.length(),text.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
 
-            int view=c.getResources().getIdentifier("day_"+i,"id",c.getPackageName());v.setTextViewText(view,text.toString());v.setContentDescription(view,key+" · "+entries.size()+"개");
+            int view=c.getResources().getIdentifier("day_"+i,"id",c.getPackageName());v.setTextViewText(view,text);v.setContentDescription(view,key+" · "+entries.size()+"개"+(entries.isEmpty()?"":" · "+entries.get(0).optString("title")));
             v.setTextColor(view,Color.parseColor(date.getMonthValue()!=month.getMonthValue()?"#A5A7A2":date.getDayOfWeek()==DayOfWeek.SUNDAY?"#A65A52":"#343A34"));v.setInt(view,"setBackgroundResource",key.equals(selected)?R.drawable.day_selected:date.equals(LocalDate.now())?R.drawable.day_today:R.drawable.day_plain);v.setOnClickPendingIntent(view,button(c,id,"day",key));
         }
         List<JSONObject> selectedTasks=CalendarData.forDay(tasks,selected,space);LocalDate chosen=LocalDate.parse(selected);v.setTextViewText(R.id.selected_day,chosen.getMonthValue()+"월 "+chosen.getDayOfMonth()+"일 · "+selectedTasks.size()+"개");

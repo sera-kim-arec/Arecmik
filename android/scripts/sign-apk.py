@@ -23,7 +23,7 @@ if not keystore.exists():
     keystore.chmod(0o600)
 source = repo / 'android/app/build/outputs/apk/release/app-release-unsigned.apk'
 aligned = source.parent / 'app-release-aligned.apk'
-output = repo / 'downloads/Arecmik-widget-1.0.0.apk'
+output = repo / 'downloads/Arecmik-1.1.0.apk'
 output.parent.mkdir(exist_ok=True)
 subprocess.run([str(tools/'zipalign'), '-f', '-p', '4', str(source), str(aligned)], check=True)
 subprocess.run([str(tools/'apksigner'), 'sign', '--ks', str(keystore), '--ks-key-alias', 'arecmik',
