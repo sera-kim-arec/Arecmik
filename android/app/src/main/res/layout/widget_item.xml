@@ -1,0 +1,7 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingTop="5dp" android:paddingBottom="5dp">
+    <TextView android:id="@+id/item_check" android:layout_width="42dp" android:layout_height="42dp" android:gravity="center" android:textSize="23sp" android:textColor="#526B59" android:contentDescription="완료 상태 바꾸기" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:id="@+id/item_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="13sp" android:textColor="#252A26" android:maxLines="2" android:ellipsize="end" />
+        <TextView android:id="@+id/item_meta" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="10sp" android:textColor="#747873" />
+    </LinearLayout>
+</LinearLayout>

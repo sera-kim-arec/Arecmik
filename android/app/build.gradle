@@ -1,0 +1,33 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'kr.arecmik.widget'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'kr.arecmik.widget'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+    }
+    buildTypes { release { minifyEnabled false } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            systemProperty 'robolectric.dependency.repo.url', 'https://repo.maven.apache.org/maven2'
+            if (System.getProperty('robolectric.dependency.dir')) {
+                systemProperty 'robolectric.dependency.dir', System.getProperty('robolectric.dependency.dir')
+                systemProperty 'robolectric.offline', 'true'
+            }
+            ['http.proxyHost','http.proxyPort','https.proxyHost','https.proxyPort','javax.net.ssl.trustStore','maven.repo.local'].each { name ->
+                if (System.getProperty(name)) systemProperty name, System.getProperty(name)
+            }
+        }
+    }
+}
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20240303'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+}
