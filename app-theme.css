@@ -1,16 +1,6 @@
-/* The same three palettes as the widget; saved independently for this browser. */
-:root,[data-app-theme="glass"]{
- color-scheme:light;
- --tx:#2F4035;--t2:#53695A;--mu:#778678;--faint:#A3AEA2;--ln:rgba(73,98,77,.13);
- --accent:#4E6E5C;--on-accent:#FFF;--ink:linear-gradient(150deg,#72927D,#4E6E5C);
- --app-bg:radial-gradient(ellipse at 6% 6%,#AEC8B6,transparent 54%),radial-gradient(ellipse at 96% 45%,#E0DCC4,transparent 50%),radial-gradient(ellipse at 40% 100%,#C8D7CD,transparent 56%),#E7EFE9;
- --card:linear-gradient(135deg,rgba(255,255,255,.69),rgba(255,255,255,.34));
- --card-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 12px 38px -23px rgba(44,72,51,.22);
- --blur:blur(22px) saturate(125%);--popover:rgba(248,252,247,.97);
- --surface:rgba(255,255,255,.35);--field:rgba(255,255,255,.55);--today:rgba(255,255,255,.74);--selection:rgba(218,235,222,.85);
- --control:rgba(255,255,255,.72);--control-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 2px 7px rgba(59,83,64,.06);
-}
-:root[data-app-theme="lemon"]{
+/* Opaque app palettes; saved independently from widget appearance. */
+:root{color-scheme:light;--on-accent:#FFF}
+:root,:root[data-app-theme="lemon"]{
  --tx:#3E4936;--t2:#637354;--mu:#7C886D;--faint:#A4AD96;--ln:rgba(106,119,77,.14);
  --accent:#60744C;--ink:linear-gradient(150deg,#7D8B58,#5D7149);
  --app-bg:radial-gradient(ellipse at 95% 1%,#F4EAB8,transparent 45%),#F8F5E8;
@@ -50,7 +40,6 @@ html[data-app-theme] .menu{max-height:calc(100dvh - 90px);overflow-y:auto;oversc
 .app-theme-swatch{position:relative;display:block;flex:none;width:64px;height:62px;border-radius:12px;padding:8px;border:1px solid rgba(0,0,0,.04)}
 .app-theme-swatch::before{content:'';display:block;width:23px;height:6px;border-radius:4px;background:var(--sample-ink);margin:1px 0 7px}
 .app-theme-swatch i{display:block;height:10px;border-radius:5px;background:var(--sample-card);margin-top:4px}
-.app-theme-swatch[data-sample="glass"]{background:linear-gradient(140deg,#ABC7B5,#E5E9D6);--sample-ink:#547460;--sample-card:#FFFFFFA8}
 .app-theme-swatch[data-sample="lemon"]{background:#F6F0D6;--sample-ink:#8A8555;--sample-card:#FFFDF7}
 .app-theme-swatch[data-sample="lemon"] i:last-child{background:#EEDC95}
 .app-theme-swatch[data-sample="mono"]{background:#EAEAE8;--sample-ink:#444;--sample-card:#FAFAF9}
@@ -59,7 +48,6 @@ html[data-app-theme] .menu{max-height:calc(100dvh - 90px);overflow-y:auto;oversc
 .app-theme-option[aria-checked="true"]::after{border:5px solid var(--accent);background:var(--on-accent)}
 .app-theme-footer{margin:16px 0 0;display:flex;justify-content:flex-end}
 .app-theme-menu-label{float:right;font-size:12px;font-weight:400;color:var(--mu)}
-@media(prefers-reduced-transparency:reduce){html[data-app-theme="glass"] .g{background:rgba(248,252,247,.96);backdrop-filter:none;-webkit-backdrop-filter:none}}
 html[data-app-theme] .ck{box-shadow:inset 0 0 0 1.5px var(--accent)!important}
 html[data-app-theme] :is(.dn .ck,.es-ck.on,.es-sr .ck.on){background:var(--accent)!important;box-shadow:none!important}
 html[data-app-theme] .wc.sel{background:var(--selection)!important;box-shadow:inset 0 0 0 1.5px var(--accent)!important}

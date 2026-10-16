@@ -17,10 +17,10 @@ class AppThemeTests(unittest.TestCase):
         self.page.locator('[data-app-theme-open]').click()
         expect(self.page.get_by_role('radiogroup', name='앱 테마')).to_be_visible()
 
-    def test_three_palettes_persist_through_reload_and_views_without_writes(self):
+    def test_two_palettes_persist_through_reload_and_views_without_writes(self):
         original = self.page.evaluate('JSON.stringify(window.__store)')
         backgrounds = []
-        for theme in ['lemon', 'mono', 'glass']:
+        for theme in ['lemon', 'mono']:
             with self.subTest(theme=theme):
                 self.open_themes()
                 self.page.locator('[data-app-theme-choice="'+theme+'"]').click()
@@ -36,7 +36,7 @@ class AppThemeTests(unittest.TestCase):
                 expect(self.page.locator('html')).to_have_attribute('data-app-theme', theme)
                 self.assertEqual(self.page.evaluate('localStorage.getItem("arecmik.app.theme")'), theme)
                 self.assertEqual(self.page.evaluate('JSON.stringify(window.__store)'), original)
-        self.assertEqual(len(set(backgrounds)), 3)
+        self.assertEqual(len(set(backgrounds)), 2)
         self.assertEqual(self.page.evaluate('window.__writes||[]'), [])
 
     def test_switching_theme_keeps_editor_element_caret_and_unsaved_content(self):
@@ -48,7 +48,7 @@ class AppThemeTests(unittest.TestCase):
           window.__editor=document.querySelector('#record-body');
           return {text:window.__editor.textContent,offset:getSelection().anchorOffset};
         }""")
-        self.page.evaluate("window.ArecmikTheme.apply('lemon')")
+        self.page.evaluate("window.ArecmikTheme.apply('mono')")
         self.assertTrue(self.page.evaluate("document.querySelector('#record-body')===window.__editor"))
         self.assertEqual(self.page.evaluate('getSelection().anchorOffset'), before['offset'])
         expect(editor).to_have_text(before['text'])
@@ -57,15 +57,20 @@ class AppThemeTests(unittest.TestCase):
 
     def test_mobile_keyboard_selection_and_invalid_saved_preference(self):
         self.page.set_viewport_size({'width': 390, 'height': 844})
-        self.page.evaluate("localStorage.setItem('arecmik.app.theme','unknown')")
-        self.page.reload()
-        expect(self.page.locator('html')).to_have_attribute('data-app-theme', 'glass')
-        self.open_themes()
-        self.page.locator('[data-app-theme-choice="glass"]').focus()
-        self.page.keyboard.press('ArrowDown')
         expect(self.page.locator('html')).to_have_attribute('data-app-theme', 'lemon')
-        self.page.keyboard.press('End')
+        for saved in ['glass', 'unknown']:
+            with self.subTest(saved=saved):
+                self.page.evaluate("value => localStorage.setItem('arecmik.app.theme',value)", saved)
+                self.page.reload()
+                expect(self.page.locator('html')).to_have_attribute('data-app-theme', 'lemon')
+                self.assertEqual(self.page.evaluate('localStorage.getItem("arecmik.app.theme")'), 'lemon')
+        self.open_themes()
+        expect(self.page.get_by_role('radio')).to_have_count(2)
+        self.page.locator('[data-app-theme-choice="lemon"]').focus()
+        self.page.keyboard.press('ArrowDown')
         expect(self.page.locator('html')).to_have_attribute('data-app-theme', 'mono')
+        self.page.keyboard.press('Home')
+        expect(self.page.locator('html')).to_have_attribute('data-app-theme', 'lemon')
         self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'), 390)
         expect(self.page.get_by_role('button', name='이렇게 쓸게요')).to_be_in_viewport()
 
