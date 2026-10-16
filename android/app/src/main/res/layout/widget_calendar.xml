@@ -1,21 +1,219 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="10dp" android:background="@drawable/widget_bg">
-<LinearLayout android:layout_width="match_parent" android:layout_height="44dp" android:orientation="horizontal" android:gravity="center_vertical">
-<TextView android:id="@+id/month_prev" android:layout_width="36dp" android:layout_height="match_parent" android:text="‹" android:textSize="27sp" android:gravity="center" android:textColor="#343A34" android:contentDescription="이전 달" />
-<TextView android:id="@+id/month_title" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:textSize="20sp" android:textStyle="bold" android:textColor="#343A34" android:contentDescription="이번 달로 이동" />
-<TextView android:id="@+id/month_next" android:layout_width="36dp" android:layout_height="match_parent" android:text="›" android:textSize="27sp" android:gravity="center" android:textColor="#343A34" android:contentDescription="다음 달" />
-<TextView android:id="@+id/widget_settings" android:layout_width="32dp" android:layout_height="match_parent" android:text="⚙" android:textSize="19sp" android:gravity="center" android:contentDescription="연결 및 설정" android:textColor="#747873" />
+<LinearLayout android:id="@+id/widget_root" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="12dp" android:background="@drawable/widget_bg">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingLeft="5dp">
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center_vertical">
+            <TextView android:id="@+id/month_year" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#929784" android:fontFamily="sans-serif-medium" android:maxLines="1"/>
+            <TextView android:id="@+id/month_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="26sp" android:fontFamily="sans-serif-medium" android:textColor="#3A4433" android:includeFontPadding="false" android:contentDescription="이번 달로 이동"/>
+        </LinearLayout>
+        <ImageView android:id="@+id/month_prev" style="@style/WidgetIcon" android:src="@drawable/ic_month_prev" android:contentDescription="이전 달"/>
+        <ImageView android:id="@+id/month_next" style="@style/WidgetIcon" android:src="@drawable/ic_month_next" android:contentDescription="다음 달"/>
+        <ImageView android:id="@+id/widget_settings" android:layout_width="42dp" android:layout_height="42dp" android:padding="0dp" android:clipToOutline="true" android:background="@drawable/widget_brand_circle" android:src="@drawable/lemon_brand" android:contentDescription="Arecmik 앱 열기"/>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/space_tabs" android:layout_width="match_parent" android:layout_height="38dp" android:layout_marginTop="6dp" android:layout_marginBottom="4dp" android:padding="3dp" android:orientation="horizontal" android:background="@drawable/widget_space_bg">
+        <TextView android:id="@+id/space_work" style="@style/WidgetSpace" android:text="WORK"/>
+        <TextView android:id="@+id/space_life" style="@style/WidgetSpace" android:text="LIFE"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="26dp" android:orientation="horizontal">
+        <TextView android:id="@+id/weekday_0" style="@style/WidgetWeekday" android:text="일" android:textColor="#B48271"/>
+        <TextView android:id="@+id/weekday_1" style="@style/WidgetWeekday" android:text="월"/>
+        <TextView android:id="@+id/weekday_2" style="@style/WidgetWeekday" android:text="화"/>
+        <TextView android:id="@+id/weekday_3" style="@style/WidgetWeekday" android:text="수"/>
+        <TextView android:id="@+id/weekday_4" style="@style/WidgetWeekday" android:text="목"/>
+        <TextView android:id="@+id/weekday_5" style="@style/WidgetWeekday" android:text="금"/>
+        <TextView android:id="@+id/weekday_6" style="@style/WidgetWeekday" android:text="토" android:textColor="#8C9BA2"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="4" android:orientation="vertical">
+        <LinearLayout android:id="@+id/week_0" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_0" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_0" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_1" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_1" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_2" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_2" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_3" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_3" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_4" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_4" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_5" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_5" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_6" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_6" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/week_1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_7" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_7" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_8" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_8" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_9" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_9" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_10" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_10" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_11" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_11" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_12" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_12" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_13" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_13" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/week_2" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_14" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_14" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_15" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_15" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_16" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_16" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_17" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_17" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_18" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_18" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_19" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_19" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_20" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_20" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/week_3" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_21" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_21" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_22" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_22" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_23" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_23" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_24" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_24" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_25" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_25" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_26" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_26" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_27" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_27" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/week_4" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_28" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_28" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_29" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_29" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_30" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_30" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_31" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_31" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_32" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_32" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_33" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_33" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_34" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_34" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout android:id="@+id/week_5" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_35" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_35" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_36" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_36" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_37" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_37" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_38" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_38" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_39" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_39" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_40" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_40" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+            <FrameLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent">
+                <TextView android:id="@+id/day_41" style="@style/WidgetDay"/>
+                <ImageView android:id="@+id/mark_41" android:layout_width="3dp" android:layout_height="3dp" android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="1dp" android:src="@drawable/event_dot" android:importantForAccessibility="no"/>
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <ImageView android:importantForAccessibility="no" android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="8dp" android:background="#EBEDE0"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingLeft="5dp" android:paddingRight="3dp">
+        <TextView android:id="@+id/selected_day" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center_vertical" android:textSize="15sp" android:fontFamily="sans-serif-medium" android:textColor="#4B5740"/>
+        <TextView android:id="@+id/selected_count" android:layout_width="wrap_content" android:layout_height="26dp" android:paddingLeft="9dp" android:paddingRight="9dp" android:gravity="center" android:textSize="12sp" android:textColor="#788767" android:background="@drawable/widget_count_bg"/>
+    </LinearLayout>
+    <FrameLayout android:id="@+id/agenda_panel" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="2" android:padding="5dp" android:background="@drawable/widget_agenda_bg">
+        <ListView android:id="@+id/day_list" android:layout_width="match_parent" android:layout_height="match_parent" android:divider="@android:color/transparent" android:dividerHeight="4dp" android:scrollbars="none"/>
+        <TextView android:id="@+id/day_empty" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="아직 일정이 없는 날이에요" android:textSize="14sp" android:textColor="#939C85"/>
+    </FrameLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="32dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingLeft="5dp">
+        <TextView android:id="@+id/sync_status" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center_vertical" android:maxLines="1" android:ellipsize="end" android:textSize="12sp" android:textColor="#9A9F8F"/>
+        <ImageView android:id="@+id/widget_refresh" style="@style/WidgetIcon" android:layout_height="32dp" android:src="@drawable/ic_widget_refresh" android:contentDescription="새로 동기화"/>
+    </LinearLayout>
 </LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="36dp" android:orientation="horizontal">
-<TextView android:id="@+id/space_work" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="WORK" android:gravity="center" android:textSize="14sp" />
-<TextView android:id="@+id/space_life" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="LIFE" android:gravity="center" android:textSize="14sp" />
-</LinearLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="26dp" android:orientation="horizontal"><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="일" android:gravity="center" android:textSize="13sp" android:textColor="#AB5D54" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="월" android:gravity="center" android:textSize="13sp" android:textColor="#747873" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="화" android:gravity="center" android:textSize="13sp" android:textColor="#747873" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="수" android:gravity="center" android:textSize="13sp" android:textColor="#747873" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="목" android:gravity="center" android:textSize="13sp" android:textColor="#747873" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="금" android:gravity="center" android:textSize="13sp" android:textColor="#747873" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:text="토" android:gravity="center" android:textSize="13sp" android:textColor="#747873" /></LinearLayout><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="3" android:orientation="vertical"><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal"><TextView android:id="@+id/day_0" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_1" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_2" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_3" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_4" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_5" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_6" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /></LinearLayout><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal"><TextView android:id="@+id/day_7" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_8" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_9" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_10" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_11" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_12" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_13" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /></LinearLayout><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal"><TextView android:id="@+id/day_14" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_15" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_16" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_17" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_18" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_19" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_20" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /></LinearLayout><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal"><TextView android:id="@+id/day_21" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_22" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_23" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_24" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_25" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_26" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_27" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /></LinearLayout><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal"><TextView android:id="@+id/day_28" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_29" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_30" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_31" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_32" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_33" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_34" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /></LinearLayout><LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal"><TextView android:id="@+id/day_35" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_36" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_37" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_38" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_39" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_40" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /><TextView android:id="@+id/day_41" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:padding="1dp" android:includeFontPadding="false" android:textSize="17sp" android:gravity="center" android:maxLines="1" android:ellipsize="end" android:textColor="#343A34" /></LinearLayout></LinearLayout>
-<TextView android:id="@+id/selected_day" android:layout_width="match_parent" android:layout_height="36dp" android:gravity="center_vertical" android:textSize="15sp" android:textStyle="bold" android:textColor="#343A34" />
-<FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="2">
-<ListView android:id="@+id/day_list" android:layout_width="match_parent" android:layout_height="match_parent" android:divider="@android:color/transparent" android:dividerHeight="0dp" />
-<TextView android:id="@+id/day_empty" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="날짜를 골라 일정을 확인하세요" android:textSize="15sp" android:textColor="#747873" />
-</FrameLayout>
-<LinearLayout android:layout_width="match_parent" android:layout_height="36dp" android:orientation="horizontal" android:gravity="center_vertical">
-<TextView android:maxLines="1" android:ellipsize="end" android:id="@+id/sync_status" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center_vertical" android:textSize="13sp" android:textColor="#747873" />
-<TextView android:id="@+id/widget_refresh" android:layout_width="40dp" android:layout_height="match_parent" android:text="↻" android:textSize="21sp" android:gravity="center" android:textColor="#526B59" android:contentDescription="새로 동기화" />
-</LinearLayout></LinearLayout>
