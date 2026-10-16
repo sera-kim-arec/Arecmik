@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.16.1"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<title>Arecmik</title><meta name="application-version" content="2026.10.16.2"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -731,6 +731,16 @@ body.rzing{user-select:none;cursor:grabbing}
 .qa-time{display:flex;align-items:center;gap:8px;margin:-2px 0 10px;font-size:12px;color:#858585;flex-wrap:wrap}
 .qa-time input{min-width:0;max-width:130px;border:0;border-radius:8px;background:rgba(55,53,47,.06);padding:8px;color:#37352F;font:inherit}
 .qa-time button{min-height:36px}
+.qa-dates{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:12px}
+.qa-dates label{display:grid;gap:5px;min-width:0;font-size:11.5px;color:#858585}
+.qa-dates input{width:100%;min-width:0;border:0;border-radius:8px;padding:8px 5px;background:rgba(55,53,47,.06);color:#37352F;font:inherit}
+.cal-range-help{font-size:11.5px;color:#858585;margin:0 4px 10px}.cal-range-help .mobile{display:none}
+.mc,.wc{-webkit-touch-callout:none}
+.mc.range-selected,.wc.range-selected{background:rgba(77,106,140,.15)!important;box-shadow:inset 0 0 0 1px rgba(77,106,140,.38)!important}
+.mc.range-edge,.wc.range-edge{box-shadow:inset 0 0 0 2px #4D6A8C!important}
+body.selecting-dates,body.selecting-dates *{user-select:none!important;-webkit-user-select:none!important;cursor:crosshair!important}
+.cal-range-status{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:89;max-width:calc(100vw - 24px);border-radius:14px;background:#37352F;color:white;padding:10px 16px;font-size:13px;pointer-events:none;white-space:nowrap}
+@media(pointer:coarse){.cal-range-help .desktop{display:none}.cal-range-help .mobile{display:inline}.cal-range-status{bottom:100px}}
 .qa-pj{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;max-height:96px;overflow:auto}
 .qa-pj button{display:inline-flex;align-items:center;gap:6px;border:0;font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(55,53,47,.06);color:#55534e}
 .qa-pj button i{width:8px;height:8px;border-radius:2px;background:var(--pc)}
@@ -1210,7 +1220,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
  <div class="tr"><button class="ic" data-search aria-label="찾기" title="전체 찾기 (Ctrl+K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.16.1</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.16.2</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
@@ -1341,8 +1351,10 @@ function previewHTML(v,fixedPid){if(!v.trim()&&!pend.length)return fixedPid?'<sp
  if(r.pid&&!fixedPid)o.push(`<span># ${esc(PJ(r.pid).name)}</span>`);if(r.newP)o.push(`<span>＋ 새 프로젝트 '${esc(r.newP)}'</span>`);return o.join('')}
 
 /* ================= 쓰기 ================= */
-function addTodo(o){const pj=o.pid?PJ(o.pid):null;if(pj&&!(o.ex&&o.ex.eid)){const rr=rowOf(pj,o.title);if(rr)o.ex={...(o.ex||{}),eid:rr.id}}const v={title:o.title,kind:o.time?'event':'todo',time:o.time||'',date:o.date||'',end:'',projectId:o.pid||'',done:false,doneDate:'',subs:[],memo:'',space:pj?SPo(pj):U.sp,created:Date.now(),...(o.ex||{})};
+function todoData(o){const pj=o.pid?PJ(o.pid):null;if(pj&&!(o.ex&&o.ex.eid)){const rr=rowOf(pj,o.title);if(rr)o.ex={...(o.ex||{}),eid:rr.id}}return {title:o.title,kind:o.time?'event':'todo',time:o.time||'',date:o.date||'',end:'',projectId:o.pid||'',done:false,doneDate:'',subs:[],memo:'',space:pj?SPo(pj):o.space||U.sp,created:Date.now(),...(o.ex||{})}}
+function addTodo(o){const v=todoData(o);
  const ref=doc(col('todos')),tmp={id:ref.id,...v};D.todos.push(tmp);setDoc(ref,v).catch(()=>{D.todos=D.todos.filter(t=>t.id!==ref.id);renderQ()});return tmp}
+async function addTodoConfirmed(o){const v=todoData(o),ref=doc(col('todos'));await setDoc(ref,v);const t={id:ref.id,...v};if(!D.todos.some(x=>x.id===ref.id))D.todos.push(t);return t}
 async function addMom(o){const pj=o.pid?PJ(o.pid):null;return addDoc(col('moms'),{d:T(),at:Date.now(),t:o.t||'',imgs:o.imgs||[],space:pj?SPo(pj):U.sp,pid:o.pid||''})}
 async function addProj(name){const used=D.projects.map(p=>p.color);const x=await addDoc(col('projects'),{name,color:PAL.find(c=>!used.includes(c))||PAL[D.projects.length%PAL.length],start:T(),end:'',status:'active',doneDate:'',space:U.sp,memoH:'',created:Date.now()});return x.id}
 const upT=(id,v)=>{const t=D.todos.find(x=>x.id===id);if(t)Object.assign(t,v);return updateDoc(dc('todos',id),v)};
@@ -1452,7 +1464,7 @@ const wkStart=k=>add(k,-P(k).getDay());
 function calStart(){return U.cv==='7'||U.cv==='3'?U.anc:wkStart(U.anc)}
 function calTitle(){if(U.cv==='m'){const[y,m]=U.calCur.split('-').map(Number);return `${y}년 ${m}월`}const a=calStart(),b=add(a,U.cv==='w2'?13:U.cv==='3'?2:6);return `${md(a)} – ${md(b)}`}
 function calHead(){return `<div class="ch"><button class="ar" data-cm="-1" aria-label="이전">‹</button><h2 class="cht">${calTitle()}</h2><button class="ar" data-cm="1" aria-label="다음">›</button><button class="soft" data-cm="0">오늘</button>
- <div class="seg g cvs">${[['3','3일'],['7','7일'],['w2','2주'],['m','월']].map(([k,l])=>`<button data-cv="${k}" class="${U.cv===k?'on':''}">${l}</button>`).join('')}</div></div>`}
+ <div class="seg g cvs">${[['3','3일'],['7','7일'],['w2','2주'],['m','월']].map(([k,l])=>`<button data-cv="${k}" class="${U.cv===k?'on':''}">${l}</button>`).join('')}</div></div><p class="cal-range-help"><span class="desktop">빈 날짜 칸을 드래그하면 여러 날 일정을 만들 수 있어요.</span><span class="mobile">빈 날짜 칸을 길게 누른 뒤 끌어서 기간을 선택해요.</span></p>`}
 function dayPanel(k,big){const L=[...D.todos.filter(x=>inSp(x)&&onDay(x,k)).sort(ordT)],lg=getLogs(U.sp)[k],und=D.todos.filter(x=>inSp(x)&&!x.date&&!x.done);
  return `${big?'':`<h2 class="ct">${+k.slice(5,7)}월 ${+k.slice(8)}일 ${DOW[P(k).getDay()]}요일<small>${[LUN&&lunar(k)?'음 '+lunar(k):'',k===T()?'오늘':hol(k)].filter(Boolean).join(' · ')}</small></h2>`}
   <div class="dlist" data-dk="${k}">${L.map(x=>itemHTML(x,{late:1})).join('')||'<div class="emp">비어 있어요 · 위 입력칸에 적으면 이날로 들어가요</div>'}</div>
@@ -1593,11 +1605,11 @@ function refList(){const L=D.refs.filter(inSp).sort((a,b)=>(!!b.fav-!!a.fav)||((
 function searchView(){return `<section class="g box archive-list">${archiveSearchHTML(U.q)}</section>`}
 
 /* ================= 그리기 ================= */
-let pendR=false,rq=0;
+let pendR=false,rq=0,calRange=null;
 function editing(){const a=document.activeElement;return a&&(a.isContentEditable||a.closest('#main input,#main textarea,#main select'))}
-function renderQ(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(editing()||$('#scrim').classList.contains('on')){pendR=true;return}render()})}
-document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
-function render(){if(!ME)return;captureLineInputs();const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq','udi','spi'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';
+function renderQ(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(calRange||editing()||$('.qa')||$('#scrim').classList.contains('on')){pendR=true;return}render()})}
+document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!calRange&&!$('.qa')&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
+function render(){if(!ME)return;if(calRange)cancelCalRange();captureLineInputs();const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq','udi','spi'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';
  $$('[data-sp]').forEach(b=>b.classList.toggle('on',b.dataset.sp===U.sp));$$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===U.tab));
  if(!U.ready){$('#main').innerHTML='<div class="loading">불러오는 중…</div>';return}
  if(U.tab==='cal')U.tab='home';let h;if(U.tab==='home')h=home();else if(U.tab==='proj'){const p=U.pid&&PJ(U.pid);h=p?projView(p):(U.pid='',projList())}else h=rec();
@@ -1930,43 +1942,43 @@ document.addEventListener('keydown',async e=>{if(e.target.id!=='spi'||e.key!=='E
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-xdel]');if(b)trashDel('exps',b.dataset.xdel)});
 
 /* 달력 칸에 바로 적기 */
-let QA={k:'',type:LS('a2qt')||'todo',pid:'',time:'',more:false,m:{}};
-function openCell(k,anchor){U.calSel=k;QA.dd=false;QA.pq='';QA.m={};render();const cell=document.querySelector(`[data-pick="${k}"]`)||anchor;QA.k=k;QA.time='';QA.noTime=false;openQA(cell)}
+let QA={k:'',type:LS('a2qt')||'todo',pid:'',time:'',more:false,m:{},saving:false};
+function openCell(k,anchor,end=''){if(QA.saving)return;QA.space=U.sp;U.calSel=k;QA.dd=false;QA.pq='';QA.m=end?{end}:{};QA.rangeDates=!!end;if(end){QA.type='ev';QA.more=false}render();const cell=document.querySelector(`[data-pick="${k}"]`)||anchor;QA.k=k;QA.time='';QA.noTime=false;openQA(cell)}
 function openQA(cell){$$('.qa').forEach(x=>x.remove());const d=document.createElement('div');d.className='qa g solid';document.body.appendChild(d);
  const AP=D.projects.filter(p=>inSp(p)&&!isDoneP(p));if(QA.pid&&!AP.some(p=>p.id===QA.pid))QA.pid='';
- const draw=()=>{const ttl=$('#qat')?$('#qat').value:'';d.innerHTML=`<div class="qa-h"><b>${+QA.k.slice(5,7)}월 ${+QA.k.slice(8)}일 ${DOW[P(QA.k).getDay()]}</b><button class="es-x" data-qax aria-label="닫기">×</button></div>
+ const draw=()=>{const ttl=$('#qat')?$('#qat').value:'';d.innerHTML=`<div class="qa-h"><b>${md(QA.k)}${QA.m.end&&QA.m.end>QA.k?' – '+md(QA.m.end):' '+DOW[P(QA.k).getDay()]}</b><button class="es-x" data-qax aria-label="닫기">×</button></div>
  <div class="qa-seg"><button data-qt="todo" class="${QA.type==='todo'?'on':''}"><i class="qi-ck"></i>할 일</button><button data-qt="ev" class="${QA.type==='ev'?'on':''}"><i class="qi-ev"></i>일정</button><button data-qt="pj" class="${QA.type==='pj'?'on':''}"><i class="qi-pj"></i>프로젝트</button></div>
  ${QA.type==='pj'?`<div class="qa-in"><input id="qat" placeholder="프로젝트 이름 (예: 12월 제주 여행)" autocomplete="off" value="${esc(ttl)}"></div>
  <div class="qa-pjd"><label><span>시작</span><input id="qps" type="date" value="${QA.k}"></label><label><span>끝 <em>비우면 상시</em></span><input id="qpe" type="date" value="${QA.pe||''}"></label></div>
  <div class="qa-b"><span class="qa-hint">만들면 할 일 추가 때 고를 수 있어요</span><button class="ink" data-qasave>만들기</button></div>`:`
  <div class="qa-in"><input id="qat" placeholder="${QA.type==='ev'?'일정 이름':'할 일'}" autocomplete="off" value="${esc(ttl)}"></div>${QA.type==='ev'?`<div class="qa-time"><label for="qah">시간 (선택)</label><input id="qah" type="time" value="${QA.time||''}"><button type="button" class="link" data-qtclear>시간 빼기</button><span>비우면 종일 일정</span></div>`:''}
+ <div class="qa-dates"><label>시작 날짜<input id="qad-start" type="date" value="${QA.k}"></label><label>끝 날짜 (포함)<input id="qad-end" type="date" value="${QA.m.end||''}" min="${QA.k}"></label></div>
  ${(()=>{const sp=QA.pid&&PJ(QA.pid);const q=(QA.pq||'').trim().toLowerCase();const L=AP.filter(p=>!q||p.name.toLowerCase().includes(q));
  return `<div class="qa-dd"><button class="qa-ddb${QA.dd?' open':''}" data-qdd style="--pc:${sp?pcol(sp):'transparent'}"><i class="${sp?'':'none'}"></i><span>${sp?esc(sp.name):'프로젝트 없음'}</span><em>▾</em></button>
  ${QA.dd?`<div class="qa-ddl"><input id="qpq" placeholder="프로젝트 찾기 또는 새 이름" value="${esc(QA.pq||'')}" autocomplete="off">
   <div class="qa-ddi">${!q?`<button data-qp="" class="${!QA.pid?'on':''}"><i class="none"></i>프로젝트 없음</button>`:''}${pGroups(L).map(([g,LL])=>`${g&&!q?`<div class="qa-gh">${esc(g)}</div>`:''}${LL.map(p=>`<button data-qp="${p.id}" class="${QA.pid===p.id?'on':''}" style="--pc:${pcol(p)}"><i></i>${esc(p.name)}</button>`).join('')}`).join('')}${q&&!L.length?'<div class="emp" style="padding:6px 10px">없는 프로젝트예요</div>':''}</div>
   <button class="qa-new" data-qnew>＋ ${q?`'${esc(QA.pq.trim())}' 새 프로젝트 만들기`:'새 프로젝트 만들기'}</button></div>`:''}</div>`})()}
  ${QA.more?`<div class="qa-more">
-  <label><span>끝나는 날</span><input data-qm="end" type="date" value="${QA.m.end||''}"></label>
   <label><span>반복</span><select data-qm="rep">${Object.entries(REPL).filter(([k])=>k!=='c').map(([k,l])=>`<option value="${k}"${(QA.m.rep||'')===k?' selected':''}>${l}</option>`).join('')}</select></label>
   <label><span>장소</span><input data-qm="loc" value="${esc(QA.m.loc||'')}" placeholder="주소나 지도 링크"></label>
   <label><span>링크</span><input data-qm="link" value="${esc(QA.m.link||'')}" placeholder="https://"></label>
   <label><span>메모</span><input data-qm="note" value="${esc(QA.m.note||'')}" placeholder="한 줄"></label>
   <label class="qa-subs"><span>하위 할 일</span><textarea data-qm="subs" rows="2" placeholder="한 줄에 하나씩">${esc(QA.m.subs||'')}</textarea></label>
  </div>`:''}
- <button class="link qa-mt" data-qmore>${QA.more?'자세히 접기 ▴':'＋ 끝나는 날 · 반복 · 장소 · 링크 · 하위 할 일'}</button>
+ <button class="link qa-mt" data-qmore>${QA.more?'자세히 접기 ▴':'＋ 반복 · 장소 · 링크 · 하위 할 일'}</button>
  <div class="qa-b"><span class="qa-hint">Enter로 추가</span><button class="ink" data-qasave>추가</button></div>`}`;
   const r=cell?cell.getBoundingClientRect():{left:innerWidth/2-160,bottom:200,top:200};const W=d.offsetWidth,H=d.offsetHeight;let x=Math.min(innerWidth-W-12,Math.max(12,r.left));let y=r.bottom+6;if(y+H>innerHeight-12)y=Math.max(12,r.top-H-6);d.style.left=x+'px';d.style.top=(y+scrollY)+'px';
   if(!QA.dd)setTimeout(()=>{const i=$('#qat');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}},10)};
  d._draw=draw;draw()}
-function closeQA(){$$('.qa').forEach(x=>x.remove())}
-function saveQA(){const i=$('#qat');if(!i)return;const v=i.value.trim();if(!v){i.focus();return}
+function closeQA(){if(QA.saving)return;$$('.qa').forEach(x=>x.remove())}
+async function saveQA(){if(QA.saving)return;const i=$('#qat');if(!i)return;const v=i.value.trim();if(!v){i.focus();return}
  if(QA.type==='pj'){const st=($('#qps')||{}).value||QA.k,en=($('#qpe')||{}).value||'';(async()=>{const id=await addProj(v);updateDoc(dc('projects',id),{start:st,end:en&&en>=st?en:''});if(!PJ(id))D.projects.push({id,name:v,space:U.sp,status:'active',start:st,end:en,created:Date.now(),color:PAL[D.projects.length%PAL.length]});QA.pid=id;QA.type=LS('a2qt')==='ev'?'ev':'todo';QA.pe='';closeQA();toast(`'${v}' 프로젝트를 만들었어요`);render()})();return}const r=parseQ(v);if(r.error){toast(r.error);return}const time=QA.type==='ev'?(QA.noTime?'':(($('#qah')||{}).value||r.time||'')):r.time;
- const M=QA.m||{},ex=QA.type==='ev'?{kind:'event'}:{};const dd=r.date||QA.k;
+ const M=QA.m||{},ex=QA.type==='ev'?{kind:'event'}:{};const dd=QA.rangeDates?QA.k:r.date||QA.k;
+ if(!validDate(dd)||(M.end&&(!validDate(M.end)||M.end<dd))){toast('끝 날짜는 시작 날짜와 같거나 뒤여야 해요. 날짜를 확인해 주세요.');return}
  if(M.end&&M.end>dd)ex.end=M.end;if(M.rep)ex.rep=M.rep;if(M.loc)ex.loc=M.loc.trim();if(M.link)ex.link=fixUrl(M.link.trim());if(M.note)ex.note=M.note.trim();
  if(M.subs&&M.subs.trim())ex.subs=M.subs.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>({t:x,done:false}));
- addTodo({title:r.title||v,date:dd,time,pid:QA.pid||r.pid,ex});
- QA.m={};if(time&&QA.type!=='ev'){}
- if($('#qah'))QA.time=$('#qah').value;closeQA();QA.more=false;render();const fl=document.querySelector('.cfull,.dside');toast(`${md(r.date||QA.k)} ${QA.type==='ev'||time?(time||'종일')+' 일정':'할 일'} 추가${QA.pid?' · '+PJ(QA.pid).name:''}`)}
+ const controls=[...$('.qa').querySelectorAll('input,select,textarea,button')],button=$('[data-qasave]'),label=button.textContent;QA.saving=true;controls.forEach(el=>el.disabled=true);button.textContent='저장 중…';
+ try{await addTodoConfirmed({title:r.title||v,date:dd,time,pid:QA.pid||r.pid,space:QA.space,ex});const range=md(dd)+(M.end&&M.end>dd?' – '+md(M.end):'');QA.saving=false;QA.m={};closeQA();QA.more=false;render();toast(`${range} ${QA.type==='ev'||time?(time||'종일')+' 일정':'할 일'} 추가`)}catch(_){toast('저장하지 못했어요. 제목과 선택한 기간을 유지했어요. 다시 시도해 주세요.')}finally{QA.saving=false;controls.forEach(el=>el.disabled=false);button.textContent=label}}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const d=t.closest('.qa');let b;
  if(!d){if($('.qa')&&!t.closest('[data-cadd2]')&&!t.closest('#scrim'))closeQA();return}
  if(t.closest('[data-qax]')){closeQA();return}
@@ -1979,10 +1991,37 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;cons
  if(t.closest('[data-qmore]')){QA.more=!QA.more;d._draw();return}},true);
 document.addEventListener('keydown',e=>{if(!$('.qa'))return;if(e.key==='Escape'){e.preventDefault();closeQA();return}if(e.key==='Enter'&&!e.isComposing&&(e.target.id==='qat'||e.target.id==='qah')){e.preventDefault();saveQA()}},true);
 document.addEventListener('input',e=>{if(e.target.id==='qah'){QA.time=e.target.value;QA.noTime=!e.target.value}});
+document.addEventListener('input',e=>{if(e.target.dataset?.qm)QA.m[e.target.dataset.qm]=e.target.value});
+document.addEventListener('change',e=>{const el=e.target;if(el.id==='qad-start'){QA.k=el.value;QA.rangeDates=true;$('#qad-end').min=el.value}else if(el.id==='qad-end'){QA.m.end=el.value;QA.rangeDates=true}else return;const head=$('.qa-h b');if(head)head.textContent=QA.k+(QA.m.end?' – '+QA.m.end:'')});
 document.addEventListener('input',e=>{if(e.target.id==='e-h'&&e.target.value&&$('#e-kind'))$('#e-kind').value='event'});
 document.addEventListener('change',e=>{if(e.target.id==='e-kind'&&e.target.value==='todo')$('#e-h').value=''});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cadd2]');if(!b)return;e.stopPropagation();e.preventDefault();openCell(b.dataset.cadd2,b)},true);
 document.addEventListener('dblclick',e=>{const c=e.target.closest&&e.target.closest('.wc[data-pick],.mc[data-pick]');if(!c||e.target.closest('.it,.sub,input,button,[data-drag],[data-ie]'))return;e.preventDefault();openCell(c.dataset.pick)});
+
+/* 빈 날짜 칸을 끌어 기간 선택. 기존 일정의 드래그 이동은 그대로 둔다. */
+let rangeIgnoreClickUntil=0,rangeScrollFrame=0;
+const rangeCell=target=>target?.closest?.('.mc[data-pick],.wc[data-pick]');
+function canStartRange(target){return rangeCell(target)&&!target.closest('button,input,select,textarea,a,[contenteditable="true"],[data-drag],.it,.sub,.cadd,.cin,[data-rz],[data-rzv]')&&!QA.saving&&!$('#scrim').classList.contains('on')}
+function paintCalRange(){const r=calRange;if(!r?.active)return;const [start,end]=[r.start,r.end].sort();$$('.mc[data-pick],.wc[data-pick]').forEach(el=>{const k=el.dataset.pick,selected=k>=start&&k<=end;el.classList.toggle('range-selected',selected);el.classList.toggle('range-edge',selected&&(k===start||k===end))});let status=$('#cal-range-status');if(!status){status=document.createElement('div');status.id='cal-range-status';status.className='cal-range-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');document.body.appendChild(status)}status.textContent=`${md(start)} – ${md(end)} · ${diff(start,end)+1}일 · 놓으면 일정 입력`}
+function rangeAt(x,y){return rangeCell(document.elementFromPoint(x,y))}
+function updateCalRange(x,y){if(!calRange)return;calRange.x=x;calRange.y=y;const cell=rangeAt(x,y);if(cell&&calRange.end!==cell.dataset.pick){calRange.end=cell.dataset.pick;paintCalRange()}}
+function scrollCalRange(){cancelAnimationFrame(rangeScrollFrame);if(!calRange?.active)return;const r=calRange,edge=48,dy=r.y<edge?-10:r.y>innerHeight-edge?10:0;if(dy){scrollBy(0,dy);updateCalRange(r.x,r.y)}rangeScrollFrame=requestAnimationFrame(scrollCalRange)}
+function activateCalRange(){if(!calRange)return;closeQA();calRange.active=true;document.body.classList.add('selecting-dates');getSelection()?.removeAllRanges();paintCalRange();scrollCalRange()}
+function cancelCalRange(){if(calRange)clearTimeout(calRange.timer);calRange=null;cancelAnimationFrame(rangeScrollFrame);rangeScrollFrame=0;document.body.classList.remove('selecting-dates');$$('.range-selected,.range-edge').forEach(el=>el.classList.remove('range-selected','range-edge'));$('#cal-range-status')?.remove()}
+function finishCalRange(x,y){const r=calRange,cell=rangeAt(x,y);if(!r)return;const active=r.active;const dates=[r.start,cell?.dataset.pick||r.end].sort();cancelCalRange();if(!active)return;rangeIgnoreClickUntil=Date.now()+700;if(!cell)return;openCell(dates[0],cell,dates[1])}
+document.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.button!==0||!e.isPrimary||!canStartRange(e.target))return;cancelCalRange();const cell=rangeCell(e.target);calRange={start:cell.dataset.pick,end:cell.dataset.pick,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,id:e.pointerId,type:'pointer',active:false}});
+document.addEventListener('pointermove',e=>{const r=calRange;if(!r||r.type!=='pointer'||r.id!==e.pointerId)return;if(!r.active&&Math.hypot(e.clientX-r.x0,e.clientY-r.y0)>5)activateCalRange();if(r.active){e.preventDefault();updateCalRange(e.clientX,e.clientY)}});
+document.addEventListener('pointerup',e=>{if(calRange?.type==='pointer'&&calRange.id===e.pointerId)finishCalRange(e.clientX,e.clientY)});
+document.addEventListener('pointercancel',e=>{if(calRange?.type==='pointer'&&calRange.id===e.pointerId)cancelCalRange()});
+document.addEventListener('selectstart',e=>{if(calRange&&rangeCell(e.target))e.preventDefault()});
+document.addEventListener('touchstart',e=>{if(e.touches.length!==1){cancelCalRange();return}if(!canStartRange(e.target))return;cancelCalRange();const touch=e.touches[0],cell=rangeCell(e.target);calRange={start:cell.dataset.pick,end:cell.dataset.pick,x:touch.clientX,y:touch.clientY,x0:touch.clientX,y0:touch.clientY,id:touch.identifier,type:'touch',active:false};calRange.timer=setTimeout(activateCalRange,420)},{passive:true});
+document.addEventListener('touchmove',e=>{const r=calRange;if(!r||r.type!=='touch')return;const touch=[...e.touches].find(t=>t.identifier===r.id);if(!touch||e.touches.length!==1){cancelCalRange();return}if(!r.active){if(Math.hypot(touch.clientX-r.x0,touch.clientY-r.y0)>10)cancelCalRange();return}if(e.cancelable)e.preventDefault();updateCalRange(touch.clientX,touch.clientY)},{passive:false});
+document.addEventListener('touchend',e=>{const r=calRange;if(!r||r.type!=='touch')return;const touch=[...e.changedTouches].find(t=>t.identifier===r.id);if(!touch)return;if(r.active&&e.cancelable)e.preventDefault();finishCalRange(touch.clientX,touch.clientY)},{passive:false});
+document.addEventListener('touchcancel',cancelCalRange);
+document.addEventListener('contextmenu',e=>{if(calRange?.type==='touch'){e.preventDefault()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&calRange){e.preventDefault();if(calRange.active)rangeIgnoreClickUntil=Date.now()+700;cancelCalRange()}});
+window.addEventListener('blur',cancelCalRange);
+for(const type of ['click','dblclick'])window.addEventListener(type,e=>{if(Date.now()<rangeIgnoreClickUntil&&e.target.closest?.('.mg,.wkg')){e.preventDefault();e.stopImmediatePropagation()}},true);
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.cin'))e.stopPropagation()},true);
 document.addEventListener('keydown',async e=>{const t=e.target;if(!t.dataset||!t.dataset.cin)return;if(e.key==='Escape'){cellAdd='';render();return}if(e.key!=='Enter'||e.isComposing)return;e.preventDefault();const k=t.dataset.cin,v=t.value.trim();if(!v){cellAdd='';render();return}
  const r=parseQ(v);if(r.error){toast(r.error);return}let pid=r.pid;if(r.newP){if(await ask(`'${r.newP}' 프로젝트를 새로 만들까요?`,'만들기')){pid=await addProj(r.newP);D.projects.push({id:pid,name:r.newP,space:U.sp,status:'active'})}}
