@@ -26,4 +26,12 @@ public class AppActivityTest {
     @Test public void updateCommandOpensInstallerFlow(){
         var controller=Robolectric.buildActivity(AppActivity.class).create().start().resume();AppActivity app=controller.get();app.receive("{\"type\":\"update\"}");Intent intent=shadowOf(app).getNextStartedActivity();assertNotNull(intent);assertEquals(UpdateActivity.class.getName(),intent.getComponent().getClassName());controller.pause().stop().destroy();
     }
+    @Test public void backupImportOpensJsonPickerAndPhotosKeepImagePicker(){
+        var controller=Robolectric.buildActivity(AppActivity.class).create().start().resume();AppActivity app=controller.get();
+        for(String accept:new String[]{"application/json","image/*"}){
+            WebChromeClient.FileChooserParams params=new WebChromeClient.FileChooserParams(){public int getMode(){return MODE_OPEN;}public String[] getAcceptTypes(){return new String[]{accept};}public boolean isCaptureEnabled(){return false;}public CharSequence getTitle(){return "파일";}public String getFilenameHint(){return null;}public Intent createIntent(){return new Intent();}};
+            assertTrue(app.web.getWebChromeClient().onShowFileChooser(app.web,value->{},params));assertEquals(accept,shadowOf(app).getNextStartedActivityForResult().intent.getType());
+        }
+        controller.pause().stop().destroy();
+    }
 }

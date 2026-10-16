@@ -155,6 +155,8 @@ class ReliabilityTests(unittest.TestCase):
         self.page.locator('[data-esave]').click()
         expect(self.page.locator('#scrim')).not_to_have_class('scrim on')
         self.assertEqual(self.page.evaluate("window.__store.todos.find(t=>t.id==='work-t').title"), '수정한 보고서 제목')
+        if self.page.locator('#srch.on').count():
+            self.page.keyboard.press('Escape')
         self.life()
         self.search('숙박 결제')
         self.page.locator('#sqr [data-sgo="expense"]').click()

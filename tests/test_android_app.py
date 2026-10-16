@@ -100,6 +100,25 @@ class AndroidAppTests(unittest.TestCase):
         self.assertTrue(json.loads(backup['content'])['complete'])
         self.assertEqual(len(json.loads(backup['content'])['exps']), len(ui.SEED['exps']))
 
+    def test_back_from_related_document_restores_project_then_project_list(self):
+        self.connect_port()
+        self.page.evaluate("""async()=>{const m=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');await m.updateDoc(m.doc(m.collection({},'notes'),'work-n'),{pid:'work-p'})}""")
+        self.page.locator("nav [data-tab='proj']").click();self.page.locator('[data-open="work-p"]').click()
+        self.page.locator('.project-records [data-archive-open="doc"]').click()
+        expect(self.page.locator('[data-db]')).to_be_visible()
+        self.send({'type':'back'});expect(self.page.locator('.pname')).to_have_value('업무 프로젝트')
+        self.send({'type':'back'});expect(self.page.locator('[data-open="work-p"]')).to_be_visible()
+        self.assertFalse(self.page.evaluate("window.__nativeMessages.some(x=>x.type==='back-unhandled')"))
+
+    def test_back_restores_search_query_and_reference_draft(self):
+        self.connect_port();self.page.locator('[data-search]').click();self.page.locator('#sqi').fill('업무 회의록')
+        self.page.locator('#sqr [data-sgo="doc"]').click();expect(self.page.locator('[data-db]')).to_be_visible()
+        self.send({'type':'back'});expect(self.page.locator('#srch')).to_have_class(re.compile(r'\bon\b'))
+        expect(self.page.locator('#sqi')).to_have_value('업무 회의록');self.send({'type':'back'})
+        self.page.locator('[data-rt="ref"]').click();self.page.locator('[data-newref]').click();self.page.locator('#r-t').fill('뒤로가도 유지할 자료')
+        self.send({'type':'back'});expect(self.page.locator('#scrim')).not_to_have_class('scrim on')
+        self.page.locator('[data-newref]').click();expect(self.page.locator('#r-t')).to_have_value('뒤로가도 유지할 자료')
+
     def test_old_native_app_without_updater_downloads_the_new_apk(self):
         self.connect_port()
         self.send({'type': 'account', 'uid': 'ui-test'})

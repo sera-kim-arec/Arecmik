@@ -14,7 +14,12 @@ class OptionalEventTimeTests(unittest.TestCase):
     def calendar(self):
         self.page.locator("nav [data-tab='home']").click()
         self.page.locator('[data-cv="m"]').click()
-        self.page.locator('[data-cadd2="2026-10-20"]').click()
+        if self.page.viewport_size['width'] <= 900:
+            self.page.locator('[data-pick="2026-10-20"]').click()
+            if not self.page.locator('.qa').count():
+                self.page.locator('[data-day-add="2026-10-20"]').click()
+        else:
+            self.page.locator('[data-cadd2="2026-10-20"]').click()
         self.page.locator('[data-qt="ev"]').click()
 
     def saved(self, title):
@@ -22,7 +27,8 @@ class OptionalEventTimeTests(unittest.TestCase):
         return self.page.evaluate('(title)=>window.__store.todos.find(t=>t.title===title)', title)
 
     def open_event(self, row):
-        self.page.locator('[data-search]').click()
+        if not self.page.locator('#srch.on').count():
+            self.page.locator('[data-search]').click()
         self.page.locator('#sqi').fill(row['title'])
         self.page.locator('#sqr [data-sgo="todo"]').click()
         expect(self.page.locator('#e-kind')).to_have_value('event')

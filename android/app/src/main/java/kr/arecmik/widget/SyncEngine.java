@@ -28,8 +28,13 @@ final class SyncEngine {
                         LocalDate next="ly".equals(server.optString("rep"))?nextLunar(LocalDate.parse(server.getString("date"))):CalendarData.nextRepeat(server);
                         if(next==null)throw new IllegalStateException("이 반복 일정은 앱에서 완료해 주세요");
                         String nextName=docName(account,op.getString("nextId"));
-                        writes.put(new JSONObject().put("update",new JSONObject().put("name",nextName).put("fields",CalendarData.fields(CalendarData.nextCopy(server,next)))).put("currentDocument",new JSONObject().put("exists",false)));
-                        applied.put("rep","");
+                        JSONObject nextTask=CalendarData.nextCopy(server,next);
+                        writes.put(new JSONObject().put("update",new JSONObject().put("name",nextName).put("fields",CalendarData.fields(nextTask))).put("currentDocument",new JSONObject().put("exists",false)));
+                        applied.put("rep","").put("repeatUndo",CalendarData.repeatUndo(server,op.getString("nextId"),nextTask));
+                    }else if(!patch.optBoolean("done")&&server.optBoolean("done")&&server.optJSONObject("repeatUndo")!=null){
+                        JSONObject undo=server.getJSONObject("repeatUndo"),next=null;try{next=getTask(c,root,undo.getString("nextId"),token);}catch(Network.Failure failure){if(failure.status!=404)throw failure;}
+                        if(next!=null){if(!CalendarData.unmodifiedNext(next,undo.getJSONObject("next")))throw new IllegalStateException("다음 반복을 수정해서 취소하지 않았어요. 앱에서 다음 일정을 확인해 주세요");writes.put(new JSONObject().put("delete",docName(account,undo.getString("nextId"))).put("currentDocument",new JSONObject().put("updateTime",next.getString("_updateTime"))));}
+                        applied.put("rep",undo.getString("rep")).put("repDay",undo.getInt("repDay")).put("repeatUndo",JSONObject.NULL);
                     }
                     // Both writes commit together. A failed retry never creates a second repetition.
                     JSONArray masks=new JSONArray(CalendarData.keys(applied));writes.put(new JSONObject().put("update",new JSONObject().put("name",docName(account,id)).put("fields",CalendarData.fields(applied))).put("updateMask",new JSONObject().put("fieldPaths",masks)).put("currentDocument",new JSONObject().put("updateTime",server.getString("_updateTime"))));

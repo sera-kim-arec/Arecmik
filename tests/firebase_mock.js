@@ -61,7 +61,11 @@ export async function deleteDoc(ref) {
   store[ref.name] = (store[ref.name] || []).filter(row => row.id !== ref.id);
   persist(); emit(ref.name);
 }
-export function onSnapshot(ref, callback) {
+export function onSnapshot(ref, callback, error) {
+  if (window.__failSnapshot === ref.name) {
+    queueMicrotask(() => error(Object.assign(new Error('Simulated read failure'), {code: 'permission-denied'})));
+    return () => {};
+  }
   const callbacks = listeners.get(ref.name) || [];
   callbacks.push(callback);
   listeners.set(ref.name, callbacks);
@@ -94,5 +98,11 @@ export function writeBatch() {
       new Set(actions.map(a => a.ref.name)).forEach(emit);
     },
   };
+}
+export async function runTransaction(db, callback) {
+  const batch = writeBatch();
+  const result = await callback({get: getDoc, set: batch.set, update: batch.update, delete: batch.delete});
+  await batch.commit();
+  return result;
 }
 persist();

@@ -112,7 +112,8 @@ class ArchiveTests(unittest.TestCase):
         expect(self.page.locator(".archive-intro h2")).to_have_text("나의 일상 보관함")
 
     def search(self, query):
-        self.page.locator("[data-search]").click()
+        if not self.page.locator('#srch.on').count():
+            self.page.locator("[data-search]").click()
         self.page.locator("#sqi").fill(query)
 
     def test_spaces_search_and_legacy_references(self):

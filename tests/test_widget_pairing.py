@@ -93,13 +93,15 @@ class WidgetPairingTests(unittest.TestCase):
     def test_install_page_has_apk_link_and_mobile_instructions(self):
         self.page.set_viewport_size({'width': 390, 'height': 844})
         self.page.goto(self.origin+'/widget.html')
-        expect(self.page.locator('a[download]')).to_have_attribute('href', 'downloads/Arecmik-1.2.0.apk')
+        release = json.loads((ui.ROOT/'android-release.json').read_text())
+        filename = 'Arecmik-'+release['versionName']+'.apk'
+        expect(self.page.locator('a[download]')).to_have_attribute('href', 'downloads/'+filename)
         expect(self.page.locator('main')).to_contain_text('홈 화면에 위젯 추가')
         self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'), 390)
         with self.page.expect_download() as result:
             self.page.locator('a[download]').click()
         download = result.value
-        self.assertEqual(download.suggested_filename, 'Arecmik-1.2.0.apk')
+        self.assertEqual(download.suggested_filename, filename)
         expected = (ui.ROOT/'downloads/SHA256SUMS.txt').read_text().split()[0]
         self.assertEqual(hashlib.sha256(Path(download.path()).read_bytes()).hexdigest(), expected)
 
