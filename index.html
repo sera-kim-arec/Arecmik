@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.16.4"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<title>Arecmik</title><meta name="application-version" content="2026.10.16.5"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -997,8 +997,6 @@ body.selecting-dates,body.selecting-dates *{user-select:none!important;-webkit-u
 .sub:hover .ssb{opacity:1}.sub .ssb:hover{background:rgba(55,53,47,.08)}
 @media(hover:none){.sub .ssb{opacity:.5}}
 .es-sr.lv1{padding-left:22px}.es-sr.lv2{padding-left:44px}
-.es-sr .es-in{border:0;background:none;color:#9b9a97;font-size:14px;padding:2px 6px;border-radius:6px;line-height:1;flex:none}
-.es-sr .es-in:hover{background:rgba(55,53,47,.08);color:#37352F}
 /* 음력 */
 .mc>b .lun{margin-left:auto;font-style:normal;font-size:10px;font-weight:500;color:#b4b3b0;letter-spacing:-.02em;padding-right:16px}
 .mc>b .lun.key{color:#8a8986;font-weight:700}
@@ -1207,26 +1205,20 @@ a.lk:hover{background:rgba(55,53,47,.13)}
 .record-editor{min-height:160px;max-height:45vh;overflow:auto;padding:14px;border-radius:14px}
 .archive-list mark{background:#37352F;color:#fff;border-radius:3px;padding:0 2px}
 @media(max-width:600px){.archive-intro{align-items:flex-start}.archive-intro h2{font-size:21px}.archive-intro .ink{padding:9px 12px;font-size:12px}.archive-tools{gap:6px}.archive-tools button{padding:7px 10px}.archive-row{gap:8px}.record-editor{min-height:140px}}
-#rt-indent-bar{position:fixed;z-index:1200;display:flex;gap:2px;background:rgba(250,250,250,.96);box-shadow:0 3px 12px rgba(0,0,0,.12);border-radius:9px;padding:3px}
-#rt-indent-bar[hidden]{display:none!important}
-#rt-indent-bar button{border:0;background:none;border-radius:6px;font-size:13px;font-weight:750;padding:6px 9px;cursor:pointer}
-#rt-indent-bar button:hover{background:rgba(0,0,0,.07)}
-@media(max-width:550px){#rt-indent-bar{top:auto!important;right:8px!important;bottom:calc(env(safe-area-inset-bottom) + 12px);}}
 </style></head><body>
-<div id="login" hidden><div class="g"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
+<div id="login" hidden><div class="g"><img src="icon-192.png" width="80" height="80" alt="Arecmik 레몬" style="border-radius:24px"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
 <header class="top">
  <div class="seg g sp" aria-label="공간"><button data-sp="work">WORK</button><button data-sp="life">LIFE</button></div>
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
  <div class="tr"><button class="ic" data-search aria-label="찾기" title="전체 찾기 (Ctrl+K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-widget-install>안드로이드 월 달력 위젯</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.16.4</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.16.5</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
 <div class="one g solid" id="one"><div class="t"></div><div class="r"><input placeholder="안 써도 돼요"><button class="ink" data-one="save">남기기</button><button class="link" data-one="skip">건너뛰기</button></div></div>
 <div class="lb" id="lb"><img alt=""></div>
-<div id="rt-indent-bar" hidden aria-label="메모 들여쓰기"><button type="button" data-rt-indent="out" title="내어쓰기 · Shift+Tab">⇤</button><button type="button" data-rt-indent="in" title="들여쓰기 · Tab">⇥</button></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithCredential,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -1414,7 +1406,7 @@ function editTodo(id){const t=D.todos.find(x=>x.id===id);if(!t)return;
  ES={id,done:!!t.done,subs:subs.map(x=>({...x}))};esCost()}
 let ES=null,subUnder='',subEd='';
 function esSubs(){const W=$('#e-subs');if(!W)return;W.innerHTML=ES.subs.map(esRow).join('')}
-function esRow(x,i,A){const lv=Math.min(2,+x.lv||0),mx=i>0?Math.min(2,(+A[i-1].lv||0)+1):0,ind=lv<mx;return `<div class="es-sr lv${lv}" data-esr="${i}"><span class="es-hd" draggable="true" data-esdrag="${i}" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="ck${x.done?' on':''}" data-esub="${i}"></button><input value="${esc(x.t)}" data-esubt="${i}"><button type="button" class="es-in" data-esin="${i}" title="${ind?'위 항목의 하위로':'밖으로 빼기'} (Tab / Shift+Tab)" aria-label="들여쓰기"${!ind&&!lv?' hidden':''}>${ind?'⇥':'⇤'}</button><button type="button" class="es-x" data-esubx="${i}" aria-label="빼기">×</button></div>`}
+function esRow(x,i){const lv=Math.min(2,+x.lv||0);return `<div class="es-sr lv${lv}" data-esr="${i}"><span class="es-hd" draggable="true" data-esdrag="${i}" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="ck${x.done?' on':''}" data-esub="${i}"></button><input value="${esc(x.t)}" data-esubt="${i}"><button type="button" class="es-x" data-esubx="${i}" aria-label="빼기">×</button></div>`}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest||!ES||!t.closest('#sheet'))return;let b;
  if((b=t.closest('[data-dq]'))){$('#e-d').value=b.dataset.dq;$$('.dq').forEach(x=>x.classList.toggle('on',x===b));return}
  if(t.closest('[data-etclr]')){$('#e-h').value='';return}
@@ -1669,7 +1661,8 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if((b=t.closest('[data-menu]'))){const m=$('#menu');m.classList.toggle('on');if(m.classList.contains('on')){const r=b.getBoundingClientRect();m.style.top=(r.bottom+8+scrollY)+'px';m.style.left=Math.max(8,r.right-m.offsetWidth)+'px';m.style.right='auto'}return}
  if(t.closest('[data-old]')){location.href='old.html';return}
  if(t.closest('[data-logout]')){$('#menu').classList.remove('on');if(nativeApp)nativeApp.logout();else signOut(auth);return}
- if(t.closest('[data-widget-install]')){if(nativeApp)nativeApp.settings();else location.href='widget.html';return}
+ if(t.closest('[data-apk-download]')){$('#menu').classList.remove('on');if(nativeApp&&nativeApp.update())return;const a=document.createElement('a');a.href='downloads/Arecmik-latest.apk?t='+Date.now();a.download='Arecmik.apk';document.body.appendChild(a);a.click();a.remove();return}
+ if(t.closest('[data-widget-install]')){$('#menu').classList.remove('on');if(nativeApp)nativeApp.settings();else location.href='widget.html';return}
  if(t.closest('[data-backup]')){$('#menu').classList.remove('on');backup();return}
  if(t.closest('[data-wipe]')){$('#menu').classList.remove('on');wipe();return}
  if((b=t.closest('[data-sx]'))){const v=b.dataset.sx;closeSheet(v==='t'?(($('#atx')||{}).value||'').trim():v==='1');return}
@@ -1769,7 +1762,7 @@ async function wipe(){if(!await ask('전체 데이터를 초기화할까요? 할
  toast(`전체 데이터를 초기화했어요 (${n}개)`);go('home')}
 
 /* ================= 시작 ================= */
-const {setupAndroidApp}=await import('./android-app.js');
+const {setupAndroidApp}=await import('./android-app.js?v=2026.10.16.5');
 const nativeApp=setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,signOut,loginButton:$('#gl'),notify:toast,onBack:()=>{
  if($('.qa')){closeQA();return true}if($('#scrim').classList.contains('on')){closeSheet(false);return true}if($('#one').classList.contains('on')){oneDone(false);return true}if($('#lb').classList.contains('on')){$('#lb').classList.remove('on');return true}if($('#srch')?.classList.contains('on')){closeSearch();return true}if($('#menu').classList.contains('on')){$('#menu').classList.remove('on');return true}if(U.doc){cleanEmptyDoc();U.doc='';render();return true}persistRecordDraft();flushAutoSaves();return false;
 }});
@@ -1844,15 +1837,6 @@ function indentRichText(ed,dir){
  chosen.forEach(b=>{const old=Math.max(0,Math.min(4,+b.dataset.depth||0)),next=Math.max(0,Math.min(4,old+dir));if(next)b.dataset.depth=String(next);else delete b.dataset.depth});
  fire(ed);numFix(ed);
 }
-const INDENT_STYLE='';
-let lastRichEditor=null;
-function placeIndentBar(ed){const bar=$('#rt-indent-bar');if(!bar)return;lastRichEditor=ed;bar.hidden=false;const r=ed.getBoundingClientRect();bar.style.top=Math.min(Math.max(r.top+6,8),innerHeight-40)+'px';bar.style.right=Math.max(8,innerWidth-r.right+8)+'px'}
-function hideIndentBar(){const bar=$('#rt-indent-bar');if(bar)bar.hidden=true}
-document.addEventListener('focusin',e=>{const ed=e.target.closest&&e.target.closest('.rt[contenteditable="true"]');if(ed)placeIndentBar(ed)});
-document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('#rt-indent-bar'))e.preventDefault()},true);
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#rt-indent-bar button');if(!b||!lastRichEditor||!document.contains(lastRichEditor))return;e.preventDefault();indentRichText(lastRichEditor,b.dataset.rtIndent==='in'?1:-1);lastRichEditor.focus({preventScroll:true});placeIndentBar(lastRichEditor)});
-document.addEventListener('focusout',e=>{if(e.target.matches&&e.target.matches('.rt[contenteditable="true"]'))setTimeout(()=>{if(!document.activeElement?.closest('.rt[contenteditable="true"]'))hideIndentBar()},80)});
-document.addEventListener('scroll',()=>{if(lastRichEditor&&document.activeElement===lastRichEditor)placeIndentBar(lastRichEditor)},true);
 document.addEventListener('input',e=>{const ed=e.target.closest&&e.target.closest('.rt[contenteditable]');if(!ed)return;const b=curBlk(ed);if(!b)return;const t=b.textContent;
  if(slash){const k=t.lastIndexOf('/');if(k<0){slashClose();return}slash.q=t.slice(k+1);if(/\s/.test(slash.q)){slashClose();return}slashDraw();return}
  if(/(^|\s)\/$/.test(t)){slashOpen(ed,b);return}
@@ -2279,7 +2263,6 @@ document.addEventListener('input',e=>{if(e.target.id==='e-n'){const a=e.target;a
 function esIndent(i,dir){const S=ES.subs,cur=+S[i].lv||0,max=i>0?Math.min(2,(+S[i-1].lv||0)+1):0;let nv=dir>0?Math.min(max,cur+1):Math.max(0,cur-1);if(nv===cur&&dir>0&&cur>0)nv=0;const d=nv-cur;if(!d)return;
  S[i].lv=nv;for(let j=i+1;j<S.length&&(+S[j].lv||0)>cur;j++)S[j].lv=Math.max(0,Math.min(2,(+S[j].lv||0)+d));esSubs();const inp=$(`[data-esubt="${i}"]`);inp&&inp.focus()}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let b;
- if((b=t.closest('[data-esin]'))&&ES){const i=+b.dataset.esin,cur=+ES.subs[i].lv||0,max=i>0?Math.min(2,(+ES.subs[i-1].lv||0)+1):0;esIndent(i,cur<max?1:-1);return}
  if((b=t.closest('[data-ssub]'))){e.stopPropagation();const k=b.dataset.ssub+':'+b.dataset.si;subUnder=subUnder===k?'':k;subAdd='';render();setTimeout(()=>{const i=$('[data-sin2]');i&&i.focus()},20)}},true);
 document.addEventListener('keydown',e=>{const t=e.target;
  if(t.dataset&&t.dataset.esubt!==undefined&&e.key==='Tab'&&ES){e.preventDefault();esIndent(+t.dataset.esubt,e.shiftKey?-1:1);return}

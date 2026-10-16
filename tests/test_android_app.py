@@ -1,6 +1,8 @@
 """Exercise the actual Android browser adapter with a simulated native MessagePort."""
 import json
 import re
+import hashlib
+from pathlib import Path
 import unittest
 from playwright.sync_api import expect
 import test_archive as ui
@@ -49,13 +51,15 @@ class AndroidAppTests(unittest.TestCase):
 
     def test_browser_google_credential_signs_into_app_and_acknowledges_matching_uid(self):
         self.connect_port()
-        self.send({'type': 'account', 'uid': 'paired-user'})
+        self.send({'type': 'account', 'uid': 'paired-user', 'capabilities': ['update']})
         self.send({'type': 'credential', 'uid': 'paired-user', 'idToken': 'fake-google-id', 'accessToken': 'fake-google-access'})
         self.page.wait_for_function("window.ME?.uid==='paired-user' && window.__nativeMessages.some(x=>x.type==='auth-ok'&&x.uid==='paired-user')")
         expect(self.page.locator('#app')).to_be_visible()
         self.assertNotIn('fake-google', self.page.evaluate('JSON.stringify(localStorage)'))
         self.page.evaluate("document.querySelector('[data-widget-install]').click()")
         self.page.wait_for_function("window.__nativeMessages.some(x=>x.type==='settings')")
+        self.page.evaluate("document.querySelector('[data-apk-download]').click()")
+        self.page.wait_for_function("window.__nativeMessages.some(x=>x.type==='update')")
 
     def test_mismatched_credential_is_rejected_and_native_logout_signs_out(self):
         self.connect_port()
@@ -95,6 +99,15 @@ class AndroidAppTests(unittest.TestCase):
         self.assertRegex(backup['name'], r'^Arecmik-백업-\d{4}-\d{2}-\d{2}\.json$')
         self.assertTrue(json.loads(backup['content'])['complete'])
         self.assertEqual(len(json.loads(backup['content'])['exps']), len(ui.SEED['exps']))
+
+    def test_old_native_app_without_updater_downloads_the_new_apk(self):
+        self.connect_port()
+        self.send({'type': 'account', 'uid': 'ui-test'})
+        self.page.locator('[data-menu]').click()
+        with self.page.expect_download() as result:
+            self.page.locator('[data-apk-download]').click()
+        expected = (ui.ROOT/'downloads/SHA256SUMS.txt').read_text().split()[0]
+        self.assertEqual(hashlib.sha256(Path(result.value.path()).read_bytes()).hexdigest(), expected)
 
 
 if __name__ == '__main__':

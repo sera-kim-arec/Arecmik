@@ -1,13 +1,14 @@
 // The Android shell offers an origin-bound MessagePort, never a JavaScript interface.
 export function setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,signOut,loginButton,notify,onBack}){
  if(!navigator.userAgent.includes('ArecmikAndroid/1'))return null;
- let port=null,busy=false,queue=Promise.resolve();
+ let port=null,busy=false,supportsUpdate=false,queue=Promise.resolve();
  const send=(type,extra={})=>{if(!port){notify('앱을 연결하는 중이에요. 잠시 후 다시 눌러 주세요.');return false;}port.postMessage(JSON.stringify({type,...extra}));return true;};
  window.addEventListener('message',event=>{
   if(event.source!==null||event.data!=='arecmik-native-v1'||event.ports.length!==1||port)return;
   port=event.ports[0];
   port.onmessage=event=>{queue=queue.then(async()=>{let message;try{message=JSON.parse(event.data);}catch(_){return;}
    if(message.type==='account'){
+    supportsUpdate=Array.isArray(message.capabilities)&&message.capabilities.includes('update');
     await auth.authStateReady();
     if(auth.currentUser&&auth.currentUser.uid!==message.uid)await signOut(auth);
    }
@@ -27,5 +28,5 @@ export function setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,si
   port.start();send('ready');
  });
  loginButton.onclick=()=>send('login');
- return {settings:()=>send('settings'),logout:()=>{if(confirm('앱과 위젯의 계정 연결을 해제할까요? 이 휴대폰의 전송 대기 중인 완료 변경도 지워집니다. 원본 기록은 유지돼요.'))send('logout');},backup:(name,content)=>send('backup',{name,content})};
+ return {settings:()=>send('settings'),update:()=>supportsUpdate?send('update'):false,logout:()=>{if(confirm('앱과 위젯의 계정 연결을 해제할까요? 이 휴대폰의 전송 대기 중인 완료 변경도 지워집니다. 원본 기록은 유지돼요.'))send('logout');},backup:(name,content)=>send('backup',{name,content})};
 }

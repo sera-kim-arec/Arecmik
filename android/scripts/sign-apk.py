@@ -1,5 +1,8 @@
 """Sign the personal APK; private signing material stays outside the repository."""
 import hashlib
+import json
+import re
+import shutil
 import os
 from pathlib import Path
 import secrets
@@ -23,12 +26,18 @@ if not keystore.exists():
     keystore.chmod(0o600)
 source = repo / 'android/app/build/outputs/apk/release/app-release-unsigned.apk'
 aligned = source.parent / 'app-release-aligned.apk'
-output = repo / 'downloads/Arecmik-1.1.0.apk'
+gradle = (repo / 'android/app/build.gradle').read_text()
+version_name = re.search(r"versionName '([0-9.]+)'", gradle).group(1)
+version_code = int(re.search(r'versionCode (\d+)', gradle).group(1))
+output = repo / ('downloads/Arecmik-'+version_name+'.apk')
 output.parent.mkdir(exist_ok=True)
 subprocess.run([str(tools/'zipalign'), '-f', '-p', '4', str(source), str(aligned)], check=True)
 subprocess.run([str(tools/'apksigner'), 'sign', '--ks', str(keystore), '--ks-key-alias', 'arecmik',
                 '--ks-pass', 'file:'+str(password), '--v4-signing-enabled', 'false',
                 '--out', str(output), str(aligned)], check=True)
 subprocess.run([str(tools/'apksigner'), 'verify', '--verbose', '--print-certs', str(output)], check=True)
-output.with_name('SHA256SUMS.txt').write_text(hashlib.sha256(output.read_bytes()).hexdigest()+'  '+output.name+'\n')
+digest = hashlib.sha256(output.read_bytes()).hexdigest()
+shutil.copyfile(output, output.with_name('Arecmik-latest.apk'))
+output.with_name('SHA256SUMS.txt').write_text(digest+'  '+output.name+'\n'+digest+'  Arecmik-latest.apk\n')
+(repo / 'android-release.json').write_text(json.dumps({'versionCode':version_code,'versionName':version_name,'url':'https://sera-kim-arec.github.io/Arecmik/downloads/'+output.name,'sha256':digest},indent=2)+'\n')
 print('Signed installation APK:', output)

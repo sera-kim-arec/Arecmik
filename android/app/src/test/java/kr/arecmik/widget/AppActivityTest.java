@@ -23,4 +23,7 @@ public class AppActivityTest {
     @Test public void settingsCommandOpensNativeWidgetSettings(){
         var controller=Robolectric.buildActivity(AppActivity.class).create().start().resume();AppActivity app=controller.get();app.receive("{\"type\":\"settings\"}");Intent settings=shadowOf(app).getNextStartedActivity();assertNotNull(settings);assertEquals(MainActivity.class.getName(),settings.getComponent().getClassName());controller.pause().stop().destroy();
     }
+    @Test public void updateCommandOpensInstallerFlow(){
+        var controller=Robolectric.buildActivity(AppActivity.class).create().start().resume();AppActivity app=controller.get();app.receive("{\"type\":\"update\"}");Intent intent=shadowOf(app).getNextStartedActivity();assertNotNull(intent);assertEquals(UpdateActivity.class.getName(),intent.getComponent().getClassName());controller.pause().stop().destroy();
+    }
 }
