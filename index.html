@@ -1676,11 +1676,12 @@ function editing(){const a=document.activeElement;return a&&(a.isContentEditable
 let composing=false;
 document.addEventListener('compositionstart',()=>{composing=true},true);
 document.addEventListener('compositionend',()=>{composing=false;if(pendR)renderQ()},true);
-function lineFocus(){const a=document.activeElement;return a&&a.matches?.('#main .sp-in,#main #qi,#main [data-cin]')?a:null}
+const LINE_SEL='#main .sp-in,#main #qi,#main [data-cin],#main [data-sin],#main [data-sin2],#main #hri';
+function lineFocus(){const a=document.activeElement;return a&&a.matches?.(LINE_SEL)?a:null}
 function holdRender(){return editing()&&(composing||!lineFocus())}
 function renderQ(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(calRange||holdRender()||$('.qa')||$('#scrim').classList.contains('on')){pendR=true;return}pendR=false;render()})}
 document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!calRange&&!$('.qa')&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
-function render(){if(!ME)return;if(calRange)cancelCalRange();captureLineInputs();const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq','udi','spi'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';const lineK=!fid&&!cinK&&!sinK&&lineFocus()?lineInputKey(ae,0):null;
+function render(){if(!ME)return;if(calRange)cancelCalRange();captureLineInputs();const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq','udi','spi'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';const lineK=!fid&&!cinK&&!sinK&&lineFocus()?lineInputKey(ae,0):null,lineV=lineK?ae.value:'';
  $$('[data-sp]').forEach(b=>b.classList.toggle('on',b.dataset.sp===U.sp));$$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===U.tab));
  if(!U.ready){drawSyncState();return}
  if(U.tab==='cal')U.tab='home';let h;if(U.tab==='home')h=home();else if(U.tab==='proj'){const p=U.pid&&PJ(U.pid);h=p?projView(p):(U.pid='',projList())}else h=rec();
@@ -1688,7 +1689,7 @@ function render(){if(!ME)return;if(calRange)cancelCalRange();captureLineInputs()
  if(U.tab==='proj'&&U.pid&&PJ(U.pid))drawTL(PJ(U.pid));
  if(cinK){const f=$(`[data-cin="${cinK}"]`);if(f){f.value=cinV;f.focus({preventScroll:true})}}
  if(sinK){const f=$(`[data-sin="${sinK}"]`);if(f){f.value=sinV;f.focus({preventScroll:true})}}
- if(lineK){const f=$$('#main .sp-in,#main #qi,#main [data-cin]').find(el=>lineInputKey(el,0)===lineK);if(f){f.focus({preventScroll:true});try{f.setSelectionRange(fs,fs)}catch(_){}}}
+ if(lineK){const f=$$(LINE_SEL).find(el=>lineInputKey(el,0)===lineK);if(f){if(!f.dataset.saving)f.value=lineV;f.focus({preventScroll:true});try{f.setSelectionRange(fs,fs)}catch(_){}}}
  if(fid){const f=document.getElementById(fid);if(f){if(keep!==null)f.value=keep;f.focus({preventScroll:true});try{f.setSelectionRange(fs,fs)}catch(_){}if(fid==='qi')updPv(f)}}
  saveU()}
 function updPv(i){const v=$('#qpv');if(v)v.innerHTML=previewHTML(i.value,i.dataset.pid||undefined)}
