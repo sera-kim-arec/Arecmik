@@ -23,20 +23,22 @@ class ProjectMemoTests(unittest.TestCase):
         self.page.locator('[data-open="work-p"]').click()
         expect(self.page.locator('.pmemo:not(.pcore)')).to_be_visible()
 
-    def test_pin_edit_original_and_unpin_without_copying_or_losing_history(self):
+    def test_favorite_edit_original_and_remove_without_copying_or_losing_history(self):
         count = self.page.evaluate('window.__store.moms.length')
         expect(self.page.locator('[data-pmemo]')).to_contain_text('업무 프로젝트 메모')
         self.page.locator('[data-mpin="work-m"]').click()
-        expect(self.page.locator('.pm-core')).to_contain_text('업무 회의 회고')
-        self.assertEqual(self.page.evaluate('window.__store.moms.length'), count)
-        self.page.locator('.pm-core-open').click()
-        self.page.locator('#record-body').fill('상담 후 확정한 최종 조건')
+        expect(self.page.locator('[data-mpin="work-m"]')).to_have_attribute('aria-pressed','true')
+        self.page.locator('nav [data-tab="rec"]').click()
+        self.page.locator('[data-archive-favorites]').click()
+        self.page.locator('[data-archive-open="mom"][data-id="work-m"]').click()
+        self.page.locator('#record-body').fill('회의 후 확정한 최종 조건')
         self.page.locator('[data-record-save]').click()
-        expect(self.page.locator('.pm-core')).to_contain_text('상담 후 확정한 최종 조건')
-        expect(self.page.locator('[data-mt="work-m"]')).to_contain_text('상담 후 확정한 최종 조건')
-        self.page.locator('.pm-core [data-mpin="work-m"]').click()
-        expect(self.page.locator('.pm-core-open')).to_have_count(0)
-        expect(self.page.locator('[data-mt="work-m"]')).to_contain_text('상담 후 확정한 최종 조건')
+        expect(self.page.locator('.archive-list')).to_contain_text('회의 후 확정한 최종 조건')
+        self.page.locator('[data-archive-favorite="mom"][data-id="work-m"]').click()
+        expect(self.page.locator('.archive-empty')).to_contain_text('즐겨찾기가 없어요')
+        self.project()
+        expect(self.page.locator('[data-mt="work-m"]')).to_contain_text('회의 후 확정한 최종 조건')
+        expect(self.page.locator('[data-pmemo]')).to_contain_text('업무 프로젝트 메모')
         self.assertEqual(self.page.evaluate('window.__store.moms.length'), count)
 
     def test_failed_quick_record_keeps_text_and_date_across_reload(self):

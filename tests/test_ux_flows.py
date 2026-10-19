@@ -166,7 +166,8 @@ class UXFlowTests(unittest.TestCase):
         self.page.locator('[data-record-new]').click();self.page.locator('#record-body').fill('핵심으로 고정할 기록')
         self.page.locator('#record-project').select_option('work-p');self.page.locator('#record-pin').check();self.page.locator('[data-record-save]').click()
         self.page.wait_for_function("window.__store.moms.some(m=>m.t==='핵심으로 고정할 기록'&&m.pinned)")
-        self.project();expect(self.page.locator('.pm-core')).to_contain_text('핵심으로 고정할 기록')
+        self.page.locator('[data-archive-favorites]').click();expect(self.page.locator('.archive-list')).to_contain_text('핵심으로 고정할 기록')
+        self.project();expect(self.page.locator('[data-pmemo]')).to_contain_text('업무 프로젝트 메모')
         self.search('바닷가 산책');expect(self.page.locator('#sqr')).to_contain_text('WORK에서')
         self.page.locator('[data-search-space]').click();expect(self.page.locator('#sqr [data-sgo="mom"]')).to_have_count(1)
 
