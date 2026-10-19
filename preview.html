@@ -1453,10 +1453,10 @@ const fixUrl=u=>!u?'':/^https?:\/\//i.test(u)?u:/^[\w-]+(\.[\w-]+)+(\/|$)/.test(
 const locHref=l=>/^https?:\/\//i.test(l)?l:/^(www\.|[\w-]+(\.[\w-]+)+\/)\S*$/i.test(l.trim())?'https://'+l.trim():'https://map.naver.com/p/search/'+encodeURIComponent(l);
 function editTodo(id){const t=D.todos.find(x=>x.id===id);if(!t)return;
  const ps=D.projects.filter(p=>SPo(p)===SPo(t)&&(!isDoneP(p)||p.id===t.projectId));const subs=(t.subs||[]);
- 
+
  openSheet(`<div class="es">
  <div class="es-h">${isEv(t)?'<span class="es-ev"></span>':`<button type="button" class="ck es-ck${t.done?' on':''}" data-esdone aria-label="완료"></button>`}<input id="e-t" class="es-t" value="${esc(t.title)}" placeholder="제목"></div>
- 
+
  <div class="es-p">
   <label><span>구분</span><select id="e-kind"><option value="todo"${!isEv(t)?' selected':''}>할 일</option><option value="event"${isEv(t)?' selected':''}>일정</option></select></label>
   <label><span>날짜</span><input id="e-d" type="date" value="${t.date||''}"></label>
