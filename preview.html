@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f5e8">
+  <title>Arecmik · 연결되는 하루 미리보기</title>
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="preview.css">
+  <script src="preview.js" defer></script>
+</head>
+<body>
+  <div class="preview-bar"><span><span class="live-dot"></span> 디자인 미리보기 · 예시 데이터</span><button id="reset">처음으로</button></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="preview.html" aria-label="미리보기 처음으로"><img src="icon-192.png" alt="웃는 레몬"><span>Arecmik<small>나의 하루가 쌓이는 곳</small></span></a>
+      <div class="space-switch" role="group" aria-label="생활 영역"><button data-space="work" aria-pressed="true">WORK</button><button data-space="life" aria-pressed="false">LIFE</button></div>
+      <nav class="main-nav" aria-label="주 메뉴">
+        <button data-view="home" aria-current="page"><span data-icon="calendar"></span><span>홈</span></button>
+        <button data-view="projects"><span data-icon="sprout"></span><span>프로젝트</span></button>
+        <button data-view="records"><span data-icon="book"></span><span>기록</span></button>
+      </nav>
+      <div class="sidebar-note"><span data-icon="sprout"></span><p>작은 기록 하나도<br>다음의 나에게 도움이 되도록.</p><span>YOUR LITTLE ARCHIVE</span></div>
+    </aside>
+    <main id="main" tabindex="-1"></main>
+  </div>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <form id="record-form">
+      <div class="dialog-head"><div><span class="eyebrow">하루를 남기는 가장 쉬운 방법</span><h2 id="editor-title">무엇을 기억하고 싶나요?</h2></div><button type="button" class="icon-button" id="close-editor" aria-label="기록 작성 닫기"><span data-icon="close"></span></button></div>
+      <label class="sr-only" for="record-title">기록 제목</label><input id="record-title" class="title-input" placeholder="제목을 적어주세요" required maxlength="100">
+      <label class="sr-only" for="record-body">기록 내용</label><textarea id="record-body" placeholder="결정한 것, 기억할 것, 오늘의 생각… 자유롭게 남겨요." rows="7" required></textarea>
+      <div class="context-note" id="editor-context"></div>
+      <p class="helper">예시 화면에서만 저장돼요. 새로고침하면 초기화됩니다.</p>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancel-editor">취소</button><button class="primary" type="submit">기록 남기기 <span data-icon="arrow"></span></button></div>
+    </form>
+  </dialog>
+  <dialog id="task-editor" aria-labelledby="task-title">
+    <form id="task-form">
+      <div class="dialog-head"><div><span class="eyebrow">기록에서 이어지는 다음 행동</span><h2 id="task-title">할 일로 연결하기</h2></div><button type="button" class="icon-button" id="close-task" aria-label="할 일 작성 닫기"><span data-icon="close"></span></button></div>
+      <label for="next-task">다음에 할 일</label><input id="next-task" required maxlength="100">
+      <label for="next-date">날짜</label><input id="next-date" type="date" value="2026-10-20" min="2026-10-01" max="2026-10-31" required>
+      <p class="helper">달력 동작은 예시인 2026년 10월 안에서 살펴볼 수 있어요.</p>
+      <p class="context-note"><span data-icon="link"></span> 이 기록과 자동으로 연결돼요.</p>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancel-task">취소</button><button class="primary" type="submit">할 일 만들기 <span data-icon="arrow"></span></button></div>
+    </form>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <svg xmlns="http://www.w3.org/2000/svg" class="svg-defs" aria-hidden="true"><defs>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h2m4 0h2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h11a4 4 0 0 1 4 4v13H8a4 4 0 0 1-4-4Zm0 12h15M8 8h7m-7 4h5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 14 4-4m-6 5-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0m2 2 1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9m0 3C5 15 3 10 3 5c6 0 9 3 9 8m0-1c0-6 4-9 9-9 0 6-3 10-9 10"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Z"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5m5-5-5 5 5 5"/></symbol>
+  </defs></svg>
+</body>
+</html>
