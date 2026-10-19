@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.19.3"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
-<script src="app-theme.js?v=2026.10.19.3"></script>
+<title>Arecmik</title><meta name="application-version" content="2026.10.19.4"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<script src="app-theme.js?v=2026.10.19.4"></script>
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -1211,7 +1211,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
 .record-editor{min-height:160px;max-height:45vh;overflow:auto;padding:14px;border-radius:14px}
 .archive-list mark{background:#37352F;color:#fff;border-radius:3px;padding:0 2px}
 @media(max-width:600px){.archive-intro{align-items:flex-start}.archive-intro h2{font-size:21px}.archive-intro .ink{padding:9px 12px;font-size:12px}.archive-tools{gap:6px}.archive-tools button{padding:7px 10px}.archive-row{gap:8px}.record-editor{min-height:140px}}
-</style><link rel="stylesheet" href="app-theme.css?v=2026.10.19.3"><link rel="stylesheet" href="app-ux.css?v=2026.10.19.3"><link rel="stylesheet" href="connections.css?v=2026.10.19.3"></head><body>
+</style><link rel="stylesheet" href="app-theme.css?v=2026.10.19.4"><link rel="stylesheet" href="app-ux.css?v=2026.10.19.4"><link rel="stylesheet" href="connections.css?v=2026.10.19.4"></head><body>
 <div id="login" hidden><div class="g"><img src="icon-192.png" width="80" height="80" alt="Arecmik 레몬" style="border-radius:24px"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
 <header class="top">
@@ -1219,7 +1219,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
  <div class="tr"><button class="ic" data-search aria-label="찾기" title="전체 찾기 (Ctrl+K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-app-theme-open>앱 테마 <span class="app-theme-menu-label" data-app-theme-label></span></button><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-backup-import>백업 가져오기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.19.3</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-app-theme-open>앱 테마 <span class="app-theme-menu-label" data-app-theme-label></span></button><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-backup-import>백업 가져오기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.19.4</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
@@ -1295,8 +1295,30 @@ function pCost(p){const F=((p.tbl||{}).fields||[]).filter(f=>f.t==='num');if(!F.
 const IMGC={};
 function shrink(file,M=1400){return new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{let W=im.width,H=im.height;const go=(m,q)=>{const k=Math.min(1,m/Math.max(W,H)),c=document.createElement('canvas');c.width=Math.round(W*k);c.height=Math.round(H*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)};let d=go(M,.8);if(d.length>700000)d=go(1000,.72);if(d.length>700000)d=go(800,.65);ok(d)};im.onerror=no;im.src=r.result};r.onerror=no;r.readAsDataURL(file)})}
 async function upImg(file){const d=await shrink(file);const x=await addDoc(col('imgs'),{d,created:Date.now()});IMGC[x.id]=d;return x.id}
-function pickFiles(multi=true){return new Promise(ok=>{const i=document.createElement('input');i.type='file';i.accept='image/*';i.multiple=multi;i.onchange=()=>ok([...i.files]);i.click()})}
+function pickFiles(multi=true){return new Promise(ok=>{const i=document.createElement('input');i.type='file';i.accept='image/*';i.multiple=multi;i.hidden=true;document.body.appendChild(i);const done=()=>{i.remove();ok([...i.files||[]])};i.onchange=done;i.oncancel=done;i.click()})}
 async function pickImgs(){const F=await pickFiles();if(!F.length)return[];toast('사진 올리는 중…');const out=[];for(const f of F){try{out.push(await upImg(f))}catch(_){toast('사진을 올리지 못했어요')}}return out}
+const imageJobs=new Set();
+function sheetImagesBusy(){return [...imageJobs].some(ed=>$('#sheet').contains(ed))}
+async function uploadEditorImages(ed,files,block=null){
+ if(!ed?.isConnected||imageJobs.has(ed))return;
+ const uid=ME?.uid,status=document.createElement('p'),label=document.createElement('span'),cancel=document.createElement('button');status.className='archive-help image-upload-status';status.setAttribute('role','status');label.textContent='사진을 선택해 주세요';cancel.type='button';cancel.className='link';cancel.textContent='추가 취소';status.append(label,cancel);
+ const canceled=new Promise(resolve=>{cancel.onclick=()=>resolve(null)});
+ imageJobs.add(ed);ed.setAttribute('aria-busy','true');ed.after(status);
+ let added=0,failed=0;
+ try{
+  const selected=await Promise.race([typeof files==='function'?files():files,canceled]);if(!selected)return;
+  for(const file of selected){
+   if(!ed.isConnected||ME?.uid!==uid)break;
+   label.textContent=`사진 올리는 중… ${added+failed+1}/${selected.length}`;
+   try{const id=await Promise.race([upImg(file),canceled]);if(!id||!ed.isConnected||ME?.uid!==uid)break;block=insertImgAt(ed,block,id);added++}
+   catch(_){failed++}
+  }
+  if(ME?.uid===uid&&ed.isConnected){if(failed)toast(`사진 ${failed}장을 올리지 못했어요. 다시 추가해 주세요.`);else if(added)toast(ed.closest('#sheet')?'사진을 넣었어요. 저장을 눌러 함께 보관해 주세요.':'사진을 넣었어요.')}
+ }catch(_){if(ME?.uid===uid)toast('사진을 열지 못했어요. 다시 선택해 주세요.')
+ }finally{imageJobs.delete(ed);ed.removeAttribute('aria-busy');status.remove();if(pendR)renderQ()}
+}
+// Uploads must finish before a sheet is saved; otherwise the photo arrives after its memo was closed.
+document.addEventListener('click',e=>{if(e.target.closest?.('#sheet [data-esave],#sheet [data-xsave],#sheet [data-rsave],#sheet [data-record-save]')&&sheetImagesBusy()){e.preventDefault();e.stopImmediatePropagation();toast('사진을 올리는 중이에요. 완료 후 저장해 주세요.')}},true);
 function hydr(root){(root||document).querySelectorAll('img[data-img]').forEach(im=>{const id=im.dataset.img;if(!id)return;if(IMGC[id]){if(im.src!==IMGC[id])im.src=IMGC[id];return}
  getDoc(dc('imgs',id)).then(r=>{if(r&&r.exists()){IMGC[id]=r.data().d;$$(`img[data-img="${id}"]`).forEach(x=>x.src=IMGC[id])}else{const w=im.closest('.img');(w||im).remove()}}).catch(()=>{})})}
 const imgTag=id=>`<img data-img="${id}" alt="">`;
@@ -1444,8 +1466,8 @@ window.addEventListener('pagehide',()=>{captureLineInputs();persistSheetDraft()}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){captureLineInputs();persistSheetDraft()}});
 
 let sheetRes=null;
-function openSheet(html){persistSheetDraft();sheetDraft=null;persistRecordDraft();$('#sheet').innerHTML=html;queueMicrotask(()=>{restoreSheetDraft();connectionUI?.refresh()});$('#scrim').classList.add('on');setTimeout(()=>{if($('#sheet').contains(document.activeElement))return;const f=$('#sheet input:not([type=date]):not([type=time]),#sheet textarea,#sheet .rt');f&&f.focus()},40)}
-function closeSheet(v){if(sheetSaving)return false;persistSheetDraft();persistRecordDraft();$('#scrim').classList.remove('on');if(sheetRes){const r=sheetRes;sheetRes=null;r(v)}if(pendR){pendR=false;render()}if(sheetSearchOrigin){const origin=sheetSearchOrigin;sheetSearchOrigin=null;sq=origin.query;openSearch()}connectionUI?.refresh()}
+function openSheet(html){persistSheetDraft();sheetDraft=null;persistRecordDraft();$('#sheet').innerHTML=html;queueMicrotask(()=>{restoreSheetDraft();hydr($('#sheet'));connectionUI?.refresh()});$('#scrim').classList.add('on');setTimeout(()=>{if($('#sheet').contains(document.activeElement))return;const f=$('#sheet input:not([type=date]):not([type=time]),#sheet textarea,#sheet .rt');f&&f.focus()},40)}
+function closeSheet(v){if(sheetSaving)return false;if(sheetImagesBusy()){toast('사진을 올리는 중이에요. 완료 후 닫아 주세요.');return false}persistSheetDraft();persistRecordDraft();$('#scrim').classList.remove('on');if(sheetRes){const r=sheetRes;sheetRes=null;r(v)}if(pendR){pendR=false;render()}if(sheetSearchOrigin){const origin=sheetSearchOrigin;sheetSearchOrigin=null;sq=origin.query;openSearch()}connectionUI?.refresh()}
 function ask(msg,ok='확인'){return new Promise(r=>{sheetRes=r;openSheet(`<h3>${esc(msg)}</h3><div class="bt"><button class="soft" data-sx="0">아니요</button><button class="ink" data-sx="1">${esc(ok)}</button></div>`)})}
 function askText(title,ph,val=''){return new Promise(r=>{sheetRes=r;openSheet(`<h3>${esc(title)}</h3><div class="f"><input id="atx" placeholder="${esc(ph)}" value="${esc(val)}"></div><div class="bt"><button class="soft" data-sx="0">취소</button><button class="ink" data-sx="t">확인</button></div>`)})}
 const fixUrl=u=>!u?'':/^https?:\/\//i.test(u)?u:/^[\w-]+(\.[\w-]+)+(\/|$)/.test(u)?'https://'+u:u;
@@ -1468,7 +1490,7 @@ function editTodo(id){const t=D.todos.find(x=>x.id===id);if(!t)return;
   <label><span>프로젝트</span><select id="e-p"><option value="">없음</option>${ps.map(p=>`<option value="${p.id}"${p.id===t.projectId?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
   <label><span>장소</span><div class="es-tm"><input id="e-l" value="${esc(t.loc||'')}" placeholder="주소나 지도 링크">${t.loc?`<a class="es-go" href="${esc(locHref(t.loc))}" target="_blank" rel="noopener">지도 ↗</a>`:''}</div></label>
   <label><span>링크</span><div class="es-tm"><input id="e-k" value="${esc(t.link||'')}" placeholder="https://" inputmode="url">${/^https?:\/\//.test(t.link||'')?`<a class="es-go" href="${esc(t.link)}" target="_blank" rel="noopener">열기 ↗</a>`:''}</div></label>
-  <div class="es-memo"><span>메모</span><div class="rt well es-rt" contenteditable="true" id="e-n" data-ph="어떻게 됐는지, 기억할 것 · / 로 서식">${t.noteH?safeHTML(t.noteH):linkify(t.note||'')}</div></div>
+  <div class="es-memo"><span>메모</span><div class="es-memo-body"><div class="rt well es-rt" contenteditable="true" id="e-n" data-ph="어떻게 됐는지, 기억할 것 · / 로 서식">${t.noteH?safeHTML(t.noteH):linkify(t.note||'')}</div><button type="button" class="link memo-photo" data-memo-photo="e-n">＋ 사진 추가</button></div></div>
  </div>
  <div class="es-c" id="e-c" data-tid="${t.id}"${t.projectId&&pMods(PJ(t.projectId)||{}).cost?'':' hidden'}></div>
  <div class="es-s"><div class="es-sh">하위 할 일</div><div id="e-subs">${subs.map(esRow).join('')}</div><input id="e-sadd" class="es-add" placeholder="＋ 하위 할 일 · Enter"></div>
@@ -1687,9 +1709,9 @@ document.addEventListener('compositionstart',()=>{composing=true},true);
 document.addEventListener('compositionend',()=>{composing=false;if(pendR)renderQ()},true);
 const LINE_SEL='#main .sp-in,#main #qi,#main [data-cin],#main [data-sin],#main [data-sin2],#main #hri';
 function lineFocus(){const a=document.activeElement;return a&&a.matches?.(LINE_SEL)?a:null}
-function holdRender(){return editing()&&(composing||!lineFocus())}
+function holdRender(){return imageJobs.size>0||editing()&&(composing||!lineFocus())}
 function renderQ(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;if(calRange||holdRender()||$('.qa')||$('#scrim').classList.contains('on')){pendR=true;return}pendR=false;render()})}
-document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!calRange&&!$('.qa')&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
+document.addEventListener('focusout',()=>setTimeout(()=>{if(pendR&&!calRange&&!$('.qa')&&!imageJobs.size&&!editing()&&!$('#scrim').classList.contains('on')){pendR=false;render()}},60));
 function render(){if(!ME)return;if(calRange)cancelCalRange();captureLineInputs();const ae=document.activeElement,fid=ae&&ae.id,fs=ae&&ae.selectionStart,keep=fid&&['qi','rq','hri','rfq','udi','spi'].includes(fid)?ae.value:null;const sinK=ae&&ae.dataset&&ae.dataset.sin,sinV=sinK?ae.value:'';const cinK=ae&&ae.dataset&&ae.dataset.cin,cinV=cinK?ae.value:'';const lineK=!fid&&!cinK&&!sinK&&lineFocus()?lineInputKey(ae,0):null,lineV=lineK?ae.value:'';
  $$('[data-sp]').forEach(b=>b.classList.toggle('on',b.dataset.sp===U.sp));$$('.nav [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===U.tab));
  if(!U.ready){drawSyncState();return}
@@ -1746,12 +1768,11 @@ document.addEventListener('keydown',e=>{const t=e.target;
  if(t.closest&&t.closest('.tbl')&&t.tagName==='INPUT'){e.preventDefault();t.blur()}});
 document.addEventListener('paste',async e=>{const ed=e.target.closest&&e.target.closest('.rt[contenteditable]');if(!ed)return;const cd=e.clipboardData;if(!cd)return;
  const f=[...cd.files||[]].filter(x=>/^image\//.test(x.type));e.preventDefault();
- if(f.length){for(const x of f){try{const id=await upImg(x);insertImg(ed,id)}catch(_){toast('사진을 올리지 못했어요')}}return}
+ if(f.length){await uploadEditorImages(ed,f,curBlk(ed));return}
  const t=cd.getData('text/plain');const sel=getSelection();
  if(isURL(t.trim())&&sel&&!sel.isCollapsed&&ed.contains(sel.anchorNode)){document.execCommand('createLink',false,normURL(t.trim()));fixLinks(ed);ed.dispatchEvent(new Event('input',{bubbles:true}));return}
  if(URLRX().test(t)){document.execCommand('insertHTML',false,linkify(t));fixLinks(ed);ed.dispatchEvent(new Event('input',{bubbles:true}));return}
  document.execCommand('insertText',false,t)});
-function insertImg(ed,id){const w=document.createElement('div');w.className='img';w.contentEditable='false';w.innerHTML=imgTag(id);const nx=document.createElement('div');nx.innerHTML='<br>';ed.appendChild(w);ed.appendChild(nx);hydr(w);ed.dispatchEvent(new Event('input',{bubbles:true}))}
 function cAdd(){const i=$('#ci');if(!i||!i.value.trim())return;const r=parseQ(i.value);if(r.error){toast(r.error);return}saveQuickTask(i,{title:r.title,date:r.date||U.calSel,time:r.time,pid:r.pid})}
 
 function openAppTheme(){
@@ -1805,8 +1826,9 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if(t.closest('[data-cam]')){const im=await pickImgs();if(im.length){pend.push(...im);render();const i=$('#qi');if(i){i.focus();updPv(i)}}return}
  if((b=t.closest('[data-unatt]'))){pend.splice(+b.dataset.unatt,1);render();return}
  if((b=t.closest('[data-addon]'))){openCell(b.dataset.addon,b);return}
- if((b=t.closest('[data-logimg]'))){const k=b.dataset.logimg,ed=document.querySelector(`[data-log="${k}"]`);const F=await pickFiles();if(!F.length)return;toast('사진 올리는 중…');for(const f of F){try{const id=await upImg(f);const el=document.querySelector(`[data-log="${k}"]`)||ed;if(el)insertImg(el,id)}catch(_){toast('사진을 올리지 못했어요')}}return}
- if((b=t.closest('[data-dimg]'))){$$('.pop').forEach(x=>x.remove());const ed=$('[data-db]');if(!ed)return;const F=await pickFiles();for(const f of F){try{insertImg(ed,await upImg(f))}catch(_){toast('사진을 올리지 못했어요')}}return}
+ if((b=t.closest('[data-memo-photo]'))){const ed=document.getElementById(b.dataset.memoPhoto);await uploadEditorImages(ed,()=>pickFiles());return}
+ if((b=t.closest('[data-logimg]'))){await uploadEditorImages(document.querySelector(`[data-log="${b.dataset.logimg}"]`),()=>pickFiles());return}
+ if((b=t.closest('[data-dimg]'))){$$('.pop').forEach(x=>x.remove());await uploadEditorImages($('[data-db]'),()=>pickFiles());return}
  if(t.closest('[data-golog]')){go('rec',{rt:'log',ry:+T().slice(0,4),rm:+T().slice(5,7),q:'',editLog:''});return}
  if((b=t.closest('[data-open]'))){perOpen=false;go('proj',{pid:b.dataset.open});return}
  if(t.closest('[data-newp]')){const n=await askText('새 프로젝트','예) 12월 제주 여행');if(n){const id=await addProj(n);D.projects.push({id,name:n,space:U.sp,status:'active',start:T(),created:Date.now()});go('proj',{pid:id});toast('만들었어요. 입력칸에 할 일을 적어 보세요')}return}
@@ -1878,7 +1900,7 @@ async function applyBackup(button){
 document.addEventListener('click',e=>{if(e.target.closest?.('[data-backup-import]')){$('#menu').classList.remove('on');openBackupRestore();return}const b=e.target.closest?.('[data-backup-apply]');if(b)applyBackup(b)});
 document.addEventListener('change',e=>{if(e.target.id==='backup-file')previewBackup(e.target.files[0])});
 
-import {readBackup,backupChunks,BACKUP_COLLECTIONS} from './backup-restore.js?v=2026.10.19.3';
+import {readBackup,backupChunks,BACKUP_COLLECTIONS} from './backup-restore.js?v=2026.10.19.4';
 const COLS=['todos','projects','notes','refs','ents','moms','logs','exps','fbk','imgs','trash'];
 async function backup(){
  if(autoBusy.size||autoPending.size){flushAutoSaves();toast('편집을 저장하고 있어요. 저장 완료 후 백업을 다시 눌러 주세요.');return}
@@ -1894,7 +1916,7 @@ async function wipe(){if(!await ask('전체 데이터를 초기화할까요? 할
  toast(`전체 데이터를 초기화했어요 (${n}개)`);go('home')}
 
 /* ================= 시작 ================= */
-const {setupAndroidApp}=await import('./android-app.js?v=2026.10.19.3');
+const {setupAndroidApp}=await import('./android-app.js?v=2026.10.19.4');
 const nativeApp=setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,signOut,loginButton:$('#gl'),notify:toast,onBack:handleBack});
 if(!nativeApp)$('#gl').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('로그인하지 못했어요: '+e.message));
 const syncErrors=new Map(),syncReceived=new Set();let syncGeneration=0,syncWaitTimer=0;
@@ -1939,10 +1961,10 @@ function curBlk(ed){const s=getSelection();if(!s.rangeCount)return null;let n=s.
 function ensureBlk(ed){if(!ed.firstElementChild||[...ed.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())){const h=ed.innerHTML;if(!/^\s*</.test(h)||[...ed.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())){const t=[...ed.childNodes].map(n=>n.nodeType===3?`<div>${esc(n.textContent)}</div>`:n.outerHTML).join('');ed.innerHTML=t||'<div><br></div>'}}}
 function caretEnd(el){const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}
 function setBlk(ed,b,cls){if(!b)return;if(cls==='hr'){const hr=document.createElement('div');hr.className='hrl2';hr.contentEditable='false';const nx=document.createElement('div');nx.innerHTML='<br>';if(!b.textContent.trim()){b.replaceWith(hr)}else b.after(hr);hr.after(nx);caretEnd(nx);fire(ed);return}
- if(cls==='img'){(async()=>{const F=await pickFiles();for(const f of F){try{insertImgAt(ed,b,await upImg(f))}catch(_){toast('사진을 올리지 못했어요')}}})();return}
+ if(cls==='img'){uploadEditorImages(ed,()=>pickFiles(),b);return}
  BCLS.forEach(c=>b.classList.remove(c));b.classList.remove('on');if(cls)b.classList.add(cls);if(cls==='tgl')b.classList.add('open');
  if(cls==='co'||cls==='tgl'){const cc=cls==='co'?'coc':'tgc';b.dataset.ph='제목';const nx=b.nextElementSibling;if(!nx||!nx.classList.contains(cc)){const d=document.createElement('div');d.className=cc;d.dataset.ph='내용';d.innerHTML='<br>';b.after(d)}}if(!b.className)b.removeAttribute('class');if(!b.innerHTML)b.innerHTML='<br>';caretEnd(b);fire(ed)}
-function insertImgAt(ed,b,id){const w=document.createElement('div');w.className='img';w.contentEditable='false';w.innerHTML=imgTag(id);const nx=document.createElement('div');nx.innerHTML='<br>';if(b&&ed.contains(b)){if(!b.textContent.trim()&&!b.querySelector('img'))b.replaceWith(w);else b.after(w)}else ed.appendChild(w);w.after(nx);hydr(w);caretEnd(nx);fire(ed)}
+function insertImgAt(ed,b,id){const w=document.createElement('div');w.className='img';w.contentEditable='false';w.innerHTML=imgTag(id);const nx=document.createElement('div');nx.innerHTML='<br>';if(b&&ed.contains(b)){if(!b.textContent.trim()&&!b.querySelector('img'))b.replaceWith(w);else b.after(w)}else ed.appendChild(w);w.after(nx);hydr(w);caretEnd(nx);fire(ed);return nx}
 const fire=ed=>ed.dispatchEvent(new Event('input',{bubbles:true}));
 let slash=null;
 function slashOpen(ed,b){slashClose();const m=document.createElement('div');m.className='slm g solid';m.innerHTML=BLK.map((x,i)=>`<button data-si="${i}" class="${i?'':'on'}"><span>${x[0]}</span><em>${x[2]}</em></button>`).join('');document.body.appendChild(m);
@@ -2855,7 +2877,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
 document.addEventListener('change',e=>{const t=e.target,state=archiveState[U.sp];if(t.matches('[data-archive-month]'))state.month=t.value;else if(t.matches('[data-archive-project]'))state.pid=t.value;else return;state.limit=40;render()});
 
 /* Shared connections preserve each item's original editor and storage. */
-import {installConnections} from './connections-ui.js?v=2026.10.19.3';
+import {installConnections} from './connections-ui.js?v=2026.10.19.4';
 connectionUI=installConnections({
  D,U,uid:()=>ME?.uid,plain:txt,getLogs,isEvent:isEv,date:ms=>ymd(new Date(ms)),
  getSpace:(ref,row)=>ref.c==='fbk'?row.sp||'work':ref.c==='logs'?(ref.id==='memo_life'?'life':'work'):ref.c==='exps'?recordSpace(row,'expense'):ref.c==='ents'?SPo(PJ(row.pid)||row):ref.c==='projects'||ref.c==='todos'||ref.c==='refs'?SPo(row):recordSpace(row,'doc'),
@@ -2864,11 +2886,11 @@ connectionUI=installConnections({
  ref:(uid,c,id)=>doc(db,'users',uid,c,id),newRef:(uid,c)=>doc(collection(db,'users',uid,c)),transaction:callback=>runTransaction(db,callback),
  changed:()=>{connectionUI?.refresh();renderQ()},notify:toast,toggle,todoData,validDate,render:renderQ,
  loadDraft:LS,saveDraft:LSS,removeDraft:key=>{try{localStorage.removeItem(key)}catch(_){}},
- canNavigate:()=>!sheetSaving,hasSheet:()=>$('#scrim').classList.contains('on'),snapshot:()=>({...navSnapshot(),connectionSearchOrigin:sheetSearchOrigin}),
+ canNavigate:()=>!sheetSaving&&!imageJobs.size,hasSheet:()=>$('#scrim').classList.contains('on'),snapshot:()=>({...navSnapshot(),connectionSearchOrigin:sheetSearchOrigin}),
  restore:snapshot=>{closeSheet();restoreNavigation(snapshot)},
  newRecord:n=>{closeSheet();if($('#srch')?.classList.contains('on'))closeSearch();recordSheet(null,n.ref.c==='projects'?n.ref.id:n.pid,n.ref)},
  openNode:(ref,snapshot=null)=>{
-  if(sheetSaving)return;persistRecordDraft();persistSheetDraft();closeSheet();if($('#srch')?.classList.contains('on'))closeSearch();
+  if(sheetSaving||imageJobs.size)return;persistRecordDraft();persistSheetDraft();closeSheet();if($('#srch')?.classList.contains('on'))closeSearch();
   const n=connectionUI.node(ref);if(!n)return;U.sp=n.space;
   if(ref.c==='ents'){const row=D.ents.find(r=>r.id===ref.id);rowOpen=ref.id;go('proj',{pid:row.pid});flash('[data-hrow="'+CSS.escape(ref.id)+'"]');return;}
   if(ref.c==='logs'){go('rec',{rt:'ref',doc:'',q:''});flash('[data-memo="'+CSS.escape(ref.id)+'"]');return;}

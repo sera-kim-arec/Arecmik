@@ -85,4 +85,8 @@
 }
 @media(max-width:380px){.mg{padding:8px;gap:0}}
 @keyframes ux-spin{to{transform:rotate(360deg)}}
+.es-memo-body{min-width:0}
+.memo-photo{min-height:44px;padding:8px 10px;display:inline-flex;align-items:center}
+.image-upload-status{margin:6px 0;line-height:1.5}
+.image-upload-status button{min-height:44px;margin-left:8px;padding:8px}
 @media(prefers-reduced-motion:reduce){html[data-app-theme] .it [aria-busy="true"]::before{animation:none}}
