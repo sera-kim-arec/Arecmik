@@ -21,7 +21,7 @@ class ProjectMemoTests(unittest.TestCase):
     def project(self):
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator('[data-open="work-p"]').click()
-        expect(self.page.locator('.pmemo')).to_be_visible()
+        expect(self.page.locator('.pmemo:not(.pcore)')).to_be_visible()
 
     def test_pin_edit_original_and_unpin_without_copying_or_losing_history(self):
         count = self.page.evaluate('window.__store.moms.length')

@@ -155,7 +155,7 @@ class UXFlowTests(unittest.TestCase):
         self.page.locator('[data-qax]').click()
         self.link_task();self.project()
         box=self.page.locator('[data-ck="work-t"]').bounding_box();self.assertGreaterEqual(min(box['width'],box['height']),44)
-        self.mutate("for(let i=0;i<20;i++)await m.setDoc(ref('moms','history-'+i),{pid:'work-p',space:'work',d:'2026-10-15',at:i,t:'진행 기록 '+i});")
+        self.mutate("for(let i=0;i<20;i++)await m.setDoc(ref('notes','history-'+i),{pid:'work-p',space:'work',date:'2026-10-15',created:i,title:'관련 글 '+i,html:'<div>관련 내용</div>'});")
         self.page.locator('[data-zoom="near"]').click()
         expect(self.page.locator('.project-records .archive-row')).to_have_count(6)
         self.page.locator('[data-project-record-more]').click()

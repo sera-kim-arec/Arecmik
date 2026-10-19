@@ -6,10 +6,10 @@ source = (ROOT / 'index.html').read_text()
 source = source.replace('<title>Arecmik</title>', '<title>Arecmik · 기존 화면 개선 미리보기</title>')
 source = re.sub(r'<link rel="manifest"[^>]*>', '', source)
 source = re.sub(r'<script src="app-theme.js[^>]*></script>', '<script>document.documentElement.dataset.appTheme="lemon";window.ArecmikTheme={choices:[{id:"lemon",name:"레몬 크림",description:"따뜻한 크림 바탕",color:"#F8F5E8"},{id:"mono",name:"흑백",description:"차분한 무채색",color:"#F4F4F3"}],current:()=>document.documentElement.dataset.appTheme,apply:id=>{document.documentElement.dataset.appTheme=id;return true;}};</script>', source)
-source = source.replace('</head>', '<link rel="stylesheet" href="preview.css?v=2"></head>')
-source = source.replace('<body>', '<body><div class="preview-note"><span>예시 데이터 · 기존 화면을 유지한 미리보기</span><div><button data-preview-mode="off" aria-pressed="false">현재 구성</button><button data-preview-mode="on" aria-pressed="true">작은 개선안</button></div></div><script>document.documentElement.dataset.previewChanges="on";</script>', 1)
-source = source.replace('<div id="login"', '<section id="preview-loading" class="g box" style="max-width:520px;margin:24px auto" role="status">예시 화면을 불러오고 있어요.</section><script>setTimeout(()=>{const el=document.getElementById("preview-loading");if(el)el.innerHTML=\'<b>미리보기를 불러오지 못했어요.</b><p>페이지를 새로고침해 주세요.</p><a href="preview.html?v=2">다시 불러오기</a>\';},8000);</script><div id="login"', 1)
-source = re.sub(r'https://www[.]gstatic[.]com/firebasejs/[^" ]+/firebase-(?:app|auth|firestore)[.]js', './preview-store.js?v=2', source)
+source = source.replace('</head>', '<link rel="stylesheet" href="preview.css?v=3"></head>')
+source = source.replace('<body>', '<body><div class="preview-note"><span>미리보기 · 예시 데이터 · 새로고침하면 초기화돼요</span><a href="index.html">실제 앱 열기 ↗</a></div>', 1)
+source = source.replace('<div id="login"', '<section id="preview-loading" class="g box" style="max-width:520px;margin:24px auto" role="status">예시 화면을 불러오고 있어요.</section><script>setTimeout(()=>{const el=document.getElementById("preview-loading");if(el)el.innerHTML=\'<b>미리보기를 불러오지 못했어요.</b><p>페이지를 새로고침해 주세요.</p><a href="preview.html?v=3">다시 불러오기</a>\';},8000);</script><div id="login"', 1)
+source = re.sub(r'https://www[.]gstatic[.]com/firebasejs/[^" ]+/firebase-(?:app|auth|firestore)[.]js', './preview-store.js?v=3', source)
 source = re.sub(r'const app=initializeApp\(\{[^\n]+\}\);', 'const app=initializeApp({});', source)
 source = source.replace('const PREVIEW=false;', 'const PREVIEW=true;\nconst previewStorage=(()=>{const values=new Map();return {getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,String(value)),removeItem:key=>values.delete(key)};})();')
 source = source.replace('localStorage', 'previewStorage')
@@ -17,7 +17,7 @@ source = source.replace("if('serviceWorker' in navigator)navigator.serviceWorker
 source = re.sub(r"const \{setupAndroidApp\}=await import\('[^']+'\);\nconst nativeApp=setupAndroidApp\([^\n]+\);", 'const nativeApp=null;', source)
 for name in ['apk-download','widget-install','backup','backup-import','logout','wipe']:
  source = re.sub(r'<button data-'+name+r'(?:[ >])[^<]*</button>', '', source)
-source = source.replace(' saveU()}', ' saveU();applyPreviewHints()}')
+source = source.replace(' saveU();connectionUI?.refresh()}', ' saveU();connectionUI?.refresh();applyPreviewHints()}')
 position = source.rfind('</script>')
 assert position > 0
 source = source[:position] + '\n' + (ROOT/'preview.js').read_text() + '\n' + source[position:]
