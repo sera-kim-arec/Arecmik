@@ -145,13 +145,12 @@ html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
 .layout-refined .layout-fold-hint,.layout-day-overview,.layout-project-overview,.layout-refined .meta,.layout-refined .tg{color:var(--t2)}
 .layout-refined .layout-fold-hint,.layout-day-overview,.layout-type-count{font-size:12px}
 .layout-refined .it .nt{font-size:13px}
-.layout-capture{display:flex;align-items:center;gap:12px;min-width:0;padding:8px 10px 8px 16px;margin:0 0 12px;border-radius:13px!important}
-.layout-capture label{flex:none;font-size:13px;font-weight:650;color:var(--t2)}
-.layout-capture #udi{flex:1;min-width:0;width:auto;min-height:44px;margin:0;padding:8px 0;background:transparent;border:0;border-radius:4px;box-shadow:none;font-size:14px;color:var(--tx)}
-.layout-capture #udi::placeholder{color:var(--mu);opacity:1}
-.layout-capture [data-layout-add-task]{flex:none;min-height:44px;padding:8px 15px}
-.layout-task-rail>.layout-capture{margin:0}
-.layout-capture:has(input[data-saving]) [data-layout-add-task]{opacity:.55;cursor:progress}
+.layout-task-create{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;min-width:0;margin-top:12px;padding-top:12px;border-top:1px solid var(--ln)}
+.layout-task-create #udi{min-width:0;width:100%;min-height:44px;margin:0;padding:10px 12px;background:var(--field);border:1px solid var(--ln);border-radius:10px;box-shadow:none;font-size:13px;color:var(--tx)}
+.layout-task-create #udi::placeholder{color:var(--mu);opacity:1}
+.layout-task-create [data-layout-add-task]{min-height:44px;padding:8px 12px;font-weight:500}
+.layout-task-create [data-pending-event]{grid-column:1/-1;justify-self:end;min-height:44px;padding:6px 0;font-size:12px;font-weight:400}
+.layout-task-create:has(input[data-saving]) [data-layout-add-task]{opacity:.55;cursor:progress}
 .layout-write-group{grid-column:2;grid-row:1;display:flex;align-items:center;gap:5px}
 .layout-write-group>[data-record-new]{white-space:nowrap;min-height:44px;padding:9px 14px}
 .layout-write-group>.layout-write>summary{min-width:44px;min-height:44px;padding:0;border:1px solid var(--ln);background:var(--card);color:var(--t2);font-size:20px}
@@ -169,9 +168,6 @@ html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
  .layout-record-types button{font-size:12px}
  .layout-home-attention button{font-size:12px}
  .layout-refined .hhead h1 small{font-size:12px}
- .layout-capture{gap:8px;padding:6px 8px 6px 12px}
- .layout-capture #udi{font-size:13px}
- .layout-capture [data-layout-add-task]{padding:8px 12px}
  .layout-write-group>[data-record-new]{padding:8px 11px;font-size:12px}
  .layout-refined .archive-content strong{font-size:15px}
 }
