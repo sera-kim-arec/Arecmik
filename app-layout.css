@@ -108,7 +108,7 @@ html.layout-refined .sp button.on{background:var(--selection)!important;color:va
 .layout-refined .layout-task-rail>.rzh{display:none}
 .layout-refined .layout-task-rail .undbox .ct{flex-wrap:wrap;gap:6px}
 .layout-refined .layout-task-rail .undbox .ct small{font-size:11px;white-space:normal;text-align:left}
-.layout-refined .layout-task-rail .undbox .it{padding:9px 0}
+.layout-refined .layout-task-rail .undbox .it{padding:4px 0}
 .layout-record-toolbar{flex-wrap:wrap}
 @media(min-width:901px){
  .layout-refined .tr [data-search]{display:flex;align-items:center;gap:10px;width:204px;height:44px;padding:0 13px;border-radius:12px;border:1px solid var(--ln);box-shadow:none;background:var(--card);color:var(--t2)}
@@ -176,3 +176,9 @@ html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
  .layout-refined .archive-content strong{font-size:15px}
 }
 @media(max-width:380px){.record-meta{grid-template-columns:minmax(0,1fr);gap:0}}
+
+/* Keep task rows light while preserving their touch targets. */
+.layout-refined .it{padding:4px 0;line-height:1.5;align-items:center}
+.layout-refined .it .tt{font-weight:400;line-height:1.5;padding:4px 0}
+.layout-refined .it.ev .tt{font-weight:500}
+.layout-refined .it em{font-weight:500}
