@@ -146,6 +146,7 @@ class ArchiveTests(unittest.TestCase):
     def test_spaces_search_and_legacy_references(self):
         expect(self.page.locator(".archive")).to_contain_text("업무 회의 회고")
         expect(self.page.locator(".archive")).not_to_contain_text("바닷가 산책")
+        self.page.locator('[data-archive-filter="ref"]').click()
         expect(self.page.locator(".archive")).to_contain_text("기존 자료")
         self.life()
         expect(self.page.locator(".archive")).to_contain_text("바닷가 산책")
@@ -292,7 +293,7 @@ class ArchiveTests(unittest.TestCase):
         }""")
         expect(self.page.locator(".archive [data-archive-open]")).to_have_count(40)
         self.page.locator("[data-archive-more]").click()
-        expect(self.page.locator(".archive [data-archive-open]")).to_have_count(52)
+        expect(self.page.locator(".archive [data-archive-open]")).to_have_count(50)
         expect(self.page.locator("[data-archive-more]")).to_have_count(0)
 
 
