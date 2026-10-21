@@ -292,7 +292,7 @@ class ArchiveTests(unittest.TestCase):
         }""")
         expect(self.page.locator(".archive [data-archive-open]")).to_have_count(40)
         self.page.locator("[data-archive-more]").click()
-        expect(self.page.locator(".archive [data-archive-open]")).to_have_count(53)
+        expect(self.page.locator(".archive [data-archive-open]")).to_have_count(52)
         expect(self.page.locator("[data-archive-more]")).to_have_count(0)
 
 

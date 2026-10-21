@@ -25,6 +25,11 @@ store.notes.push({id:'preview-work-journal',log:true,date:dayAt(-1),space:'work'
 store.ents.push({id:'preview-studio',pid:'preview-work',title:'디자인 스튜디오',v:{stage:'검토',date:day},created:stamp});
 store.exps.push({id:'preview-work-expense',t:'참고 도서 구입',a:28000,d:dayAt(-1),pid:'preview-work',sp:'work',c:'자료',created:stamp-86400000});
 store.logs.push({id:'memo_work',html:'<div>금요일에는 시안을 확인하고, 결정한 이유도 함께 남기기.</div>'},{id:'memo_life',html:'<div>여행에서는 하루에 한 곳만. 쉬는 시간도 일정에 넣기.</div>'});
+store.refs.push(
+ {id:'preview-brand-guide',title:'브랜드 컬러·문구',html:'<div>레몬색은 선택한 곳에만. 문구는 짧고 편안하게.</div>',space:'work',fav:true,created:stamp-86400000},
+ {id:'preview-review-list',title:'시안 확인 체크리스트',html:'<div>제목이 한눈에 보이는지, 모바일에서 누르기 편한지 확인하기.</div>',space:'work',created:stamp},
+ {id:'preview-trip-reference',title:'제주 여행 준비물',html:'<div>신분증, 충전기, 편한 신발.</div>',space:'life',fav:true,created:stamp}
+);
 export const initializeApp=()=>({});
 export const getAuth=()=>({});
 export const GoogleAuthProvider=class {};
