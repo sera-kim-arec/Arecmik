@@ -3,6 +3,7 @@ const clone = value => JSON.parse(JSON.stringify(value));
 const today = new Date();
 const day = [today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
 const stamp=Date.now();
+const dayAt=offset=>{const d=new Date(today);d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
 const store = {
  projects:[{id:'preview-work',name:'브랜드 리뉴얼',space:'work',status:'active',start:day,memoH:'<div>밝고 편안한 방향으로. 금요일에 시안 확인.</div>',created:stamp,mods:{memo:true}},{id:'preview-life',name:'가을 제주 여행',space:'life',status:'active',start:day,memoH:'<div>동쪽 숙소 · 하루에 한 곳 · 여유롭게</div>',created:stamp,mods:{memo:true}}],
  todos:[{id:'preview-meeting',title:'브랜드 리뉴얼 미팅',kind:'event',date:day,time:'14:00',projectId:'preview-work',space:'work',done:false,created:stamp},{id:'preview-work-task',title:'미팅 전 참고 이미지 모으기',date:day,projectId:'preview-work',space:'work',done:false,created:stamp},{id:'preview-trip',title:'제주 여행 계획 세우기',kind:'event',date:day,time:'',projectId:'preview-life',space:'life',done:false,created:stamp},{id:'preview-life-task',title:'제주 동쪽 숙소 비교하기',projectId:'preview-life',space:'life',done:false,created:stamp}],
@@ -10,6 +11,20 @@ const store = {
  notes:[{id:'preview-work-doc',title:'리뉴얼 참고 자료 정리',html:'<div>좋아하는 화면과 참고할 디자인을 모아두는 곳.</div>',space:'work',pid:'preview-work',created:stamp},{id:'preview-life-doc',title:'다시 가고 싶은 제주 장소들',html:'<div>바닷가 카페, 조용한 산책길.</div>',space:'life',pid:'preview-life',created:stamp}],
  logs:[],exps:[],refs:[],ents:[],fbk:[],trash:[],imgs:[]
 };
+// A few varied examples make density, grouping and collapsed details reviewable.
+Object.assign(store.projects[0],{color:'#D1B55D',mods:{memo:true,cost:true,budget:300000},tbl:{on:true,fields:[{k:'stage',n:'단계',t:'sel',o:['준비','검토','완료']},{k:'date',n:'날짜',t:'date'}]}});
+store.projects.push({id:'preview-portfolio',name:'나만의 포트폴리오',space:'work',status:'active',start:dayAt(-5),end:dayAt(14),color:'#B9B5A7',memoH:'<div>이번 달에는 가장 좋아하는 작업 세 개부터 정리하기.</div>',created:stamp+1,mods:{memo:true}});
+store.todos.push(
+ {id:'preview-followup',title:'시안 두 가지 정리해서 공유하기',date:dayAt(2),projectId:'preview-work',space:'work',done:false,created:stamp+1},
+ {id:'preview-finished',title:'리뉴얼 방향 정리하기',date:dayAt(-1),doneDate:dayAt(-1),doneAt:stamp-86400000,projectId:'preview-work',space:'work',done:true,created:stamp-86400000},
+ {id:'preview-portfolio-task',title:'소개할 작업 세 개 고르기',date:dayAt(1),projectId:'preview-portfolio',space:'work',done:false,created:stamp+2},
+ {id:'preview-undated',title:'영감이 된 화면 모아두기',projectId:'preview-work',space:'work',done:false,created:stamp+3}
+);
+store.moms.push({id:'preview-earlier-note',t:'좋아하는 방향이 조금 더 선명해졌다',h:'<div>좋아하는 방향이 조금 더 선명해졌다</div><div>꾸미기보다 읽기 편한 화면. 작은 선택에도 이유를 남겨두기로 했다.</div>',d:dayAt(-2),pid:'preview-work',space:'work',at:stamp-172800000});
+store.notes.push({id:'preview-work-journal',log:true,date:dayAt(-1),space:'work',html:'<div>리뉴얼의 우선순위를 정했다.</div><div>내일 미팅에서는 첫 화면의 메시지부터 이야기하기.</div>',updated:stamp-86400000});
+store.ents.push({id:'preview-studio',pid:'preview-work',title:'디자인 스튜디오',v:{stage:'검토',date:day},created:stamp});
+store.exps.push({id:'preview-work-expense',t:'참고 도서 구입',a:28000,d:dayAt(-1),pid:'preview-work',sp:'work',c:'자료',created:stamp-86400000});
+store.logs.push({id:'memo_work',html:'<div>금요일에는 시안을 확인하고, 결정한 이유도 함께 남기기.</div>'},{id:'memo_life',html:'<div>여행에서는 하루에 한 곳만. 쉬는 시간도 일정에 넣기.</div>'});
 export const initializeApp=()=>({});
 export const getAuth=()=>({});
 export const GoogleAuthProvider=class {};
