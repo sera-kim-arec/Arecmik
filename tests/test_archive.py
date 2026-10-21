@@ -62,8 +62,7 @@ def reveal(page, selector):
 
 
 def record_new(page):
-    reveal(page, '.layout-write [data-record-new]')
-    page.locator('.layout-write [data-record-new]').click()
+    page.locator('.layout-write-group > [data-record-new]').click()
 
 
 def record_source(page, kind):

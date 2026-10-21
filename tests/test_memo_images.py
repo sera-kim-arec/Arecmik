@@ -103,6 +103,7 @@ class MemoImageTests(unittest.TestCase):
         expect(self.page.locator('.image-upload-status')).to_have_count(0)
         self.page.evaluate('window.__writeDelayMs=0')
         self.page.locator('[data-esave]').click()
+        expect(self.page.locator('#scrim')).not_to_have_class('scrim on')
         self.open_event()
         self.assert_photo_loaded()
 

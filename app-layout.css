@@ -132,3 +132,47 @@ html.layout-refined .sp button.on{background:var(--selection)!important;color:va
  .layout-record-types button{min-width:0;padding:7px 3px;font-size:11px;white-space:normal;word-break:keep-all;line-height:1.4}
  .layout-type-count{display:none}
 }
+
+/* Read comfortably, then capture a thought without filling out a form. */
+html.layout-refined[data-app-theme="lemon"]{--mu:#6d695e}
+html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
+.layout-refined .archive-content strong{font-size:16px;line-height:1.5}
+.layout-refined .archive-excerpt{font-size:14px;line-height:1.65;margin-top:4px}
+.layout-refined .archive-context{font-size:12px;line-height:1.5;margin-top:5px}
+.layout-refined .archive-kind,.layout-refined .layout-archive .archive-kind{font-size:12px;margin-bottom:3px}
+.layout-refined .archive-day{font-size:13px;color:var(--t2);margin:18px 0 3px}
+.layout-refined .archive-row{padding:12px 0}
+.layout-refined .layout-fold-hint,.layout-day-overview,.layout-project-overview,.layout-refined .meta,.layout-refined .tg{color:var(--t2)}
+.layout-refined .layout-fold-hint,.layout-day-overview,.layout-type-count{font-size:12px}
+.layout-refined .it .nt{font-size:13px}
+.layout-capture{display:flex;align-items:center;gap:12px;min-width:0;padding:8px 10px 8px 16px;margin:0 0 12px;border-radius:13px!important}
+.layout-capture label{flex:none;font-size:13px;font-weight:650;color:var(--t2)}
+.layout-capture #udi{flex:1;min-width:0;width:auto;min-height:44px;margin:0;padding:8px 0;background:transparent;border:0;border-radius:4px;box-shadow:none;font-size:14px;color:var(--tx)}
+.layout-capture #udi::placeholder{color:var(--mu);opacity:1}
+.layout-capture [data-layout-add-task]{flex:none;min-height:44px;padding:8px 15px}
+.layout-task-rail>.layout-capture{margin:0}
+.layout-capture:has(input[data-saving]) [data-layout-add-task]{opacity:.55;cursor:progress}
+.layout-write-group{grid-column:2;grid-row:1;display:flex;align-items:center;gap:5px}
+.layout-write-group>[data-record-new]{white-space:nowrap;min-height:44px;padding:9px 14px}
+.layout-write-group>.layout-write>summary{min-width:44px;min-height:44px;padding:0;border:1px solid var(--ln);background:var(--card);color:var(--t2);font-size:20px}
+.record-meta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:16px 0 3px}
+.sheet .record-meta .f{min-width:0;margin-bottom:8px}
+.record-meta label{font-size:12px;font-weight:600;color:var(--t2)}
+.record-meta :is(input,select){min-width:0;min-height:44px;font:inherit;font-size:13px}
+.layout-refined .record-editor{font-size:15px;line-height:1.8;min-height:140px}
+.layout-refined .record-pin{font-size:13px;color:var(--t2)}
+#record-draft-status:empty{display:none}
+@media(min-width:901px){
+ .layout-refined .mc i,.layout-refined .mc.sel i{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;font-size:12px;line-height:1.4;overflow:hidden}
+}
+@media(max-width:900px){
+ .layout-record-types button{font-size:12px}
+ .layout-home-attention button{font-size:12px}
+ .layout-refined .hhead h1 small{font-size:12px}
+ .layout-capture{gap:8px;padding:6px 8px 6px 12px}
+ .layout-capture #udi{font-size:13px}
+ .layout-capture [data-layout-add-task]{padding:8px 12px}
+ .layout-write-group>[data-record-new]{padding:8px 11px;font-size:12px}
+ .layout-refined .archive-content strong{font-size:15px}
+}
+@media(max-width:380px){.record-meta{grid-template-columns:minmax(0,1fr);gap:0}}
