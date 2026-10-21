@@ -155,6 +155,50 @@ class LayoutTests(unittest.TestCase):
         expect(p.locator('[data-layout-fold="refs"]')).to_contain_text('여행 자료')
         expect(p.locator('[data-layout-fold="refs"]')).not_to_contain_text('업무 자료')
 
+    def test_life_home_keeps_diary_close_to_calendar_with_a_long_task_list_and_old_height(self):
+        p=self.page
+        for i in range(8):
+            self.patch('todos','life-pending-'+str(i),{'title':'여행 준비할 일 '+str(i),'space':'life','done':False})
+        p.evaluate("localStorage.setItem('rz_dsh','1200')")
+        p.reload();p.set_viewport_size({'width':1365,'height':900})
+        p.locator('nav [data-tab="home"]').click();p.locator('[data-sp="life"]').click()
+        before=p.evaluate('JSON.stringify(window.__store)')
+        calendar=p.locator('.mg');journal=p.locator('[data-layout-fold="journal"]')
+        pending=p.locator('[data-layout-fold="undated"]');spend=p.locator('[data-layout-fold="spend"]')
+        cb=calendar.bounding_box();jb=journal.bounding_box();pb=pending.bounding_box();sb=spend.bounding_box()
+        self.assertAlmostEqual(jb['x'],cb['x'],delta=1)
+        self.assertAlmostEqual(jb['width'],cb['width'],delta=1)
+        self.assertAlmostEqual(jb['y']-(cb['y']+cb['height']),16,delta=1)
+        self.assertAlmostEqual(sb['y']-(pb['y']+pb['height']),16,delta=1)
+        self.assertLess(p.locator('.dside').bounding_box()['height'],300)
+        expect(p.locator('.layout-home-extras')).to_be_hidden()
+        p.set_viewport_size({'width':390,'height':844})
+        boxes=[p.locator(s).bounding_box() for s in ['.mg','.dside','[data-layout-fold="undated"]','[data-layout-fold="journal"]','[data-layout-fold="spend"]']]
+        for above,below in zip(boxes,boxes[1:]):
+            self.assertAlmostEqual(below['y']-above['y']-above['height'],16,delta=1)
+        self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),390)
+        self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
+
+    def test_life_diary_and_spending_still_save_after_reflow(self):
+        p=self.page;p.set_viewport_size({'width':1365,'height':900})
+        p.locator('nav [data-tab="home"]').click();p.locator('[data-sp="life"]').click()
+        ui.reveal(p,'[data-log][contenteditable]')
+        editor=p.locator('[data-log][contenteditable]')
+        editor.fill('배치가 바뀌어도 오늘의 일기를 보관해요')
+        p.evaluate("window.__lifeDiary=document.querySelector('[data-log][contenteditable]')")
+        p.set_viewport_size({'width':390,'height':844})
+        self.assertTrue(p.evaluate("window.__lifeDiary===document.querySelector('[data-log][contenteditable]')"))
+        expect(editor).to_contain_text('오늘의 일기를 보관해요')
+        ui.reveal(p,'#spi');p.locator('#spi').fill('점심 9000');p.locator('#spi').press('Enter')
+        p.wait_for_function("window.__store.exps.some(e=>e.t==='점심'&&e.a===9000&&e.sp==='life')")
+        p.wait_for_function("window.__store.notes.some(n=>n.log&&n.space==='life'&&n.html?.includes('오늘의 일기를 보관해요'))")
+        p.reload();ui.reveal(p,'[data-log][contenteditable]');ui.reveal(p,'#spi')
+        expect(p.locator('[data-log][contenteditable]')).to_contain_text('오늘의 일기를 보관해요')
+        expect(p.locator('.spend')).to_contain_text('9,000')
+        p.locator('[data-sp="work"]').click()
+        expect(p.locator('.spend')).to_have_count(0)
+        expect(p.locator('.layout-life-home')).to_have_count(0)
+
     def test_tasks_stay_out_of_default_records_but_are_retrievable_without_data_loss(self):
         self.patch('todos','work-t',{'done':True,'doneDate':'2026-10-20','fav':True})
         self.patch('todos','work-undated',{'title':'날짜 없는 원래 할 일','space':'work','done':False})
