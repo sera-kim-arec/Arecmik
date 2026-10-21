@@ -53,12 +53,17 @@ class UXFlowTests(unittest.TestCase):
         self.page.evaluate('window.__failWrites=true')
         self.page.locator('[data-ck="work-t"]').click()
         expect(self.page.locator('.toast')).to_contain_text('원래 상태')
+        expect(self.page.locator('.toast')).to_have_attribute('role','status')
+        expect(self.page.locator('.toast[data-tone="success"]')).to_have_count(0)
         expect(self.page.locator('[data-drag="work-t"]')).not_to_have_class('it dn')
         self.assertFalse(self.page.evaluate("window.__store.todos.find(t=>t.id==='work-t').done"))
         self.page.evaluate('window.__failWrites=false')
         self.page.locator('[data-retry-action]').click()
         self.page.wait_for_function("window.__store.todos.find(t=>t.id==='work-t').done")
         expect(self.page.locator('[data-ck="work-t"]')).to_be_enabled()
+        expect(self.page.locator('.toast[data-tone="success"]')).to_contain_text('완료로 저장했어요')
+        self.page.locator('.toast button').click()
+        self.page.wait_for_function("!window.__store.todos.find(t=>t.id==='work-t').done")
 
     def test_repeat_complete_and_cancel_are_atomic_and_restore_the_chain(self):
         self.link_task(",date:'2026-10-16',rep:'d'"); self.project()

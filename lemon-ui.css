@@ -1,0 +1,48 @@
+/* A little personality around the same readable, compact workspace. */
+html.layout-refined[data-app-theme="lemon"]{
+ --app-bg:radial-gradient(ellipse 850px 480px at 100% 0,#fff1c9 0,transparent 70%),#faf8f0;
+ --card:#fffef9;--popover:#fffef9;--field:#f8f5eb;--surface:#f7f2e4;
+ --selection:#fae79f;--today:#fff7d5;--ln:#ebe4d2;
+ --card-shadow:inset 0 0 0 1px var(--ln),0 8px 24px -22px #95722f66;
+ --lemon-yellow:#f3d36e;--lemon-ink:#51432c;
+ --ckmark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.6 8.4l2.7 2.7 6-6.2' fill='none' stroke='%2351432c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+html.layout-refined[data-app-theme="lemon"] :is(.hhead h1,.ph h1,.rh h1){position:relative;padding-left:44px}
+html.layout-refined[data-app-theme="lemon"] :is(.hhead h1,.ph h1,.rh h1)::before{
+ content:'';position:absolute;left:0;top:2px;width:32px;height:32px;background:url('lemon-mark.svg') center/contain no-repeat;pointer-events:none;
+}
+html.layout-refined[data-app-theme="lemon"] .ink{background:var(--lemon-yellow)!important;color:var(--lemon-ink);box-shadow:inset 0 -2px 0 #d7b14d38}
+html.layout-refined[data-app-theme="lemon"] .ink:hover{background:#edc858!important}
+html.layout-refined[data-app-theme="lemon"] :is(.sp,.nav){border-radius:18px!important}
+html.layout-refined[data-app-theme="lemon"] :is(.sp,.nav) button{border-radius:14px!important}
+html.layout-refined[data-app-theme="lemon"] .nav button.on{box-shadow:inset 0 -2px 0 #d4b44944!important}
+html.layout-refined[data-app-theme="lemon"] :is(.cvs,.pvt) button.on{background:var(--selection)!important;color:var(--lemon-ink)!important;box-shadow:inset 0 0 0 1px #e7ce7c}
+html.layout-refined[data-app-theme="lemon"] .mc.sel{border-radius:12px;box-shadow:inset 0 0 0 1.5px #c8a74a!important}
+html.layout-refined[data-app-theme="lemon"] :is(.soft,.archive-favorite,.layout-record-types button):hover{background:#fcf2ce}
+html.layout-refined[data-app-theme="lemon"] .layout-reminder{box-shadow:inset 3px 0 0 #e5c456,inset 0 0 0 1px var(--ln)}
+html.layout-refined[data-app-theme="lemon"] :is(.record-editor,.es-rt):focus{box-shadow:inset 0 0 0 1.5px #c5a449;background:#fffbed}
+html.layout-refined[data-app-theme="lemon"] :is(.archive-empty,.undbox>.emp)::before{
+ content:'';display:block;width:44px;height:44px;margin:0 auto 12px;background:url('lemon-mark.svg') center/contain no-repeat;pointer-events:none;
+}
+html.layout-refined[data-app-theme="lemon"] :is(.dn .ck,.es-ck.on,.es-sr .ck.on){background:var(--lemon-yellow)!important;box-shadow:inset 0 0 0 1px #c5a449!important}
+html.layout-refined[data-app-theme="lemon"] #sheet.task-sheet .es-ck{background:transparent!important;box-shadow:none!important}
+html.layout-refined[data-app-theme="lemon"] .es-ck.on::before{background:var(--lemon-yellow);border-color:#b99a43}
+html.layout-refined[data-app-theme="lemon"] .toast[data-tone="success"]{background:#fff9e6;color:var(--lemon-ink);border:1px solid #e3ce8b;border-radius:16px;box-shadow:0 6px 24px #65512718;font-weight:500;padding:10px 14px;gap:10px}
+html.layout-refined[data-app-theme="lemon"] .toast[data-tone="success"]::before{content:'';flex:none;width:24px;height:24px;background:url('lemon-mark.svg') center/contain no-repeat}
+html.layout-refined[data-app-theme="lemon"] .toast[data-tone="success"] button{color:var(--lemon-ink);background:#f7e49d;min-height:44px;font-weight:600}
+.app-theme-swatch[data-sample="lemon"]{background:#faf3da;--sample-ink:#e2c05c;--sample-card:#fffef9}
+@media(max-width:900px){
+ html.layout-refined[data-app-theme="lemon"] :is(.hhead h1,.ph h1,.rh h1){padding-left:32px}
+ html.layout-refined[data-app-theme="lemon"] :is(.hhead h1,.ph h1,.rh h1)::before{width:25px;height:25px;top:3px}
+ /* Keep the 44px hit area transparent; color only the small square inside it. */
+ html.layout-refined[data-app-theme="lemon"] :is(.it.dn .ck,.sub.dn>.ck){background:transparent!important;box-shadow:none!important}
+ html.layout-refined[data-app-theme="lemon"] :is(.it.dn .ck,.sub.dn>.ck)::before{background:var(--lemon-yellow);box-shadow:inset 0 0 0 1.5px #b99a43}
+ html.layout-refined[data-app-theme="lemon"] .it>.ck{animation:none;transform:none}
+ html.layout-refined[data-app-theme="lemon"] .it.dn>.ck::before{animation:lemon-tick .18s ease-out}
+}
+@keyframes lemon-tick{0%{transform:scale(.88)}65%{transform:scale(1.08)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){html.layout-refined[data-app-theme="lemon"] .it.dn>.ck::before{animation:none}}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ html.layout-refined[data-app-theme="lemon"] .hhead h1::before{transition:transform .16s ease}
+ html.layout-refined[data-app-theme="lemon"] .hhead h1:hover::before{transform:rotate(-9deg)}
+}
