@@ -79,6 +79,7 @@ class ConnectionTests(unittest.TestCase):
         self.patch('todos','work-t',{'kind':'event','date':'2026-10-20','projectId':'work-p'})
         self.search('보고서 제출');p=self.page
         p.locator('#sqr [data-sgo="todo"]').click()
+        archive.reveal(p,'#sheet [data-conn-record]')
         p.locator('#sheet [data-conn-record]').click()
         expect(p.locator('#record-day')).to_have_value('2026-10-20')
         expect(p.locator('#record-project')).to_have_value('work-p')
@@ -233,6 +234,7 @@ class ConnectionTests(unittest.TestCase):
     def test_search_origin_returns_after_link_navigation_without_losing_query(self):
         self.patch('todos','work-t',{'kind':'event','date':'2026-10-20','projectId':'work-p'})
         self.search('보고서 제출');p=self.page;p.locator('#sqr [data-sgo="todo"]').click()
+        archive.reveal(p,'#sheet [data-conn-record]')
         p.locator('#sheet [data-conn-record]').click()
         p.locator('#record-body').fill('검색에서 이어 쓴 임시 기록')
         p.go_back()

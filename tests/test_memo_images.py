@@ -96,6 +96,7 @@ class MemoImageTests(unittest.TestCase):
         expect(self.page.locator('.toast')).to_contain_text('완료 후 저장')
         self.page.locator('#sheet [data-sx="0"]').click()
         expect(self.page.locator('.toast')).to_contain_text('완료 후 닫아')
+        ui.reveal(self.page,'#sheet [data-conn-record]')
         self.page.locator('#sheet [data-conn-record]').click()
         expect(self.page.locator('#e-n')).to_be_visible()
         expect(self.page.locator('#scrim')).to_have_class('scrim on')

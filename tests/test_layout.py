@@ -121,6 +121,7 @@ class LayoutTests(unittest.TestCase):
         expect(p.locator('.dside [data-conn-manage],.dside [data-conn-record]')).to_have_count(0)
         p.locator('.dside [data-edit="work-t"]').click()
         expect(p.locator('#sheet [data-conn-manage]')).to_have_count(1)
+        ui.reveal(p,'#sheet [data-conn-record]')
         p.locator('#sheet [data-conn-record]').click()
         expect(p.locator('#record-day')).to_have_value('2026-10-20')
         expect(p.locator('#record-project')).to_have_value('work-p')
