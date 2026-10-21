@@ -104,6 +104,7 @@ class AndroidAppTests(unittest.TestCase):
         self.connect_port()
         self.page.evaluate("""async()=>{const m=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');await m.updateDoc(m.doc(m.collection({},'notes'),'work-n'),{pid:'work-p'})}""")
         self.page.locator("nav [data-tab='proj']").click();self.page.locator('[data-open="work-p"]').click()
+        ui.reveal(self.page,'.project-records [data-archive-open="doc"]')
         self.page.locator('.project-records [data-archive-open="doc"]').click()
         expect(self.page.locator('[data-db]')).to_be_visible()
         self.send({'type':'back'});expect(self.page.locator('.pname')).to_have_value('업무 프로젝트')
@@ -115,7 +116,7 @@ class AndroidAppTests(unittest.TestCase):
         self.page.locator('#sqr [data-sgo="doc"]').click();expect(self.page.locator('[data-db]')).to_be_visible()
         self.send({'type':'back'});expect(self.page.locator('#srch')).to_have_class(re.compile(r'\bon\b'))
         expect(self.page.locator('#sqi')).to_have_value('업무 회의록');self.send({'type':'back'})
-        self.page.locator('[data-rt="ref"]').click();self.page.locator('[data-newref]').click();self.page.locator('#r-t').fill('뒤로가도 유지할 자료')
+        ui.record_source(self.page, 'ref');self.page.locator('[data-newref]').click();self.page.locator('#r-t').fill('뒤로가도 유지할 자료')
         self.send({'type':'back'});expect(self.page.locator('#scrim')).not_to_have_class('scrim on')
         self.page.locator('[data-newref]').click();expect(self.page.locator('#r-t')).to_have_value('뒤로가도 유지할 자료')
 

@@ -35,10 +35,11 @@ class ContainerTests(unittest.TestCase):
         self.life()
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator('[data-open="life-p"]').click()
+        ui.project_details(self.page)
 
     def folder_manager(self):
         self.life()
-        self.page.locator('[data-rt="doc"]').click()
+        ui.record_source(self.page, 'doc')
         self.page.locator('[data-folder-manage]').click()
 
     def confirm_delete(self):

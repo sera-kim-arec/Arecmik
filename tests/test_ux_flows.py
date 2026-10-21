@@ -16,6 +16,7 @@ class UXFlowTests(unittest.TestCase):
     def project(self):
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator('[data-open="work-p"]').click()
+        ui.project_details(self.page)
 
     def mutate(self, code):
         self.page.evaluate("async()=>{const m=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');const ref=(c,id)=>m.doc(m.collection({},c),id);"+code+"}")
@@ -111,7 +112,7 @@ class UXFlowTests(unittest.TestCase):
         self.assertNotIn('불러오는 중',self.page.locator('#main').inner_text())
         self.page.evaluate('window.__failSnapshot=null')
         self.page.locator('[data-retry-load]').click()
-        expect(self.page.locator('.archive-intro')).to_be_visible()
+        expect(self.page.locator('.archive')).to_be_visible()
         expect(self.page.locator('#sync-status')).to_be_hidden()
 
     def test_invalid_edited_range_is_not_silently_truncated(self):
@@ -125,7 +126,7 @@ class UXFlowTests(unittest.TestCase):
         self.page.wait_for_function("window.__store.todos.find(t=>t.id==='work-t').end==='2026-10-26'")
 
     def test_reference_draft_survives_dismissal_reload_and_clears_after_save(self):
-        self.page.locator('[data-rt="ref"]').click(); self.page.locator('[data-newref]').click()
+        ui.record_source(self.page, 'ref'); self.page.locator('[data-newref]').click()
         self.page.locator('[data-rsave]').click()
         expect(self.page.locator('#r-t-error')).to_contain_text('자료 제목')
         self.page.locator('#r-t').fill('기억할 자료');self.page.locator('#r-b').fill('닫아도 보존할 내용')
@@ -138,6 +139,7 @@ class UXFlowTests(unittest.TestCase):
 
     def test_browser_back_restores_project_and_archive_filters(self):
         self.mutate("await m.updateDoc(ref('notes','work-n'),{pid:'work-p'});")
+        ui.reveal(self.page,'[data-archive-month]')
         self.page.locator('[data-archive-month]').select_option('2026-10')
         self.project();self.page.locator('.project-records [data-archive-open="doc"]').click()
         expect(self.page.locator('[data-db]')).to_be_visible();self.page.go_back()
@@ -163,7 +165,7 @@ class UXFlowTests(unittest.TestCase):
         self.assertLessEqual(self.page.evaluate('document.documentElement.scrollWidth'),390)
 
     def test_record_capture_can_pin_and_search_empty_state_offers_next_steps(self):
-        self.page.locator('[data-record-new]').click();self.page.locator('#record-body').fill('핵심으로 고정할 기록')
+        ui.record_new(self.page);self.page.locator('#record-body').fill('핵심으로 고정할 기록')
         self.page.locator('#record-project').select_option('work-p');self.page.locator('#record-pin').check();self.page.locator('[data-record-save]').click()
         self.page.wait_for_function("window.__store.moms.some(m=>m.t==='핵심으로 고정할 기록'&&m.pinned)")
         self.page.locator('[data-archive-favorites]').click();expect(self.page.locator('.archive-list')).to_contain_text('핵심으로 고정할 기록')

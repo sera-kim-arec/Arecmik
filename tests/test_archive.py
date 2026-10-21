@@ -52,6 +52,32 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
 
+def reveal(page, selector):
+    """Open the same summaries a user needs before operating a folded control."""
+    expect(page.locator(selector).first).to_be_attached()
+    for fold in page.locator('details').all():
+        contains = fold.evaluate('(fold, selector)=>[...document.querySelectorAll(selector)].some(el=>fold.contains(el))', selector)
+        if contains and fold.get_attribute('open') is None:
+            fold.locator(':scope > summary').click()
+
+
+def record_new(page):
+    reveal(page, '.layout-write [data-record-new]')
+    page.locator('.layout-write [data-record-new]').click()
+
+
+def record_source(page, kind):
+    page.locator('[data-archive-filter="'+kind+'"]').click()
+    page.locator('[data-rt="'+kind+'"]').click()
+
+
+def project_details(page):
+    for key in ['cost', 'status', 'history', 'records', 'timeline']:
+        fold = page.locator('[data-layout-fold="'+key+'"]')
+        if fold.count() and fold.get_attribute('open') is None:
+            fold.locator(':scope > summary').click()
+
+
 class ArchiveTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -100,7 +126,7 @@ class ArchiveTests(unittest.TestCase):
         self.page.goto(self.origin)
         expect(self.page.locator("#app")).to_be_visible()
         self.page.locator("nav [data-tab='rec']").click()
-        expect(self.page.locator(".archive-intro")).to_be_visible()
+        expect(self.page.locator(".archive")).to_be_visible()
 
     def tearDown(self):
         self.assertEqual(self.errors, [])
@@ -109,7 +135,8 @@ class ArchiveTests(unittest.TestCase):
 
     def life(self):
         self.page.locator("[data-sp='life']").click()
-        expect(self.page.locator(".archive-intro h2")).to_have_text("나의 일상 보관함")
+        expect(self.page.locator("[data-sp='life']")).to_have_class('on')
+        expect(self.page.locator(".archive")).to_be_visible()
 
     def search(self, query):
         if not self.page.locator('#srch.on').count():
@@ -135,7 +162,7 @@ class ArchiveTests(unittest.TestCase):
 
     def test_capture_project_context_and_search_without_duplication(self):
         self.life()
-        self.page.locator("[data-record-new]").click()
+        record_new(self.page)
         self.page.locator("#record-body").fill("오늘의 여행 회고\n기억하고 싶은 풍경")
         self.page.locator("#record-project").select_option("life-p")
         self.page.locator("[data-record-save]").click()
@@ -149,6 +176,7 @@ class ArchiveTests(unittest.TestCase):
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator("[data-open='life-p']").click()
         expect(self.page.locator(".pmemo:not(.pcore)")).to_contain_text("오늘의 여행 회고")
+        reveal(self.page,".project-connections [data-conn-record]")
         self.page.locator(".project-connections [data-conn-record]").click()
         expect(self.page.locator("#record-project")).to_have_value("life-p")
         self.page.locator("#sheet [data-sx='0']").click()
@@ -160,6 +188,7 @@ class ArchiveTests(unittest.TestCase):
         self.life()
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator("[data-open='life-p']").click()
+        reveal(self.page,"[data-record-link]")
         self.page.locator("[data-record-link]").click()
         expect(self.page.locator("#record-existing option")).to_have_count(1)
         self.page.locator("[data-record-attach]").click()
@@ -180,13 +209,15 @@ class ArchiveTests(unittest.TestCase):
         self.page.set_viewport_size({"width": 390, "height": 844})
         self.page.locator("[data-archive-filter='expense']").click()
         expect(self.page.locator(".archive [data-archive-open]")).to_have_count(1)
+        reveal(self.page,'[data-archive-month]')
         self.page.locator("[data-archive-month]").select_option("2026-10")
+        reveal(self.page,'[data-archive-month]')
         self.page.locator("[data-archive-project]").select_option("life-p")
         expect(self.page.locator(".archive")).to_contain_text("숙박 결제")
         self.page.locator("[data-archive-reset]").click()
         self.assertLessEqual(self.page.evaluate("document.documentElement.scrollWidth"), 390)
         self.page.screenshot(path="/tmp/arecmik-life-archive.png", full_page=True)
-        self.page.locator("[data-record-new]").click()
+        record_new(self.page)
         self.page.locator("#record-body").fill("저장 실패해도 남아야 할 기록")
         self.page.evaluate("window.__failWrites=true")
         self.page.locator("[data-record-save]").click()
@@ -197,7 +228,7 @@ class ArchiveTests(unittest.TestCase):
         expect(self.page.locator(".archive")).to_contain_text("저장 실패해도 남아야 할 기록")
 
     def test_reference_creation_and_moving_legacy_between_spaces(self):
-        self.page.locator("[data-rt='ref']").click()
+        record_source(self.page, 'ref')
         self.page.locator("[data-oref='legacy-r'] span").click()
         expect(self.page.locator("#r-space")).to_have_value("work")
         self.page.locator("#r-space").select_option("life")
@@ -246,11 +277,12 @@ class ArchiveTests(unittest.TestCase):
 
     def test_record_content_is_escaped_and_archive_paginates(self):
         self.life()
-        self.page.locator("[data-record-new]").click()
+        record_new(self.page)
         self.page.locator("#record-body").fill('<img src=x onerror="window.__injected=true">')
         self.page.locator("[data-record-save]").click()
         expect(self.page.locator(".archive")).to_contain_text('<img src=x onerror="window.__injected=true">')
         self.assertFalse(self.page.evaluate("!!window.__injected"))
+        self.page.locator("[data-archive-filter='']").click()
         # Exercise the actual snapshot subscription while adding older fixture rows.
         self.page.evaluate("""async () => {
           const {addDoc, collection} = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');

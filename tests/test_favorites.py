@@ -24,6 +24,7 @@ class FavoriteTests(unittest.TestCase):
         p=self.page;p.reload()
         p.locator('nav [data-tab="home"]').click()
         expect(p.locator('main')).not_to_contain_text('고정한 것')
+        ui.reveal(p,'[data-memo="memo_work"]')
         expect(p.locator('[data-memo="memo_work"]')).to_be_visible()
         p.locator('nav [data-tab="proj"]').click();p.locator('[data-open="work-p"]').click()
         expect(p.locator('[data-pmemo]')).to_have_text('업무 프로젝트 메모')
@@ -47,7 +48,7 @@ class FavoriteTests(unittest.TestCase):
         expect(p.locator('.archive-list')).to_contain_text('업무 회의록')
         p.locator('[data-archive-favorite="doc"][data-id="work-n"]').click()
         expect(p.locator('.archive-empty')).to_contain_text('즐겨찾기가 없어요')
-        p.locator('[data-archive-reset]').click()
+        p.locator('[data-archive-reset]').first.click()
         expect(p.locator('.archive-list')).to_contain_text('업무 회의록')
 
     def test_monthly_diary_favorites_remain_specific_to_one_day(self):
@@ -66,7 +67,7 @@ class FavoriteTests(unittest.TestCase):
         self.patch('moms','work-m',{'pinned':True,'pid':'work-p'})
         self.patch('moms','life-m',{'pinned':True})
         p=self.page;p.set_viewport_size({'width':390,'height':844})
-        p.locator('[data-archive-favorites]').click();p.locator('[data-archive-project]').select_option('work-p')
+        p.locator('[data-archive-favorites]').click();ui.reveal(p,'[data-archive-project]');p.locator('[data-archive-project]').select_option('work-p')
         p.locator('[data-archive-open="mom"][data-id="work-m"]').click();p.go_back()
         expect(p.locator('[data-archive-favorites]')).to_have_attribute('aria-pressed','true')
         expect(p.locator('[data-archive-project]')).to_have_value('work-p')

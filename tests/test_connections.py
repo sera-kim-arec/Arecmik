@@ -136,7 +136,7 @@ class ConnectionTests(unittest.TestCase):
 
     def test_two_days_in_one_monthly_note_keep_distinct_connections(self):
         self.patch('notes','work-month',{'space':'work','log':True,'mon':'2026-10','html':"<div class='h2 dayh'>10/14 (수)</div><div>첫째 날의 일지</div><div class='h2 dayh'>10/15 (목)</div><div>둘째 날의 일지</div>", 'updated':1792022400000})
-        p=self.page;p.locator('[data-rt="log"]').click()
+        p=self.page;archive.record_source(p,'log')
         first=p.locator('.lday').filter(has=p.locator('[data-elog="2026-10-14"]'))
         first.locator('[data-conn-manage]').first.click()
         p.locator('#connection-query').fill('2026-10-15 업무일지')
@@ -165,12 +165,13 @@ class ConnectionTests(unittest.TestCase):
 
     def test_manual_project_link_is_searchable_and_in_project_archive_filter(self):
         p=self.page;p.locator('nav [data-tab="proj"]').click();p.locator('[data-open="work-p"]').click()
+        archive.reveal(p,'.project-connections [data-conn-manage]')
         p.locator('.project-connections [data-conn-manage]').first.click()
         p.locator('#connection-query').fill('업무 자료');p.locator('[data-conn-add]').click()
         expect(p.locator('#connection-linked')).to_contain_text('업무 자료')
         p.locator('[data-conn-close]').first.click()
         expect(p.locator('.project-connections')).to_contain_text('업무 자료')
-        p.locator('nav [data-tab="rec"]').click();p.locator('[data-archive-project]').select_option('work-p')
+        p.locator('nav [data-tab="rec"]').click();archive.reveal(p,'[data-archive-project]');p.locator('[data-archive-project]').select_option('work-p')
         expect(p.locator('.archive-list')).to_contain_text('업무 자료')
         self.assertFalse(p.evaluate("!!window.__store.refs.find(r=>r.id==='work-r').pid"))
         self.search('업무 프로젝트')

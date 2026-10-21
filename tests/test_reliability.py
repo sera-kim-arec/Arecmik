@@ -28,15 +28,16 @@ class ReliabilityTests(unittest.TestCase):
         }""")
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator("[data-open='life-p']").click()
+        ui.project_details(self.page)
 
     def test_record_draft_survives_dismissal_and_reload(self):
-        self.page.locator('[data-record-new]').click()
+        ui.record_new(self.page)
         self.page.locator('#record-body').fill('실수로 닫아도 남아야 할 기록')
         self.page.locator('#scrim').click(position={'x': 5, 'y': 5})
-        self.page.locator('[data-record-new]').click()
+        ui.record_new(self.page)
         expect(self.page.locator('#record-body')).to_contain_text('실수로 닫아도 남아야 할 기록')
         self.page.reload()
-        self.page.locator('[data-record-new]').click()
+        ui.record_new(self.page)
         expect(self.page.locator('#record-body')).to_contain_text('실수로 닫아도 남아야 할 기록')
         self.page.locator('[data-record-save]').click()
         expect(self.page.locator('#scrim')).not_to_have_class('scrim on')
@@ -44,7 +45,7 @@ class ReliabilityTests(unittest.TestCase):
         self.assertEqual(self.page.evaluate("Object.keys(localStorage).filter(k=>k.startsWith('arecmik:record:ui-test:')&&localStorage[k].includes('실수로 닫아도')).length"), 0)
 
     def test_new_title_is_saved_when_immediately_leaving(self):
-        self.page.locator("[data-rt='doc']").click()
+        ui.record_source(self.page, 'doc')
         self.page.locator('button.newd[data-newdoc]').click()
         self.page.evaluate("""() => {
           const el = document.querySelector('.dt');
@@ -100,9 +101,11 @@ class ReliabilityTests(unittest.TestCase):
         expect(self.page.locator('#pq-t')).to_have_value('아직 입력 중인 할 일')
         self.page.locator('[data-sp="work"]').click()
         self.page.locator('[data-open="work-p"]').click()
+        ui.project_details(self.page)
         expect(self.page.locator('#pq-t')).to_have_value('')
         self.page.locator('[data-sp="life"]').click()
         self.page.locator('[data-open="life-p"]').click()
+        ui.project_details(self.page)
         expect(self.page.locator('#pq-t')).to_have_value('아직 입력 중인 할 일')
 
     def test_expense_amount_is_not_a_product_model_or_count(self):

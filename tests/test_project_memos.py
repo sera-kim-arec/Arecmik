@@ -21,6 +21,7 @@ class ProjectMemoTests(unittest.TestCase):
     def project(self):
         self.page.locator("nav [data-tab='proj']").click()
         self.page.locator('[data-open="work-p"]').click()
+        ui.project_details(self.page)
         expect(self.page.locator('.pmemo:not(.pcore)')).to_be_visible()
 
     def test_favorite_edit_original_and_remove_without_copying_or_losing_history(self):
