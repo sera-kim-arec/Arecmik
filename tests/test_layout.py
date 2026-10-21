@@ -80,7 +80,7 @@ class LayoutTests(unittest.TestCase):
         expect(p.locator('.archive-list .archive-row')).to_have_count(1)
 
     def test_new_record_and_reference_are_visible_after_writing_under_other_filters(self):
-        p=self.page;p.locator('[data-archive-filter="expense"]').click()
+        p=self.page;p.locator('[data-archive-filter="ref"]').click()
         ui.record_new(p);p.locator('#record-body').fill('새 기록을 필터 뒤에 숨기지 않기')
         p.locator('[data-record-save]').click()
         expect(p.locator('.archive-list')).to_contain_text('새 기록을 필터 뒤에 숨기지 않기')

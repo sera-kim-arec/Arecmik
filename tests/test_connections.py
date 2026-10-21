@@ -220,7 +220,7 @@ class ConnectionTests(unittest.TestCase):
         self.patch('ents','work-row',{'pid':'work-p','title':'제작 업체','v':{'amount':100000},'created':1792022400000})
         self.patch('todos','work-t',{'projectId':'work-p','eid':'work-row'})
         self.patch('exps','work-e',{'tid':'work-t','eid':'work-row'})
-        p=self.page;p.locator('[data-archive-filter="expense"]').click();p.locator('[data-archive-open="expense"][data-id="work-e"]').click()
+        self.search('업무 도서');p=self.page;p.locator('#sqr [data-sgo="expense"][data-id="work-e"]').click()
         expect(p.locator('#sheet .connections-panel')).to_contain_text('보고서 제출')
         expect(p.locator('#sheet .connections-panel')).to_contain_text('제작 업체')
         p.locator('#sheet .connection-open').filter(has_text='보고서 제출').click()
