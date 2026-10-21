@@ -56,6 +56,56 @@ class WorkspaceTests(unittest.TestCase):
         expect(p.locator('.layout-search-label')).not_to_be_visible()
         expect(p.locator('[data-search]')).to_be_visible()
 
+    def test_work_month_keeps_tasks_beside_calendar_in_narrow_pc_and_ignores_old_panel_height(self):
+        p=self.page
+        self.patch('todos','work-month-event',{'title':'월 달력에서 확인할 업무 일정','space':'work','kind':'event','date':self.today()})
+        p.evaluate("localStorage.setItem('rz_dsh','1200')")
+        p.reload();p.locator('nav [data-tab="home"]').click()
+        before=p.evaluate('JSON.stringify(window.__store)')
+        for width in [1365,1024,901,900,800,760]:
+            with self.subTest(width=width):
+                p.set_viewport_size({'width':width,'height':1000})
+                p.evaluate('scrollTo(0,0)')
+                calendar=p.locator('.mg').bounding_box();day=p.locator('.dside').bounding_box()
+                pending=p.locator('[data-layout-fold="undated"]').bounding_box()
+                self.assertGreater(day['x'],calendar['x']+calendar['width'])
+                self.assertAlmostEqual(day['y'],calendar['y'],delta=1)
+                self.assertAlmostEqual(pending['x'],day['x'],delta=1)
+                self.assertLess(day['height'],500)
+                event=p.locator('.mc [data-drag="work-month-event"]')
+                self.assertGreaterEqual(event.evaluate('e=>parseFloat(getComputedStyle(e).fontSize)'),11)
+                self.assertGreater(event.bounding_box()['height'],10)
+                self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
+        p.locator('.dside [data-edit="work-month-event"]').click()
+        expect(p.locator('#e-t')).to_have_value('월 달력에서 확인할 업무 일정')
+        p.go_back()
+        p.locator('[data-sp="life"]').click()
+        expect(p.locator('.layout-work-home')).to_have_count(0)
+        p.locator('[data-sp="work"]').click()
+        expect(p.locator('.layout-work-home')).to_have_count(1)
+        self.assertEqual(p.evaluate('localStorage.getItem("rz_dsh")'),'1200')
+        self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
+
+    def test_work_month_keeps_single_column_on_phone_and_touch_tablet(self):
+        p=self.page;p.locator('nav [data-tab="home"]').click()
+        before=p.evaluate('JSON.stringify(window.__store)')
+        def assert_stacked(width):
+            p.set_viewport_size({'width':width,'height':1000})
+            p.evaluate('scrollTo(0,0)')
+            boxes=[p.locator(s).bounding_box() for s in ['.mg','.dside','[data-layout-fold="undated"]','[data-layout-fold="journal"]']]
+            for above,below in zip(boxes,boxes[1:]):
+                self.assertGreaterEqual(below['y'],above['y']+above['height'])
+                self.assertAlmostEqual(below['x'],above['x'],delta=1)
+            self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
+        for width in [320,390,759]:
+            assert_stacked(width)
+        cdp=self.context.new_cdp_session(p)
+        cdp.send('Emulation.setTouchEmulationEnabled',{'enabled':True,'maxTouchPoints':5})
+        self.assertTrue(p.evaluate('matchMedia("(pointer:coarse)").matches'))
+        for width in [768,900]:
+            assert_stacked(width)
+        self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
+
     def test_record_feed_is_written_content_and_sources_are_explicit_and_searchable(self):
         p=self.page;before=p.evaluate('JSON.stringify(window.__store)')
         expect(p.locator('.archive-list')).to_contain_text('업무 회의 회고')
