@@ -164,3 +164,15 @@ class BlockEditorTests(unittest.TestCase):
         expect(ed).to_contain_text('A → B');expect(ed.locator('a')).to_have_attribute('href','https://example.com/guide')
         p.wait_for_function("__store.notes.find(n=>n.id==='work-n').html.includes('href=')")
         p.reload();ed=self.note();expect(ed).to_contain_text('A → B');expect(ed.locator('a')).to_have_text('https://example.com/guide')
+
+    def test_plus_inserts_between_blocks_and_drag_can_nest_then_outdent(self):
+        html='<div>첫 문단</div><div>두 번째 문단</div><div class="nb-toggle" data-expanded="true"><div class="nb-toggle-title">모아둘 내용</div><div class="nb-toggle-body"><div>기존 안쪽 문단</div></div></div>'
+        self.patch('notes','work-n',{'html':html});p=self.page;ed=self.note()
+        ed.locator(':scope > div').first.click();p.locator('[data-block-add]').click();self.choose('본문');p.keyboard.insert_text('사이에 넣은 문단')
+        expect(ed.locator(':scope > div').nth(1)).to_have_text('사이에 넣은 문단')
+        p.locator('[data-block-menu]').drag_to(ed.locator('.nb-toggle-body > div').first,target_position={'x':30,'y':23})
+        expect(ed.locator('.nb-toggle-body > div').last).to_have_text('사이에 넣은 문단')
+        p.keyboard.press('Shift+Tab');expect(ed.locator(':scope > div').last).to_have_text('사이에 넣은 문단')
+        expect(ed.locator('.nb-toggle-body')).to_have_text('기존 안쪽 문단')
+        p.wait_for_function("__store.notes.find(n=>n.id==='work-n').html.includes('사이에 넣은 문단')")
+        p.reload();ed=self.note();expect(ed.locator(':scope > div').last).to_have_text('사이에 넣은 문단')

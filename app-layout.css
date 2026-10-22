@@ -343,3 +343,12 @@ html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
 .layout-reminder.is-empty>summary>.layout-chevron{grid-column:3}
 /* The old desktop !important rule otherwise leaves mobile articles in a 260px column. */
 @media(max-width:900px){.layout-refined .dsplit{grid-template-columns:minmax(0,1fr)!important}}
+/* Compact memo slips: keep separate reminders readable without a running sentence. */
+.layout-refined .layout-reminder>summary{padding:12px 14px;gap:8px 10px}
+.layout-reminder>summary>.layout-fold-title{font-size:13px;font-weight:650;gap:7px}
+.layout-reminder-count{font-size:10px;line-height:1.5;padding:1px 6px;border-radius:6px;background:var(--surface);color:var(--t2)}
+.layout-refined .layout-reminder>summary>.layout-fold-hint{font-size:13px;line-height:1.5}
+.layout-reminder-preview{gap:6px}
+.layout-reminder-line{align-items:center;gap:9px;padding:6px 9px;border-radius:8px;background:var(--field);box-shadow:inset 0 0 0 1px var(--ln)}
+.layout-reminder-line:before{align-self:center;margin:0;width:4px;height:12px;border-radius:3px;opacity:.4}
+.layout-reminder-more{margin:6px 1px 0;font-size:11px;text-align:right;font-weight:400;color:var(--mu)}

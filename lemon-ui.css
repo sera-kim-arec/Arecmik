@@ -46,3 +46,8 @@ html.layout-refined[data-app-theme="lemon"] .toast[data-tone="success"] button{c
  html.layout-refined[data-app-theme="lemon"] .hhead h1::before{transition:transform .16s ease}
  html.layout-refined[data-app-theme="lemon"] .hhead h1:hover::before{transform:rotate(-9deg)}
 }
+html.layout-refined[data-app-theme="lemon"] .layout-reminder{box-shadow:inset 0 0 0 1px #e9dfbd,0 6px 20px -20px #a88938;border-radius:14px}
+html.layout-refined[data-app-theme="lemon"] .layout-reminder>summary>.layout-fold-title:before{content:'';width:21px;height:21px;flex:none;background:url('lemon-mark.svg') center/contain no-repeat}
+html.layout-refined[data-app-theme="lemon"] .layout-reminder-line{background:#fff9e5;box-shadow:inset 0 0 0 1px #eee2bb80}
+html.layout-refined[data-app-theme="lemon"] .layout-reminder-line:before{background:#cfac40;opacity:.7}
+html.layout-refined[data-app-theme="lemon"] .layout-reminder-count{background:#fbefc5;color:#8b7848}
