@@ -36,3 +36,9 @@ These tests use mocked Firebase. Before shipping native input changes, also chec
 Gboard/Samsung Keyboard composition, Enter in nested toggles, keyboard dismissal,
 photo selection and Android Back on an actual phone. Desktop emulation cannot
 verify a real Android keyboard or notification environment.
+
+Explicit, cancelable `beforeinput: insertParagraph` intents go through the block
+Enter command. Android Chrome suppresses the usual keydown Enter path; relying
+on native div splitting duplicates a custom toggle container. Composition text
+intents are left to ProseMirror. Disclosure clicks retain external focus and
+only relocate a cursor that would otherwise remain in a hidden body.

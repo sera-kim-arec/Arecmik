@@ -112,7 +112,7 @@ class BlockEditorTests(unittest.TestCase):
         expect(p.locator('.nb-link-dialog')).to_be_visible();expect(p.locator('#srch')).not_to_have_class('srov on')
         p.locator('#nb-link-url').fill('https://example.com/guide');p.locator('.nb-link-dialog [type=submit]').click()
         expect(ed.locator('a')).to_have_text('선택한 문구');expect(ed.locator('a')).to_have_attribute('href','https://example.com/guide')
-        p.locator('[data-esave]').click();self.search('보고서 제출');p.locator('#sqr [data-sgo="todo"]').click()
+        p.locator('[data-esave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on');self.search('보고서 제출');p.locator('#sqr [data-sgo="todo"]').click()
         expect(p.locator('#e-n a')).to_have_text('선택한 문구')
 
     def test_drag_moves_whole_toggle_with_its_body_and_can_be_undone(self):
@@ -176,3 +176,76 @@ class BlockEditorTests(unittest.TestCase):
         expect(ed.locator('.nb-toggle-body')).to_have_text('기존 안쪽 문단')
         p.wait_for_function("__store.notes.find(n=>n.id==='work-n').html.includes('사이에 넣은 문단')")
         p.reload();ed=self.note();expect(ed.locator(':scope > div').last).to_have_text('사이에 넣은 문단')
+
+    def test_enter_in_populated_toggle_title_creates_new_body_line_without_merging_text(self):
+        html='<div class="nb-toggle" data-expanded="true"><div class="nb-toggle-title">상담 내용</div><div class="nb-toggle-body"><div><strong>기존 견적 100만원</strong></div></div></div>'
+        self.patch('notes','work-n',{'html':html});p=self.page;ed=self.note()
+        ed.locator('.nb-toggle-title').click();p.keyboard.press('End');p.keyboard.press('Enter');p.keyboard.insert_text('새로 확인할 내용')
+        expect(ed.locator('.nb-toggle-body > div')).to_have_text(['새로 확인할 내용','기존 견적 100만원'])
+        expect(ed.locator('.nb-toggle-body strong')).to_have_text('기존 견적 100만원')
+
+    def test_toggle_disclosure_does_not_focus_editor_or_move_another_paragraph_caret(self):
+        html='<div class="nb-toggle" data-expanded="false"><div class="nb-toggle-title">확인만 할 제목</div><div class="nb-toggle-body"><div>보존할 본문</div></div></div><div>계속 작성할 문단</div>'
+        self.patch('notes','work-n',{'html':html});p=self.page;ed=self.note()
+        p.locator('.dt').focus();ed.locator('.nb-toggle-arrow').click()
+        expect(p.locator('.dt')).to_be_focused();expect(ed.locator('.nb-toggle-body')).to_be_visible()
+        ed.locator(':scope > div').last.click();p.keyboard.press('End');ed.locator('.nb-toggle-arrow').click();p.keyboard.insert_text(' 이어서')
+        expect(ed.locator(':scope > div').last).to_have_text('계속 작성할 문단 이어서')
+        expect(ed.locator('.nb-toggle-title')).to_have_text('확인만 할 제목')
+
+    def test_nested_legacy_toggles_remain_independent_without_writing_on_open(self):
+        html='<div class="tgl open">큰 제목</div><div class="tgc"><div class="tgl open">작은 제목</div><div class="tgc"><strong>오래된 내용</strong></div></div>'
+        self.patch('notes','work-n',{'html':html});before=self.page.evaluate('JSON.stringify(__store)');ed=self.note()
+        expect(ed.locator('.nb-toggle .nb-toggle')).to_have_count(1)
+        expect(ed.locator('.nb-toggle-body strong')).to_have_text('오래된 내용')
+        self.assertEqual(self.page.evaluate('JSON.stringify(__store)'),before)
+
+    def test_enter_in_middle_of_title_moves_formatted_tail_into_its_own_body_line(self):
+        html='<div class="nb-toggle" data-expanded="true"><div class="nb-toggle-title">제목<strong>옮길 내용</strong></div><div class="nb-toggle-body"><div>기존 본문</div></div></div>'
+        self.patch('notes','work-n',{'html':html});p=self.page;ed=self.note()
+        title=ed.locator('.nb-toggle-title');title.click();p.keyboard.press('Home');p.keyboard.press('ArrowRight');p.keyboard.press('ArrowRight');p.keyboard.press('Enter')
+        expect(title).to_have_text('제목');expect(ed.locator('.nb-toggle-body > div')).to_have_text(['옮길 내용','기존 본문'])
+        expect(ed.locator('.nb-toggle-body strong')).to_have_text('옮길 내용')
+        p.keyboard.press('Control+z');expect(title).to_have_text('제목옮길 내용');expect(ed.locator('.nb-toggle-body')).to_have_text('기존 본문')
+
+
+class AndroidBlockEditorTests(unittest.TestCase):
+    setUpClass = classmethod(ui.ArchiveTests.setUpClass.__func__)
+    tearDownClass = classmethod(ui.ArchiveTests.tearDownClass.__func__)
+    tearDown = ui.ArchiveTests.tearDown
+    search = ui.ArchiveTests.search
+    note = BlockEditorTests.note
+    choose = BlockEditorTests.choose
+
+    def setUp(self):
+        # Uses Android browser detection plus real Chromium editing events; no physical IME claim.
+        original=self.browser.new_context
+        self.browser.new_context=lambda **kw:original(user_agent='Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36',has_touch=True,is_mobile=True,viewport={'width':390,'height':844},**kw)
+        try: ui.ArchiveTests.setUp(self)
+        finally:self.browser.new_context=original
+
+    def test_title_enter_and_body_enter_do_not_create_accidental_nested_toggles(self):
+        p=self.page;ed=self.note();ed.fill('');p.keyboard.type('> ');p.keyboard.insert_text('휴대폰 제목');p.keyboard.press('Enter');p.keyboard.insert_text('첫 번째 본문')
+        expect(ed.locator('.nb-toggle')).to_have_count(1)
+        expect(ed.locator('.nb-toggle-body > div')).to_have_text(['첫 번째 본문'])
+        p.keyboard.press('Enter');p.keyboard.insert_text('두 번째 본문')
+        expect(ed.locator('.nb-toggle-body > div')).to_have_text(['첫 번째 본문','두 번째 본문'])
+        p.keyboard.press('Enter');p.keyboard.press('Enter');p.keyboard.insert_text('토글 밖의 글')
+        expect(ed.locator(':scope > div').last).to_have_text('토글 밖의 글')
+
+    def test_explicit_paragraph_intent_after_composition_keeps_one_toggle_and_korean_text(self):
+        p=self.page;ed=self.note();ed.fill('');p.keyboard.type('> ');p.keyboard.insert_text('한글 제목')
+        ed.evaluate("""ed=>{ed.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));ed.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',keyCode:229,isComposing:true,bubbles:true}));ed.dispatchEvent(new InputEvent('beforeinput',{inputType:'insertCompositionText',data:'목',isComposing:true,cancelable:true,bubbles:true}));ed.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:'목'}));ed.dispatchEvent(new InputEvent('beforeinput',{inputType:'insertParagraph',isComposing:false,cancelable:true,bubbles:true}));}""")
+        p.keyboard.insert_text('이어 쓰는 한글 본문')
+        expect(ed.locator('.nb-toggle')).to_have_count(1);expect(ed.locator('.nb-toggle-title')).to_have_text('한글 제목')
+        expect(ed.locator('.nb-toggle-body > div')).to_have_text(['이어 쓰는 한글 본문'])
+        p.keyboard.press('Control+End');p.locator('[data-block-menu]').click()
+        self.choose('아래에 문단 추가');p.keyboard.insert_text('메뉴로 더한 문단')
+        expect(ed.locator('.nb-toggle-body > div').last).to_have_text('메뉴로 더한 문단')
+
+    def test_slash_menu_remains_usable_when_android_keyboard_resizes_viewport(self):
+        p=self.page;ed=self.note();ed.fill('');p.keyboard.press('/');expect(p.locator('.nb-menu')).to_be_visible()
+        p.set_viewport_size({'width':390,'height':480});expect(p.locator('.nb-menu')).to_be_visible()
+        box=p.locator('.nb-menu').bounding_box();self.assertGreaterEqual(box['y'],0);self.assertLessEqual(box['y']+box['height'],480)
+        self.choose('토글');p.keyboard.insert_text('키보드가 떠 있어도 작성');p.keyboard.press('Enter');p.keyboard.insert_text('본문')
+        expect(ed.locator('.nb-toggle-title')).to_have_text('키보드가 떠 있어도 작성');expect(ed.locator('.nb-toggle-body')).to_have_text('본문')

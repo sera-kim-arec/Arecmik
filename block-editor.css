@@ -62,3 +62,15 @@
 .rt .img:has(img[data-missing=true]){line-height:1.7;padding:12px;border:1px dashed var(--ln,#ddd);border-radius:9px;background:var(--field,#f7f6f1);color:var(--mu,#888)}
 .rt .img:has(img[data-missing=true]):before{content:"사진을 불러오지 못했어요. 다시 열어 확인해 주세요.";display:block;font-size:12px}
 .rt .img img[data-missing=true]{display:none}
+/* A stationary hit area with a rotating caret avoids a jumping disclosure button. */
+.rt .nb-toggle[data-expanded=true]>.nb-toggle-arrow{transform:none}
+.nb-toggle-caret{display:block;transition:transform .12s;line-height:1;pointer-events:none}
+.rt .nb-toggle[data-expanded=true]>.nb-toggle-arrow>.nb-toggle-caret{transform:rotate(90deg)}
+.rt .nb-toggle-title{font-weight:500}
+.rt .nb-toggle-title:hover{background:none}
+.rt .nb-toggle-body{padding-top:0!important}
+.nb-tools{flex-direction:row;gap:0;width:42px}
+.nb-tools button{width:21px;height:28px;font-size:17px}
+.nb-tools [draggable]{font-size:19px}
+@media(hover:none),(pointer:coarse){.nb-tools{width:36px}.nb-tools button{width:36px;height:36px}.nb-tools [data-block-add]{display:none}}
+@media(prefers-reduced-motion:reduce){.nb-toggle-caret{transition:none}}
