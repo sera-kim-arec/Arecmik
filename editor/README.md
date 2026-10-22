@@ -76,3 +76,16 @@ tap may still have its native caret update pending. Click targets can position
 controls directly, and subsequent selection updates follow the synchronized state.
 Tests press the touch handle immediately after the first tap without adding a
 delay to mask this race. Scroll updates preserve visible hover controls.
+
+Deletion boundaries are explicit commands. Backspace at the beginning of text
+after a toggle enters the last visible text; forward Delete before a toggle
+enters its title. Delete at the end of a title enters its open body or the next
+visible text. It never selects the required title/body containers. Those schema
+nodes are not selectable; deliberate whole-document or block selection still
+allows deletion. Native forward-delete intents use the same command.
+
+`test_editor_surfaces.py` verifies actual typing, paragraph merging, select-all
+deletion, undo/redo, empty-body saving and reopening on each surface in both
+spaces at desktop/mobile widths. It also checks isolation and other journal days.
+`test_editor_delete_boundaries.py` covers hidden-body preservation, native delete
+intents, photos after undo, and Chromium's IME composition/cancellation path.

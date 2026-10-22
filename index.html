@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.22.8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
-<script src="app-theme.js?v=2026.10.22.8"></script>
+<title>Arecmik</title><meta name="application-version" content="2026.10.22.9"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<script src="app-theme.js?v=2026.10.22.9"></script>
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -1211,7 +1211,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
 .record-editor{min-height:160px;max-height:45vh;overflow:auto;padding:14px;border-radius:14px}
 .archive-list mark{background:#37352F;color:#fff;border-radius:3px;padding:0 2px}
 @media(max-width:600px){.archive-intro{align-items:flex-start}.archive-intro h2{font-size:21px}.archive-intro .ink{padding:9px 12px;font-size:12px}.archive-tools{gap:6px}.archive-tools button{padding:7px 10px}.archive-row{gap:8px}.record-editor{min-height:140px}}
-</style><link rel="stylesheet" href="app-theme.css?v=2026.10.22.8"><link rel="stylesheet" href="app-ux.css?v=2026.10.22.8"><link rel="stylesheet" href="connections.css?v=2026.10.22.8"><link rel="stylesheet" href="app-layout.css?v=2026.10.22.8"><link rel="stylesheet" href="lemon-ui.css?v=2026.10.22.8"><link rel="stylesheet" href="block-editor.css?v=2026.10.22.8"></head><body>
+</style><link rel="stylesheet" href="app-theme.css?v=2026.10.22.9"><link rel="stylesheet" href="app-ux.css?v=2026.10.22.9"><link rel="stylesheet" href="connections.css?v=2026.10.22.9"><link rel="stylesheet" href="app-layout.css?v=2026.10.22.9"><link rel="stylesheet" href="lemon-ui.css?v=2026.10.22.9"><link rel="stylesheet" href="block-editor.css?v=2026.10.22.9"></head><body>
 <div id="login" hidden><div class="g"><img src="icon-192.png" width="80" height="80" alt="Arecmik 레몬" style="border-radius:24px"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
 <header class="top">
@@ -1219,14 +1219,14 @@ a.lk:hover{background:rgba(55,53,47,.13)}
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
   <div class="tr"><button class="ic" data-search aria-label="전체 찾기" title="전체 찾기 (Ctrl+K / ⌘K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><span class="layout-search-label">전체 찾기</span><kbd class="layout-search-key">Ctrl K</kbd></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-app-theme-open>앱 테마 <span class="app-theme-menu-label" data-app-theme-label></span></button><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-reminders-open>일정 알림</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-backup-import>백업 가져오기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.22.8</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-app-theme-open>앱 테마 <span class="app-theme-menu-label" data-app-theme-label></span></button><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-reminders-open>일정 알림</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-backup-import>백업 가져오기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.22.9</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
 <div class="one g solid" id="one"><div class="t"></div><div class="r"><input placeholder="안 써도 돼요"><button class="ink" data-one="save">남기기</button><button class="link" data-one="skip">건너뛰기</button></div></div>
 <div class="lb" id="lb"><img alt=""></div>
 <script type="module">
-import {installBlockEditors,normalizeRichHTML} from './block-editor.js?v=2026.10.22.8';
+import {installBlockEditors,normalizeRichHTML} from './block-editor.js?v=2026.10.22.9';
 let blockEditors=null;
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithCredential,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -1344,16 +1344,27 @@ let logCache={};
 function getLogs(sp){const sig=D.notes.length+':'+D.notes.reduce((a,n)=>a+(n.log?(n.updated||0):0),0);if(!logCache[sp]||logCache[sp].sig!==sig)logCache[sp]={sig,m:logMap(sp)};return logCache[sp].m}
 const logTimers={};
 function setDay(sp,k,html){queueAutoSave({key:'day:'+sp+':'+k,day:k,space:sp,html,label:k+' '+LW(sp).t})}
-let monCreating={};
-async function writeDay(sp,k,html,uid=ME.uid){const mon=k.slice(0,7),LG=getLogs(sp)[k];
- if(LG&&LG.src.day){await updateDoc(doc(db,'users',uid,'notes',LG.src.nid),{html,updated:Date.now()});return}
+let monCreating={};const dayWriting=new Map();
+function writeDay(sp,k,html,uid=ME.uid){
+ const key=uid+':'+sp+':'+k.slice(0,7),previous=dayWriting.get(key)||Promise.resolve();
+ const pending=previous.catch(()=>{}).then(()=>writeDayContent(sp,k,html,uid));dayWriting.set(key,pending);
+ const clear=()=>{if(dayWriting.get(key)===pending)dayWriting.delete(key)};pending.then(clear,clear);return pending;
+}
+async function writeDayContent(sp,k,html,uid){if(ME?.uid!==uid)throw new Error('계정이 바뀌어 일지 저장을 멈췄어요.');const mon=k.slice(0,7);
+ // A month may have been created on two devices, or contain legacy daily notes.
+ // Update copies of this day together; retain every other day in each document.
+ const copies=D.notes.filter(n=>n.log&&!n.isFolder&&SPo(n)===sp&&(n.mon===mon?parseMon(n).days.some(d=>d.k===k):!n.mon&&n.date===k));
+ if(copies.length){const batch=writeBatch(db),updated=Date.now(),changes=[];
+  for(const n of copies){let value={html,updated};if(n.mon){const p=parseMon(n);p.days.forEach(d=>{if(d.k===k)d.html=html});value={html:serMon(p),date:k>(n.date||'')?k:n.date||k,updated}}batch.update(doc(db,'users',uid,'notes',n.id),value);changes.push([n.id,value]);}
+  await batch.commit();if(ME?.uid===uid){for(const [id,value] of changes){const n=D.notes.find(n=>n.id===id);if(n)Object.assign(n,value)}logCache={}}return;
+ }
  let n=monNotes(sp).find(x=>x.mon===mon);
  if(!n){if(isEmptyH(html))return;if(monCreating[uid+sp+mon]){await monCreating[uid+sp+mon];n=monNotes(sp).find(x=>x.mon===mon)}
   if(!n){const W0=LW(sp);monCreating[uid+sp+mon]=(async()=>{let f=D.notes.find(x=>x.isFolder&&x.title===W0.f&&SPo(x)===sp);let fid=f?f.id:(await addDoc(collection(db,'users',uid,'notes'),{isFolder:true,title:W0.f,icon:W0.ic,space:sp,fid:'',created:Date.now(),updated:Date.now()})).id;
    const nh=`<div class="h2 dayh">${dayHead(k)}</div>${html}`;const x=await addDoc(collection(db,'users',uid,'notes'),{title:`${+mon.slice(0,4)}년 ${+mon.slice(5,7)}월 ${W0.t}`,html:nh,space:sp,fid,date:k,mon,log:true,created:Date.now(),updated:Date.now()});if(ME?.uid===uid&&!D.notes.some(n=>n.id===x.id))D.notes.push({id:x.id,title:'',html:nh,space:sp,fid,date:k,mon,log:true,updated:Date.now()});logCache={}})();await monCreating[uid+sp+mon];delete monCreating[uid+sp+mon];return}}
  const p=parseMon(n);let d=p.days.find(x=>x.k===k);
  if(d)d.html=html;else{if(isEmptyH(html))return;p.days.push({k,html});p.days.sort((a,b)=>a.k<b.k?-1:1)}
- const nh=serMon(p);n.html=nh;n.updated=Date.now();logCache={};await updateDoc(doc(db,'users',uid,'notes',n.id),{html:nh,date:k>(n.date||'')?k:n.date||k,updated:Date.now()})}
+ const value={html:serMon(p),date:k>(n.date||'')?k:n.date||k,updated:Date.now()};await updateDoc(doc(db,'users',uid,'notes',n.id),value);if(ME?.uid===uid){const current=D.notes.find(row=>row.id===n.id);if(current)Object.assign(current,value);logCache={}}}
 
 /* ================= 입력 해석 ================= */
 function parseQ(v,fixedPid){let s=' '+v.trim()+' ',date='',time='',pid=fixedPid||'',newP='',memo=false;
@@ -1945,7 +1956,7 @@ async function applyBackup(button){
 document.addEventListener('click',e=>{if(e.target.closest?.('[data-backup-import]')){$('#menu').classList.remove('on');openBackupRestore();return}const b=e.target.closest?.('[data-backup-apply]');if(b)applyBackup(b)});
 document.addEventListener('change',e=>{if(e.target.id==='backup-file')previewBackup(e.target.files[0])});
 
-import {readBackup,backupChunks,BACKUP_COLLECTIONS} from './backup-restore.js?v=2026.10.22.8';
+import {readBackup,backupChunks,BACKUP_COLLECTIONS} from './backup-restore.js?v=2026.10.22.9';
 const COLS=['todos','projects','notes','refs','ents','moms','logs','exps','fbk','imgs','trash'];
 async function backup(){
  if(autoBusy.size||autoPending.size){flushAutoSaves();toast('편집을 저장하고 있어요. 저장 완료 후 백업을 다시 눌러 주세요.');return}
@@ -1961,7 +1972,7 @@ async function wipe(){if(!await ask('전체 데이터를 초기화할까요? 할
  toast(`전체 데이터를 초기화했어요 (${n}개)`);go('home')}
 
 /* ================= 시작 ================= */
-const {setupAndroidApp}=await import('./android-app.js?v=2026.10.22.8');
+const {setupAndroidApp}=await import('./android-app.js?v=2026.10.22.9');
 let reminderUI=null,pendingNativeTask=null;
 function openReminderTask(message){if(ME?.uid!==message.uid)return;pendingNativeTask=message;if(!U.ready)return;pendingNativeTask=null;const task=D.todos.find(t=>t.id===message.id);if(!task){toast('이 일정이 삭제되었거나 아직 동기화되지 않았어요.');return}go('home',{sp:SPo(task),calSel:task.date||T(),calCur:(task.date||T()).slice(0,7),anc:task.date||T()});editTodo(task.id)}
 const nativeApp=setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,signOut,loginButton:$('#gl'),notify:toast,onBack:handleBack,onReady:()=>reminderUI?.sync(),onOpenTask:openReminderTask,onReminderNotices:message=>reminderUI?.receiveNative(message)});
@@ -2939,7 +2950,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
 document.addEventListener('change',e=>{const t=e.target,state=archiveState[U.sp];if(t.matches('[data-archive-month]'))state.month=t.value;else if(t.matches('[data-archive-project]'))state.pid=t.value;else return;state.limit=40;render()});
 
 /* Shared connections preserve each item's original editor and storage. */
-import {installConnections} from './connections-ui.js?v=2026.10.22.8';
+import {installConnections} from './connections-ui.js?v=2026.10.22.9';
 connectionUI=installConnections({
  D,U,uid:()=>ME?.uid,plain:txt,getLogs,isEvent:isEv,date:ms=>ymd(new Date(ms)),
  getSpace:(ref,row)=>ref.c==='fbk'?row.sp||'work':ref.c==='logs'?(ref.id==='memo_life'?'life':'work'):ref.c==='exps'?recordSpace(row,'expense'):ref.c==='ents'?SPo(PJ(row.pid)||row):ref.c==='projects'||ref.c==='todos'||ref.c==='refs'?SPo(row):recordSpace(row,'doc'),
@@ -3119,7 +3130,7 @@ document.addEventListener('click',event=>{
  const heading=$('[data-layout-task-group="'+kind+'"]');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});flash('[data-layout-task-group="'+kind+'"]')}
 });
 
-import {installReminders} from './reminders-ui.js?v=2026.10.22.8';
+import {installReminders} from './reminders-ui.js?v=2026.10.22.9';
 reminderUI=installReminders({nativeApp,data:()=>D.todos.map(t=>({...t,space:SPo(t)})),uid:()=>ME?.uid,ready:()=>syncReceived.has('todos'),openSheet,openTask:openReminderTask,notify:toast,storage:localStorage,preview:PREVIEW});
 
 blockEditors=installBlockEditors({hydrate:hydr,photo:(ed,b,files)=>uploadEditorImages(ed,files||(()=>pickFiles()),b),link:linkAsk,linkify});
