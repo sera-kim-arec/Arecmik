@@ -20,16 +20,25 @@ export function installBlockMoving(hooks){
  function cancel(){if(!session)return false;suppressClickUntil=Date.now()+500;clear();return true;}
  function insideSource(at){return at>=session.range.from&&at<=session.range.to;}
  function asBlock(view,pos){const dom=view.nodeDOM(pos),node=view.state.doc.nodeAt(pos);return dom?.getBoundingClientRect&&node?{pos,node,dom}:null;}
- function rootBlocks(view){let pos=0;return [...view.state.doc.content.content].map(node=>{const b=asBlock(view,pos);pos+=node.nodeSize;return b;}).filter(Boolean);}
+ function visibleBlocks(view){const rows=[];view.state.doc.descendants((node,pos)=>{if(!['paragraph','toggle','image','rule'].includes(node.type.name))return;const b=asBlock(view,pos);if(b){const rect=b.dom.getBoundingClientRect();if(rect.width&&rect.height)rows.push({...b,rect});}});return rows;}
  function destination(x,y){
   const {view}=session,host=view.dom,rect=host.getBoundingClientRect();
   if(x<rect.left-72||x>rect.right+24||y<rect.top-24||y>rect.bottom+24)return null;
   const hit=document.elementFromPoint(Math.max(rect.left+2,Math.min(rect.right-2,x)),y);
-  let b=hit&&host.contains(hit)?blockFromDOM(view,hit):null;
-  if(!b){const rows=rootBlocks(view).filter(b=>{const r=b.dom.getBoundingClientRect();return r.width&&r.height;});b=rows.sort((a,b)=>{const ar=a.dom.getBoundingClientRect(),br=b.dom.getBoundingClientRect();const distance=r=>y<r.top?r.top-y:y>r.bottom?y-r.bottom:0;return distance(ar)-distance(br);})[0];}
+  // The handle sits outside the text block. elementFromPoint there hits a
+  // toggle's padding instead of its child; resolve the visible row by geometry.
+  let parent=host;
+  for(const body of host.querySelectorAll('.nb-toggle-body')){
+   const r=body.getBoundingClientRect(),left=r.left+(parseFloat(getComputedStyle(body).paddingLeft)||0);
+   if(r.width&&r.height&&y>=r.top-4&&y<=r.bottom+4&&x>=left-28&&x<=r.right+24&&parent.contains(body))parent=body;
+  }
+  const distance=r=>y<r.top?r.top-y:y>r.bottom?y-r.bottom:0;
+  const rows=visibleBlocks(view).filter(b=>b.dom.parentElement===parent);
+  // Resolve gaps between paragraphs to the same boundary as their adjacent rows.
+  let b=rows.sort((a,b)=>distance(a.rect)-distance(b.rect))[0];
   if(!b)return null;
   // The left gutter is a real drop surface, including when lifting a nested block.
-  while(x<b.dom.getBoundingClientRect().left-14){const wrap=b.dom.parentElement?.closest('.nb-toggle');if(!wrap||!host.contains(wrap))break;const parent=blockFromDOM(view,wrap);if(!parent||parent.pos===b.pos)break;b=parent;}
+  while(x<b.dom.getBoundingClientRect().left-28){const wrap=b.dom.parentElement?.closest('.nb-toggle');if(!wrap||!host.contains(wrap))break;const parent=blockFromDOM(view,wrap);if(!parent||parent.pos===b.pos)break;b=parent;}
   const r=b.dom.getBoundingClientRect();
   if(b.node.type.name==='toggle'){
    const title=b.dom.querySelector('.nb-toggle-title'),body=b.dom.querySelector('.nb-toggle-body'),tr=title.getBoundingClientRect();

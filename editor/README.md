@@ -56,3 +56,23 @@ Also run `test_block_moving.py` and `test_block_writing.py` with unittest discov
 for real mouse/touch movement, hover without focus, auto-scroll, grouped actions,
 clipboard round trips and list nesting. Touch coverage uses Chromium emulation,
 not a physical Android device.
+
+Drop hit testing first chooses the deepest visible toggle body containing the
+pointer, including its handle gutter and a small vertical gap tolerance, then
+the nearest child block. Do not use only `elementFromPoint()` for this: handles
+sit outside child text rectangles, where DOM hits resolve to the outer toggle.
+Regression tests must exercise nested-to-nested moves in both directions, gaps,
+native touch events and persisted order after reloading.
+
+Empty first body Backspace returns to the title; required empty body placeholders
+remain structural children rather than being moved to an outside paragraph.
+Backspace from a following empty paragraph skips these placeholders and respects
+closed toggles. Cancelable non-composing `deleteContentBackward` input intents use
+the same command for Android keyboards that omit a useful keydown event.
+
+Selection-change handlers flush the view's DOM observer before positioning tools.
+The focus event must not display a handle using the old model selection: a first
+tap may still have its native caret update pending. Click targets can position
+controls directly, and subsequent selection updates follow the synchronized state.
+Tests press the touch handle immediately after the first tap without adding a
+delay to mask this race. Scroll updates preserve visible hover controls.
