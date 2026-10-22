@@ -152,6 +152,19 @@ class AndroidAppTests(unittest.TestCase):
         self.send({'type':'credential','uid':'paired-user','idToken':'fake-google-id'})
         expect(self.page.locator('#e-t')).to_have_value('숙소 예약')
 
+    def test_native_notice_shows_same_popup_without_browser_notification(self):
+        self.page.evaluate("""async()=>{const f=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');await f.updateDoc(f.doc(f.collection({},'todos'),'work-t'),{date:'2026-10-22',time:'14:15',kind:'event'})}""")
+        self.connect_port();self.send({'type':'account','uid':'ui-test','capabilities':['reminders','reminder-popups']})
+        self.page.wait_for_function("__nativeMessages.some(x=>x.type==='reminders-notices')")
+        key=self.page.evaluate("'work-t|2026-10-22|14:15|'+(new Date('2026-10-22T14:15').getTime()-15*60000)")
+        self.send({'type':'reminder-notices','uid':'other-user','enabled':True,'lead':'15','notices':[{'id':'work-t','key':key}]})
+        expect(self.page.locator('#reminder-popup')).to_be_hidden()
+        message={'type':'reminder-notices','uid':'ui-test','enabled':True,'lead':'15','notices':[{'id':'work-t','key':key}]}
+        self.send(message);expect(self.page.locator('#reminder-popup h3')).to_have_text('보고서 제출')
+        self.page.locator('[data-reminder-dismiss]').click()
+        self.page.wait_for_function("__nativeMessages.some(x=>x.type==='reminders-dismiss'&&x.id==='work-t')")
+        self.send(message);expect(self.page.locator('#reminder-popup')).to_be_hidden()
+
 
 if __name__ == '__main__':
     unittest.main()

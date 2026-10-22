@@ -1,5 +1,6 @@
 """Actual browser timers, permissions, cross-tab deduplication and original editors."""
 import datetime
+import json
 import unittest
 from playwright.sync_api import expect
 import test_archive as ui
@@ -80,7 +81,7 @@ class ReminderTests(unittest.TestCase):
 
     def test_two_open_tabs_display_one_notification_for_same_occurrence(self):
         self.event();self.enable()
-        other=self.context.new_page();other.clock.install(time=datetime.datetime(2026,10,22,4,59,50,tzinfo=datetime.timezone.utc));other.goto(self.origin)
+        other=self.context.new_page();seed=self.page.evaluate('JSON.stringify(__store)');other.add_init_script('sessionStorage.setItem("mock-db",'+json.dumps(seed)+');window.__store=JSON.parse(sessionStorage.getItem("mock-db"));');other.clock.install(time=datetime.datetime(2026,10,22,4,59,50,tzinfo=datetime.timezone.utc));other.goto(self.origin)
         expect(other.locator('#app')).to_be_visible()
         self.page.clock.fast_forward(15000);self.page.wait_for_function('window.__notifications.length===1')
         other.clock.fast_forward(15000)
@@ -135,3 +136,52 @@ class ReminderTests(unittest.TestCase):
         self.page.clock.fast_forward(30000)
         self.assertEqual(self.page.evaluate('__permissionRequests'),0)
         self.assertEqual(self.page.evaluate('JSON.stringify({...localStorage})'),before)
+
+    def test_lemon_popup_survives_system_dismissal_and_reload_until_confirmed(self):
+        self.event();self.enable();self.page.clock.fast_forward(15000)
+        expect(self.page.locator('#reminder-popup')).to_be_visible()
+        expect(self.page.locator('#reminder-popup h3')).to_have_text('곧 시작할 회의')
+        expect(self.page.locator('.reminder-popup-when')).to_contain_text('15분')
+        self.assertTrue(self.page.evaluate('__notifications[0].options.requireInteraction'))
+        self.page.evaluate('__notifications[0].close()')
+        expect(self.page.locator('#reminder-popup')).to_be_visible()
+        self.page.reload();expect(self.page.locator('#reminder-popup')).to_be_visible()
+        self.assertIn('알림 1',self.page.title())
+        self.page.locator('[data-reminder-dismiss]').click()
+        expect(self.page.locator('#reminder-popup')).to_be_hidden()
+        self.assertNotIn('알림',self.page.title())
+        self.page.reload();expect(self.page.locator('#reminder-popup')).to_be_hidden()
+        self.assertEqual(self.page.evaluate('__notifications.length'),0)
+
+    def test_popup_does_not_interrupt_typing_and_open_button_uses_original(self):
+        self.event();self.enable();self.page.locator('[data-archive-filter="todo"]').click()
+        self.page.locator('[data-archive-open="todo"][data-id="work-t"]').click()
+        self.page.locator('#e-n').fill('알림이 와도 작성 중인 메모를 유지해요')
+        self.page.clock.fast_forward(15000)
+        expect(self.page.locator('#e-n')).to_be_focused()
+        expect(self.page.locator('#e-n')).to_contain_text('작성 중인 메모')
+        self.page.locator('#sheet [data-sx="0"]').click()
+        self.page.locator('[data-reminder-open]').click()
+        expect(self.page.locator('#e-t')).to_have_value('곧 시작할 회의')
+        expect(self.page.locator('#reminder-popup')).to_be_hidden()
+
+    def test_simultaneous_popups_and_confirmation_in_another_tab(self):
+        self.event('one');self.event('two');self.enable();self.page.clock.fast_forward(15000)
+        expect(self.page.locator('[data-reminder-dismiss]')).to_have_count(2)
+        other=self.context.new_page();seed=self.page.evaluate('JSON.stringify(__store)');other.add_init_script('sessionStorage.setItem("mock-db",'+json.dumps(seed)+');window.__store=JSON.parse(sessionStorage.getItem("mock-db"));');other.clock.install(time=datetime.datetime(2026,10,22,5,0,5,tzinfo=datetime.timezone.utc));other.goto(self.origin)
+        expect(other.locator('#reminder-popup')).to_be_visible()
+        self.page.locator('[data-reminder-dismiss]').first.click()
+        expect(other.locator('[data-reminder-dismiss]')).to_have_count(1)
+        other.locator('[data-reminder-dismiss-all]').click()
+        expect(self.page.locator('#reminder-popup')).to_be_hidden()
+        self.page.wait_for_function('__notifications.every(n=>n.closed)');other.close()
+
+    def test_test_button_shows_cute_popup_without_creating_a_task(self):
+        before=self.page.evaluate('JSON.stringify(__store)')
+        self.settings();self.page.locator('[data-reminder-test]').click()
+        expect(self.page.locator('#reminder-popup')).to_be_visible()
+        expect(self.page.locator('#reminder-popup')).to_contain_text('레몬이 알려줘요')
+        expect(self.page.locator('#reminder-popup')).to_contain_text('실제 일정은 만들지 않아요')
+        self.page.locator('[data-reminder-sample-close]').click()
+        expect(self.page.locator('#reminder-popup')).to_be_hidden()
+        self.assertEqual(self.page.evaluate('JSON.stringify(__store)'),before)
