@@ -74,3 +74,12 @@
 .nb-tools [draggable]{font-size:19px}
 @media(hover:none),(pointer:coarse){.nb-tools{width:36px}.nb-tools button{width:36px;height:36px}.nb-tools [data-block-add]{display:none}}
 @media(prefers-reduced-motion:reduce){.nb-toggle-caret{transition:none}}
+/* A real drop location is shown before the document is changed. */
+.nb-tools [data-block-menu]{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+.nb-moving,.nb-moving *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.nb-drop-indicator{position:fixed;z-index:275;height:3px;border-radius:3px;background:var(--accent,#a48c3e);pointer-events:none;font-size:10px;line-height:1.4;color:var(--tx);text-align:right;transform:translateY(-1px)}
+.nb-drop-indicator:not(:empty){padding-top:5px;height:20px;background:linear-gradient(var(--accent,#a48c3e) 0 3px,transparent 3px)}
+.nb-drop-indicator:before{content:'';position:absolute;left:-3px;top:-2px;width:7px;height:7px;border-radius:50%;background:var(--accent,#a48c3e)}
+.nb-drop-indicator[hidden]{display:none!important}
+.nb-drag-preview{position:fixed;z-index:280;pointer-events:none;max-width:220px;padding:8px 12px;border:1px solid var(--ln,#e8e3d9);border-radius:9px;background:var(--popover,#fffefb);color:var(--tx,#444);box-shadow:0 5px 20px #40351c22;font-size:12px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
+.rt.nb-editor .nb-selected-block{background:var(--selection,#fff0bb);border-radius:4px}

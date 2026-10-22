@@ -42,3 +42,17 @@ Enter command. Android Chrome suppresses the usual keydown Enter path; relying
 on native div splitting duplicates a custom toggle container. Composition text
 intents are left to ProseMirror. Disclosure clicks retain external focus and
 only relocate a cursor that would otherwise remain in a hidden body.
+
+`block-moving.js` owns pointer capture, mouse hover controls, gutter hit testing,
+drop indicators, touch cancellation and ancestor/page auto-scroll. It commits a
+single schema transaction on a valid drop, with no writes on hover or cancel.
+Controls must stay mounted during pointer capture. Block ranges share the same
+move/type/duplicate/delete operations; media nodes stay intact. Native list HTML
+is flattened into the schema's paragraph kind/depth representation before parse.
+Clipboard paste and cut have separate history boundaries. This is a practical
+writing subset, not Notion's complete editor or database feature set.
+
+Also run `test_block_moving.py` and `test_block_writing.py` with unittest discovery
+for real mouse/touch movement, hover without focus, auto-scroll, grouped actions,
+clipboard round trips and list nesting. Touch coverage uses Chromium emulation,
+not a physical Android device.
