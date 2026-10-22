@@ -17,7 +17,7 @@ function emit(name) {
 }
 function checkWrite(ref, mustExist = false) {
   if (window.__failWrites || window.__failWritesFor === ref.name)
-    throw Object.assign(new Error('Simulated write failure'), {code: 'permission-denied'});
+    throw Object.assign(new Error('Simulated write failure'), {code: window.__writeErrorCode || 'permission-denied'});
   if (mustExist && !(store[ref.name] || []).some(row => row.id === ref.id))
     throw Object.assign(new Error('Missing document'), {code: 'not-found'});
 }
@@ -73,6 +73,8 @@ export function onSnapshot(ref, callback, error) {
   return () => listeners.set(ref.name, callbacks.filter(fn => fn !== callback));
 }
 export async function getDoc(ref) {
+  if (window.__failRead === ref.name)
+    throw Object.assign(new Error('Read failed'), {code: 'permission-denied'});
   const row = (store[ref.name] || []).find(row => row.id === ref.id);
   return {exists: () => !!row, data: () => row ? documentData(row) : undefined};
 }
@@ -87,8 +89,9 @@ export function writeBatch() {
     set: (ref, data) => actions.push({ref, data, merge: false}),
     update: (ref, data) => actions.push({ref, data, merge: true}),
     delete: ref => actions.push({ref, remove: true}),
-    commit: async () => {
+    commit: async validate => {
       await delayWrite();
+      if (validate && !validate()) throw Object.assign(new Error('Concurrent transaction'), {code:'mock-transaction-retry'});
       actions.forEach(a => checkWrite(a.ref, a.merge));
       actions.forEach(a => {
         if (a.remove) store[a.ref.name] = (store[a.ref.name] || []).filter(row => row.id !== a.ref.id);
@@ -100,9 +103,21 @@ export function writeBatch() {
   };
 }
 export async function runTransaction(db, callback) {
-  const batch = writeBatch();
-  const result = await callback({get: getDoc, set: batch.set, update: batch.update, delete: batch.delete});
-  await batch.commit();
-  return result;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const batch = writeBatch(), reads = new Map();
+    const fingerprint = ref => {
+      const row = (store[ref.name] || []).find(row => row.id === ref.id);
+      return JSON.stringify(row ? documentData(row) : null);
+    };
+    const result = await callback({get: async ref => {
+      reads.set(ref.name+':'+ref.id, {ref, version:fingerprint(ref)});
+      return getDoc(ref);
+    }, set: batch.set, update: batch.update, delete: batch.delete});
+    try {
+      await batch.commit(() => [...reads.values()].every(({ref,version}) => fingerprint(ref) === version));
+      return result;
+    } catch (error) { if (error.code !== 'mock-transaction-retry') throw error; }
+  }
+  throw Object.assign(new Error('Transaction contention'), {code:'aborted'});
 }
 persist();
