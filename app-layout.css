@@ -22,6 +22,12 @@ html.layout-refined .sp button.on{background:var(--selection)!important;color:va
 .layout-refined .mg{padding:12px;gap:3px}.layout-refined .mc{border-radius:8px;box-shadow:none;background:transparent!important;min-width:0}.layout-refined .mc.sel{box-shadow:inset 0 0 0 1px #d7c675!important;background:var(--selection)!important}.layout-refined .mc>b{font-weight:550}
 .layout-refined .dside{padding:22px 20px}.layout-refined .dside .ct{font-size:16px;align-items:center;flex-wrap:wrap;margin-bottom:4px}.layout-refined .dside .ct small{font-size:11px}.layout-refined .dside .ct [data-day-add]{min-height:44px;margin-left:auto}
 .layout-day-overview{margin:0 0 12px;color:var(--mu);font-size:12px}
+.es-reminder-field{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.es-reminder-field small{font-size:11px;line-height:1.5;color:var(--mu)}
+.task-sheet .es-options-body .es-reminder-field select{min-height:44px}
+.reminder-setting{display:flex;align-items:center;gap:16px;margin:20px 0;font-size:14px}
+.reminder-setting select{flex:1;min-height:44px;min-width:0;background:var(--field);border:1px solid var(--ln);border-radius:10px;padding:8px}
+.reminder-setting-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .layout-home-extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:24px;align-items:start}
 .layout-home-extras:empty{display:none}
 .layout-life-extras{gap:16px;margin-top:16px}

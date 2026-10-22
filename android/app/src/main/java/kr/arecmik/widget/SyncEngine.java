@@ -19,7 +19,7 @@ final class SyncEngine {
             JSONObject before=DataStore.data(c);JSONObject queue=DataStore.pending(before);long last=before.optLong("lastSync");
             if(!force&&queue.length()==0&&System.currentTimeMillis()-last<45*60*1000){CalendarWidget.updateAll(c);return;}
             DataStore.prefs(c).edit().putBoolean("syncing",true).apply();CalendarWidget.updateAll(c);
-            String token=Network.token(c,account),root=base(account);
+            long reminderReadAt=System.currentTimeMillis();String token=Network.token(c,account),root=base(account);
             for(String id:CalendarData.keys(queue)) {
                 JSONObject op=queue.getJSONObject(id),patch=op.getJSONObject("patch");
                 try {
@@ -51,6 +51,7 @@ final class SyncEngine {
                 page=response.optString("nextPageToken");if(++pages>50)throw new IllegalStateException("일정이 너무 많아요. 앱에서 오래된 기록을 정리해 주세요");
             }while(!page.isEmpty());
             synchronized(DataStore.class){JSONObject current=DataStore.data(c),pending=DataStore.pending(current);for(String id:CalendarData.keys(pending)){JSONObject task=CalendarData.find(tasks,id);if(task!=null){JSONObject p=pending.getJSONObject(id).getJSONObject("patch");for(String k:CalendarData.keys(p))task.put(k,p.get(k));}}current.put("tasks",tasks).put("lastSync",System.currentTimeMillis()).put("error","");DataStore.save(c,current);}
+            ReminderScheduler.update(c,account.getString("uid"),DataStore.tasks(DataStore.data(c)),reminderReadAt);
             DataStore.prefs(c).edit().putInt("syncFailures",0).apply();if(DataStore.pending(DataStore.data(c)).length()>0)SyncJob.scheduleSoon(c);
         }catch(Exception e){synchronized(DataStore.class){JSONObject current=DataStore.data(c);try{current.put("error",e instanceof Network.Failure?e.getMessage():e instanceof IllegalStateException?e.getMessage():"인터넷 연결을 기다리고 있어요");DataStore.save(c,current);}catch(Exception ignored){}}DataStore.prefs(c).edit().putInt("syncFailures",Math.min(6,DataStore.prefs(c).getInt("syncFailures",0)+1)).apply();if(!(e instanceof Network.Failure failure&&(failure.status==401||failure.status==403)))SyncJob.scheduleSoon(c);
         }finally{DataStore.prefs(c).edit().putBoolean("syncing",false).apply();CalendarWidget.updateAll(c);}}

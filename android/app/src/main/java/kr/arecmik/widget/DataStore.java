@@ -20,7 +20,7 @@ final class DataStore {
         JSONObject patch=new JSONObject().put("done",done).put("doneDate",done?LocalDate.now().toString():"").put("doneAt",done?now:0);
         JSONObject queue=pending(data);JSONObject previous=queue.optJSONObject(id);String nextId=previous==null?"widget-"+java.util.UUID.randomUUID():previous.optString("nextId","widget-"+java.util.UUID.randomUUID());
         queue.put(id,new JSONObject().put("patch",patch).put("version",java.util.UUID.randomUUID().toString()).put("nextId",nextId));
-        for(String k:CalendarData.keys(patch))task.put(k,patch.get(k));data.put("tasks",tasks).put("pending",queue);save(c,data);return true;
+        for(String k:CalendarData.keys(patch))task.put(k,patch.get(k));data.put("tasks",tasks).put("pending",queue);save(c,data);ReminderScheduler.completed(c,id,done);return true;
     }
     static void clear(Context c){prefs(c).edit().remove("data").commit();}
 }

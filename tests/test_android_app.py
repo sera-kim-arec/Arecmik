@@ -129,6 +129,29 @@ class AndroidAppTests(unittest.TestCase):
         expected = (ui.ROOT/'downloads/SHA256SUMS.txt').read_text().split()[0]
         self.assertEqual(hashlib.sha256(Path(result.value.path()).read_bytes()).hexdigest(), expected)
 
+    def test_native_reminders_sync_only_needed_fields_and_settings_command(self):
+        self.connect_port();self.send({'type':'account','uid':'ui-test','capabilities':['update','reminders']})
+        self.page.wait_for_function("__nativeMessages.some(x=>x.type==='reminders-sync')")
+        message=self.page.evaluate("__nativeMessages.filter(x=>x.type==='reminders-sync').at(-1)")
+        self.assertEqual(message['uid'],'ui-test');self.assertEqual(len(message['tasks']),len(ui.SEED['todos']))
+        self.assertTrue(all(set(t)<=set(['id','title','date','time','kind','space','reminder','done']) for t in message['tasks']))
+        self.page.locator('[data-menu]').click();self.page.locator('[data-reminders-open]').click()
+        self.page.wait_for_function("__nativeMessages.some(x=>x.type==='reminders-settings')")
+
+    def test_native_notification_opens_correct_space_and_rejects_other_account(self):
+        self.connect_port();self.send({'type':'open-task','uid':'other-user','id':'life-t'})
+        expect(self.page.locator('#e-t')).to_have_count(0)
+        self.send({'type':'open-task','uid':'ui-test','id':'life-t'})
+        expect(self.page.locator('#e-t')).to_have_value('숙소 예약')
+        expect(self.page.locator('[data-sp="life"]')).to_have_class('on')
+
+    def test_notification_waits_for_expected_account_sign_in_on_cold_start(self):
+        self.connect_port();self.send({'type':'account','uid':'paired-user','capabilities':['reminders']})
+        expect(self.page.locator('#login')).to_be_visible()
+        self.send({'type':'open-task','uid':'paired-user','id':'life-t'})
+        self.send({'type':'credential','uid':'paired-user','idToken':'fake-google-id'})
+        expect(self.page.locator('#e-t')).to_have_value('숙소 예약')
+
 
 if __name__ == '__main__':
     unittest.main()
