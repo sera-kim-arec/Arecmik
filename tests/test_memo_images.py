@@ -146,7 +146,7 @@ class MemoImageTests(unittest.TestCase):
         self.page.locator('#e-n').fill('')
         self.page.locator('#e-n').press('/')
         with self.page.expect_file_chooser() as chosen:
-            self.page.locator('.slm button').filter(has_text='사진').click()
+            self.page.locator('.nb-menu [data-block-command]').filter(has_text='사진').click()
         chosen.value.set_files({'name':'photo.png','mimeType':'image/png','buffer':PNG})
         self.assert_photo_loaded()
         self.page.locator('[data-esave]').click()

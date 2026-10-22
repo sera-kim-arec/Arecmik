@@ -52,6 +52,33 @@ class LayoutTests(unittest.TestCase):
         expect(p.locator('[data-layout-fold="status"]')).to_have_attribute('open','')
         self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
 
+    def test_reminder_preview_keeps_separate_lines_and_opens_original_rich_memo(self):
+        html='<div><strong>프로모션 지급 가능 여부 확인하기</strong></div><p>채용 서비스의 MCP / AI 연동 가이드 확인하기<br>이번 주 면접 일정 공유하기</p><div>정산 자료 다시 확인하기</div>'
+        self.patch('logs','memo_work',{'html':html})
+        p=self.page;p.locator('nav [data-tab="home"]').click()
+        before=p.evaluate('JSON.stringify(window.__store)')
+        fold=p.locator('[data-layout-fold="reminder"]');summary=fold.locator('summary')
+        expect(summary.locator('.layout-reminder-line')).to_have_text(['프로모션 지급 가능 여부 확인하기','채용 서비스의 MCP / AI 연동 가이드 확인하기'])
+        expect(summary.locator('.layout-reminder-more')).to_contain_text('2줄 더 보기')
+        for width in [1365,390,320]:
+            p.set_viewport_size({'width':width,'height':900})
+            lines=summary.locator('.layout-reminder-line').all()
+            self.assertGreater(lines[1].bounding_box()['y'],lines[0].bounding_box()['y'])
+            self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
+        summary.click()
+        editor=p.locator('[data-memo="memo_work"]')
+        expect(summary.locator('.layout-fold-hint')).to_be_hidden()
+        expect(editor.locator('strong')).to_have_text('프로모션 지급 가능 여부 확인하기')
+        expect(editor).to_contain_text('정산 자료 다시 확인하기')
+        self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
+        editor.fill('첫 번째로 기억할 일\n두 번째로 기억할 일\n세 번째로 기억할 일')
+        summary.click()
+        expect(summary.locator('.layout-reminder-line')).to_have_text(['첫 번째로 기억할 일','두 번째로 기억할 일'])
+        expect(summary.locator('.layout-reminder-more')).to_contain_text('1줄 더 보기')
+        p.wait_for_function("__store.logs.some(l=>l.id==='memo_work'&&l.html.includes('세 번째로 기억할 일'))")
+        p.reload()
+        expect(p.locator('[data-layout-fold="reminder"] .layout-reminder-line')).to_have_text(['첫 번째로 기억할 일','두 번째로 기억할 일'])
+
     def test_single_classification_and_composed_search_have_recoverable_empty_state(self):
         self.patch('notes','work-n',{'pid':'work-p'})
         self.patch('projects','other-work',{'name':'다른 업무','space':'work','status':'active'})

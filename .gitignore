@@ -7,3 +7,4 @@ android/**/build/
 *.keystore
 signing.properties
 *.apk.idsig
+editor/node_modules/
