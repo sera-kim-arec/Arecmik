@@ -179,6 +179,54 @@ class LayoutTests(unittest.TestCase):
         self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),390)
         self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
 
+    def test_work_journal_stays_under_month_with_long_pending_list_on_pc(self):
+        p=self.page
+        for i in range(12):
+            self.patch('todos','work-pending-'+str(i),{'title':'놓치지 않을 업무 '+str(i),'space':'work','done':False})
+        p.locator('nav [data-tab="home"]').click()
+        before=p.evaluate('JSON.stringify(window.__store)')
+        for width in [1365,1108,1024,901,900,760]:
+            with self.subTest(width=width):
+                p.set_viewport_size({'width':width,'height':1000});p.evaluate('scrollTo(0,0)')
+                cb=p.locator('.mg').bounding_box();jb=p.locator('[data-layout-fold="journal"]').bounding_box()
+                pb=p.locator('[data-layout-fold="undated"]').bounding_box()
+                self.assertAlmostEqual(jb['x'],cb['x'],delta=1)
+                self.assertAlmostEqual(jb['width'],cb['width'],delta=1)
+                self.assertAlmostEqual(jb['y']-cb['y']-cb['height'],16,delta=1)
+                self.assertLess(jb['y'],pb['y']+pb['height'])
+                expect(p.locator('.layout-home-extras')).to_be_hidden()
+                self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
+        p.set_viewport_size({'width':390,'height':844})
+        boxes=[p.locator(s).bounding_box() for s in ['.mg','.dside','[data-layout-fold="undated"]','[data-layout-fold="journal"]']]
+        for above,below in zip(boxes,boxes[1:]):
+            self.assertAlmostEqual(below['y']-above['y']-above['height'],16,delta=1)
+        self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)
+
+    def test_work_journal_keeps_unsaved_editor_across_pc_phone_and_touch_tablet(self):
+        p=self.page;p.set_viewport_size({'width':1365,'height':900})
+        p.locator('nav [data-tab="home"]').click()
+        ui.reveal(p,'[data-log][contenteditable]')
+        editor=p.locator('[data-log][contenteditable]')
+        editor.fill('달력 바로 아래에서 작성한 업무일지')
+        p.evaluate("window.__workJournal=document.querySelector('[data-log][contenteditable]')")
+        for width in [800,390]:
+            p.set_viewport_size({'width':width,'height':900})
+            self.assertTrue(p.evaluate("window.__workJournal===document.querySelector('[data-log][contenteditable]')"))
+            expect(editor).to_contain_text('달력 바로 아래에서 작성한 업무일지')
+        cdp=self.context.new_cdp_session(p)
+        cdp.send('Emulation.setTouchEmulationEnabled',{'enabled':True,'maxTouchPoints':5})
+        p.set_viewport_size({'width':900,'height':1000})
+        self.assertTrue(p.evaluate("window.__workJournal===document.querySelector('[data-log][contenteditable]')"))
+        pending=p.locator('[data-layout-fold="undated"]').bounding_box()
+        self.assertAlmostEqual(p.locator('[data-layout-fold="journal"]').bounding_box()['y']-pending['y']-pending['height'],16,delta=1)
+        p.wait_for_function("window.__store.notes.some(n=>n.log&&n.space==='work'&&n.html?.includes('달력 바로 아래에서 작성한 업무일지'))")
+        p.reload();ui.reveal(p,'[data-log][contenteditable]')
+        expect(p.locator('[data-log][contenteditable]')).to_contain_text('달력 바로 아래에서 작성한 업무일지')
+        p.locator('[data-sp="life"]').click();ui.reveal(p,'[data-log][contenteditable]')
+        expect(p.locator('[data-log][contenteditable]')).not_to_contain_text('달력 바로 아래에서 작성한 업무일지')
+        p.locator('[data-sp="work"]').click();ui.reveal(p,'[data-log][contenteditable]')
+        expect(p.locator('[data-log][contenteditable]')).to_contain_text('달력 바로 아래에서 작성한 업무일지')
+
     def test_life_diary_and_spending_still_save_after_reflow(self):
         p=self.page;p.set_viewport_size({'width':1365,'height':900})
         p.locator('nav [data-tab="home"]').click();p.locator('[data-sp="life"]').click()
