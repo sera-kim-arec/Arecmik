@@ -96,3 +96,13 @@ toggles, remain visible spacing without repeated slash hints. Empty toggle title
 retain their title prompt. This changes decorations only; blank blocks remain
 in the document and survive saving, reopening and undo. Slash menus and hover
 controls are available on those blank blocks without a visible prompt.
+
+The user's 2026-10-23 Notion recording supplies the reference for paragraph vs
+soft-line spacing, toggle exit and multiline quotes. Enter makes a separate
+paragraph; Shift+Enter and cancelable native `insertLineBreak` share the same
+hard-break command. Plain paragraphs get a runtime-only decoration class for
+spacing; it is not serialized into saved HTML. A final empty body paragraph
+after existing toggle content leaves one toggle level on Backspace. A first
+empty body still returns to the title, and a middle empty line does not move
+following content outside. `test_notion_writing_flow.py` covers these boundaries,
+undo/redo, nested order and storage round trips.

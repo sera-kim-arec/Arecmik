@@ -83,3 +83,7 @@
 .nb-drop-indicator[hidden]{display:none!important}
 .nb-drag-preview{position:fixed;z-index:280;pointer-events:none;max-width:220px;padding:8px 12px;border:1px solid var(--ln,#e8e3d9);border-radius:9px;background:var(--popover,#fffefb);color:var(--tx,#444);box-shadow:0 5px 20px #40351c22;font-size:12px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
 .rt.nb-editor .nb-selected-block{background:var(--selection,#fff0bb);border-radius:4px}
+/* Enter separates blocks; Shift+Enter keeps the tighter lines of one block.
+   These classes are view decorations, never saved into the user's HTML. */
+.rt.nb-editor .nb-text-block{line-height:1.6;min-height:1.6em!important;padding-top:3px;padding-bottom:3px;margin-top:4px;margin-bottom:4px}
+.rt.nb-editor .qt{line-height:1.6;min-height:1.6em!important}

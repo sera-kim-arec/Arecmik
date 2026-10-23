@@ -160,13 +160,17 @@ function enter(view){
   view.dispatch(selectText(tr,at+1).scrollIntoView());return true;
  }
  const b=textBlock(s);if(!b)return false;
- if(!b.node.textContent&&$from.parent.type===schema.nodes.paragraph){
+ if(!b.node.content.size&&$from.parent.type===schema.nodes.paragraph){
   if(b.node.attrs.kind||b.node.attrs.depth){view.dispatch(s.tr.setNodeMarkup(b.pos,null,{...b.node.attrs,kind:'',depth:0,checked:false}));return true;}
   if($from.depth>1&&$from.node($from.depth-1).type===schema.nodes.toggle_body){const depth=$from.depth-2,outerPos=$from.before(depth),toggle=$from.node(depth),tr=s.tr;const body=$from.node($from.depth-1);if(body.childCount>1)tr.delete(b.pos,b.pos+b.node.nodeSize);const after=tr.mapping.map(outerPos+toggle.nodeSize);tr.insert(after,paragraph());view.dispatch(selectText(tr,after+1));return true;}
  }
  if(b.node.attrs.kind==='code')return false;
  if($from.parentOffset===b.node.content.size&&['h1','h2','h3','qt','co'].includes(b.node.attrs.kind)){const at=b.pos+b.node.nodeSize,tr=s.tr.insert(at,paragraph());view.dispatch(selectText(tr,at+1));return true;}
  return splitBlock(s,tr=>{const p=tr.selection.$from;if(p.parent.type===schema.nodes.paragraph&&p.parent.attrs.checked)tr.setNodeMarkup(p.before(),null,{...p.parent.attrs,checked:false});view.dispatch(tr)});
+}
+function softBreak(view){
+ const s=view.state;if(!s.selection.$from.parent.isTextblock)return false;
+ view.dispatch(s.tr.replaceSelectionWith(schema.nodes.hard_break.create()).scrollIntoView());return true;
 }
 // Skip required empty body placeholders when returning from the following line.
 function toggleEnd(node,pos){
@@ -185,6 +189,9 @@ function backspace(view){if(undoInputRule(view.state,view.dispatch))return true;
   if(!b.node.content.size){const body=$from.node($from.depth-1),depth=$from.depth-2,pos=$from.before(depth),titleEnd=pos+$from.node(depth).firstChild.nodeSize,tr=closeHistory(s.tr);if(body.childCount>1)tr.delete(b.pos,b.pos+b.node.nodeSize);view.dispatch(selectText(tr,titleEnd).scrollIntoView());return true;}
   return indent(view,-1);
  }
+ // Backspace on the final empty body block leaves this toggle. Do not join it
+ // back into the preceding text or move any following body blocks outside.
+ if(!b.node.content.size&&$from.depth>1&&$from.node($from.depth-1).type===schema.nodes.toggle_body&&$from.index($from.depth-1)===$from.node($from.depth-1).childCount-1)return indent(view,-1);
  const $pos=s.doc.resolve(b.pos),previous=$pos.nodeBefore;
  if(previous?.type===schema.nodes.toggle){const tr=s.tr;if(!b.node.content.size)tr.delete(b.pos,b.pos+b.node.nodeSize);view.dispatch(selectText(closeHistory(tr),toggleEnd(previous,b.pos-previous.nodeSize)).scrollIntoView());return true;}
  return false;
@@ -214,7 +221,7 @@ function decorations(state,placeholder){
  const first=state.doc.firstChild,emptyDocument=state.doc.childCount===1&&first.type===schema.nodes.paragraph&&!first.content.size&&!first.attrs.kind;
  state.doc.descendants((n,pos,parent)=>{
   if(n.type===schema.nodes.paragraph||n.type===schema.nodes.toggle_title){
-   const attrs={};
+   const attrs=n.type===schema.nodes.paragraph&&!n.attrs.kind?{class:'nb-text-block'}:{};
    if(!n.content.size){
     if(n.type===schema.nodes.toggle_title)attrs['data-placeholder']='토글 제목';
     else if(emptyDocument&&parent===state.doc)attrs['data-placeholder']=placeholder||'내용을 적거나 / 로 블록 추가';
@@ -283,10 +290,10 @@ export function installBlockEditors(options={}){
  function keyHandler(view,event){if(event.isComposing||view.composing)return false;view.domObserver.flush();if(event.key==='Escape'&&menu){closeMenu();return true;}if(menu?.view===view){const items=menuItems();if(event.key==='ArrowDown'||event.key==='ArrowUp'){menu.index=items.length?(menu.index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length:0;drawMenu();return true;}if(event.key==='Enter'){pick(menu.index);return true;}if(event.key==='Tab'){closeMenu();return false;}}
  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){openLink(view);return true;}if(event.key==='Tab')return indent(view,event.shiftKey?-1:1);return false;}
  function mount(host){if(views.has(host)||!host.isConnected||host.getAttribute('contenteditable')!=='true')return;const original=host.innerHTML,clean=document.createElement('div');clean.innerHTML=normalizeRichHTML(original);const doc=PMParser.fromSchema(schema).parse(clean);const entry={host,view:null,original,dirty:false,flushing:false};views.set(host,entry);
- const customKeys={'Enter':(s,d,v)=>enter(v),'Backspace':(s,d,v)=>backspace(v),'Delete':(s,d,v)=>forwardDelete(v),'Mod-Backspace':(s,d,v)=>backspace(v),'Mod-Delete':(s,d,v)=>forwardDelete(v),'Mod-z':undo,'Shift-Mod-z':redo,'Mod-y':redo,'Mod-b':toggleMark(schema.marks.strong),'Mod-i':toggleMark(schema.marks.em),'Mod-u':toggleMark(schema.marks.underline),'Mod-`':toggleMark(schema.marks.code),'Shift-Enter':(s,d)=>{d(s.tr.replaceSelectionWith(schema.nodes.hard_break.create()).scrollIntoView());return true},'Alt-ArrowUp':(s,d,v)=>{moveBlock(v,-1);return true},'Alt-ArrowDown':(s,d,v)=>{moveBlock(v,1);return true}};
+ const customKeys={'Enter':(s,d,v)=>enter(v),'Backspace':(s,d,v)=>backspace(v),'Delete':(s,d,v)=>forwardDelete(v),'Mod-Backspace':(s,d,v)=>backspace(v),'Mod-Delete':(s,d,v)=>forwardDelete(v),'Mod-z':undo,'Shift-Mod-z':redo,'Mod-y':redo,'Mod-b':toggleMark(schema.marks.strong),'Mod-i':toggleMark(schema.marks.em),'Mod-u':toggleMark(schema.marks.underline),'Mod-`':toggleMark(schema.marks.code),'Shift-Enter':(s,d,v)=>softBreak(v),'Alt-ArrowUp':(s,d,v)=>{moveBlock(v,-1);return true},'Alt-ArrowDown':(s,d,v)=>{moveBlock(v,1);return true}};
  const view=new EditorView({mount:host},{state:EditorState.create({schema,doc,plugins:[history(),inputRules({rules:rules()}),keymap(customKeys),keymap(baseKeymap),new Plugin({props:{decorations:state=>decorations(state,host.dataset.ph)}})]}),attributes:{class:'nb-editor',role:'textbox','aria-multiline':'true','aria-label':host.getAttribute('aria-label')||'글과 메모 편집기',spellcheck:'true'},nodeViews:{toggle:(...args)=>new ToggleView(...args)},handleKeyDown:keyHandler,
  dispatchTransaction(tr){if(tr.getMeta('uiEvent')==='cut')closeHistory(tr);const prev=view.state;view.updateState(view.state.apply(tr));if(tr.docChanged){entry.dirty=true;options.hydrate?.(host);emit(entry);}if((tr.docChanged||menu?.typed)&&tr.getMeta('uiEvent')!=='paste')slashUpdate(view);if(prev.selection!==view.state.selection||tr.docChanged)refreshUI(view);},
- handleDOMEvents:{beforeinput:(view,event)=>{if(event.isComposing||view.composing||!event.cancelable)return false;if(/^delete(?:Content|Word|SoftLine|HardLine)(?:Backward|Forward)$/.test(event.inputType)){view.domObserver.flush();const back=event.inputType.endsWith('Backward'),s=view.state;if(!event.inputType.startsWith('deleteContent')&&(!s.selection.empty||s.selection.$from.parentOffset!==(back?0:s.selection.$from.parent.content.size)))return false;if((back?backspace:forwardDelete)(view)){event.preventDefault();return true;}return false;}if(event.inputType!=='insertParagraph')return false;view.domObserver.flush();if(keyHandler(view,{key:'Enter',isComposing:false})||enter(view)){event.preventDefault();return true;}return false;},focus:()=>{active=view;return false},compositionstart:()=>{closeMenu();inline?.remove();inline=null;return false},compositionend:()=>{queueMicrotask(()=>slashUpdate(view));return false}},
+ handleDOMEvents:{beforeinput:(view,event)=>{if(event.isComposing||view.composing||!event.cancelable)return false;if(/^delete(?:Content|Word|SoftLine|HardLine)(?:Backward|Forward)$/.test(event.inputType)){view.domObserver.flush();const back=event.inputType.endsWith('Backward'),s=view.state;if(!event.inputType.startsWith('deleteContent')&&(!s.selection.empty||s.selection.$from.parentOffset!==(back?0:s.selection.$from.parent.content.size)))return false;if((back?backspace:forwardDelete)(view)){event.preventDefault();return true;}return false;}if(event.inputType==='insertLineBreak'){view.domObserver.flush();if(softBreak(view)){event.preventDefault();return true}return false}if(event.inputType!=='insertParagraph')return false;view.domObserver.flush();if(keyHandler(view,{key:'Enter',isComposing:false})||enter(view)){event.preventDefault();return true;}return false;},focus:()=>{active=view;return false},compositionstart:()=>{closeMenu();inline?.remove();inline=null;return false},compositionend:()=>{queueMicrotask(()=>slashUpdate(view));return false}},
  handleClick(view,pos,event){const block=event.target.closest('.todo');if(block&&event.clientX-block.getBoundingClientRect().left<26){const at=view.posAtDOM(block,0)-1,n=view.state.doc.nodeAt(at);if(n?.type===schema.nodes.paragraph){view.dispatch(view.state.tr.setNodeMarkup(at,null,{...n.attrs,checked:!n.attrs.checked}));return true;}}const b=blockFromDOM(view,event.target);if(b)refreshUI(view,b);return false;},
  handlePaste(view,event){const cd=event.clipboardData;if(!cd)return false;const files=[...(cd.files||[])].filter(f=>/^image\//.test(f.type));if(files.length){options.photo?.(host,currentBlock(host),files);return true;}const text=cd.getData('text/plain'),html=cd.getData('text/html');if(/^https?:\/\/\S+$/i.test(text.trim())&&!view.state.selection.empty){const {from,to}=view.state.selection;view.dispatch(view.state.tr.addMark(from,to,schema.marks.link.create({href:text.trim()})));return true;}if(html||/https?:\/\/|www\./i.test(text)){const c=document.createElement('div');c.innerHTML=normalizeRichHTML(html||options.linkify?.(text)||'');const parser=PMParser.fromSchema(schema),b=textBlock(view.state);let tr=closeHistory(view.state.tr);
  if(b?.node.type===schema.nodes.paragraph&&!b.node.content.size){const content=parser.parse(c).content;tr.replaceWith(b.pos,b.pos+b.node.nodeSize,content);selectText(tr,b.pos+content.size-1);}
