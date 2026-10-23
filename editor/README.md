@@ -89,3 +89,10 @@ deletion, undo/redo, empty-body saving and reopening on each surface in both
 spaces at desktop/mobile widths. It also checks isolation and other journal days.
 `test_editor_delete_boundaries.py` covers hidden-body preservation, native delete
 intents, photos after undo, and Chromium's IME composition/cancellation path.
+
+Writing hints appear only in a wholly empty editor's single plain paragraph.
+Leading, trailing and intermediate blank paragraphs, including those inside
+toggles, remain visible spacing without repeated slash hints. Empty toggle titles
+retain their title prompt. This changes decorations only; blank blocks remain
+in the document and survive saving, reopening and undo. Slash menus and hover
+controls are available on those blank blocks without a visible prompt.

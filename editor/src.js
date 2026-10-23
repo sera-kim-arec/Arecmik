@@ -207,7 +207,26 @@ function forwardDelete(view){
 function rules(){const specs=[[/^#\s$/,'h1'],[/^##\s$/,'h2'],[/^###\s$/,'h3'],[/^[-*•]\s$/,'li'],[/^1[.)]\s$/,'num'],[/^\[\s?\]\s$/,'todo'],[/^>>?\s$/,'toggle'],[/^["“]\s$/,'qt'],[/^!\s$/,'co'],[/^```\s$/,'code']];const blocks=specs.map(([re,kind])=>new InputRule(re,(state,match,start,end)=>{
  const $p=state.doc.resolve(start);if($p.parent.type!==schema.nodes.paragraph||$p.parent.attrs.kind)return null;const tr=state.tr.delete(start,end),pos=$p.before();if(kind==='toggle'){const original=tr.doc.nodeAt(pos);const toggle=schema.nodes.toggle.create({open:true},[schema.nodes.toggle_title.create(null,original.content),schema.nodes.toggle_body.create(null,paragraph())]);tr.replaceWith(pos,pos+original.nodeSize,toggle);return selectText(tr,pos+2)}return tr.setNodeMarkup(pos,null,{...$p.parent.attrs,kind});
  }));return [...blocks,...[['->','→'],['<-','←'],['=>','⇒']].map(([from,to])=>new InputRule(new RegExp(from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$'),(state,match,start,end)=>state.selection.$from.parent.attrs.kind==='code'?null:state.tr.insertText(to,start,end))),new InputRule(/(https?:\/\/[^\s<]+|www\.[^\s<]+\.[^\s<]+)\s$/,(state,match,start,end)=>{if(state.selection.$from.parent.attrs.kind==='code')return null;const url=/^https?:/i.test(match[1])?match[1]:'https://'+match[1];return state.tr.insertText(' ',end).addMark(start,end,schema.marks.link.create({href:url})).removeStoredMark(schema.marks.link)})];}
-function decorations(state,placeholder){const d=[],number=new Map();state.doc.descendants((n,pos,parent)=>{if(n.type===schema.nodes.paragraph||n.type===schema.nodes.toggle_title){const attrs={};if(!n.content.size)attrs['data-placeholder']=n.type===schema.nodes.toggle_title?'토글 제목':parent.type===schema.nodes.toggle_body?'내용을 적거나 / 로 추가':state.doc.childCount===1?placeholder||'내용을 적거나 / 로 블록 추가':'/ 로 블록 추가';if(n.attrs.kind==='num'){let a=number.get(parent)||[0,0,0,0,0];a[n.attrs.depth]++;a.fill(0,n.attrs.depth+1);attrs['data-n']=String(a[n.attrs.depth]);number.set(parent,a)}else if(n.type===schema.nodes.paragraph){const a=number.get(parent)||[0,0,0,0,0];a.fill(0,n.attrs.depth);number.set(parent,a);}if(Object.keys(attrs).length)d.push(Decoration.node(pos,pos+n.nodeSize,attrs));}});const selected=blockRange({state});if(selected?.nodes.length>1){let at=selected.from;for(const node of selected.nodes){d.push(Decoration.node(at,at+node.nodeSize,{class:'nb-selected-block'}));at+=node.nodeSize;}}return DecorationSet.create(state.doc,d);}
+function decorations(state,placeholder){
+ const d=[],number=new Map();
+ // Blank paragraphs are intentional spacing. Only a new, empty editor needs
+ // the writing hint; adding or focusing a gap in existing text must stay quiet.
+ const first=state.doc.firstChild,emptyDocument=state.doc.childCount===1&&first.type===schema.nodes.paragraph&&!first.content.size&&!first.attrs.kind;
+ state.doc.descendants((n,pos,parent)=>{
+  if(n.type===schema.nodes.paragraph||n.type===schema.nodes.toggle_title){
+   const attrs={};
+   if(!n.content.size){
+    if(n.type===schema.nodes.toggle_title)attrs['data-placeholder']='토글 제목';
+    else if(emptyDocument&&parent===state.doc)attrs['data-placeholder']=placeholder||'내용을 적거나 / 로 블록 추가';
+   }
+   if(n.attrs.kind==='num'){let a=number.get(parent)||[0,0,0,0,0];a[n.attrs.depth]++;a.fill(0,n.attrs.depth+1);attrs['data-n']=String(a[n.attrs.depth]);number.set(parent,a)}
+   else if(n.type===schema.nodes.paragraph){const a=number.get(parent)||[0,0,0,0,0];a.fill(0,n.attrs.depth);number.set(parent,a)}
+   if(Object.keys(attrs).length)d.push(Decoration.node(pos,pos+n.nodeSize,attrs));
+  }
+ });
+ const selected=blockRange({state});if(selected?.nodes.length>1){let at=selected.from;for(const node of selected.nodes){d.push(Decoration.node(at,at+node.nodeSize,{class:'nb-selected-block'}));at+=node.nodeSize;}}
+ return DecorationSet.create(state.doc,d);
+}
 class ToggleView{
  constructor(node,view,getPos){
   this.node=node;this.view=view;this.getPos=getPos;
