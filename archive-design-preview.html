@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f8f6ee">
+  <title>Arecmik · 기록과 자료실 디자인 미리보기</title>
+  <link rel="icon" href="lemon-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="archive-design-preview.css?v=1">
+  <script src="archive-design-preview.js?v=1" defer></script>
+</head>
+<body>
+  <div class="preview-banner"><b>화면 구성 미리보기</b><span>예시 데이터 · 새로고침하면 초기화돼요</span></div>
+  <header class="app-header">
+    <div class="brand"><img src="lemon-mark.svg" alt="" width="33" height="33"><span>Arecmik<small>나를 위한 보관함</small></span></div>
+    <div class="space-switch" role="group" aria-label="공간 선택"><button type="button" data-space="work" aria-pressed="false">WORK</button><button type="button" data-space="life" aria-pressed="true">LIFE</button></div>
+    <a class="actual-app" href="index.html?v=202610237">실제 앱 열기 <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="workspace">
+    <aside class="navigation" aria-label="보관함 탐색">
+      <nav class="main-modes" aria-label="보관함 선택"><button type="button" data-mode="record"></button><button type="button" data-mode="library"></button></nav>
+      <div id="desktop-filters" class="desktop-filters"></div>
+      <div class="navigation-note"><img src="lemon-mark.svg" width="25" height="25" alt=""><span id="space-count"></span></div>
+    </aside>
+    <main id="main">
+      <div class="page-heading"><div><p class="eyebrow" id="eyebrow"></p><h1 id="heading"></h1></div><button type="button" class="primary" id="new-item"></button></div>
+      <label class="search-field"><span id="search-icon" aria-hidden="true"></span><input id="search" type="search" autocomplete="off" aria-label="현재 공간에서 찾기"><kbd>Ctrl K</kbd></label>
+      <div id="mobile-filters" class="mobile-filters"></div>
+      <div class="list-toolbar"><span id="result-count" role="status"></span><button type="button" class="text-button" id="clear-filters" hidden>조건 지우기</button></div>
+      <div id="content"></div>
+    </main>
+  </div>
+  <dialog id="reader" aria-labelledby="reader-title"><div id="reader-content"></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
