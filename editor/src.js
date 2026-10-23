@@ -6,7 +6,7 @@ import {baseKeymap, toggleMark, splitBlock} from 'prosemirror-commands';
 import {history, undo, redo, closeHistory} from 'prosemirror-history';
 import {keymap} from 'prosemirror-keymap';
 import {inputRules, InputRule, undoInputRule} from 'prosemirror-inputrules';
-import {installBlockMoving,blockFromDOM} from './block-moving.js';
+import {installBlockMoving,blockFromDOM,blockFromPoint} from './block-moving.js';
 
 const kinds=['h1','h2','h3','li','num','todo','qt','co','coc','cite','src','code'];
 const safeURL=(url,image=false)=>/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url||'')||(image&&/^data:image\/(png|gif|jpeg|webp);base64,/i.test(url||''));
@@ -108,7 +108,7 @@ function changeKind(view,kind){
   if(node.type===schema.nodes.toggle){
    if(kind==='toggle')converted.push(node);
    else converted.push(schema.nodes.paragraph.create({kind:kind==='text'?'':kind},node.firstChild.content),...node.lastChild.content.content);
-  }else if(kind==='toggle')converted.push(schema.nodes.toggle.create({open:true},[schema.nodes.toggle_title.create(null,node.content),schema.nodes.toggle_body.create(null,paragraph())]));
+  }else if(kind==='toggle')converted.push(schema.nodes.toggle.create({open:false},[schema.nodes.toggle_title.create(null,node.content),schema.nodes.toggle_body.create(null,paragraph())]));
   else converted.push(schema.nodes.paragraph.create({...node.attrs,kind:kind==='text'?'':kind,checked:false},node.content));
  }
  if(converted.every((n,i)=>n===range.nodes[i]))return false;
@@ -132,7 +132,7 @@ function moveRange(view,range,target){
  const tr=closeHistory(view.state.tr);
  if(target.openAt!==undefined){const toggle=tr.doc.nodeAt(target.openAt);if(toggle?.type===schema.nodes.toggle)tr.setNodeMarkup(target.openAt,null,{...toggle.attrs,open:true});}
  if(range.parent.type===schema.nodes.toggle_body&&range.content.size===range.parent.content.size)tr.replaceWith(range.from,range.to,paragraph());else tr.delete(range.from,range.to);
- const at=tr.mapping.map(target.at);try{tr.insert(at,range.content);selectMoved(tr,at,range);}catch(_){return false;}
+ const at=tr.mapping.map(target.at);try{tr.insert(at,range.content);if(target.selectBlock&&range.nodes.length===1)tr.setSelection(NodeSelection.create(tr.doc,at));else selectMoved(tr,at,range);}catch(_){return false;}
  view.dispatch(tr.scrollIntoView());view.focus();return true;
 }
 function moveBlock(view,dir){const range=blockRange(view);if(!range)return;const $p=view.state.doc.resolve(range.from),index=$p.index();
@@ -226,6 +226,7 @@ function decorations(state,placeholder){
    if(!n.content.size){
     if(n.type===schema.nodes.toggle_title)attrs['data-placeholder']='토글 제목';
     else if(emptyDocument&&parent===state.doc)attrs['data-placeholder']=placeholder||'내용을 적거나 / 로 블록 추가';
+    else if(!n.attrs.kind&&parent.type===schema.nodes.toggle_body&&parent.childCount===1&&state.selection.empty&&state.selection.$from.parent===n){attrs['data-placeholder']='내용을 적거나 / 로 블록 추가';attrs.class+=' nb-empty-toggle-body';}
    }
    if(n.attrs.kind==='num'){let a=number.get(parent)||[0,0,0,0,0];a[n.attrs.depth]++;a.fill(0,n.attrs.depth+1);attrs['data-n']=String(a[n.attrs.depth]);number.set(parent,a)}
    else if(n.type===schema.nodes.paragraph){const a=number.get(parent)||[0,0,0,0,0];a.fill(0,n.attrs.depth);number.set(parent,a)}
@@ -247,7 +248,11 @@ class ToggleView{
    const focused=view.hasFocus(),selection=view.state.selection,bodyStart=pos+this.node.firstChild.nodeSize+2;
    const tr=view.state.tr.setNodeMarkup(pos,null,{open:!this.node.attrs.open}).setMeta('addToHistory',false);
    if(this.node.attrs.open&&selection.from>=bodyStart&&selection.to<pos+this.node.nodeSize)selectText(tr,pos+this.node.firstChild.nodeSize);
-   view.dispatch(tr);if(focused)view.focus();
+   // Opening a new, empty toggle gives the user a place to write immediately.
+   const body=this.node.lastChild;
+   const startWriting=!this.node.attrs.open&&body.childCount===1&&body.firstChild.type===schema.nodes.paragraph&&!body.firstChild.content.size;
+   if(startWriting)selectText(tr,bodyStart+1);
+   view.dispatch(tr);if(focused||startWriting)view.focus();
   });
   this.contentDOM=document.createElement('div');this.contentDOM.className='nb-toggle-content';this.dom.append(this.button,this.contentDOM);this.update(node);
  }
@@ -269,7 +274,7 @@ export function installBlockEditors(options={}){
    // In nested toggles this gap belongs to the inner paragraph, not its parent.
    if(r&&pointer.x>=t.left&&pointer.x<=Math.max(t.right,r.left+2)&&pointer.y>=t.top-2&&pointer.y<=t.bottom+2)return toolContext;
   }
-  return view.dom.contains(hit)?blockFromDOM(view,hit):null;
+  return view.dom.contains(hit)?blockFromPoint(view,pointer.x,pointer.y):null;
  }
  document.addEventListener('pointermove',event=>{
   pointerType=event.pointerType||'mouse';pointer={x:event.clientX,y:event.clientY};
@@ -326,7 +331,7 @@ export function installBlockEditors(options={}){
  const b=pointerType==='touch'?hover||blockAt(view.state):hoveredBlock(view),node=b&&view.nodeDOM(b.pos),rect=node?.getBoundingClientRect?.();
  if(!rect?.width||rect.bottom<0||rect.top>innerHeight)hideBlockTools();
  else{
-  toolContext={view,pos:b.pos};if(!tools){tools=document.createElement('div');tools.className='nb-tools';tools.setAttribute('aria-label','문단 도구');tools.innerHTML='<button type="button" data-block-add aria-label="문단 추가" title="문단 추가">+</button><button type="button" data-block-menu aria-label="문단 서식 및 이동" title="드래그해 이동 · 클릭해 서식 (Alt+↑↓)">⠿</button>';document.body.append(tools);}tools.style.left=Math.max(2,rect.left-(matchMedia('(pointer:coarse)').matches?38:44))+'px';tools.style.top=Math.max(0,rect.top-1)+'px';
+  toolContext={view,pos:b.pos};if(!tools){tools=document.createElement('div');tools.className='nb-tools';tools.setAttribute('aria-label','문단 도구');tools.innerHTML='<button type="button" data-block-add aria-label="문단 추가" title="문단 추가"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button><button type="button" data-block-menu aria-label="문단 서식 및 이동" title="드래그해 이동 · 클릭해 서식 (Alt+↑↓)"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><circle cx="5.5" cy="3.5" r="1.2"/><circle cx="10.5" cy="3.5" r="1.2"/><circle cx="5.5" cy="8" r="1.2"/><circle cx="10.5" cy="8" r="1.2"/><circle cx="5.5" cy="12.5" r="1.2"/><circle cx="10.5" cy="12.5" r="1.2"/></svg></button>';document.body.append(tools);}tools.style.left=Math.max(2,rect.left-(matchMedia('(pointer:coarse)').matches?38:44))+'px';tools.style.top=Math.max(0,rect.top-1)+'px';
  }
  if(!view.state.selection.empty&&view.state.selection.$from.parent.isTextblock){inline=document.createElement('div');inline.className='nb-inline';inline.setAttribute('role','toolbar');inline.setAttribute('aria-label','선택한 글 서식');inline.innerHTML=[['strong','굵게','B'],['em','기울임','I'],['underline','밑줄','U'],['strike','취소선','S'],['code','인라인 코드','〈〉'],['link','링크','↗']].map(([k,l,t])=>`<button type="button" data-mark="${k}" aria-label="${l}">${t}</button>`).join('');document.body.append(inline);place(inline,view.coordsAtPos(view.state.selection.from),true);}
  }

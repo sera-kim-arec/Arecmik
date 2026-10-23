@@ -1,5 +1,6 @@
 """Use actual pointer paths, including the gutter and browser touch events."""
 import unittest
+import re
 from playwright.sync_api import expect
 import test_archive as ui
 import test_block_editor as editors
@@ -159,7 +160,7 @@ class TouchBlockMovingTests(BlockMovingTests):
         cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
         if not ed.locator(':scope > div').first.evaluate("el=>el.classList.contains('nb-toggle')"):
             print('Touch move diagnostics:',p.evaluate('window.__moveEvents'), 'html:',ed.inner_html(),flush=True)
-        expect(ed.locator(':scope > div').first).to_have_class('nb-toggle');expect(ed.locator('.nb-toggle-body')).to_have_text('토글 안의 내용')
+        expect(ed.locator(':scope > div').first).to_have_class(re.compile(r'\bnb-toggle\b'));expect(ed.locator('.nb-toggle-body')).to_have_text('토글 안의 내용')
         p.wait_for_function("__store.notes.find(n=>n.id==='work-n').html.startsWith('<div class=\"nb-toggle\"')")
         p.reload();ed=self.note();expect(ed.locator(':scope > div').first).to_have_class('nb-toggle');expect(ed.locator('.nb-toggle-body')).to_have_text('토글 안의 내용')
 

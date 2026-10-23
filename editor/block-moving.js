@@ -8,6 +8,20 @@ export function blockFromDOM(view, element) {
  }
  return null;
 }
+// The writing gutter is part of its row. Hovering it must not require first
+// crossing the text, and an open toggle's padding is not its title's row.
+export function blockFromPoint(view,x,y){
+ const host=view.dom.getBoundingClientRect();
+ if(x<host.left||x>host.right||y<host.top||y>host.bottom)return null;
+ let found=null;
+ view.state.doc.descendants((node,pos)=>{
+  if(!['paragraph','toggle','image','rule'].includes(node.type.name))return;
+  const dom=view.nodeDOM(pos),row=node.type.name==='toggle'?dom?.querySelector('.nb-toggle-title'):dom;
+  const rect=row?.getBoundingClientRect();
+  if(rect?.width&&rect.height&&x>=rect.left-44&&x<=rect.right&&y>=rect.top&&y<=rect.bottom)found={pos,node,dom};
+ });
+ return found;
+}
 export function installBlockMoving(hooks){
  let session=null,frame=0,suppressClickUntil=0;
  function stopFrame(){cancelAnimationFrame(frame);frame=0;}
@@ -81,7 +95,7 @@ export function installBlockMoving(hooks){
   event.preventDefault();suppressClickUntil=Date.now()+500;showTarget();
   const target=old.target;const valid=target&&old.view.dom.isConnected&&old.view.state.doc===old.doc;
   // Clear before dispatch so the new block controls can follow the moved selection.
-  clear();if(valid)hooks.move(old.view,old.range,target);
+  clear();if(valid)hooks.move(old.view,old.range,{...target,selectBlock:true});
  }
  document.addEventListener('pointerdown',event=>{
   const handle=event.target.closest?.('[data-block-menu]');if(!handle||event.button>0||session)return;
@@ -94,7 +108,7 @@ export function installBlockMoving(hooks){
  document.addEventListener('pointermove',event=>{
   if(session){if(event.pointerId!==session.pointerId)return;session.x=event.clientX;session.y=event.clientY;const distance=Math.hypot(session.x-session.startX,session.y-session.startY);if(!session.started&&distance>=(session.pointerType==='touch'?9:5))begin();if(session.started){event.preventDefault();showTarget();}return;}
   if(event.pointerType==='touch'||event.buttons||event.target.closest?.('.nb-tools,.nb-menu,.nb-inline'))return;
-  const host=event.target.closest?.('.nb-editor'),view=host&&hooks.view(host);if(!view)return;const b=blockFromDOM(view,event.target);if(b)hooks.hover(view,b);
+  const host=event.target.closest?.('.nb-editor'),view=host&&hooks.view(host);if(!view)return;const b=blockFromPoint(view,event.clientX,event.clientY);if(b)hooks.hover(view,b);
  },{passive:false});
  document.addEventListener('pointerup',event=>finish(event));
  document.addEventListener('pointercancel',event=>finish(event,true));

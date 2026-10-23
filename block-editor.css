@@ -1,6 +1,6 @@
 /* Local ProseMirror editing surface; saved blocks also use these styles. */
 .nb-editor{position:relative;white-space:pre-wrap;word-wrap:break-word;font-variant-ligatures:none;outline:none;min-width:0;overflow-wrap:anywhere}
-.rt.nb-editor{padding-left:38px!important;padding-right:12px!important;line-height:1.8;caret-color:var(--tx);min-height:72px}
+.rt.nb-editor{padding-left:38px!important;padding-right:12px!important;font-size:16px;line-height:1.5;caret-color:var(--tx);min-height:72px}
 .rt.nb-editor.db{min-height:300px;padding-top:8px}
 .nb-editor .ProseMirror-selectednode{outline:2px solid var(--accent,#d7bd56);outline-offset:2px}
 .nb-editor .ProseMirror-gapcursor{display:none;pointer-events:none;position:absolute;margin:0}
@@ -85,5 +85,11 @@
 .rt.nb-editor .nb-selected-block{background:var(--selection,#fff0bb);border-radius:4px}
 /* Enter separates blocks; Shift+Enter keeps the tighter lines of one block.
    These classes are view decorations, never saved into the user's HTML. */
-.rt.nb-editor .nb-text-block{line-height:1.6;min-height:1.6em!important;padding-top:3px;padding-bottom:3px;margin-top:4px;margin-bottom:4px}
-.rt.nb-editor .qt{line-height:1.6;min-height:1.6em!important}
+.rt.nb-editor .nb-text-block{line-height:1.5;min-height:1.5em!important;padding-top:3px;padding-bottom:3px;margin-top:10px;margin-bottom:10px}
+.rt.nb-editor .nb-toggle-title{line-height:1.5;min-height:1.5em!important;padding-top:3px!important;padding-bottom:3px!important}
+.rt.nb-editor .nb-toggle-body>.nb-text-block:first-child{margin-top:4px}
+.rt.nb-editor .qt{line-height:1.5;min-height:1.5em!important}
+.rt.nb-editor .nb-empty-toggle-body:before{visibility:hidden}
+.rt.nb-editor:focus .nb-empty-toggle-body:before{visibility:visible}
+.nb-tools svg{width:16px;height:16px;pointer-events:none}
+.rt.nb-editor .ProseMirror-selectednode:not(.img):not(.hrl2){outline:none;background:var(--selection,#fff0bb);border-radius:3px}

@@ -74,4 +74,32 @@ class NotionWritingFlowTests(unittest.TestCase):
         p=self.page;ed=self.body('<div><br><br></div><div>다음 내용</div>');line=ed.locator('.nb-toggle-body > div').first;line.evaluate("el=>{el.focus();const r=document.createRange();r.selectNodeContents(el);r.collapse(false);getSelection().removeAllRanges();getSelection().addRange(r)}");p.keyboard.press('Enter')
         expect(ed.locator(':scope > div')).to_have_count(1);expect(ed.locator('.nb-toggle-body > div')).to_have_count(3);expect(ed.locator('.nb-toggle-body > div').first.locator('br:not(.ProseMirror-trailingBreak)')).to_have_count(2);expect(ed.locator('.nb-toggle-body > div').last).to_have_text('다음 내용')
 
+    def test_recorded_writing_reorder_toggle_and_quote_as_one_continuous_session(self):
+        p=self.page;ed=self.seed('');ed.fill('하잉');p.keyboard.press('Enter');p.keyboard.insert_text('하잉');p.keyboard.press('Shift+Enter');p.keyboard.insert_text('쉬프트+엔터를 누르면 이렇게');p.keyboard.press('Shift+Enter');p.keyboard.insert_text('내려가고');p.keyboard.press('Enter');p.keyboard.insert_text('그냥엔터누르면 이렇게 내려가고');p.keyboard.press('Enter');p.keyboard.insert_text('토글이랑 더하기 붙이는거? 흠..')
+        # The recording moves this last paragraph above the preceding one by
+        # hovering, taking the grip and dropping at the indicated boundary.
+        rows=ed.locator(':scope > div');rows.last.hover();handle=p.locator('[data-block-menu]');h=handle.bounding_box();target=rows.nth(2).bounding_box();x=h['x']+h['width']/2
+        p.mouse.move(x,h['y']+h['height']/2,steps=12);p.mouse.down();p.mouse.move(x,target['y']+1,steps=20);expect(p.locator('.nb-drop-indicator')).to_be_visible();p.mouse.up()
+        expect(rows).to_have_text(['하잉','하잉쉬프트+엔터를 누르면 이렇게내려가고','토글이랑 더하기 붙이는거? 흠..','그냥엔터누르면 이렇게 내려가고']);expect(rows.nth(2)).to_have_class('nb-text-block ProseMirror-selectednode')
+        # Select another block with the pointer, then use + without changing the
+        # existing text. A new toggle initially has a title and closed body.
+        rows.last.hover();p.locator('[data-block-add]').click();self.choose('토글');toggle=ed.locator('.nb-toggle');expect(toggle).to_have_attribute('data-expanded','false');expect(toggle.locator('.nb-toggle-body')).to_be_hidden();p.keyboard.insert_text('하잉')
+        toggle.locator('.nb-toggle-arrow').click();expect(toggle.locator('.nb-toggle-body')).to_be_visible();expect(ed).to_be_focused();p.keyboard.insert_text('앙농하세요');p.keyboard.press('Shift+Enter');p.keyboard.insert_text('앙농하세용');p.keyboard.press('Shift+Enter');p.keyboard.insert_text('그래가지고요');p.keyboard.press('Enter');p.keyboard.press('Backspace');p.keyboard.insert_text('백스페이스 누르면 토글에서 나오고 그런거지')
+        expect(toggle.locator('.nb-toggle-body > div')).to_have_count(1);expect(toggle.locator('.nb-toggle-body br')).to_have_count(2);expect(rows.last).to_have_text('백스페이스 누르면 토글에서 나오고 그런거지')
+        p.keyboard.press('Enter');p.keyboard.press('/');self.choose('인용');p.keyboard.insert_text('인용을 누르면 이렇게 뜨는데요');p.keyboard.press('Shift+Enter');p.keyboard.insert_text('하잉하잉');p.keyboard.press('Enter')
+        expect(ed.locator('.qt br')).to_have_count(1);expect(rows.last).to_have_text('');self.saved('인용을 누르면 이렇게 뜨는데요');p.reload();ed=self.note();expect(ed.locator(':scope > div').nth(2)).to_have_text('토글이랑 더하기 붙이는거? 흠..');expect(ed.locator('.nb-toggle-body > div')).to_have_count(1);expect(ed.locator('.qt br')).to_have_count(1)
+
+    def test_gutter_hover_finds_root_and_nested_rows_without_crossing_the_text(self):
+        p=self.page;ed=self.body('<div>첫 번째 내용</div><div>두 번째 내용</div>','<div>마지막 문단</div>');title=ed.locator('.nb-toggle-title');title.click();p.keyboard.press('End');before=p.evaluate('JSON.stringify(__store)')
+        p.mouse.move(8,100);expect(p.locator('.nb-tools')).to_have_count(0)
+        for row in [ed.locator(':scope > div').last,ed.locator('.nb-toggle-body > div').last]:
+            r=row.bounding_box();p.mouse.move(r['x']-20,r['y']+r['height']/2)
+            expect(p.locator('[data-block-menu]')).to_be_visible();self.assertAlmostEqual(p.locator('.nb-tools').bounding_box()['y'],r['y']-1,delta=1)
+            p.mouse.move(8,100);expect(p.locator('.nb-tools')).to_have_count(0)
+        self.assertEqual(p.evaluate('JSON.stringify(__store)'),before);p.keyboard.insert_text(' 제목 이어 쓰기');expect(title).to_have_text('토글 제목 제목 이어 쓰기')
+
+    def test_opening_an_empty_toggle_starts_its_body_but_existing_body_keeps_caret(self):
+        p=self.page;ed=self.seed('');ed.fill('');p.keyboard.press('/');self.choose('토글');p.keyboard.insert_text('새 토글');expect(ed.locator('.nb-toggle-body')).to_be_hidden();p.locator('.nb-toggle-arrow').click();p.keyboard.insert_text('바로 쓰는 본문');expect(ed.locator('.nb-toggle-body')).to_have_text('바로 쓰는 본문')
+        p.locator('.nb-toggle-arrow').click();ed.locator('.nb-toggle-title').click();p.keyboard.press('End');p.locator('.nb-toggle-arrow').click();p.keyboard.insert_text(' 제목');expect(ed.locator('.nb-toggle-title')).to_have_text('새 토글 제목');expect(ed.locator('.nb-toggle-body')).to_have_text('바로 쓰는 본문')
+
 if __name__=='__main__':unittest.main()

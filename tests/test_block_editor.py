@@ -1,5 +1,6 @@
 """Shared block writing must preserve legacy documents, nesting and autosave."""
 import unittest
+import re
 from pathlib import Path
 from playwright.sync_api import expect
 import test_archive as ui
@@ -120,7 +121,7 @@ class BlockEditorTests(unittest.TestCase):
         self.patch('notes','work-n',{'html':html});p=self.page;ed=self.note();ed.locator('.nb-toggle-title').click()
         handle=p.locator('[data-block-menu]');target=ed.locator(':scope > div').first
         handle.drag_to(target,target_position={'x':20,'y':1})
-        expect(ed.locator(':scope > div').first).to_have_class('nb-toggle')
+        expect(ed.locator(':scope > div').first).to_have_class(re.compile(r'\bnb-toggle\b'))
         expect(ed.locator('.nb-toggle-body')).to_have_text('함께 이동할 본문')
         p.keyboard.press('Control+z');expect(ed.locator(':scope > div').first).to_have_text('위 문단')
         expect(ed.locator('.nb-toggle-body')).to_have_text('함께 이동할 본문')
@@ -170,6 +171,7 @@ class BlockEditorTests(unittest.TestCase):
         self.patch('notes','work-n',{'html':html});p=self.page;ed=self.note()
         ed.locator(':scope > div').first.click();p.locator('[data-block-add]').click();self.choose('본문');p.keyboard.insert_text('사이에 넣은 문단')
         expect(ed.locator(':scope > div').nth(1)).to_have_text('사이에 넣은 문단')
+        ed.locator(':scope > div').nth(1).hover()
         p.locator('[data-block-menu]').drag_to(ed.locator('.nb-toggle-body > div').first,target_position={'x':30,'y':23})
         expect(ed.locator('.nb-toggle-body > div').last).to_have_text('사이에 넣은 문단')
         p.keyboard.press('Shift+Tab');expect(ed.locator(':scope > div').last).to_have_text('사이에 넣은 문단')
