@@ -20,11 +20,11 @@
 .archive-folders{margin-top:25px;padding-top:16px;border-top:1px solid var(--ln)}
 .archive-folder-heading{display:flex;align-items:center;justify-content:space-between;padding-left:12px;font-size:12px;color:var(--t2)}
 .archive-folder-heading button{min-width:44px;min-height:44px;font-size:20px}
-.archive-folders>[data-archive-folder]{display:flex;align-items:center;gap:8px;min-height:44px;width:100%;border:0;border-radius:8px;background:transparent;color:var(--t2);font:inherit;font-size:12px;text-align:left;padding:9px 10px;cursor:pointer}
-.archive-folders>[data-archive-folder]>span{flex:1;min-width:0;overflow-wrap:anywhere}
-.archive-folders>[data-archive-folder] small{color:var(--mu);font-size:11px}
-.archive-folders>[data-archive-folder].on{background:var(--selection);color:var(--tx)}
-.archive-folders>[data-archive-folder]:hover{background:var(--surface)}
+.archive-folders [data-archive-folder]{display:flex;align-items:center;gap:8px;min-height:44px;width:100%;border:0;border-radius:8px;background:transparent;color:var(--t2);font:inherit;font-size:12px;text-align:left;padding:9px 10px;cursor:pointer}
+.archive-folders [data-archive-folder]>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.archive-folders [data-archive-folder] small{color:var(--mu);font-size:11px}
+.archive-folders [data-archive-folder].on{background:var(--selection);color:var(--tx)}
+.archive-folders [data-archive-folder]:hover{background:var(--surface)}
 .archive-folders>.link{min-height:44px;padding-left:12px;font-size:12px;color:var(--mu)}
 .archive-mobile-folders{display:none}
 .archive-explorer .archive-list{padding:4px 20px 15px;min-width:0}
@@ -75,3 +75,31 @@
 
 .document-location{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px}
 .document-location>[data-document-location]{font-size:12px;color:var(--mu);overflow-wrap:anywhere}
+
+/* Folder names sit inside their parent branch; paths belong in the breadcrumb. */
+.archive-folder-tree,.archive-folder-children{list-style:none;margin:0;padding:0;min-width:0}
+.archive-folder-children{margin-left:13px;padding-left:12px;border-left:1px solid var(--ln)}
+.archive-folder-children[hidden]{display:none}
+.archive-folder-row{display:flex;align-items:center;min-width:0;border-radius:8px}
+.archive-folder-row.on{background:var(--selection)}
+.archive-folder-row>[data-archive-folder]{flex:1;min-width:0;width:auto;padding:8px 6px 8px 2px}
+.archive-folder-row>[data-archive-folder]>.archive-folder-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+.archive-folder-row .fico{flex:none;color:var(--t2)}
+.archive-folder-row>[data-archive-folder]>small{flex:none}
+.archive-folder-toggle,.archive-folder-toggle-space{flex:none;width:28px;min-height:44px}
+.archive-folder-toggle{display:flex;align-items:center;justify-content:center;border:0;border-radius:7px;padding:0;background:transparent;color:var(--mu);cursor:pointer}
+.archive-folder-toggle:hover{background:var(--surface)}
+.archive-folder-toggle[aria-expanded="true"]>svg{transform:rotate(90deg)}
+.archive-folder-row>[data-archive-folder]:focus-visible,.archive-folder-toggle:focus-visible{outline:2px solid var(--t2);outline-offset:-2px}
+.archive-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:0 7px;min-height:44px;margin:0 0 8px;font-size:12px;color:var(--t2);overflow-wrap:anywhere}
+.archive-breadcrumb button{border:0;border-radius:6px;background:transparent;color:var(--mu);font:inherit;padding:8px 4px;min-height:44px;cursor:pointer;max-width:100%;overflow-wrap:anywhere}
+.archive-breadcrumb button:hover{background:var(--surface);color:var(--tx)}
+.archive-breadcrumb [aria-current]{font-weight:600;color:var(--tx);min-width:0}
+.archive-breadcrumb-separator{color:var(--mu)}
+.archive-child-folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:7px;margin:0 0 16px;min-width:0}
+.archive-child-folders>button{display:flex;align-items:center;gap:8px;min-width:0;min-height:44px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--t2);font:inherit;font-size:12px;padding:10px 12px;text-align:left;cursor:pointer}
+.archive-child-folders>button:hover{background:var(--selection)}
+.archive-child-folders>button>.fico{flex:none;color:var(--t2)}
+.archive-child-folders>button>span:not(.archive-child-arrow){flex:1;min-width:0;overflow-wrap:anywhere}
+.archive-child-folders small,.archive-child-arrow{flex:none;color:var(--mu);font-size:11px}
+@media(max-width:600px){.archive-child-folders{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.archive-child-folders>button{padding:9px 10px}}

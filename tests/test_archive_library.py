@@ -21,6 +21,17 @@ class ArchiveLibraryTests(unittest.TestCase):
         self.page.locator('[data-archive-filter="ref"]').click()
         expect(self.page.locator('.archive-library')).to_be_visible()
 
+    def folder_button(self, ident):
+        return self.page.locator('.archive-folders [data-archive-folder="'+ident+'"]')
+
+    def select_folder(self, ident):
+        # Open the same ancestor disclosures needed to reach a nested folder.
+        ancestors=self.page.evaluate("""ident=>{const seen=new Set(),path=[];let row=__store.notes.find(x=>x.id===ident&&x.isFolder);while(row?.fid&&!seen.has(row.fid)){seen.add(row.fid);path.unshift(row.fid);row=__store.notes.find(x=>x.id===row.fid&&x.isFolder)}return path}""",ident)
+        for parent in ancestors:
+            toggle=self.page.locator('.archive-folders [data-archive-folder-toggle="'+parent+'"]')
+            if toggle.count() and toggle.get_attribute('aria-expanded')=='false':toggle.click()
+        self.folder_button(ident).click()
+
     def records(self):
         if self.page.locator('[data-closedoc]').count():self.page.locator('nav [data-tab="rec"]').click()
         self.page.locator('[data-archive-filter=""]').click()
@@ -62,12 +73,12 @@ class ArchiveLibraryTests(unittest.TestCase):
 
     def test_library_contains_parent_descendants_and_unfiled_without_other_space(self):
         p=self.page;self.folders();self.library()
-        p.locator('[data-archive-folder="root"]').click()
+        self.select_folder('root')
         expect(p.locator('.archive-list .archive-row')).to_have_count(2)
         expect(p.locator('.archive-list')).to_contain_text('업무 회의록')
         expect(p.locator('.archive-list')).to_contain_text('업무 자료')
         expect(p.locator('.archive-navigation')).not_to_contain_text('나의 독서')
-        p.locator('[data-archive-folder="none"]').click()
+        self.select_folder('none')
         expect(p.locator('.archive-list .archive-row')).to_have_count(1)
         expect(p.locator('.archive-list')).to_contain_text('기존 자료')
 
@@ -93,17 +104,17 @@ class ArchiveLibraryTests(unittest.TestCase):
         self.search('팀 연락처');expect(p.locator('#sqr [data-sgo="ref"]')).to_have_count(1)
 
     def test_resource_reader_keeps_list_search_folder_and_browser_back(self):
-        p=self.page;self.folders();self.library();p.locator('[data-archive-folder="root"]').click();p.locator('#rq').fill('팀 연락처')
+        p=self.page;self.folders();self.library();self.select_folder('root');p.locator('#rq').fill('팀 연락처')
         expect(p.locator('.archive-list .archive-row')).to_have_count(1)
         p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
         expect(p.locator('[data-dfold]')).to_have_value('child')
         p.go_back();expect(p.locator('[data-db]')).to_have_count(0)
         expect(p.locator('#rq')).to_have_value('팀 연락처')
-        expect(p.locator('[data-archive-folder="root"]')).to_have_attribute('aria-pressed','true')
-        p.go_back();expect(p.locator('[data-archive-folder=""]')).to_have_attribute('aria-pressed','true')
+        expect(self.folder_button('root')).to_have_attribute('aria-pressed','true')
+        p.go_back();expect(self.folder_button('')).to_have_attribute('aria-pressed','true')
 
     def test_quick_capture_uses_selected_folder_derives_title_and_keeps_block_editor(self):
-        p=self.page;self.folders();self.library();p.locator('[data-archive-folder="child"]').click()
+        p=self.page;self.folders();self.library();self.select_folder('child')
         ui.resource_quick(p)
         expect(p.locator('#r-folder')).to_have_value('child')
         p.locator('#r-b').fill('다시 쓸 입사 안내문\nhttps://example.com')
@@ -119,7 +130,7 @@ class ArchiveLibraryTests(unittest.TestCase):
         self.assertIn('https://example.com',saved['html'])
 
     def test_long_article_created_in_library_uses_current_folder_without_a_copy(self):
-        p=self.page;self.folders();self.library();p.locator('[data-archive-folder="child"]').click()
+        p=self.page;self.folders();self.library();self.select_folder('child')
         before=p.evaluate('__store.notes.length')
         p.locator('.layout-write-group>[data-newdoc]').click()
         expect(p.locator('[data-dpurpose]')).to_have_value('resource')
@@ -170,7 +181,7 @@ class ArchiveLibraryTests(unittest.TestCase):
         p=self.page;self.library();p.locator('.archive-folder-heading [data-newf]').click()
         p.locator('#folder-title').fill('참고 문서');p.locator('[data-folder-create]').click()
         expect(p.locator('.archive-library')).to_be_visible();folder=p.evaluate("__store.notes.find(x=>x.isFolder&&x.title==='참고 문서')")
-        expect(p.locator('[data-archive-folder="'+folder['id']+'"]').first).to_have_attribute('aria-pressed','true')
+        expect(self.folder_button(folder['id'])).to_have_attribute('aria-pressed','true')
         ui.resource_quick(p);expect(p.locator('#r-folder')).to_have_value(folder['id'])
         p.locator('#r-b').fill('다음에 찾을 안내문');p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
         p.reload();self.library();expect(p.locator('.archive-list')).to_contain_text('다음에 찾을 안내문')
@@ -183,7 +194,7 @@ class ArchiveLibraryTests(unittest.TestCase):
             if width<=900:
                 p.locator('[data-archive-folder-select]').select_option('root')
                 expect(p.locator('.archive-folders')).not_to_be_visible()
-            else:p.locator('[data-archive-folder="root"]').click()
+            else:self.select_folder('root')
             expect(p.locator('.archive-list .archive-row')).to_have_count(2)
             self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
             for selector in ['.layout-record-types>button','[data-archive-favorites]','.archive-favorite']:
