@@ -56,6 +56,7 @@ class BlockMovingTests(unittest.TestCase):
         p=self.page;ed=self.seed('<div>첫째</div><div>둘째</div><div>셋째</div><div>넷째</div>')
         ed.evaluate("""ed=>{ed.focus();const r=document.createRange();r.setStart(ed.children[1],0);r.setEnd(ed.children[2],1);getSelection().removeAllRanges();getSelection().addRange(r)}""")
         expect(ed.locator('.nb-selected-block')).to_have_count(2)
+        ed.locator(':scope > div').nth(1).hover()
         handle=p.locator('[data-block-menu]');first=ed.locator(':scope > div').first.bounding_box();b=handle.bounding_box()
         self.move(handle,b['x']+b['width']/2,first['y']+1)
         expect(ed.locator(':scope > div')).to_have_text(['둘째','셋째','첫째','넷째'])

@@ -20,6 +20,7 @@ class BlockWritingTests(unittest.TestCase):
 
     def select(self,ed,first,last):
         ed.evaluate("""(ed,[first,last])=>{ed.focus();const r=document.createRange();r.setStart(ed.children[first],0);r.setEnd(ed.children[last],ed.children[last].childNodes.length);getSelection().removeAllRanges();getSelection().addRange(r)}""",[first,last])
+        ed.locator(':scope > div').nth(first).hover()
         expect(self.page.locator('.nb-inline')).to_be_visible()
         self.page.wait_for_function("document.querySelectorAll('.nb-selected-block').length>=2")
 
@@ -27,8 +28,10 @@ class BlockWritingTests(unittest.TestCase):
         p=self.page;ed=self.seed('<div><strong>첫째</strong></div><div>둘째</div><div>셋째</div>');self.select(ed,0,1)
         p.locator('[data-block-menu]').click();self.choose('글머리 목록')
         expect(ed.locator(':scope > .li')).to_have_text(['첫째','둘째']);expect(ed.locator('strong')).to_have_text('첫째')
+        ed.locator(':scope > div').first.hover()
         p.locator('[data-block-menu]').click();self.choose('복제')
         expect(ed.locator(':scope > div')).to_have_text(['첫째','둘째','첫째','둘째','셋째'])
+        ed.locator(':scope > div').nth(2).hover()
         p.locator('[data-block-menu]').click();self.choose('삭제')
         expect(ed.locator(':scope > div')).to_have_text(['첫째','둘째','셋째'])
         p.keyboard.press('Control+z');expect(ed.locator(':scope > div')).to_have_text(['첫째','둘째','첫째','둘째','셋째'])

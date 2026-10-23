@@ -239,13 +239,14 @@ class AndroidBlockEditorTests(unittest.TestCase):
         p.keyboard.insert_text('이어 쓰는 한글 본문')
         expect(ed.locator('.nb-toggle')).to_have_count(1);expect(ed.locator('.nb-toggle-title')).to_have_text('한글 제목')
         expect(ed.locator('.nb-toggle-body > div')).to_have_text(['이어 쓰는 한글 본문'])
-        p.keyboard.press('Control+End');p.locator('[data-block-menu]').click()
+        p.keyboard.press('Control+End');ed.locator('.nb-toggle-body > div').last.tap();p.locator('[data-block-menu]').tap()
         self.choose('아래에 문단 추가');p.keyboard.insert_text('메뉴로 더한 문단')
         expect(ed.locator('.nb-toggle-body > div').last).to_have_text('메뉴로 더한 문단')
 
     def test_slash_menu_remains_usable_when_android_keyboard_resizes_viewport(self):
         p=self.page;ed=self.note();ed.fill('');p.keyboard.press('/');expect(p.locator('.nb-menu')).to_be_visible()
         p.set_viewport_size({'width':390,'height':480});expect(p.locator('.nb-menu')).to_be_visible()
+        p.wait_for_function("(()=>{const r=document.querySelector('.nb-menu')?.getBoundingClientRect();return r&&r.top>=0&&r.bottom<=innerHeight})()")
         box=p.locator('.nb-menu').bounding_box();self.assertGreaterEqual(box['y'],0);self.assertLessEqual(box['y']+box['height'],480)
         self.choose('토글');p.keyboard.insert_text('키보드가 떠 있어도 작성');p.keyboard.press('Enter');p.keyboard.insert_text('본문')
         expect(ed.locator('.nb-toggle-title')).to_have_text('키보드가 떠 있어도 작성');expect(ed.locator('.nb-toggle-body')).to_have_text('본문')

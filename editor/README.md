@@ -106,3 +106,11 @@ after existing toggle content leaves one toggle level on Backspace. A first
 empty body still returns to the title, and a middle empty line does not move
 following content outside. `test_notion_writing_flow.py` covers these boundaries,
 undo/redo, nested order and storage round trips.
+
+Desktop block controls appear only while the pointer is on a block, its controls
+or the small connecting gutter. Moving away hides them without closing the
+selection formatting toolbar, and caret/scroll updates cannot revive them away
+from the pointer. Drag capture is preserved; touch continues to expose controls
+on a tapped block. Desktop block actions, including actions on a text selection,
+start by hovering the chosen block. `test_block_tools_visibility.py` covers leave,
+re-entry, focused typing, scroll, the nested gutter bridge, menus and window blur.

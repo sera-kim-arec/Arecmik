@@ -81,7 +81,8 @@ function selectText(tr,pos){return tr.setSelection(TextSelection.near(tr.doc.res
 function withView(ed){const entry=views.get(ed);if(entry&&!entry.flushing){entry.flushing=true;entry.view.domObserver.flush();entry.flushing=false}return entry?.view;}
 function emit(entry){if(entry.emitPending)return;entry.emitPending=true;queueMicrotask(()=>{entry.emitPending=false;if(entry.host.isConnected)entry.host.dispatchEvent(new Event('input',{bubbles:true}))});}
 function closeMenu(){menu?.dom.remove();menu=null;}
-function hideUI(){closeMenu();tools?.remove();tools=null;inline?.remove();inline=null;}
+function hideBlockTools(){tools?.remove();tools=null;toolContext=null;}
+function hideUI(){closeMenu();hideBlockTools();inline?.remove();inline=null;}
 function place(el,rect,above=false){
  const viewport=window.visualViewport,top=viewport?.offsetTop||0,left=viewport?.offsetLeft||0;
  const width=Math.min(innerWidth,viewport?.width||innerWidth),height=Math.min(innerHeight,viewport?.height||innerHeight);
@@ -255,7 +256,27 @@ class ToggleView{
  ignoreMutation(mutation){return mutation.type!=='selection'&&(mutation.target===this.dom||this.button.contains(mutation.target))}
 }
 export function installBlockEditors(options={}){
- let linkDialog=null,moving=null;
+ let linkDialog=null,moving=null,pointerType=matchMedia('(hover:none)').matches?'touch':'mouse',pointer=null;
+ function hoveredBlock(view){
+  if(!view?.dom.isConnected)return null;
+  if(tools?.contains(document.activeElement)&&toolContext?.view===view)return toolContext;
+  if(!pointer)return null;
+  const hit=document.elementFromPoint(pointer.x,pointer.y);
+  if(toolContext?.view===view&&tools){
+   if(tools.contains(hit))return toolContext;
+   const node=view.nodeDOM(toolContext.pos),r=node?.getBoundingClientRect?.(),t=tools.getBoundingClientRect();
+   // The narrow gap between a paragraph and its controls is a usable bridge.
+   // In nested toggles this gap belongs to the inner paragraph, not its parent.
+   if(r&&pointer.x>=t.left&&pointer.x<=Math.max(t.right,r.left+2)&&pointer.y>=t.top-2&&pointer.y<=t.bottom+2)return toolContext;
+  }
+  return view.dom.contains(hit)?blockFromDOM(view,hit):null;
+ }
+ document.addEventListener('pointermove',event=>{
+  pointerType=event.pointerType||'mouse';pointer={x:event.clientX,y:event.clientY};
+  if(pointerType!=='touch'&&!drag&&tools&&!hoveredBlock(toolContext?.view))hideBlockTools();
+ },true);
+ document.addEventListener('pointerdown',event=>{pointerType=event.pointerType||'mouse';pointer={x:event.clientX,y:event.clientY};},true);
+ document.addEventListener('pointerout',event=>{if(event.pointerType!=='touch'&&!event.relatedTarget){pointer=null;if(!drag)hideBlockTools();}});
  function openLink(view,anchor=null){
   closeMenu();inline?.remove();inline=null;linkDialog?.cancel();
   const state=view.state;let {from,to}=state.selection,href='';
@@ -302,8 +323,11 @@ export function installBlockEditors(options={}){
  });entry.view=view;options.hydrate?.(host);}
  function currentBlock(host){const view=withView(host);if(!view)return null;const b=blockAt(view.state);return b?view.nodeDOM(b.pos):null;}
  function refreshUI(view,hover=null){if(!view.dom.isConnected||view.composing||linkDialog||drag?.view===view)return;if(!hover&&!view.hasFocus()&&active!==view)return;active=view;inline?.remove();inline=null;
- const b=hover||blockAt(view.state);if(!b)return;const node=view.nodeDOM(b.pos);if(!node?.getBoundingClientRect)return;const rect=node.getBoundingClientRect();if(!rect.width||rect.bottom<0||rect.top>innerHeight){tools?.remove();tools=null;toolContext=null;return;}
- toolContext={view,pos:b.pos};if(!tools){tools=document.createElement('div');tools.className='nb-tools';tools.setAttribute('aria-label','문단 도구');tools.innerHTML='<button type="button" data-block-add aria-label="문단 추가" title="문단 추가">+</button><button type="button" data-block-menu aria-label="문단 서식 및 이동" title="드래그해 이동 · 클릭해 서식 (Alt+↑↓)">⠿</button>';document.body.append(tools);}tools.style.left=Math.max(2,rect.left-(matchMedia('(pointer:coarse)').matches?38:44))+'px';tools.style.top=Math.max(0,rect.top-1)+'px';
+ const b=pointerType==='touch'?hover||blockAt(view.state):hoveredBlock(view),node=b&&view.nodeDOM(b.pos),rect=node?.getBoundingClientRect?.();
+ if(!rect?.width||rect.bottom<0||rect.top>innerHeight)hideBlockTools();
+ else{
+  toolContext={view,pos:b.pos};if(!tools){tools=document.createElement('div');tools.className='nb-tools';tools.setAttribute('aria-label','문단 도구');tools.innerHTML='<button type="button" data-block-add aria-label="문단 추가" title="문단 추가">+</button><button type="button" data-block-menu aria-label="문단 서식 및 이동" title="드래그해 이동 · 클릭해 서식 (Alt+↑↓)">⠿</button>';document.body.append(tools);}tools.style.left=Math.max(2,rect.left-(matchMedia('(pointer:coarse)').matches?38:44))+'px';tools.style.top=Math.max(0,rect.top-1)+'px';
+ }
  if(!view.state.selection.empty&&view.state.selection.$from.parent.isTextblock){inline=document.createElement('div');inline.className='nb-inline';inline.setAttribute('role','toolbar');inline.setAttribute('aria-label','선택한 글 서식');inline.innerHTML=[['strong','굵게','B'],['em','기울임','I'],['underline','밑줄','U'],['strike','취소선','S'],['code','인라인 코드','〈〉'],['link','링크','↗']].map(([k,l,t])=>`<button type="button" data-mark="${k}" aria-label="${l}">${t}</button>`).join('');document.body.append(inline);place(inline,view.coordsAtPos(view.state.selection.from),true);}
  }
  document.addEventListener('mousedown',event=>{if(event.target.closest('.nb-tools,.nb-menu,.nb-inline')){event.preventDefault();return;}if(menu&&!event.target.closest('.nb-editor'))closeMenu();});
@@ -321,6 +345,7 @@ export function installBlockEditors(options={}){
   menu:(view,context)=>{if(activateTool(context))openMenu(view,{actions:true,rect:tools?.getBoundingClientRect()||view.coordsAtPos(view.state.selection.from)});},
   move:moveRange
  });
+ window.addEventListener('blur',()=>{pointer=null;hideUI();active=null;});
  window.addEventListener('scroll',event=>{if(drag)return;if(menu){if(menu.dom.contains(event.target))return;if(menu.view.dom.isConnected){menu.rect=menu.view.coordsAtPos(menu.view.state.selection.from);place(menu.dom,menu.rect);}else closeMenu();}if(active?.hasFocus())refreshUI(active);else if(tools&&toolContext?.view===active&&active.dom.isConnected)refreshUI(active,{pos:toolContext.pos});else if(!menu&&!linkDialog)hideUI()},{passive:true,capture:true});
  function viewportChanged(){if(menu){if(menu.view.dom.isConnected){menu.rect=menu.view.coordsAtPos(menu.view.state.selection.from);place(menu.dom,menu.rect);}else closeMenu();}if(active?.hasFocus())refreshUI(active);}
  window.addEventListener('resize',viewportChanged);window.visualViewport?.addEventListener('resize',viewportChanged);
