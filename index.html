@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Arecmik</title><meta name="application-version" content="2026.10.23.4"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
-<script src="app-theme.js?v=2026.10.23.4"></script>
+<title>Arecmik</title><meta name="application-version" content="2026.10.23.5"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E9E9E9">
+<script src="app-theme.js?v=2026.10.23.5"></script>
 <style>
 :root{--tx:#0E0E0E;--t2:#3F3F3F;--mu:#858585;--ln:rgba(0,0,0,.07);--ink:linear-gradient(180deg,#474747,#111 55%,#000)}
 *{box-sizing:border-box}
@@ -1211,7 +1211,7 @@ a.lk:hover{background:rgba(55,53,47,.13)}
 .record-editor{min-height:160px;max-height:45vh;overflow:auto;padding:14px;border-radius:14px}
 .archive-list mark{background:#37352F;color:#fff;border-radius:3px;padding:0 2px}
 @media(max-width:600px){.archive-intro{align-items:flex-start}.archive-intro h2{font-size:21px}.archive-intro .ink{padding:9px 12px;font-size:12px}.archive-tools{gap:6px}.archive-tools button{padding:7px 10px}.archive-row{gap:8px}.record-editor{min-height:140px}}
-</style><link rel="stylesheet" href="app-theme.css?v=2026.10.23.4"><link rel="stylesheet" href="app-ux.css?v=2026.10.23.4"><link rel="stylesheet" href="connections.css?v=2026.10.23.4"><link rel="stylesheet" href="app-layout.css?v=2026.10.23.4"><link rel="stylesheet" href="lemon-ui.css?v=2026.10.23.4"><link rel="stylesheet" href="block-editor.css?v=2026.10.23.4"></head><body>
+</style><link rel="stylesheet" href="app-theme.css?v=2026.10.23.5"><link rel="stylesheet" href="app-ux.css?v=2026.10.23.5"><link rel="stylesheet" href="connections.css?v=2026.10.23.5"><link rel="stylesheet" href="app-layout.css?v=2026.10.23.5"><link rel="stylesheet" href="lemon-ui.css?v=2026.10.23.5"><link rel="stylesheet" href="block-editor.css?v=2026.10.23.5"></head><body>
 <div id="login" hidden><div class="g"><img src="icon-192.png" width="80" height="80" alt="Arecmik 레몬" style="border-radius:24px"><h1>Arecmik</h1><p>Google 계정으로 로그인하면<br>PC와 휴대폰이 같이 바뀌어요.</p><button id="gl" class="ink">Google로 로그인</button></div></div>
 <div id="app" hidden>
 <header class="top">
@@ -1219,16 +1219,16 @@ a.lk:hover{background:rgba(55,53,47,.13)}
  <nav class="seg g nav" aria-label="메뉴"><button data-tab="home">홈</button><button data-tab="proj">프로젝트</button><button data-tab="rec">기록</button></nav>
   <div class="tr"><button class="ic" data-search aria-label="전체 찾기" title="전체 찾기 (Ctrl+K / ⌘K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><span class="layout-search-label">전체 찾기</span><kbd class="layout-search-key">Ctrl K</kbd></button><button class="ic" data-menu aria-label="설정">⚙</button></div>
 </header>
-<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-app-theme-open>앱 테마 <span class="app-theme-menu-label" data-app-theme-label></span></button><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-reminders-open>일정 알림</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-backup-import>백업 가져오기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.23.4</p></div>
+<div class="menu g solid" id="menu"><p id="pvnote" hidden>미리보기라 적은 내용은 새로고침하면 사라져요.</p><button data-app-theme-open>앱 테마 <span class="app-theme-menu-label" data-app-theme-label></span></button><button data-lunar id="lunbtn">음력 날짜 보기</button><button data-apk-download>APK 설치 · 업데이트</button><button data-widget-install>위젯 설정</button><button data-reminders-open>일정 알림</button><button data-trash>휴지통</button><button data-backup>백업 받기</button><button data-backup-import>백업 가져오기</button><button data-logout>로그아웃</button><button data-wipe class="danger">전체 데이터 초기화</button><p style="font-size:11px;color:#888;margin:8px 12px">버전 2026.10.23.5</p></div>
 <div id="save-status" class="save-status" role="status" aria-live="polite" hidden></div><main id="main"></main>
 </div>
 <div class="scrim" id="scrim"><div class="sheet g solid" id="sheet"></div></div>
 <div class="one g solid" id="one"><div class="t"></div><div class="r"><input placeholder="안 써도 돼요"><button class="ink" data-one="save">남기기</button><button class="link" data-one="skip">건너뛰기</button></div></div>
 <div class="lb" id="lb"><img alt=""></div>
 <script type="module">
-import {installBlockEditors,normalizeRichHTML} from './block-editor.js?v=2026.10.23.4';
+import {installBlockEditors,normalizeRichHTML} from './block-editor.js?v=2026.10.23.5';
 let blockEditors=null;
-import {copy,same,EditConflict,checkPatch,canRetry} from './safe-save.js?v=2026.10.23.4';
+import {copy,same,EditConflict,checkPatch,canRetry} from './safe-save.js?v=2026.10.23.5';
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithCredential,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,addDoc as _addDoc,setDoc as _setDoc,updateDoc as _updateDoc,deleteDoc as _deleteDoc,writeBatch,runTransaction,onSnapshot as _onSnapshot,getDoc as _getDoc,getDocs as _getDocs}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
@@ -1638,7 +1638,7 @@ function calGrid(){if(U.cv!=='m'){const L=D.todos.filter(inSp),t=T(),a=calStart(
    return `<div class="wc${k===t?' td':''}${k===U.calSel?' sel big':''}" data-dk="${k}" data-pick="${k}"><div class="wh"><b class="${P(k).getDay()===0||h?'r':''}">${+k.slice(8)}</b><span>${DOW[P(k).getDay()]}${k===t?' · 오늘':''}${h?' · '+h:''}</span>${lunH(k)}${U.sp==='life'&&expDay(k).length?`<em class="xs">${won(expDay(k).reduce((a,e)=>a+expAmt(e),0))}원</em>`:''}<button class="cadd" data-cadd2="${k}" aria-label="${md(k)}에 추가" title="이 날짜에 추가">＋</button></div>${it.map(x=>itemHTML(x)).join('')}${cellAdd===k?`<div class="cin"><input data-cin="${k}" placeholder="3시 회의 · #프로젝트" autocomplete="off"></div>`:''}</div>`}).join('')}<div class="rzh" data-rz="wch" title="끌어서 높이 조절 · 두 번 누르면 원래대로"></div></section>`}
  const[y,m]=U.calCur.split('-').map(Number),s=new Date(y,m-1,1).getDay(),nd=new Date(y,m,0).getDate(),rows=Math.ceil((s+nd)/7),t=T(),L=D.todos.filter(inSp);
  let cells='';for(let i=0;i<rows*7;i++){const k=ymd(new Date(y,m-1,1-s+i)),o=k.slice(0,7)!==U.calCur,it=L.filter(x=>onDay(x,k)).sort(ordT),h=hol(k);
-  const xs=U.sp==='life'?expDay(k).reduce((a,e)=>a+expAmt(e),0):0;cells+=`<div data-dk="${k}" data-pick="${k}" role="button" tabindex="0" class="mc${o?' o':''}${k===t?' td':''}${k===U.calSel?' sel':''}${P(k).getDay()===0?' sun':''}${h?' hd':''}"><b>${+k.slice(8)}${h?`<small>${h}</small>`:''}${h&&!/^\d+\.(1|15)$/.test(lunar(k))?'':lunH(k)}</b>${(k===U.calSel?it:it.slice(0,3)).map(x=>`<i draggable="true" data-drag="${x.id}" title="${esc((x.time?x.time+' · ':'')+x.title)}" class="${isEv(x)?'e':''}${x.done?' dn':''}${x.projectId&&PJ(x.projectId)?' p':''}" style="--pc:${pcol(PJ(x.projectId))}">${x.time?`<u class="mtm">${x.time} </u>`:isEv(x)?'<u class="mtm">종일 </u>':''}<span class="ttx" data-ie="todos|${x.id}|title">${esc(x.title)}</span>${(x.subs||[]).length?` ${x.subs.filter(z=>z.done).length}/${x.subs.length}`:''}</i>`).join('')}${it.length>3&&k!==U.calSel?`<span class="more">+${it.length-3}</span>`:''}${xs?`<span class="xs">${won(xs)}원</span>`:''}<span class="cadd" data-cadd2="${k}" role="button" aria-label="${md(k)}에 추가" title="이 날짜에 추가">＋</span>${cellAdd===k?`<span class="cin"><input data-cin="${k}" placeholder="3시 회의" autocomplete="off"></span>`:''}</div>`}
+  const xs=U.sp==='life'?expDay(k).reduce((a,e)=>a+expAmt(e),0):0;cells+=`<div data-dk="${k}" data-pick="${k}" role="button" tabindex="0" aria-label="${md(k)} · 일정과 할 일 ${it.length}개" class="mc${o?' o':''}${k===t?' td':''}${k===U.calSel?' sel':''}${P(k).getDay()===0?' sun':''}${h?' hd':''}"><b>${+k.slice(8)}${h?`<small>${h}</small>`:''}${it.length>3?`<small class="month-item-count">${it.length}개</small>`:''}${h&&!/^\d+\.(1|15)$/.test(lunar(k))?'':lunH(k)}</b>${it.slice(0,3).map(x=>`<i draggable="true" data-drag="${x.id}" title="${esc((x.time?x.time+' · ':'')+x.title)}" class="${isEv(x)?'e':''}${x.done?' dn':''}${x.projectId&&PJ(x.projectId)?' p':''}" style="--pc:${pcol(PJ(x.projectId))}">${x.time?`<u class="mtm">${x.time} </u>`:isEv(x)?'<u class="mtm">종일 </u>':''}<span class="ttx" data-ie="todos|${x.id}|title">${esc(x.title)}</span>${(x.subs||[]).length?` ${x.subs.filter(z=>z.done).length}/${x.subs.length}`:''}</i>`).join('')}${it.length>3?`<button type="button" class="more" data-day-more="${k}" aria-label="${md(k)} 일정·할 일 ${it.length}개 전체 보기">+${it.length-3}개 더</button>`:''}${xs?`<span class="xs">${won(xs)}원</span>`:''}<span class="cadd" data-cadd2="${k}" role="button" aria-label="${md(k)}에 추가" title="이 날짜에 추가">＋</span>${cellAdd===k?`<span class="cin"><input data-cin="${k}" placeholder="3시 회의" autocomplete="off"></span>`:''}</div>`}
  return `<section class="g mg rzw">${[...DOW].map(w=>`<div class="w">${w}</div>`).join('')}${cells}<div class="rzh" data-rz="mch" title="끌어서 달력 크기 조절 · 두 번 누르면 원래대로"></div></section>`}
 
 /* ================= 화면: 프로젝트 ================= */
@@ -1744,6 +1744,7 @@ function logView(){if(U.lfb&&U.sp==='work')return `<button class="back" data-lfb
  <div class="ms">${[...Array(12)].map((_,i)=>{const m=i+1,fut=U.ry>ty||(U.ry===ty&&m>tm),c=cnt(m);return `<button data-rm="${m}" class="${m===U.rm?'on':''}"${fut?' disabled':''}>${m}월<i>${c||''}</i></button>`}).join('')}</div></div>
  <section class="g box"><h2 class="ct">${U.ry}년 ${U.rm}월<span style="display:flex;gap:10px;align-items:center"><small>${ks.filter(has).length}일 기록</small>${U.sp==='work'?`<button class="link" data-lfball>피드백 모아 보기${fbL().length?' '+fbL().length:''}</button>`:''}<label class="link" style="cursor:pointer;position:relative">다른 날 쓰기<input type="date" data-pickday style="position:absolute;inset:0;opacity:0;width:100%;cursor:pointer"></label></span></h2>${ks.map(row).join('')||'<div class="emp">이 달은 비어 있어요</div>'}</section>`}
 const fname=id=>{const f=D.notes.find(n=>n.id===id&&n.isFolder);return f?f.title:''};
+function folderPath(id,space=U.sp){const seen=new Set(),names=[];let f=D.notes.find(n=>n.id===id&&n.isFolder&&SPo(n)===space);while(f&&!seen.has(f.id)){seen.add(f.id);names.unshift(f.title||'이름 없는 폴더');f=D.notes.find(n=>n.id===f.fid&&n.isFolder&&SPo(n)===space)}return names.join(' / ')}
 const fOpen=(()=>{try{return new Set(JSON.parse(LS('a2fo')||'[]'))}catch(_){return new Set()}})();
 const FICO='<svg class="fico" viewBox="0 0 20 20" width="15" height="15"><path d="M2.5 5.5a1.5 1.5 0 0 1 1.5-1.5h3.6l1.6 1.8H16a1.5 1.5 0 0 1 1.5 1.5v7.7A1.5 1.5 0 0 1 16 16.5H4A1.5 1.5 0 0 1 2.5 15z" fill="currentColor"/></svg>';
 const DICO='<svg class="dico" viewBox="0 0 20 20" width="14" height="14"><path d="M5 2.5h6.5L15.5 6.5V17a.5.5 0 0 1-.5.5H5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 2.5V6.5H15.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
@@ -1756,13 +1757,14 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;let 
  if((b=t.closest('[data-fnewin]'))){e.stopPropagation();U.fold=b.dataset.fnewin;fOpen.add(U.fold);LSS('a2fo',JSON.stringify([...fOpen]));const nd=document.createElement('button');nd.dataset.newdoc='';nd.hidden=true;document.body.appendChild(nd);nd.click();nd.remove();return}
  if(t.closest('[data-fren],[data-folder-delete]'))return;
  if((b=t.closest('[data-ftog]'))){const id=b.dataset.ftog;if(fOpen.has(id)&&U.fold===id)fOpen.delete(id);else fOpen.add(id);LSS('a2fo',JSON.stringify([...fOpen]));U.fold=id;if(U.doc){cleanEmptyDoc();U.doc=''}render()}},true);
-function docList(){const F=folders(U.sp),ids=new Set(F.map(f=>f.id));const L=docs().filter(d=>inSp(d)&&(!U.fold||(U.fold==='none'?(!d.fid||!ids.has(d.fid)):d.fid===U.fold))).sort((a,b)=>(b.updated||b.created||0)-(a.updated||a.created||0));
- return `<div class="folder-toolbar"><button class="soft" data-folder-manage>폴더 관리</button><button class="soft" data-newf>＋ 새 폴더</button></div><div class="chips mchips"><button data-fold="" class="${!U.fold?'on':''}">전체</button>${F.map(f=>`<button data-fold="${f.id}" class="${U.fold===f.id?'on':''}">${esc(f.title)}</button>`).join('')}<button data-newf style="background:none;color:#888">＋ 폴더</button></div>
- <div class="dsplit">${folderSide()}<section class="g box"><h2 class="ct">${!U.fold?'전체':U.fold==='none'?'폴더 없음':esc(fname(U.fold))}<small>${L.length}</small></h2>
- ${L.map(d=>`<div class="dr" data-odoc="${d.id}"><div><b>${esc(d.title||'제목 없음')}</b><span>${esc(txt(d.html).split('\n').find(x=>x.trim())||'')}</span></div><em>${d.fid&&ids.has(d.fid)&&!U.fold?esc(fname(d.fid))+' · ':''}${md(ymd(new Date(d.updated||d.created||Date.now())))}</em></div>`).join('')||'<div class="emp">글이 없어요</div>'}<button class="newd" data-newdoc>＋ 새 글</button></section></div>`}
+function docList(){const F=folders(U.sp),ids=new Set(F.map(f=>f.id)),current=F.find(f=>f.id===U.fold),children=U.fold==='none'?[]:F.filter(f=>current?f.fid===current.id:!f.fid||!ids.has(f.fid));const L=docs().filter(d=>inSp(d)&&(!U.fold||(U.fold==='none'?(!d.fid||!ids.has(d.fid)):d.fid===U.fold))).sort((a,b)=>(b.updated||b.created||0)-(a.updated||a.created||0));
+ return `<div class="folder-toolbar">${current?`<button class="link" data-fold="${ids.has(current.fid)?current.fid:''}">‹ 상위 폴더</button>`:''}<button class="soft" data-folder-manage>폴더 관리</button><button class="soft" data-newf>${current?'＋ 하위 폴더':'＋ 새 폴더'}</button></div><div class="chips mchips"><button data-fold="" class="${!U.fold?'on':''}">전체 글</button><button data-fold="none" class="${U.fold==='none'?'on':''}">폴더 없는 글</button></div>
+ <div class="dsplit">${folderSide()}<section class="g box"><h2 class="ct">${!U.fold?'전체':U.fold==='none'?'폴더 없음':esc(folderPath(U.fold))}<small>글 ${L.length}개${children.length?' · 폴더 '+children.length+'개':''}</small></h2>
+ ${children.map(f=>{const kids=D.notes.filter(n=>n.fid===f.id&&SPo(n)===U.sp);return `<button type="button" class="folder-entry" data-fold="${f.id}" aria-label="${esc(f.title)} 폴더 열기">${FICO}<span><b>${esc(f.title)}</b><small>글 ${kids.filter(n=>!n.isFolder&&!n.log).length}개 · 하위 폴더 ${kids.filter(n=>n.isFolder).length}개</small></span><span aria-hidden="true">›</span></button>`}).join('')}
+ ${L.map(d=>`<div class="dr" data-odoc="${d.id}"><div><b>${esc(d.title||'제목 없음')}</b><span>${esc(txt(d.html).split('\n').find(x=>x.trim())||'')}</span></div><em>${d.fid&&ids.has(d.fid)&&!U.fold?esc(fname(d.fid))+' · ':''}${md(ymd(new Date(d.updated||d.created||Date.now())))}</em></div>`).join('')||(!children.length?'<div class="emp">글이 없어요</div>':'')}<button class="newd" data-newdoc>＋ 새 글</button></section></div>`}
 function docView(d){d={...d,...(localEdits()['notes:'+d.id]?.patch||{})};const F=folders(SPo(d)),ps=D.projects.filter(p=>SPo(p)===SPo(d));
  return `<div class="rw wide"><button class="back" data-closedoc>‹ 글 목록</button><div class="dsplit" style="margin-top:10px">${folderSide()}<article class="g doc">${d.pid&&PJ(d.pid)?`<div class="record-project-link"><button class="link" data-archive-open="project" data-id="${esc(d.pid)}">‹ ${esc(PJ(d.pid).name)} 관련 기록</button></div>`:''}<input class="dt" data-dt="${d.id}" value="${esc(d.title||'')}" placeholder="제목">
- <div class="dm"><select data-dfold="${d.id}"><option value="">폴더 없음</option>${F.map(f=>`<option value="${f.id}"${f.id===d.fid?' selected':''}>${esc(f.title)}</option>`).join('')}</select><select data-dpj="${d.id}"><option value="">프로젝트 없음</option>${ps.map(p=>`<option value="${p.id}"${p.id===d.pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select><span data-save-state style="font-size:12px;color:#888;font-weight:700">${esc(saveStateText())}</span><button class="ic more" data-more="doc" data-id="${d.id}" aria-label="더 보기" style="margin-left:auto">⋯</button></div>
+ <div class="dm"><select data-dfold="${d.id}"><option value="">폴더 없음</option>${F.map(f=>`<option value="${f.id}"${f.id===d.fid?' selected':''}>${esc(folderPath(f.id,SPo(d)))}</option>`).join('')}</select><select data-dpj="${d.id}"><option value="">프로젝트 없음</option>${ps.map(p=>`<option value="${p.id}"${p.id===d.pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select><span data-save-state style="font-size:12px;color:#888;font-weight:700">${esc(saveStateText())}</span><button class="ic more" data-more="doc" data-id="${d.id}" aria-label="더 보기" style="margin-left:auto">⋯</button></div>
  <div class="rt db" contenteditable="true" data-db="${d.id}" data-ph="내용을 적어요 · / 를 누르면 제목·목록·체크 같은 서식">${safeHTML(d.html||'')}</div></article></div></div>`}
 function refList(){const L=D.refs.filter(inSp).sort((a,b)=>(!!b.fav-!!a.fav)||((b.updated||b.created||0)-(a.updated||a.created||0)));const mk='memo_'+U.sp,m=D.logs[mk]||{},mh=m.html!=null?m.html:t2h(m.text||'');
  return `<section class="g memo2"><h2 class="ct">잊지 말 것<small>${U.sp==='work'?'WORK':'LIFE'}</small></h2><div class="rt" contenteditable="true" data-memo="${mk}" data-ph="자꾸 까먹는 것을 적어 두세요">${safeHTML(mh)}</div></section>
@@ -1921,6 +1923,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
  if((b=t.closest('[data-trnew]'))){await addDoc(col('ents'),{pid:b.dataset.trnew,title:'',v:{},created:Date.now()});setTimeout(()=>{const ins=$$('[data-rname]');if(ins.length)ins[ins.length-1].focus()},250);return}
  if((b=t.closest('[data-cv]'))){U.cv=b.dataset.cv;U.calCur=U.calSel.slice(0,7);U.anc=U.cv==='7'||U.cv==='3'?T():U.calSel;render();return}
  if((b=t.closest('[data-cm]'))){const n=+b.dataset.cm;if(!n){U.calCur=T().slice(0,7);U.calSel=T();U.anc=T()}else if(U.cv==='m'){const[y,m]=U.calCur.split('-').map(Number);U.calCur=ymd(new Date(y,m-1+n,1)).slice(0,7)}else{U.anc=add(U.anc||T(),n*(U.cv==='w2'?14:U.cv==='3'?3:7))}render();return}
+ if((b=t.closest('[data-day-more]'))){const k=b.dataset.dayMore;U.calSel=k;U.calCur=k.slice(0,7);render();const panel=$('.dside');if(panel){panel.tabIndex=-1;panel.focus({preventScroll:true});panel.scrollIntoView({behavior:'smooth',block:'nearest'});}return}
  if((b=t.closest('[data-pick]'))&&!t.closest('.it,.sub,button.sa,input')){const k=b.dataset.pick;if(U.calSel===k&&!$('.qa')){openCell(k);return}U.calSel=k;if(k.slice(0,7)!==U.calCur&&U.cv==='m')U.calCur=k.slice(0,7);render();revealSelectedDay();return}
  if((b=t.closest('[data-hsel]'))){homeSel=b.dataset.hsel;render();return}
  if((b=t.closest('[data-day]'))){const k=b.dataset.day;if(U.cv!=='m'&&b.classList.contains('wh')){if(U.calSel===k){U.cv='d'}U.calSel=k;render();return}U.calSel=k;if(k.slice(0,7)!==U.calCur)U.calCur=k.slice(0,7);render();if(matchMedia('(max-width:900px)').matches){const c=$('.cg>section:last-child');c&&c.scrollIntoView({behavior:'smooth',block:'start'})}return}
@@ -1933,7 +1936,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
   if(v===''){await deleteFolder(id);return}
   if(v!==f.title)updateDoc(dc('notes',id),{title:v,updated:Date.now()});return}
  if((b=t.closest('[data-fold]'))){U.fold=b.dataset.fold;if(U.doc){cleanEmptyDoc();U.doc=''}render();return}
- if(t.closest('[data-newf]')){const n=await askText('새 폴더','예) 회의록');if(n){const x=await addDoc(col('notes'),{isFolder:true,title:n,icon:'📁',fid:'',space:U.sp,created:Date.now(),updated:Date.now()});U.fold=x.id;U.doc='';render()}return}
+ if((b=t.closest('[data-newf]'))){openFolderForm(b.dataset.parent??(U.doc?D.notes.find(n=>n.id===U.doc)?.fid:U.fold));return}
  if((b=t.closest('[data-newdoc]'))){const p=PJ(b.dataset.project);const v={title:'',html:'',space:p?SPo(p):U.sp,fid:p?'':U.fold&&U.fold!=='none'?U.fold:'',pid:p?p.id:'',date:'',created:Date.now(),updated:Date.now()};const x=await addDoc(col('notes'),v);if(!D.notes.find(n=>n.id===x.id))D.notes.push({id:x.id,...v});go('rec',{rt:'doc',doc:x.id,q:''});setTimeout(()=>{const i=$('.dt');if(i&&!$('#main').contains(document.activeElement))i.focus()},30);return}
  if((b=t.closest('[data-odoc]'))){const d=D.notes.find(x=>x.id===b.dataset.odoc);if(d){U.sp=SPo(d);go('rec',{rt:'doc',doc:d.id,q:''})}return}
  if(t.closest('[data-closedoc]')){cleanEmptyDoc();backView();return}
@@ -1974,7 +1977,7 @@ async function applyBackup(button){
 document.addEventListener('click',e=>{if(e.target.closest?.('[data-backup-import]')){$('#menu').classList.remove('on');openBackupRestore();return}const b=e.target.closest?.('[data-backup-apply]');if(b)applyBackup(b)});
 document.addEventListener('change',e=>{if(e.target.id==='backup-file')previewBackup(e.target.files[0])});
 
-import {readBackup,backupChunks,BACKUP_COLLECTIONS} from './backup-restore.js?v=2026.10.23.4';
+import {readBackup,backupChunks,BACKUP_COLLECTIONS} from './backup-restore.js?v=2026.10.23.5';
 const COLS=['todos','projects','notes','refs','ents','moms','logs','exps','fbk','imgs','trash'];
 async function backup(){
  if(autoBusy.size||autoPending.size){flushAutoSaves();toast('편집을 저장하고 있어요. 저장 완료 후 백업을 다시 눌러 주세요.');return}
@@ -1990,7 +1993,7 @@ async function wipe(){if(!await ask('전체 데이터를 초기화할까요? 할
  toast(`전체 데이터를 초기화했어요 (${n}개)`);go('home')}
 
 /* ================= 시작 ================= */
-const {setupAndroidApp}=await import('./android-app.js?v=2026.10.23.4');
+const {setupAndroidApp}=await import('./android-app.js?v=2026.10.23.5');
 let reminderUI=null,pendingNativeTask=null;
 function openReminderTask(message){if(ME?.uid!==message.uid)return;pendingNativeTask=message;if(!U.ready)return;pendingNativeTask=null;const task=D.todos.find(t=>t.id===message.id);if(!task){toast('이 일정이 삭제되었거나 아직 동기화되지 않았어요.');return}go('home',{sp:SPo(task),calSel:task.date||T(),calCur:(task.date||T()).slice(0,7),anc:task.date||T()});editTodo(task.id)}
 const nativeApp=setupAndroidApp({auth,GoogleAuthProvider,signInWithCredential,signOut,loginButton:$('#gl'),notify:toast,onBack:handleBack,onReady:()=>reminderUI?.sync(),onOpenTask:openReminderTask,onReminderNotices:message=>reminderUI?.receiveNative(message)});
@@ -2799,7 +2802,29 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 
 /* 폴더와 업체·항목은 지워도 안의 기록과 연결된 거래는 남긴다. */
 const deletingContainers=new Set();
-function manageFolders(){const F=folders(U.sp);openSheet(`<div id="folder-manager"><h3>폴더 관리 · ${U.sp==='work'?'WORK':'LIFE'}</h3><p class="archive-help">폴더를 지워도 글은 남아요. 안의 글과 하위 폴더는 상위 폴더로 옮겨져요.</p>${F.map(f=>{const children=D.notes.filter(n=>n.fid===f.id&&SPo(n)===U.sp),parent=f.fid&&D.notes.find(n=>n.id===f.fid&&n.isFolder);return `<div class="folder-manage-row"><div><b>${esc(f.title)}</b><small>${parent?esc(parent.title)+' 안 · ':''}글 ${children.filter(n=>!n.isFolder).length}개 · 하위 폴더 ${children.filter(n=>n.isFolder).length}개</small></div><button class="soft" data-folder-rename="${esc(f.id)}">이름 변경</button><button class="link danger" data-folder-delete="${esc(f.id)}">삭제</button></div>`}).join('')||'<div class="archive-empty">만든 폴더가 없어요.</div>'}<div class="bt"><button class="soft" data-sx="0">닫기</button></div></div>`)}
+function openFolderForm(parent=''){
+ const F=folders(U.sp),space=U.sp,selected=F.some(f=>f.id===parent)?parent:'',managing=!!$('#folder-manager')&&$('#scrim').classList.contains('on');
+ openSheet(`<form id="folder-create-form" data-space="${space}"><h3>${selected?'하위 폴더 만들기':'새 폴더'}</h3><div class="f"><label for="folder-title">폴더 이름</label><input id="folder-title" maxlength="120" placeholder="${space==='work'?'예) 계약·서식':'예) 독서·영화·스크랩'}" autocomplete="off"></div><div class="f"><label for="folder-parent">만들 위치</label><select id="folder-parent"><option value="">폴더 밖</option>${F.map(f=>`<option value="${esc(f.id)}"${f.id===selected?' selected':''}>${esc(folderPath(f.id,space))}</option>`).join('')}</select></div><p id="folder-create-error" class="field-error" role="alert"></p><div class="bt"><button type="button" class="soft" ${managing?'data-folder-back':'data-sx="0"'}>취소</button><button type="submit" class="ink" data-folder-create>만들기</button></div></form>`);
+}
+document.addEventListener('click',event=>{if(event.target.closest?.('[data-folder-back]'))manageFolders()});
+document.addEventListener('submit',async event=>{
+ if(event.target.id!=='folder-create-form')return;event.preventDefault();
+ const form=event.target,button=form.querySelector('[data-folder-create]');if(button.disabled)return;
+ const title=form.querySelector('#folder-title').value.trim(),parent=form.querySelector('#folder-parent').value,space=form.dataset.space,uid=ME?.uid;
+ if(!title){fieldError(form.querySelector('#folder-title'),'폴더 이름을 적어 주세요.');return}
+ if(!uid)return;form.querySelector('#folder-create-error').textContent='';const label=button.textContent;button.textContent='만드는 중…';form.setAttribute('aria-busy','true');const unlock=lockSheet(button),ref=doc(collection(db,'users',uid,'notes')),now=Date.now(),value={isFolder:true,title,icon:'📁',fid:parent,space,created:now,updated:now};
+ try{
+  await runTransaction(db,async tx=>{
+   if(parent){const snap=await tx.get(doc(db,'users',uid,'notes',parent)),p=snap.exists()?snap.data():null;if(!p?.isFolder||SPo(p)!==space)throw Object.assign(new Error('Folder parent is missing'),{code:'folder-parent-missing'})}
+   tx.set(ref,value);
+  });
+  if(ME?.uid!==uid)return;if(!D.notes.some(n=>n.id===ref.id))D.notes.push({id:ref.id,...value});
+  const seen=new Set();let id=parent;while(id&&!seen.has(id)){seen.add(id);fOpen.add(id);id=D.notes.find(n=>n.id===id&&n.isFolder)?.fid||''}fOpen.add(ref.id);LSS('a2fo',JSON.stringify([...fOpen]));
+  unlock();if(form.isConnected){closeSheet();go('rec',{rt:'doc',sp:space,doc:'',fold:ref.id,q:''});toast('폴더를 만들었어요.');}
+ }catch(error){if(ME?.uid===uid&&form.isConnected)form.querySelector('#folder-create-error').textContent=error.code==='folder-parent-missing'?'상위 폴더가 없어졌어요. 만들 위치를 다시 선택해 주세요.':'폴더를 만들지 못했어요. 입력한 이름과 위치는 유지했으니 다시 시도해 주세요.';}
+ finally{unlock();button.textContent=label;form.removeAttribute('aria-busy')}
+});
+function manageFolders(){const F=folders(U.sp);openSheet(`<div id="folder-manager"><h3>폴더 관리 · ${U.sp==='work'?'WORK':'LIFE'}</h3><p class="archive-help">폴더를 지워도 글은 남아요. 안의 글과 하위 폴더는 상위 폴더로 옮겨져요.</p>${F.map(f=>{const children=D.notes.filter(n=>n.fid===f.id&&SPo(n)===U.sp),parent=f.fid&&D.notes.find(n=>n.id===f.fid&&n.isFolder);return `<div class="folder-manage-row"><div><b>${esc(f.title)}</b><small>${parent?esc(parent.title)+' 안 · ':''}글 ${children.filter(n=>!n.isFolder).length}개 · 하위 폴더 ${children.filter(n=>n.isFolder).length}개</small></div><button class="link" data-newf data-parent="${esc(f.id)}">하위 폴더</button><button class="soft" data-folder-rename="${esc(f.id)}">이름 변경</button><button class="link danger" data-folder-delete="${esc(f.id)}">삭제</button></div>`}).join('')||'<div class="archive-empty">만든 폴더가 없어요.</div>'}<div class="bt"><button class="soft" data-sx="0">닫기</button></div></div>`)}
 async function removeContainer(c,id,changes){if(changes.length>450){toast('연결된 기록이 많아요. 일부 연결을 정리한 뒤 다시 삭제해 주세요. 아무것도 변경하지 않았어요.');return false}const src=(D[c]||[]).find(x=>x.id===id);if(!src)return false;const {id:_id,...data}=src,key=c+'_'+id,links=changes.map(x=>({c:x.c,id:x.id,v:x.before,after:x.after})),bat=writeBatch(db);bat.set(dc('trash',key),{c,id,data,at:Date.now(),name:data.title||data.name||'',links});for(const change of changes)bat.update(dc(change.c,change.id),change.after);bat.delete(dc(c,id));
  try{await W(bat.commit());for(const change of changes){const target=(D[change.c]||[]).find(x=>x.id===change.id);if(target)Object.assign(target,change.after)}D[c]=D[c].filter(x=>x.id!==id);render();undoPush(c==='notes'?'폴더를 삭제했어요. 글은 남아 있어요.':'항목을 삭제했어요. 할 일과 지출은 남아 있어요.',async()=>{await restore(key);if($('#folder-manager')&&$('#scrim').classList.contains('on'))manageFolders()});return true}catch(_){toast('삭제하지 못했어요. 기록과 연결은 그대로 유지했어요.');return false}}
 async function deleteProject(id){
@@ -3024,7 +3049,7 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
 document.addEventListener('change',e=>{const t=e.target,state=archiveState[U.sp];if(t.matches('[data-archive-month]'))state.month=t.value;else if(t.matches('[data-archive-project]'))state.pid=t.value;else return;state.limit=40;render()});
 
 /* Shared connections preserve each item's original editor and storage. */
-import {installConnections} from './connections-ui.js?v=2026.10.23.4';
+import {installConnections} from './connections-ui.js?v=2026.10.23.5';
 connectionUI=installConnections({
  D,U,uid:()=>ME?.uid,plain:txt,getLogs,isEvent:isEv,date:ms=>ymd(new Date(ms)),
  getSpace:(ref,row)=>ref.c==='fbk'?row.sp||'work':ref.c==='logs'?(ref.id==='memo_life'?'life':'work'):ref.c==='exps'?recordSpace(row,'expense'):ref.c==='ents'?SPo(PJ(row.pid)||row):ref.c==='projects'||ref.c==='todos'||ref.c==='refs'?SPo(row):recordSpace(row,'doc'),
@@ -3204,7 +3229,7 @@ document.addEventListener('click',event=>{
  const heading=$('[data-layout-task-group="'+kind+'"]');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});flash('[data-layout-task-group="'+kind+'"]')}
 });
 
-import {installReminders} from './reminders-ui.js?v=2026.10.23.4';
+import {installReminders} from './reminders-ui.js?v=2026.10.23.5';
 reminderUI=installReminders({nativeApp,data:()=>D.todos.map(t=>({...t,space:SPo(t)})),uid:()=>ME?.uid,ready:()=>syncReceived.has('todos'),openSheet,openTask:openReminderTask,notify:toast,storage:localStorage,preview:PREVIEW});
 
 blockEditors=installBlockEditors({hydrate:hydr,photo:(ed,b,files)=>uploadEditorImages(ed,files||(()=>pickFiles()),b),link:linkAsk,linkify});

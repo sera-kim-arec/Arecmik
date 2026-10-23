@@ -124,6 +124,14 @@ class BlockMovingTests(unittest.TestCase):
         p.reload();p.locator('[data-open="work-p"]').click();ui.project_details(p)
         expect(p.locator('[data-pmemo] > div')).to_have_text(['셋째 메모','첫 메모','둘째 메모'])
 
+    def test_recorded_soft_lines_move_together_across_a_blank_paragraph(self):
+        p=self.page;ed=self.seed('<div>하이잉<br>하잉</div><div><br></div><div>그다음 문단</div>');rows=ed.locator(':scope > div');before=p.evaluate('JSON.stringify(__store)');rows.first.hover();h=p.locator('[data-block-menu]').bounding_box();last=rows.last.bounding_box();x=h['x']+h['width']/2
+        p.mouse.move(x,h['y']+h['height']/2,steps=12);p.mouse.down();p.mouse.move(x,last['y']+last['height']-1,steps=24)
+        expect(p.locator('.nb-drop-indicator')).to_be_visible();expect(p.locator('.nb-drag-preview')).to_have_text('하이잉\n하잉');self.assertEqual(p.evaluate('JSON.stringify(__store)'),before)
+        p.mouse.up();expect(rows).to_have_text(['','그다음 문단','하이잉하잉']);expect(rows.last.locator('br:not(.ProseMirror-trailingBreak)')).to_have_count(1)
+        p.keyboard.press('Control+z');expect(rows).to_have_text(['하이잉하잉','','그다음 문단']);expect(rows.first.locator('br:not(.ProseMirror-trailingBreak)')).to_have_count(1)
+        p.keyboard.press('Control+Shift+z');p.wait_for_function("__store.notes.find(n=>n.id==='work-n').html.startsWith('<div></div>')");p.reload();ed=self.note();expect(ed.locator(':scope > div')).to_have_text(['','그다음 문단','하이잉하잉']);expect(ed.locator(':scope > div').last.locator('br')).to_have_count(1)
+
 
 class TouchBlockMovingTests(BlockMovingTests):
     def setUp(self):
@@ -148,6 +156,7 @@ class TouchBlockMovingTests(BlockMovingTests):
     test_root_paragraph_can_move_down_in_home_reminder_and_survive_reload = None
 
     test_project_memo_controls_stay_available_after_hover_scroll_and_reorder = None
+    test_recorded_soft_lines_move_together_across_a_blank_paragraph = None
 
     def test_browser_touch_drag_reorders_whole_toggle_and_survives_reload(self):
         p=self.page;ed=self.seed('<div>첫 문단</div><div class="nb-toggle" data-expanded="true"><div class="nb-toggle-title">옮길 토글</div><div class="nb-toggle-body"><div>토글 안의 내용</div></div></div><div>마지막 문단</div>')

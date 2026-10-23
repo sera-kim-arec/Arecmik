@@ -67,13 +67,18 @@ export function installBlockMoving(hooks){
  function showTarget(){
   if(!session?.started)return;const d=destination(session.x,session.y);session.target=d;const marker=session.marker;
   marker.hidden=!d;if(d){marker.style.left=Math.max(4,d.left)+'px';marker.style.top=d.top+'px';marker.style.width=Math.max(35,Math.min(d.width,innerWidth-d.left-8))+'px';marker.textContent=d.label;}
-  session.ghost.style.left=Math.max(6,Math.min(innerWidth-180,session.x+16))+'px';session.ghost.style.top=Math.max(6,Math.min(innerHeight-44,session.y+16))+'px';
+  const ghost=session.ghost,r=ghost.getBoundingClientRect();
+  ghost.style.left=Math.max(6,Math.min(innerWidth-r.width-6,session.x+20))+'px';ghost.style.top=Math.max(6,Math.min(innerHeight-r.height-6,session.y+8))+'px';
  }
  function begin(){
   session.started=true;suppressClickUntil=Date.now()+500;hooks.closeMenu();document.body.classList.add('nb-moving');
   const marker=document.createElement('div');marker.className='nb-drop-indicator';marker.hidden=true;marker.setAttribute('aria-hidden','true');
   const ghost=document.createElement('div');ghost.className='nb-drag-preview';ghost.setAttribute('aria-hidden','true');
-  const first=session.range.nodes[0];ghost.textContent=(session.range.nodes.length>1?session.range.nodes.length+'개 문단 · ':'')+(first.textContent||({image:'사진',rule:'구분선'}[first.type.name])||'문단').slice(0,50);
+  // Soft lines belong to one block. Keep them visible while dragging instead
+  // of turning a multi-line paragraph into an unrelated one-line label.
+  const nodes=session.range.nodes,source=session.view.nodeDOM(session.range.from),width=source?.getBoundingClientRect().width||300;
+  ghost.style.width=Math.min(width,420,innerWidth-24)+'px';
+  ghost.textContent=(nodes.length>1?nodes.length+'개 문단\n':'')+nodes.slice(0,4).map(node=>node.textBetween(0,node.content.size,'\n','\n')||({image:'사진',rule:'구분선'}[node.type.name])||'빈 문단').join('\n\n').slice(0,300);
   session.marker=marker;session.ghost=ghost;document.body.append(marker,ghost);showTarget();frame=requestAnimationFrame(autoScroll);
  }
  function autoScroll(){
