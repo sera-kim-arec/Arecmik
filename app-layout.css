@@ -261,6 +261,7 @@ html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
 .sheet .record-meta .f{min-width:0;margin-bottom:8px}
 .record-meta label{font-size:12px;font-weight:600;color:var(--t2)}
 .record-meta :is(input,select){min-width:0;min-height:44px;font:inherit;font-size:13px}
+.record-meta .record-type-field{grid-column:1/-1}
 .layout-refined .record-editor{font-size:15px;line-height:1.8;min-height:140px}
 .layout-refined .record-pin{font-size:13px;color:var(--t2)}
 #record-draft-status:empty{display:none}

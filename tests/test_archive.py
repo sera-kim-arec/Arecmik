@@ -62,7 +62,13 @@ def reveal(page, selector):
 
 
 def record_new(page):
-    page.locator('.layout-write-group > [data-record-new]').click()
+    expect(page.locator('.layout-write-group')).to_be_visible()
+    primary=page.locator('.layout-write-group > [data-record-new]')
+    if primary.count():
+        primary.click()
+    else:
+        page.locator('.layout-write > summary').click()
+        page.locator('.layout-write [data-record-new]').click()
 
 
 def record_source(page, kind):
