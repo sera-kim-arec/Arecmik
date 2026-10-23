@@ -25,8 +25,8 @@ class MaterialWritingTests(unittest.TestCase):
 
     def material(self, ident='work-r'):
         self.library();self.page.locator('[data-archive-open="ref"][data-id="'+ident+'"]').click()
-        expect(self.page.locator('[data-rdoc-body].nb-editor')).to_be_visible()
-        return self.page.locator('[data-rdoc-body]')
+        expect(self.page.locator('[data-db].nb-editor')).to_be_visible()
+        return self.page.locator('[data-db]')
 
     def test_default_material_writing_uses_article_blocks_folder_and_autosave(self):
         p=self.page;self.patch('notes','folder',{'isFolder':True,'title':'가이드','space':'work'})
@@ -45,7 +45,7 @@ class MaterialWritingTests(unittest.TestCase):
     def test_existing_ref_autosaves_original_without_copying_relationships(self):
         p=self.page;self.patch('refs','work-r',{'fav':True,'custom':'원본','connections':[{'c':'moms','id':'work-m','sourceId':'work-r'}]})
         self.patch('moms','work-m',{'connections':[{'c':'refs','id':'work-r','sourceId':'work-m'}]})
-        ed=self.material();p.locator('[data-rdoc-title]').fill('길게 고친 자료');ed.fill('자료도 문단을 나눠 길게 작성할 수 있어요')
+        ed=self.material();p.locator('[data-dt]').fill('길게 고친 자료');ed.fill('자료도 문단을 나눠 길게 작성할 수 있어요')
         self.wait_saved();saved=self.stored('refs','work-r')
         self.assertIn('길게 작성',saved['html']);self.assertEqual(saved['title'],'길게 고친 자료')
         self.assertTrue(saved['fav']);self.assertEqual(saved['custom'],'원본');self.assertEqual(saved['connections'],[{'c':'moms','id':'work-m','sourceId':'work-r'}])
@@ -67,7 +67,7 @@ class MaterialWritingTests(unittest.TestCase):
         p.locator('article.doc .connection-open').filter(has_text='업무 회의 회고').click()
         expect(p.locator('#record-body')).to_contain_text('업무 회의 회고')
         p.go_back();expect(p.locator('#scrim')).not_to_have_class('scrim on')
-        expect(p.locator('[data-rdoc-body]')).to_contain_text('자료에서 작성하던 본문')
+        expect(p.locator('[data-db]')).to_contain_text('자료에서 작성하던 본문')
         source=p.locator('article.doc .connections-panel').get_attribute('data-connection-source')
         self.assertEqual(p.evaluate('s=>JSON.parse(decodeURIComponent(s)).c',source),'refs')
 
@@ -92,7 +92,7 @@ class MaterialWritingTests(unittest.TestCase):
         p=self.page;self.patch('notes','a',{'isFolder':True,'space':'work','title':'A'});self.patch('notes','b',{'isFolder':True,'space':'work','title':'B'})
         ed=self.material();ed.fill('본문만 고친 자료');self.patch('refs','work-r',{'title':'다른 기기 제목','fid':'a','fav':True})
         self.wait_saved();saved=self.stored('refs','work-r');self.assertEqual(saved['title'],'다른 기기 제목');self.assertEqual(saved['fid'],'a');self.assertTrue(saved['fav'])
-        ed=self.material();p.locator('[data-rdoc-folder]').select_option('b');self.patch('refs','work-r',{'fid':''})
+        ed=self.material();p.locator('[data-dfold]').select_option('b');self.patch('refs','work-r',{'fid':''})
         self.wait_conflict();self.assertEqual(self.stored('refs','work-r')['fid'],'')
         self.assertEqual(self.drafts()['refs:work-r']['patch']['fid'],'b')
 
@@ -110,21 +110,21 @@ class MaterialWritingTests(unittest.TestCase):
 
     def test_prior_quick_form_draft_has_a_clear_continue_path(self):
         p=self.page;self.library();ui.resource_quick(p);p.locator('#r-t').fill('새 자료 임시 제목');p.locator('#r-b').fill('새 자료 임시 내용');p.locator('#sheet [data-sx]').click()
-        ed=self.material();p.locator('.resource-settings').click();p.locator('#r-b').fill('이전 작성창에 남긴 내용');p.locator('#sheet [data-sx]').click()
+        ed=self.material();ui.ref_settings(p);p.locator('#r-b').fill('이전 작성창에 남긴 내용');p.locator('#sheet [data-sx]').click()
         p.locator('[data-closedoc]').click();ed=self.material()
         expect(p.locator('.resource-draft-notice')).to_contain_text('저장 전 작성 내용')
         p.locator('.resource-draft-notice button').click();expect(p.locator('#r-b')).to_contain_text('이전 작성창에 남긴 내용')
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
-        expect(p.locator('[data-rdoc-body]')).to_contain_text('이전 작성창에 남긴 내용')
+        expect(p.locator('[data-db]')).to_contain_text('이전 작성창에 남긴 내용')
         expect(p.locator('.resource-draft-notice')).to_have_count(0)
 
     def test_opening_settings_finishes_pending_body_save_before_form_edit(self):
         p=self.page;ed=self.material();ed.fill('넓은 화면에서 방금 고친 내용')
-        p.locator('.resource-settings').click();expect(p.locator('#r-b')).to_contain_text('방금 고친 내용')
+        ui.ref_settings(p);expect(p.locator('#r-b')).to_contain_text('방금 고친 내용')
         p.locator('#r-b').fill('설정 창에서도 이어 고친 내용');p.locator('[data-rsave]').click()
         expect(p.locator('#scrim')).not_to_have_class('scrim on')
         self.assertIn('설정 창에서도',self.stored('refs','work-r')['html'])
-        expect(p.locator('[data-rdoc-body]')).to_contain_text('설정 창에서도')
+        expect(p.locator('[data-db]')).to_contain_text('설정 창에서도')
 
     def test_article_create_failure_and_repeated_click_keep_list_and_single_original(self):
         p=self.page;self.library();before=p.evaluate('__store.notes.length')
@@ -143,8 +143,8 @@ class MaterialWritingTests(unittest.TestCase):
             self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
             p.screenshot(path=str(out/f'list-{width}.png'),full_page=True)
             p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
-            expect(p.locator('[data-rdoc-body]')).to_be_visible();self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
-            for selector in ['.resource-settings','article.doc .archive-favorite','[data-rdoc-purpose]','[data-rdoc-folder]']:
+            expect(p.locator('[data-db]')).to_be_visible();self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
+            for selector in ['article.doc [data-more]','[data-dpurpose]','[data-dfold]','[data-dpj]']:
                 self.assertGreaterEqual(p.locator(selector).bounding_box()['height'],44)
             p.screenshot(path=str(out/f'editor-{width}.png'),full_page=True)
             p.locator('[data-closedoc]').click()

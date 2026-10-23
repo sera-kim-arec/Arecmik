@@ -96,8 +96,8 @@ class ArchiveLibraryTests(unittest.TestCase):
         p=self.page;self.folders();self.library();p.locator('[data-archive-folder="root"]').click();p.locator('#rq').fill('팀 연락처')
         expect(p.locator('.archive-list .archive-row')).to_have_count(1)
         p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
-        expect(p.locator('[data-rdoc-folder]')).to_have_value('child')
-        p.go_back();expect(p.locator('[data-rdoc-body]')).to_have_count(0)
+        expect(p.locator('[data-dfold]')).to_have_value('child')
+        p.go_back();expect(p.locator('[data-db]')).to_have_count(0)
         expect(p.locator('#rq')).to_have_value('팀 연락처')
         expect(p.locator('[data-archive-folder="root"]')).to_have_attribute('aria-pressed','true')
         p.go_back();expect(p.locator('[data-archive-folder=""]')).to_have_attribute('aria-pressed','true')
@@ -134,7 +134,7 @@ class ArchiveLibraryTests(unittest.TestCase):
 
     def test_resource_can_be_reclassified_without_losing_remote_body_or_favorite(self):
         p=self.page;self.patch('refs','work-r',{'fav':True,'custom':'원본'});self.library()
-        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
+        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();ui.ref_settings(p)
         p.locator('#r-purpose').select_option('record')
         self.patch('refs','work-r',{'html':'<div>휴대폰에서 수정한 내용</div>'})
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
@@ -144,12 +144,12 @@ class ArchiveLibraryTests(unittest.TestCase):
 
     def test_conflicting_resource_purpose_preserves_draft_and_remote_choice(self):
         p=self.page;self.patch('refs','work-r',{'archivePurpose':'resource'});self.library()
-        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
+        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();ui.ref_settings(p)
         p.locator('#r-purpose').select_option('record');p.locator('#r-b').fill('내가 쓰던 내용')
         self.patch('refs','work-r',{'archivePurpose':'record'})
         # A concurrent same-value change is safe; a new local reversal conflicts.
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
-        self.records();p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
+        self.records();p.locator('[data-archive-open="ref"][data-id="work-r"]').click();ui.ref_settings(p)
         p.locator('#r-purpose').select_option('resource')
         # A previous client clearing an explicit classification is a distinct edit.
         self.patch('refs','work-r',{'archivePurpose':''})
@@ -158,11 +158,11 @@ class ArchiveLibraryTests(unittest.TestCase):
         self.assertEqual(self.stored('refs','work-r')['archivePurpose'],'')
 
     def test_old_resource_draft_missing_purpose_preserves_remote_classification(self):
-        p=self.page;self.library();p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
+        p=self.page;self.library();p.locator('[data-archive-open="ref"][data-id="work-r"]').click();ui.ref_settings(p)
         p.locator('#r-b').fill('이전 버전의 작성 내용');p.locator('#sheet [data-sx]').click()
         p.evaluate("()=>{const key='arecmik:form:ui-test:ref:work-r',d=JSON.parse(localStorage.getItem(key));delete d.fields['r-purpose'];delete d.guard.initialFields['r-purpose'];localStorage.setItem(key,JSON.stringify(d))}")
         self.patch('refs','work-r',{'archivePurpose':'record'});self.records()
-        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click();expect(p.locator('#r-purpose')).to_have_value('record')
+        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();ui.ref_settings(p);expect(p.locator('#r-purpose')).to_have_value('record')
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
         self.assertEqual(self.stored('refs','work-r')['archivePurpose'],'record')
 

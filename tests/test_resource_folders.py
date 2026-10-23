@@ -31,7 +31,7 @@ class ResourceFolderTests(unittest.TestCase):
         return self.page.evaluate('([c,id])=>__store[c].find(x=>x.id===id)',[c,id])
 
     def open_search_ref(self):
-        self.search('업무 자료');self.page.locator('#sqr [data-sgo="ref"]').click()
+        self.search('업무 자료');self.page.locator('#sqr [data-sgo="ref"]').click();ui.ref_settings(self.page)
 
     def test_same_nested_folder_contains_original_note_and_resource_and_back_returns_to_parent(self):
         p=self.page;self.child();expect(p.locator('.library-list>.ct')).to_contain_text('회사 / 채용 서식');expect(p.locator('.library-list>.ct')).to_contain_text('글 1개 · 자료 1개')
@@ -43,21 +43,21 @@ class ResourceFolderTests(unittest.TestCase):
         p=self.page;self.child();p.locator('[data-newref]').click();expect(p.locator('#r-folder')).to_have_value('child');expect(p.locator('#r-folder option:checked')).to_have_text('회사 / 채용 서식');expect(p.locator('#r-folder option[value="personal"]')).to_have_count(0)
         p.locator('#r-t').fill('입사 안내문');p.locator('#r-b').fill('준비 서류와 안내 링크');p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on');expect(p.locator('.library-list')).to_contain_text('입사 안내문')
         saved=p.evaluate("__store.refs.find(r=>r.title==='입사 안내문')");self.assertEqual((saved['space'],saved['fid']),('work','child'))
-        p.reload();p.locator('.folder-entry[data-fold="root"]').click();p.locator('.folder-entry[data-fold="child"]').click();p.locator('.library-list [data-oref="'+saved['id']+'"] b').click();expect(p.locator('#r-folder')).to_have_value('child');expect(p.locator('#r-b')).to_contain_text('준비 서류')
+        p.reload();p.locator('.folder-entry[data-fold="root"]').click();p.locator('.folder-entry[data-fold="child"]').click();p.locator('.library-list [data-oref="'+saved['id']+'"] b').click();expect(p.locator('[data-dfold]')).to_have_value('child');expect(p.locator('[data-db]')).to_contain_text('준비 서류')
 
     def test_legacy_unfiled_resource_can_be_filed_without_rewriting_remote_body(self):
         p=self.page;self.browse();p.locator('.folder-scope [data-fold="none"]').click();expect(p.locator('.library-list [data-oref="legacy-r"]')).to_be_visible();expect(p.locator('.library-list [data-oref="work-r"]')).to_have_count(0)
-        p.locator('.library-list [data-oref="legacy-r"] b').click();expect(p.locator('#r-folder')).to_have_value('');p.locator('#r-folder').select_option('child');self.patch('refs','legacy-r',{'html':'<div>다른 기기에서 고친 대표번호</div>'});p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
+        p.locator('.library-list [data-oref="legacy-r"] b').click();ui.ref_settings(p);expect(p.locator('#r-folder')).to_have_value('');p.locator('#r-folder').select_option('child');self.patch('refs','legacy-r',{'html':'<div>다른 기기에서 고친 대표번호</div>'});p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
         saved=self.stored('refs','legacy-r');self.assertEqual(saved['fid'],'child');self.assertIn('다른 기기',saved['html']);self.assertNotIn('space',saved)
-        p.locator('.folder-scope [data-fold=""]').click();p.locator('.folder-entry[data-fold="root"]').click();p.locator('.folder-entry[data-fold="child"]').click();expect(p.locator('.library-list [data-oref="legacy-r"]')).to_be_visible()
+        p.locator('[data-closedoc]').click();p.locator('.folder-scope [data-fold=""]').click();p.locator('.folder-entry[data-fold="root"]').click();p.locator('.folder-entry[data-fold="child"]').click();expect(p.locator('.library-list [data-oref="legacy-r"]')).to_be_visible()
 
     def test_folder_path_search_opens_the_same_resource_and_filing_preserves_other_fields(self):
         p=self.page;self.search('회사 채용');expect(p.locator('#sqr [data-sgo="ref"][data-id="work-r"]')).to_be_visible();expect(p.locator('#sqr [data-sgo="doc"][data-id="work-n"]')).to_be_visible()
-        p.locator('#sqr [data-sgo="ref"][data-id="work-r"]').click();expect(p.locator('#r-folder')).to_have_value('child');p.locator('#r-folder').select_option('root');p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
+        p.locator('#sqr [data-sgo="ref"][data-id="work-r"]').click();ui.ref_settings(p);expect(p.locator('#r-folder')).to_have_value('child');p.locator('#r-folder').select_option('root');p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
         saved=self.stored('refs','work-r');self.assertEqual(saved['fid'],'root');self.assertTrue(saved['fav']);self.assertEqual(saved['custom'],'보존할 부가 정보')
 
     def test_search_from_a_different_folder_opens_unfiled_resource_and_keeps_navigation(self):
-        p=self.page;self.child();self.search('기존 자료');p.locator('#sqr [data-sgo="ref"]').click();expect(p.locator('#r-t')).to_have_value('기존 자료');expect(p.locator('#r-folder')).to_have_value('');p.locator('#sheet [data-sx]').click();expect(p.locator('.library-list [data-oref="legacy-r"]')).to_be_visible()
+        p=self.page;self.child();self.search('기존 자료');p.locator('#sqr [data-sgo="ref"]').click();expect(p.locator('[data-dt]')).to_have_value('기존 자료');expect(p.locator('[data-dfold]')).to_have_value('');p.locator('[data-closedoc]').click();p.locator('#sqi').press('Escape');expect(p.locator('.library-list [data-oref="work-r"]')).to_be_visible()
 
     def test_body_edit_preserves_a_remote_folder_move_and_conflicting_move_is_stopped(self):
         p=self.page;self.open_search_ref();p.locator('#r-b').fill('작성 중인 내 본문');self.patch('refs','work-r',{'fid':'root'});p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on');self.assertEqual(self.stored('refs','work-r')['fid'],'root');self.assertIn('내 본문',self.stored('refs','work-r')['html'])
@@ -87,7 +87,7 @@ class ResourceFolderTests(unittest.TestCase):
         p=self.page;self.child()
         for width in [320,390,768,1365]:
             p.set_viewport_size({'width':width,'height':900});self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width);row=p.locator('.library-list [data-oref="work-r"]');expect(row).to_be_visible()
-            row.focus();row.press('Enter');expect(p.locator('#r-folder')).to_have_value('child');self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width);p.locator('#sheet [data-sx]').click()
+            row.focus();row.press('Enter');expect(p.locator('[data-dfold]')).to_have_value('child');self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width);p.locator('[data-closedoc]').click()
         p.set_viewport_size({'width':390,'height':900})
         for selector in ['.library-row .fv','.library-row .library-copy','.library-create [data-newref]','.folder-scope [data-fold="none"]']:
             box=p.locator(selector).bounding_box();self.assertGreaterEqual(box['height'],44)

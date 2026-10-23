@@ -25,7 +25,7 @@ class ConnectionTests(unittest.TestCase):
         expect(self.page.locator('#sheet .connections-panel')).to_be_visible()
 
     def manage(self):
-        self.page.locator('#sheet [data-conn-manage]').first.click()
+        self.page.locator('#scrim.on #sheet [data-conn-manage],article.doc [data-conn-manage]').first.click()
         expect(self.page.locator('#connections-dialog')).to_be_visible()
 
     def connect_reference(self):
@@ -44,8 +44,8 @@ class ConnectionTests(unittest.TestCase):
         self.patch('refs','work-r',{'title':'바뀐 자료 제목'})
         expect(p.locator('#sheet .connections-panel')).to_contain_text('바뀐 자료 제목')
         p.locator('#sheet .connection-open').filter(has_text='바뀐 자료 제목').click()
-        expect(p.locator('#r-t')).to_have_value('바뀐 자료 제목')
-        expect(p.locator('#sheet .connections-panel')).to_contain_text('업무 회의 회고')
+        expect(p.locator('[data-dt]')).to_have_value('바뀐 자료 제목')
+        expect(p.locator('article.doc .connections-panel')).to_contain_text('업무 회의 회고')
         self.manage()
         p.locator('[data-conn-remove]').click()
         expect(p.locator('#connection-linked')).not_to_contain_text('업무 회의 회고')
@@ -112,7 +112,7 @@ class ConnectionTests(unittest.TestCase):
         self.connect_reference();p=self.page
         p.locator('#record-body').fill('아직 저장하지 않은 원본 메모')
         p.locator('#sheet .connection-open').filter(has_text='업무 자료').click()
-        expect(p.locator('#r-t')).to_have_value('업무 자료')
+        expect(p.locator('[data-dt]')).to_have_value('업무 자료')
         p.go_back()
         expect(p.locator('#record-body')).to_have_text('아직 저장하지 않은 원본 메모')
         self.assertEqual(p.evaluate("window.__store.moms.find(m=>m.id==='work-m').t"),'업무 회의 회고')
@@ -120,7 +120,7 @@ class ConnectionTests(unittest.TestCase):
     def test_delete_restore_and_backup_keep_original_connections(self):
         self.connect_reference();p=self.page
         p.locator('#sheet .connection-open').filter(has_text='업무 자료').click()
-        p.locator('[data-rdel]').click()
+        p.locator('article.doc [data-more]').click();p.locator('.pop [data-ddel]').click()
         p.wait_for_function("!window.__store.refs.some(r=>r.id==='work-r')")
         p.locator('.toast button').click()
         p.wait_for_function("window.__store.refs.some(r=>r.id==='work-r')")
@@ -178,7 +178,7 @@ class ConnectionTests(unittest.TestCase):
         self.search('업무 프로젝트')
         expect(p.locator('#sqr [data-sgo="ref"][data-id="work-r"]')).to_contain_text('연결: 업무 프로젝트')
         p.locator('#sqr [data-sgo="ref"][data-id="work-r"]').click()
-        p.locator('#sheet [data-conn-task]').click()
+        p.locator('article.doc [data-conn-task]').click()
         expect(p.locator('#connection-task-project')).to_have_value('work-p')
 
     def test_failed_unlink_cannot_leave_one_sided_changes(self):

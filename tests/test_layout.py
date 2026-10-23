@@ -174,7 +174,7 @@ class LayoutTests(unittest.TestCase):
         expect(refs.locator('[data-oref]').first).to_contain_text('업무 자료')
         expect(refs.locator('[data-oref]')).to_contain_text(['업무 자료','최근 업무 자료 3','최근 업무 자료 2'])
         refs.locator('[data-oref="work-r"] span').click()
-        expect(p.locator('#r-b')).to_contain_text('팀 연락처')
+        expect(p.locator('[data-db]')).to_contain_text('팀 연락처')
         p.go_back();refs.locator('[data-goref]').click()
         expect(p.locator('[data-oref="recent-0"]')).to_be_visible()
         self.assertEqual(p.evaluate('JSON.stringify(window.__store)'),before)

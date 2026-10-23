@@ -31,12 +31,12 @@ class EditorSurfaceTests(unittest.TestCase):
             query={'article':('업무 회의록' if sp=='work' else '숙소 후보','doc'),'record':('업무 회의 회고' if sp=='work' else '바닷가 산책','mom'),'task':('보고서 제출' if sp=='work' else '숙소 예약','todo'),'reference':('업무 자료' if sp=='work' else '여행 자료','ref'),'expense':('숙박 결제','expense')}[s]
             if s=='record':query=(p.evaluate("id=>__store.moms.find(m=>m.id===id).t",sp+'-m').split('\n')[0],'mom')
             self.search(query[0]);p.locator('#sqr [data-sgo="'+query[1]+'"]').first.click()
-            selector={'article':'[data-db]','record':'#record-body','task':'#e-n','reference':'#r-b','expense':'#x-m'}[s]
+            selector={'article':'[data-db]','record':'#record-body','task':'#e-n','reference':'[data-db]','expense':'#x-m'}[s]
         ed=p.locator(selector).first;expect(ed).to_be_visible();expect(ed).to_have_class(re.compile(r'\bnb-editor\b'))
         return ed
 
     def save(self):
-        button={'record':'[data-record-save]','task':'[data-esave]','reference':'[data-rsave]','expense':'[data-xsave]'}.get(self.surface)
+        button={'record':'[data-record-save]','task':'[data-esave]','expense':'[data-xsave]'}.get(self.surface)
         if button:
             self.page.locator(button).click();expect(self.page.locator('#scrim')).not_to_have_class('scrim on')
         else:

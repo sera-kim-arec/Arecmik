@@ -93,7 +93,9 @@ class SaveSafetyTests(unittest.TestCase):
         query,kind,selector={'todos':('보고서 제출','todo','#e-n'),'moms':('업무 회의 회고','mom','#record-body'),'refs':('업무 자료','ref','#r-b'),'exps':('숙박 결제','expense','#x-m')}[c]
         if c=='moms':query=self.page.evaluate("()=>{const m=__store.moms.find(m=>m.id==='work-m');const el=document.createElement('div');el.innerHTML=m.h||'';return (el.textContent||m.t).trim().split('\\n')[0]}")
         if c=='exps':p=self.page;p.locator('[data-sp="life"]').click()
-        self.search(query);self.page.locator('#sqr [data-sgo="'+kind+'"]').click();return self.page.locator(selector)
+        self.search(query);self.page.locator('#sqr [data-sgo="'+kind+'"]').click()
+        if c=='refs':ui.ref_settings(self.page)
+        return self.page.locator(selector)
 
     def test_all_explicit_forms_protect_conflicts(self):
         for c,id,field,save in [('todos','work-t','noteH','esave'),('moms','work-m','h','record-save'),('refs','work-r','html','rsave'),('exps','life-e','memoH','xsave')]:

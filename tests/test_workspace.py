@@ -150,7 +150,7 @@ class WorkspaceTests(unittest.TestCase):
         p=self.page;p.locator('nav [data-tab="home"]').click()
         fold=p.locator('[data-layout-fold="refs"]');fold.locator('summary').click()
         fold.locator('[data-ie="refs|work-r|title"]').click()
-        expect(p.locator('#r-t')).to_have_value('업무 자료')
+        expect(p.locator('[data-dt]')).to_have_value('업무 자료')
         p.go_back();expect(fold).to_have_attribute('open','')
         p.locator('nav [data-tab="proj"]').click();p.locator('[data-open="work-p"]').click()
         p.locator('nav [data-tab="home"]').click()

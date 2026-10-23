@@ -82,6 +82,12 @@ def resource_quick(page):
         menu.locator('[data-newref]').click()
 
 
+def ref_settings(page):
+    expect(page.locator('article.doc[data-doc-collection="refs"]')).to_be_visible()
+    page.locator('article.doc [data-more]').click()
+    page.locator('.pop [data-ref-quick]').click()
+
+
 def archive_filter(page, kind):
     selector='[data-archive-filter="'+kind+'"]'
     reveal(page,selector)
@@ -253,13 +259,14 @@ class ArchiveTests(unittest.TestCase):
     def test_reference_creation_and_moving_legacy_between_spaces(self):
         record_source(self.page, 'ref')
         self.page.locator("[data-oref='legacy-r'] span").click()
+        ref_settings(self.page)
         expect(self.page.locator("#r-space")).to_have_value("work")
         self.page.locator("#r-space").select_option("life")
         self.page.locator("[data-rsave]").click()
-        expect(self.page.locator("[data-oref='legacy-r']")).to_have_count(0)
-        self.page.locator("[data-sp='life']").click()
-        expect(self.page.locator("[data-oref='legacy-r']")).to_be_visible()
-        self.page.locator("[data-newref]").click()
+        self.page.locator("nav [data-tab='rec']").click()
+        self.page.locator("[data-archive-filter='ref']").click()
+        expect(self.page.locator("[data-archive-open='ref'][data-id='legacy-r']")).to_be_visible()
+        resource_quick(self.page)
         expect(self.page.locator("#r-space")).to_have_value("life")
         self.page.locator("#r-t").fill("나의 독서 목록")
         self.page.locator("#r-b").fill("읽고 싶은 책")
