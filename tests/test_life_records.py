@@ -40,7 +40,7 @@ class LifeRecordTests(unittest.TestCase):
         p.locator('[data-sp="work"]').click();expect(p.locator('[data-archive-record-type]')).to_have_count(0);ui.record_new(p);expect(p.locator('#record-type')).to_have_count(0);p.locator('#sheet [data-sx]').click()
 
     def test_scrap_is_captured_in_library_and_stays_out_of_personal_record_feed(self):
-        p=self.page;p.locator('[data-archive-filter="ref"]').click();expect(p.locator('.layout-write-group>[data-newref]')).to_have_text('＋ 자료 보관');p.locator('.layout-write-group>[data-newref]').click();expect(p.locator('#record-type')).to_have_count(0);expect(p.locator('#r-space')).to_have_value('life');p.locator('#r-t').fill('관점을 넓혀 준 인터뷰');p.locator('#r-b').fill('다시 읽을 질문과 인사이트');p.locator('[data-rsave]').click();expect(p.locator('.archive-list')).to_contain_text('관점을 넓혀 준 인터뷰')
+        p=self.page;p.locator('[data-archive-filter="ref"]').click();expect(p.locator('.layout-write-group>[data-newdoc]')).to_have_text('＋ 자료 쓰기');ui.resource_quick(p);expect(p.locator('#record-type')).to_have_count(0);expect(p.locator('#r-space')).to_have_value('life');p.locator('#r-t').fill('관점을 넓혀 준 인터뷰');p.locator('#r-b').fill('다시 읽을 질문과 인사이트');p.locator('[data-rsave]').click();expect(p.locator('.archive-list')).to_contain_text('관점을 넓혀 준 인터뷰')
         p.locator('[data-archive-filter=""]').click();expect(p.locator('.archive-list')).not_to_contain_text('관점을 넓혀 준 인터뷰');self.search('인사이트');expect(p.locator('#sqr [data-sgo="ref"]')).to_have_count(1);self.assertEqual(p.evaluate("__store.moms.filter(m=>m.t.includes('인터뷰')).length"),0)
 
     def test_type_filter_resets_for_library_and_work_and_new_records_use_current_type(self):

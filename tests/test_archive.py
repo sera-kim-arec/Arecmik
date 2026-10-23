@@ -71,6 +71,17 @@ def record_new(page):
         page.locator('.layout-write [data-record-new]').click()
 
 
+def resource_quick(page):
+    expect(page.locator('.layout-write-group')).to_be_visible()
+    primary=page.locator('.layout-write-group>[data-newref]')
+    if primary.count():
+        primary.click()
+    else:
+        menu=page.locator('.layout-write')
+        if menu.get_attribute('open') is None:menu.locator(':scope>summary').click()
+        menu.locator('[data-newref]').click()
+
+
 def archive_filter(page, kind):
     selector='[data-archive-filter="'+kind+'"]'
     reveal(page,selector)

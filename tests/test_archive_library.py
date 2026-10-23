@@ -22,6 +22,7 @@ class ArchiveLibraryTests(unittest.TestCase):
         expect(self.page.locator('.archive-library')).to_be_visible()
 
     def records(self):
+        if self.page.locator('[data-closedoc]').count():self.page.locator('nav [data-tab="rec"]').click()
         self.page.locator('[data-archive-filter=""]').click()
 
     def folders(self):
@@ -95,21 +96,21 @@ class ArchiveLibraryTests(unittest.TestCase):
         p=self.page;self.folders();self.library();p.locator('[data-archive-folder="root"]').click();p.locator('#rq').fill('팀 연락처')
         expect(p.locator('.archive-list .archive-row')).to_have_count(1)
         p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
-        expect(p.locator('#r-folder')).to_have_value('child')
-        p.go_back();expect(p.locator('#scrim')).not_to_have_class('scrim on')
+        expect(p.locator('[data-rdoc-folder]')).to_have_value('child')
+        p.go_back();expect(p.locator('[data-rdoc-body]')).to_have_count(0)
         expect(p.locator('#rq')).to_have_value('팀 연락처')
         expect(p.locator('[data-archive-folder="root"]')).to_have_attribute('aria-pressed','true')
         p.go_back();expect(p.locator('[data-archive-folder=""]')).to_have_attribute('aria-pressed','true')
 
     def test_quick_capture_uses_selected_folder_derives_title_and_keeps_block_editor(self):
         p=self.page;self.folders();self.library();p.locator('[data-archive-folder="child"]').click()
-        p.locator('.layout-write-group>[data-newref]').click()
+        ui.resource_quick(p)
         expect(p.locator('#r-folder')).to_have_value('child')
         p.locator('#r-b').fill('다시 쓸 입사 안내문\nhttps://example.com')
         p.evaluate('window.__failWrites=true');p.locator('[data-rsave]').click()
         expect(p.locator('#r-b')).to_contain_text('다시 쓸 입사 안내문')
         p.locator('#sheet [data-sx]').click()
-        p.locator('.layout-write-group>[data-newref]').click()
+        ui.resource_quick(p)
         expect(p.locator('#r-folder')).to_have_value('child');expect(p.locator('#r-b')).to_contain_text('입사 안내문')
         p.evaluate('window.__failWrites=false');p.locator('[data-rsave]').click()
         expect(p.locator('#scrim')).not_to_have_class('scrim on')
@@ -120,7 +121,7 @@ class ArchiveLibraryTests(unittest.TestCase):
     def test_long_article_created_in_library_uses_current_folder_without_a_copy(self):
         p=self.page;self.folders();self.library();p.locator('[data-archive-folder="child"]').click()
         before=p.evaluate('__store.notes.length')
-        p.locator('.layout-write>summary').click();p.locator('.layout-write [data-newdoc]').click()
+        p.locator('.layout-write-group>[data-newdoc]').click()
         expect(p.locator('[data-dpurpose]')).to_have_value('resource')
         expect(p.locator('[data-dfold]')).to_have_value('child')
         p.locator('.dt').fill('다시 읽을 업무 안내');p.locator('[data-db]').fill('기존 블록 편집기로 쓴 안내문')
@@ -133,22 +134,22 @@ class ArchiveLibraryTests(unittest.TestCase):
 
     def test_resource_can_be_reclassified_without_losing_remote_body_or_favorite(self):
         p=self.page;self.patch('refs','work-r',{'fav':True,'custom':'원본'});self.library()
-        p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
+        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
         p.locator('#r-purpose').select_option('record')
         self.patch('refs','work-r',{'html':'<div>휴대폰에서 수정한 내용</div>'})
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
-        expect(p.locator('.archive-list [data-id="work-r"]')).to_have_count(0)
+        p.locator('[data-closedoc]').click();expect(p.locator('.archive-list [data-id="work-r"]')).to_have_count(0)
         self.records();expect(p.locator('.archive-list')).to_contain_text('휴대폰에서 수정한 내용')
         saved=self.stored('refs','work-r');self.assertEqual(saved['archivePurpose'],'record');self.assertTrue(saved['fav']);self.assertEqual(saved['custom'],'원본')
 
     def test_conflicting_resource_purpose_preserves_draft_and_remote_choice(self):
         p=self.page;self.patch('refs','work-r',{'archivePurpose':'resource'});self.library()
-        p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
+        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
         p.locator('#r-purpose').select_option('record');p.locator('#r-b').fill('내가 쓰던 내용')
         self.patch('refs','work-r',{'archivePurpose':'record'})
         # A concurrent same-value change is safe; a new local reversal conflicts.
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
-        self.records();p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
+        self.records();p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
         p.locator('#r-purpose').select_option('resource')
         # A previous client clearing an explicit classification is a distinct edit.
         self.patch('refs','work-r',{'archivePurpose':''})
@@ -157,11 +158,11 @@ class ArchiveLibraryTests(unittest.TestCase):
         self.assertEqual(self.stored('refs','work-r')['archivePurpose'],'')
 
     def test_old_resource_draft_missing_purpose_preserves_remote_classification(self):
-        p=self.page;self.library();p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
+        p=self.page;self.library();p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click()
         p.locator('#r-b').fill('이전 버전의 작성 내용');p.locator('#sheet [data-sx]').click()
         p.evaluate("()=>{const key='arecmik:form:ui-test:ref:work-r',d=JSON.parse(localStorage.getItem(key));delete d.fields['r-purpose'];delete d.guard.initialFields['r-purpose'];localStorage.setItem(key,JSON.stringify(d))}")
         self.patch('refs','work-r',{'archivePurpose':'record'});self.records()
-        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();expect(p.locator('#r-purpose')).to_have_value('record')
+        p.locator('[data-archive-open="ref"][data-id="work-r"]').click();p.locator('.resource-settings').click();expect(p.locator('#r-purpose')).to_have_value('record')
         p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
         self.assertEqual(self.stored('refs','work-r')['archivePurpose'],'record')
 
@@ -170,7 +171,7 @@ class ArchiveLibraryTests(unittest.TestCase):
         p.locator('#folder-title').fill('참고 문서');p.locator('[data-folder-create]').click()
         expect(p.locator('.archive-library')).to_be_visible();folder=p.evaluate("__store.notes.find(x=>x.isFolder&&x.title==='참고 문서')")
         expect(p.locator('[data-archive-folder="'+folder['id']+'"]').first).to_have_attribute('aria-pressed','true')
-        p.locator('.layout-write-group>[data-newref]').click();expect(p.locator('#r-folder')).to_have_value(folder['id'])
+        ui.resource_quick(p);expect(p.locator('#r-folder')).to_have_value(folder['id'])
         p.locator('#r-b').fill('다음에 찾을 안내문');p.locator('[data-rsave]').click();expect(p.locator('#scrim')).not_to_have_class('scrim on')
         p.reload();self.library();expect(p.locator('.archive-list')).to_contain_text('다음에 찾을 안내문')
 
@@ -191,7 +192,7 @@ class ArchiveLibraryTests(unittest.TestCase):
             p.locator('[data-archive-open="ref"][data-id="work-r"]').click()
             self.assertLessEqual(p.evaluate('document.documentElement.scrollWidth'),width)
             p.screenshot(path=str(out/f'write-{width}.png'),full_page=True)
-            p.locator('#sheet [data-sx]').click()
+            p.locator('[data-closedoc]').click()
         self.records();p.screenshot(path=str(out/'records-1365.png'),full_page=True)
 
 
