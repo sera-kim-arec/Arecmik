@@ -283,6 +283,27 @@ html.layout-refined[data-app-theme="mono"]{--mu:#6b6b6b}
 .folder-entry{display:grid;grid-template-columns:20px minmax(0,1fr) 18px;align-items:center;gap:10px;width:100%;min-height:56px;padding:10px 0;border:0;border-bottom:1px solid var(--ln);border-radius:0;background:transparent;box-shadow:none;color:var(--tx);text-align:left;font:inherit;cursor:pointer}
 .folder-entry>span{min-width:0}.folder-entry b{font-size:14px;font-weight:600;overflow-wrap:anywhere}.folder-entry small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
 .folder-entry:is(:hover,:focus-visible){background:var(--surface)}
+.folder-scope{display:flex;gap:6px;margin:0 0 12px}
+.folder-scope button{min-height:44px}
+.tree button.tr-d{width:100%;border:0;background:transparent;text-align:left;font:inherit;font-size:13px}
+.tree button.tr-d:is(:hover,:focus-visible){background:var(--surface)}
+.tree button.tr-d.on{background:var(--selection)}
+.tree .tr-d small{color:var(--mu);font-size:10px;flex:none}
+.library-list>.ct{align-items:flex-start;flex-wrap:wrap;gap:6px 12px;overflow-wrap:anywhere}
+.library-list>.ct small{white-space:normal}
+.library-row .library-kind{display:block;font-size:11px;font-weight:400;color:var(--mu);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.library-row b{font-weight:600}
+.library-row:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.library-copy{font-size:12px;padding:6px 10px}
+.library-create{display:flex;gap:8px;margin-top:12px}
+.library-create .newd{flex:1;min-width:0;margin-top:0;min-height:44px}
+@media(max-width:600px){
+ .library-row{gap:5px}
+ .library-row .fv,.library-row .library-copy{min-width:44px;min-height:44px;margin:0}
+ .library-row .ix,.library-row .ropen{display:none}
+ .library-row>em{font-size:11px}
+ .library-list>.ct small{width:100%}
+}
 #folder-create-form label{display:block;font-size:13px;color:var(--t2);margin-bottom:6px}
 #folder-create-form :is(input,select){width:100%;min-height:44px;padding:10px 12px;font:inherit;border:1px solid var(--ln);border-radius:9px;background:var(--field);color:var(--tx)}
 #folder-create-error:empty{display:none}
