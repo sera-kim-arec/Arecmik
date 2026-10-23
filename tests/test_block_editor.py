@@ -133,7 +133,7 @@ class BlockEditorTests(unittest.TestCase):
         expect(ed.locator('.nb-toggle-body')).to_be_hidden();expect(ed.locator('strong')).to_have_text('중요한 본문')
         # A previous day's journal is read-only until opened. Disclosure must not trigger editing.
         self.patch('notes','work-month',{'log':True,'mon':'2026-10','space':'work','html':'<div class="h2 dayh">10/14 (수)</div><div>다른 날 기록</div><div class="h2 dayh">10/15 (목)</div>'+html})
-        p.locator('nav [data-tab="rec"]').click();p.locator('[data-archive-filter="log"]').click()
+        p.locator('nav [data-tab="rec"]').click();ui.archive_filter(p,'log')
         p.locator('[data-archive-open="log"][data-id="2026-10-14"]').click()
         title=p.locator('.rt:not([contenteditable]) .nb-toggle-title').first
         expect(title).to_have_attribute('aria-expanded','false');title.focus();p.keyboard.press('Enter')

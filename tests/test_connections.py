@@ -172,7 +172,7 @@ class ConnectionTests(unittest.TestCase):
         expect(p.locator('#connection-linked')).to_contain_text('업무 자료')
         p.locator('[data-conn-close]').first.click()
         expect(p.locator('.project-connections')).to_contain_text('업무 자료')
-        p.locator('nav [data-tab="rec"]').click();archive.reveal(p,'[data-archive-project]');p.locator('[data-archive-project]').select_option('work-p')
+        p.locator('nav [data-tab="rec"]').click();p.locator('[data-archive-filter="ref"]').click();archive.reveal(p,'[data-archive-project]');p.locator('[data-archive-project]').select_option('work-p')
         expect(p.locator('.archive-list')).to_contain_text('업무 자료')
         self.assertFalse(p.evaluate("!!window.__store.refs.find(r=>r.id==='work-r').pid"))
         self.search('업무 프로젝트')

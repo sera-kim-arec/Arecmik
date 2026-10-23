@@ -12,6 +12,7 @@ class TaskDetailTests(unittest.TestCase):
     tearDown = ui.ArchiveTests.tearDown
 
     def open_task(self):
+        ui.archive_filter(self.page,'todo')
         self.page.locator('#rq').fill('보고서 제출')
         self.page.locator('[data-archive-open="todo"]').click()
         expect(self.page.locator('#sheet.task-sheet textarea#e-t')).to_be_visible()

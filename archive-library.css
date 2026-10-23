@@ -1,0 +1,68 @@
+/* The archive keeps the existing editors and navigation, with two clear purposes. */
+.layout-refined .archive-explorer{display:grid;grid-template-columns:185px minmax(0,1fr);gap:26px;align-items:start}
+.archive-navigation,.archive-workspace{min-width:0}
+.archive-navigation{position:sticky;top:18px}
+.layout-refined .archive-explorer .layout-record-types{display:flex;flex-direction:column;align-items:stretch;overflow:visible;gap:5px;padding:0}
+.layout-refined .archive-explorer .layout-record-types button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:11px 13px;border:1px solid transparent;background:transparent;text-align:left;font-size:14px;border-radius:10px;white-space:normal}
+.layout-refined .archive-explorer .layout-record-types button.on{background:var(--selection);border-color:var(--ln);color:var(--tx)}
+.archive-explorer .layout-type-count{font-size:12px;font-weight:400}
+.archive-explorer .layout-record-toolbar{margin:0 0 10px;gap:10px}
+.archive-explorer .layout-record-toolbar>.archive-help{margin:0 auto 0 0;font-size:12px;color:var(--t2)}
+.archive-explorer .layout-record-toolbar .archive-favorites-filter{display:flex;align-items:center;gap:6px;min-height:44px;padding:8px 11px;font-size:12px;background:var(--card)}
+.archive-favorites-filter span{color:var(--mu)}
+.archive-explorer .archive-legacy-folders{margin-left:0;font-size:12px;color:var(--mu)}
+.archive-explorer .layout-filter-fold{margin:0 0 14px}
+.archive-explorer .layout-filter-fold>summary{min-height:44px;padding:9px 13px;font-size:12px}
+.archive-source-controls{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.archive-source-controls button{min-height:44px;padding:8px 11px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--t2);font:inherit;font-size:12px}
+.archive-source-controls button.on{background:var(--selection);color:var(--tx)}
+.archive-explorer .archive-tools select{min-height:44px;max-width:100%}
+.archive-folders{margin-top:25px;padding-top:16px;border-top:1px solid var(--ln)}
+.archive-folder-heading{display:flex;align-items:center;justify-content:space-between;padding-left:12px;font-size:12px;color:var(--t2)}
+.archive-folder-heading button{min-width:44px;min-height:44px;font-size:20px}
+.archive-folders>[data-archive-folder]{display:flex;align-items:center;gap:8px;min-height:44px;width:100%;border:0;border-radius:8px;background:transparent;color:var(--t2);font:inherit;font-size:12px;text-align:left;padding:9px 10px;cursor:pointer}
+.archive-folders>[data-archive-folder]>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.archive-folders>[data-archive-folder] small{color:var(--mu);font-size:11px}
+.archive-folders>[data-archive-folder].on{background:var(--selection);color:var(--tx)}
+.archive-folders>[data-archive-folder]:hover{background:var(--surface)}
+.archive-folders>.link{min-height:44px;padding-left:12px;font-size:12px;color:var(--mu)}
+.archive-mobile-folders{display:none}
+.archive-explorer .archive-list{padding:4px 20px 15px;min-width:0}
+.archive-explorer .archive-row{align-items:flex-start;gap:12px;padding:13px 0}
+.archive-explorer .archive-row:before{content:'';display:block;flex:0 0 9px;height:32px;border:1px solid #d7c78e;border-left:3px solid #d7bd65;border-radius:2px 4px 4px 2px;background:#f7e9b3;margin-top:5px}
+.archive-explorer [data-record-mark=movie]:before{background:#ebe5ef;border-color:#d7cadf;border-left-color:#b7a1c5}
+.archive-explorer [data-record-mark=daily]:before,.archive-explorer [data-record-mark=log]:before{background:#f2e7d8;border-color:#dfcdb3;border-left-color:#c4a780}
+.archive-explorer [data-record-mark=ref]:before{background:var(--surface);border-color:var(--ln);border-left-color:var(--mu)}
+.layout-refined .archive-explorer .archive-content strong{font-size:15px;line-height:1.5;font-weight:650}
+.layout-refined .archive-explorer .archive-excerpt{font-size:13px;line-height:1.6;-webkit-line-clamp:1;margin-top:3px}
+.layout-refined .archive-explorer .archive-kind{font-size:11px;color:var(--mu);margin-bottom:3px}
+.layout-refined .archive-explorer .archive-context{font-size:11px;margin-top:4px}
+.archive-explorer .archive-day{margin:17px 0 2px;font-size:12px;color:var(--t2)}
+.archive-section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--t2);margin:18px 0 0}
+.archive-section-title span{font-size:11px;font-weight:400;color:var(--mu)}
+.archive-explorer .archive-favorite{font-size:18px;margin-top:11px;border-radius:8px}
+.archive-resource-editor{min-height:180px;font-size:15px;line-height:1.8}
+.archive-resource-meta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 12px;border-top:1px solid var(--ln);padding-top:17px;margin-top:20px}
+.archive-resource-meta .f{min-width:0}
+.archive-resource-meta .f>label{font-size:12px;color:var(--t2)}
+.archive-resource-meta :is(select,input){min-height:44px;min-width:0;font-size:13px}
+.archive-resource-folder{grid-column:1/-1}
+@media(min-width:901px){.layout-records-page>.srch{margin-left:211px}.layout-records-page>.rh{margin-bottom:16px}.layout-refined .rw.layout-records-page{max-width:1140px}}
+@media(max-width:900px){
+ .layout-refined .archive-explorer{display:block}
+ .archive-navigation{position:static;margin-bottom:12px}
+ .layout-refined .archive-explorer .layout-record-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .layout-refined .archive-explorer .layout-record-types button{font-size:14px;min-height:48px;justify-content:center}
+ .archive-folders{display:none}
+ .archive-mobile-folders{display:flex;align-items:center;gap:7px;margin:0 0 10px;font-size:12px;color:var(--t2)}
+ .archive-mobile-folders select{flex:1;min-width:0;min-height:44px;max-width:100%;padding:8px;border:1px solid var(--ln);border-radius:8px;background:var(--field);color:var(--tx);font:inherit}
+ .archive-mobile-folders button{min-width:44px;min-height:44px;padding:8px}
+ .archive-explorer .archive-list{padding:3px 14px 13px}
+ .archive-explorer .layout-record-toolbar{gap:5px}
+ .archive-explorer .layout-record-toolbar>.archive-help{font-size:11px;flex-basis:100%;overflow-wrap:anywhere}
+ .archive-explorer .layout-record-toolbar>[data-archive-reset]{margin-left:auto}
+ .archive-explorer .archive-row{gap:10px}
+ .archive-explorer .archive-favorite{min-width:44px;min-height:44px}
+ .archive-resource-editor{min-height:160px}
+}
+@media(prefers-reduced-motion:no-preference){.archive-explorer :is(button,select){transition:background .12s ease}}

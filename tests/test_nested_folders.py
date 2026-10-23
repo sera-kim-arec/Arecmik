@@ -15,7 +15,7 @@ class NestedFolderTests(unittest.TestCase):
 
     def browse(self):
         p=self.page
-        if p.locator('[data-archive-filter="doc"]').count():p.locator('[data-archive-filter="doc"]').click();p.locator('[data-rt="doc"]').click()
+        if p.locator('[data-archive-filter="doc"]').count():ui.archive_filter(p,'doc');p.locator('[data-rt="doc"]').click()
         expect(p.locator('.folder-toolbar')).to_be_visible()
 
     def parent(self):

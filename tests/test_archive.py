@@ -71,8 +71,14 @@ def record_new(page):
         page.locator('.layout-write [data-record-new]').click()
 
 
+def archive_filter(page, kind):
+    selector='[data-archive-filter="'+kind+'"]'
+    reveal(page,selector)
+    page.locator(selector).click()
+
+
 def record_source(page, kind):
-    page.locator('[data-archive-filter="'+kind+'"]').click()
+    archive_filter(page,kind)
     page.locator('[data-rt="'+kind+'"]').click()
 
 
@@ -213,7 +219,7 @@ class ArchiveTests(unittest.TestCase):
     def test_filters_mobile_and_write_failure_preserve_text(self):
         self.life()
         self.page.set_viewport_size({"width": 390, "height": 844})
-        self.page.locator("[data-archive-filter='expense']").click()
+        archive_filter(self.page,'expense')
         expect(self.page.locator(".archive [data-archive-open]")).to_have_count(1)
         reveal(self.page,'[data-archive-month]')
         self.page.locator("[data-archive-month]").select_option("2026-10")

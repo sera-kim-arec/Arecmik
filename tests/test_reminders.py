@@ -88,7 +88,7 @@ class ReminderTests(unittest.TestCase):
         self.assertEqual(other.evaluate('window.__notifications.length'),0);other.close()
 
     def test_schedule_reminder_choice_persists_and_draft_is_restored(self):
-        self.event();self.page.locator('[data-archive-filter="todo"]').click()
+        self.event();ui.archive_filter(self.page,'todo')
         self.page.locator('[data-archive-open="todo"][data-id="alarm"]').click()
         ui.reveal(self.page,'#e-reminder')
         self.page.locator('#e-reminder').select_option('30');self.page.locator('#e-reminder').dispatch_event('input')
@@ -97,7 +97,7 @@ class ReminderTests(unittest.TestCase):
         expect(self.page.locator('#e-reminder')).to_have_value('30')
         self.page.locator('[data-esave]').click()
         self.page.wait_for_function("__store.todos.find(t=>t.id==='alarm').reminder==='30'")
-        self.page.reload();self.page.locator('[data-archive-filter="todo"]').click()
+        self.page.reload();ui.archive_filter(self.page,'todo')
         self.page.locator('[data-archive-open="todo"][data-id="alarm"]').click()
         expect(self.page.locator('#e-reminder')).to_have_value('30')
         self.page.locator('#e-d').fill('');self.page.locator('#e-d').dispatch_event('input')
@@ -154,7 +154,7 @@ class ReminderTests(unittest.TestCase):
         self.assertEqual(self.page.evaluate('__notifications.length'),0)
 
     def test_popup_does_not_interrupt_typing_and_open_button_uses_original(self):
-        self.event();self.enable();self.page.locator('[data-archive-filter="todo"]').click()
+        self.event();self.enable();ui.archive_filter(self.page,'todo')
         self.page.locator('[data-archive-open="todo"][data-id="work-t"]').click()
         self.page.locator('#e-n').fill('알림이 와도 작성 중인 메모를 유지해요')
         self.page.clock.fast_forward(15000)

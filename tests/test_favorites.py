@@ -30,8 +30,10 @@ class FavoriteTests(unittest.TestCase):
         expect(p.locator('[data-pmemo]')).to_have_text('업무 프로젝트 메모')
         expect(p.locator('.pcore')).not_to_contain_text('업무 회의 회고')
         p.locator('nav [data-tab="rec"]').click();p.locator('[data-archive-favorites]').click()
-        expect(p.locator('.archive-list .archive-row')).to_have_count(2)
+        expect(p.locator('.archive-list .archive-row')).to_have_count(1)
         expect(p.locator('.archive-list')).to_contain_text('업무 회의 회고')
+        p.locator('[data-archive-filter="ref"]').click();p.locator('[data-archive-favorites]').click()
+        expect(p.locator('.archive-list .archive-row')).to_have_count(1)
         expect(p.locator('.archive-list')).to_contain_text('업무 자료')
         self.assertEqual(p.evaluate('window.__store.moms.length'),len(ui.SEED['moms']))
 
@@ -84,7 +86,7 @@ class FavoriteTests(unittest.TestCase):
         p=self.page;self.search('보고서 제출')
         p.locator('#sqr [data-archive-favorite="todo"][data-id="work-t"]').click()
         expect(p.locator('#sqr [data-archive-favorite="todo"]')).to_have_attribute('aria-pressed','true')
-        p.locator('#sqi').press('Escape');p.locator('[data-archive-favorites]').click()
+        p.locator('#sqi').press('Escape');ui.archive_filter(p,'todo');p.locator('[data-archive-favorites]').click()
         expect(p.locator('.archive-list')).to_contain_text('보고서 제출')
         self.assertFalse(p.evaluate("window.__store.todos.find(t=>t.id==='work-t').done"))
 
@@ -102,6 +104,6 @@ class FavoriteTests(unittest.TestCase):
         # prevent a copied star from selecting the next occurrence.
         self.patch('todos',following['id'],{'fav':True,'favSourceId':'work-t'})
         if p.locator('#srch.on').count():p.locator('#sqi').press('Escape')
-        p.locator('nav [data-tab="rec"]').click();p.locator('[data-archive-favorites]').click()
+        p.locator('nav [data-tab="rec"]').click();ui.archive_filter(p,'todo');p.locator('[data-archive-favorites]').click()
         expect(p.locator('.archive-list [data-archive-open="todo"]')).to_have_count(1)
         expect(p.locator('.archive-list [data-archive-open="todo"]')).to_have_attribute('data-id','work-t')
