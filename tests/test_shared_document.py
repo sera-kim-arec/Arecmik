@@ -51,6 +51,7 @@ class SharedDocumentTests(unittest.TestCase):
         self.assertIn('감상과 연결된',r['html']);self.assertEqual(p.evaluate('__store.refs.length'),len(ui.SEED['refs']))
         p.locator('[data-closedoc]').click();p.locator('[data-archive-filter=""]').click()
         ui.reveal(p,'[data-archive-record-type]');p.locator('[data-archive-record-type]').select_option('movie')
+        p.locator('[data-archive-project]').select_option('life-p')
         expect(p.locator('.archive-list')).to_contain_text('여행 자료');expect(p.locator('.archive-kind')).to_have_text('영화 기록')
 
     def test_search_home_and_folder_tree_open_the_common_form_and_return_to_origin(self):
@@ -61,6 +62,9 @@ class SharedDocumentTests(unittest.TestCase):
         p.locator('[data-oref="work-r"] b').click();expect(p.locator('article.doc[data-doc-collection="refs"]')).to_be_visible()
         p.go_back();expect(p.locator('.hhead')).to_be_visible()
         p.locator('nav [data-tab="rec"]').click();p.locator('[data-archive-open="doc"][data-id="work-n"]').click()
+        expect(p.locator('[data-tree-ref="work-r"]')).to_have_count(0)
+        p.go_back();self.patch('notes','work-n',{'archivePurpose':'resource'})
+        p.locator('[data-archive-filter="ref"]').click();p.locator('[data-archive-open="doc"][data-id="work-n"]').click()
         p.locator('[data-tree-ref="work-r"]').click();expect(p.locator('article.doc[data-doc-collection="refs"]')).to_be_visible()
         p.go_back();expect(p.locator('article.doc[data-doc-collection="notes"]')).to_be_visible()
 

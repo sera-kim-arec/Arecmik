@@ -1,4 +1,4 @@
-"""One folder hierarchy for written notes and resources, without copying records."""
+"""Purpose-scoped browsing over the original folder hierarchy and documents."""
 import unittest
 from playwright.sync_api import expect
 import test_archive as ui
@@ -33,11 +33,11 @@ class ResourceFolderTests(unittest.TestCase):
     def open_search_ref(self):
         self.search('업무 자료');self.page.locator('#sqr [data-sgo="ref"]').click();ui.ref_settings(self.page)
 
-    def test_same_nested_folder_contains_original_note_and_resource_and_back_returns_to_parent(self):
-        p=self.page;self.child();expect(p.locator('.library-list>.ct')).to_contain_text('회사 / 채용 서식');expect(p.locator('.library-list>.ct')).to_contain_text('글 1개 · 자료 1개')
-        expect(p.locator('.library-list [data-odoc="work-n"]')).to_be_visible();expect(p.locator('.library-list [data-oref="work-r"]')).to_be_visible();expect(p.locator('.library-list')).not_to_contain_text('여행 자료')
+    def test_library_folder_keeps_records_out_and_back_returns_to_parent(self):
+        p=self.page;self.child();expect(p.locator('.library-list>.ct')).to_contain_text('회사 / 채용 서식');expect(p.locator('.library-list>.ct')).to_contain_text('자료 1개')
+        expect(p.locator('.library-list [data-odoc="work-n"]')).to_have_count(0);expect(p.locator('.library-list [data-oref="work-r"]')).to_be_visible();expect(p.locator('.library-list')).not_to_contain_text('여행 자료')
         p.go_back();expect(p.locator('.folder-entry[data-fold="child"]')).to_be_visible();expect(p.locator('.folder-entry[data-fold="child"]')).to_contain_text('자료 1개')
-        p.go_back();expect(p.locator('.folder-entry[data-fold="root"]')).to_be_visible();self.assertEqual(len(p.evaluate('__store.refs')),len(ui.SEED['refs']))
+        p.go_back();expect(p.locator('.folder-entry[data-fold="root"]')).to_be_visible();self.assertEqual(len(p.evaluate('__store.refs')),len(ui.SEED['refs']));self.assertEqual(self.stored('notes','work-n')['fid'],'child')
 
     def test_new_resource_defaults_to_open_folder_and_survives_reload(self):
         p=self.page;self.child();p.locator('[data-newref]').click();expect(p.locator('#r-folder')).to_have_value('child');expect(p.locator('#r-folder option:checked')).to_have_text('회사 / 채용 서식');expect(p.locator('#r-folder option[value="personal"]')).to_have_count(0)

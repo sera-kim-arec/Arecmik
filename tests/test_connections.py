@@ -21,6 +21,8 @@ class ConnectionTests(unittest.TestCase):
 
     def record(self):
         self.page.locator('nav [data-tab="rec"]').click()
+        mode=self.page.locator('[data-archive-filter=""]')
+        if mode.get_attribute('aria-pressed') != 'true':mode.click()
         self.page.locator('[data-archive-open="mom"][data-id="work-m"]').click()
         expect(self.page.locator('#sheet .connections-panel')).to_be_visible()
 
