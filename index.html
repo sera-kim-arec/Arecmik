@@ -538,6 +538,25 @@ code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospa
 .code-copy{border:0;background:transparent;color:var(--muted);font-size:11.5px;font-weight:600;border-radius:6px;padding:3px 8px;cursor:pointer}
 .code-copy:hover{background:var(--hover);color:var(--fg)}
 .bk-code .code-text{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospace;font-size:13px;line-height:1.6;padding:6px 14px 12px;white-space:pre-wrap;tab-size:2;overflow-x:auto;width:100%;box-sizing:border-box}
+/* ---- table block ---- */
+.bk-table{flex-direction:column;align-items:stretch;gap:4px;margin:6px 0}
+.tbl-scroll{overflow-x:auto;border-radius:10px;box-shadow:0 0 0 1px var(--line)}
+.etbl{border-collapse:collapse;width:100%;min-width:100%;font-size:.94em}
+.etbl td{border:1px solid var(--line);vertical-align:top;min-width:96px;padding:0}
+.etbl tr:first-child td{border-top:0}
+.etbl tr:last-child td{border-bottom:0}
+.etbl td:first-child{border-left:0}
+.etbl td:last-child{border-right:0}
+.etbl td.th{background:var(--sunken);font-weight:600}
+.tcell{outline:none;padding:7px 10px;min-height:1.6em;white-space:pre-wrap;word-break:break-word;line-height:1.55}
+.tcell:focus{box-shadow:inset 0 0 0 2px var(--blue);border-radius:2px}
+.tbl-tools{display:flex;align-items:center;gap:4px;opacity:0;transition:opacity .15s}
+.bk-table:hover .tbl-tools,.bk-table:focus-within .tbl-tools{opacity:1}
+.tbl-tools button{border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;cursor:pointer}
+.tbl-tools button:hover:not(:disabled){background:var(--hover);color:var(--fg)}
+.tbl-tools button:disabled{opacity:.4;cursor:default}
+.tbl-hint{font-size:11.5px;color:var(--faint);margin-right:6px}
+@media (hover:none){ .tbl-tools{opacity:1} .tbl-hint{display:none} }
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1624,6 +1643,11 @@ function blockHTML(b, i, bl, kids) {
   const tw = kids ? `<button class="bk-tw ${b.collapsed ? 'closed' : ''}" data-act="bfold" data-bid="${b.id}" aria-label="${b.collapsed ? '하위 항목 펼치기' : '하위 항목 접기'}" aria-expanded="${!b.collapsed}">${b.collapsed ? I.chevR : I.chevD}</button>` : '';
   const ind = `style="--ind:${b.indent || 0}"`;
   const txt = ph => `<div class="bk-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="${ph}">${b.type === 'link' ? esc(b.text) : inl(b.text)}</div>`;
+  if (b.type === 'table') {
+    const rows = b.rows && b.rows.length ? b.rows : [['']];
+    return `<div class="bk bk-table" ${ind} data-bid="${b.id}"><div class="tbl-scroll"><table class="etbl"><tbody>${rows.map((r, ri) => `<tr>${r.map((c, ci) => `<td class="${ri === 0 ? 'th' : ''}"><div class="tcell" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-r="${ri}" data-c="${ci}">${esc(c)}</div></td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <div class="tbl-tools"><button data-act="trow" data-bid="${b.id}">+ 행</button><button data-act="tcol" data-bid="${b.id}">+ 열</button><button data-act="trowdel" data-bid="${b.id}" ${rows.length < 2 ? 'disabled' : ''}>− 행</button><button data-act="tcoldel" data-bid="${b.id}" ${rows[0].length < 2 ? 'disabled' : ''}>− 열</button><span class="grow"></span><span class="tbl-hint">Tab 다음 칸 · Enter 아래 칸 · Esc 표 밖으로</span><button data-act="bdel" data-bid="${b.id}">표 삭제</button></div></div>`;
+  }
   if (b.type === 'code') return `<div class="bk bk-code" ${ind} data-bid="${b.id}"><div class="code-h"><span>코드</span><button class="code-copy" data-act="bcopy" data-bid="${b.id}">복사</button></div><div class="bk-text code-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="코드를 입력하세요 · Ctrl+Enter로 빠져나가기">${esc(b.text)}</div></div>`;
   if (b.type === 'divider') return `<div class="bk bk-divider" data-bid="${b.id}"><hr></div>`;
   if (b.type === 'image') return b.src ? `<div class="bk bk-img" data-bid="${b.id}"><img src="${b.src}" alt=""><button class="btn sm glass" data-act="bdel" data-bid="${b.id}">사진 삭제</button></div>` : `<div class="bk" data-bid="${b.id}"><button class="btn sm" data-act="pickimg" data-bid="${b.id}">${I.img}사진 고르기</button><button class="btn sm ghost" data-act="bdel" data-bid="${b.id}">취소</button></div>`;
@@ -1683,7 +1707,7 @@ document.addEventListener('keyup', e => {
   if (!e.target.classList || !e.target.classList.contains('bk-text')) return;
   if (['ArrowDown', 'ArrowUp', 'Enter', 'PageDown', 'PageUp', 'Backspace'].includes(e.key)) ensureCaretVisible();
 });
-const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['code', '{ }', '코드 블록', '```'], ['divider', '—', '구분선', '---']];
+const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['table', '▦', '표', ''], ['code', '{ }', '코드 블록', '```'], ['divider', '—', '구분선', '---']];
 let slash = null;
 function openSlash(key, bid) { slash = { key, bid, idx: 0, q: '' }; drawSlash(); }
 function closeSlash() { slash = null; pop.innerHTML = ''; }
@@ -1703,6 +1727,7 @@ function applyType(key, bid, t) {
   closeSlash();
   b.type = t; b.text = ''; if (t === 'todo') b.done = false;
   if (t === 'divider') { const nb = B('p', ''); bl.splice(i + 1, 0, nb); touch(key); rerenderEditor(key, nb.id, 0); return; }
+  if (t === 'table') { b.rows = [['', '', ''], ['', '', ''], ['', '', '']]; touch(key); rerenderEditor(key); focusCell(key, bid, 0, 0); return; }
   if (t === 'image') { touch(key); rerenderEditor(key); pendingImg = { key, bid }; $('#blk-file').click(); return; }
   touch(key); rerenderEditor(key, bid, 0);
 }
@@ -1717,7 +1742,7 @@ function readImage(file, cb) {
 function searchResults(q) {
   q = q.trim().toLowerCase(); if (!q) return [];
   const has = s => (s || '').toLowerCase().includes(q);
-  const bt = bl => (bl || []).map(b => b.text).join(' ');
+  const bt = bl => (bl || []).map(b => b.type === 'table' ? (b.rows || []).flat().join(' ') : b.text).join(' ');
   const out = [];
   S.items.forEach(it => { if (has(it.title) || has(bt(it.memo))) out.push({ g: it.kind === 'event' ? '일정' : '할일', t: it.title || '제목 없음', s: it.date ? fmtMD(it.date) : '날짜 없음', done: it.kind === 'todo' && it.done, k: 'item', id: it.id }); });
   S.projects.forEach(p => { if (has(p.title) || has(bt(p.memo))) out.push({ g: '프로젝트', t: p.title, s: projStatus(p), k: 'project', id: p.id }); });
@@ -1776,6 +1801,7 @@ function newPost(opts = {}) {
   snapshot(); S.posts.push(p); save();
   ui.postId = p.id; ui.lifeFolder = fid; ui.focusId = 'post-title'; go('posts');
 }
+function tableEdit(t, fn) { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b || !b.rows) return; const [r, c] = fn(b); touch(key); rerenderEditor(key); focusCell(key, b.id, r, c); }
 const ACT = {
   go: t => { if (t.dataset.view === 'notes') ui.noteDoc = null; if (t.dataset.view === 'collections' && !ui.collId) ui.collId = (S.collections[0] || {}).id; go(t.dataset.view); },
   menu: () => { ui.navOpen = !ui.navOpen; render(); },
@@ -1896,6 +1922,10 @@ const ACT = {
   bfold: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.collapsed = !b.collapsed; touch(key); rerenderEditor(key); },
   slashpick: t => { if (slash) applyType(slash.key, slash.bid, t.dataset.t); },
   edtail: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const last = bl[bl.length - 1]; if (last && last.type === 'p' && !last.text) { rerenderEditor(key, last.id, 0); return; } const nb = B('p', ''); bl.push(nb); touch(key); rerenderEditor(key, nb.id, 0); },
+  trow: t => tableEdit(t, b => { b.rows.push(Array(b.rows[0].length).fill('')); return [b.rows.length - 1, 0]; }),
+  tcol: t => tableEdit(t, b => { b.rows.forEach(r => r.push('')); return [0, b.rows[0].length - 1]; }),
+  trowdel: t => tableEdit(t, b => { if (b.rows.length > 1) b.rows.pop(); return [b.rows.length - 1, 0]; }),
+  tcoldel: t => tableEdit(t, b => { if (b.rows[0].length > 1) b.rows.forEach(r => r.pop()); return [0, b.rows[0].length - 1]; }),
   bcopy: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; const done = () => toast('코드를 복사했어요'); if (navigator.clipboard) navigator.clipboard.writeText(b.text).then(done).catch(() => toast('복사하지 못했어요. 직접 선택해서 복사해 주세요')); },
   bdel: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const i = bl.findIndex(b => b.id === t.dataset.bid); if (i >= 0) bl.splice(i, 1); touch(key); rerenderEditor(key); },
   pickimg: t => { pendingImg = { key: t.closest('[data-ed]').dataset.ed, bid: t.dataset.bid }; $('#blk-file').click(); }
@@ -1926,7 +1956,8 @@ pop.addEventListener('mousedown', e => { if (e.target.closest('.slash')) e.preve
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'q') { ui.search = t.value; drawSearch(); return; }
-  if (t.classList.contains('bk-text')) return onBlockInput(t);
+  if (t.classList.contains('tcell')) { autoArrow(t); const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (b && b.rows) { b.rows[+t.dataset.r][+t.dataset.c] = t.innerText.replace(/\n$/, ''); touch(key); } return; }
+  if (t.classList.contains('bk-text')) { if (!t.classList.contains('code-text')) autoArrow(t); return onBlockInput(t); }
   if (t.dataset.f !== undefined && t.dataset.f === 'title') { const m = ui.modal; const o = modalTarget(); if (o) { o.title = t.value; save(); render(); } return; }
   if (t.dataset.cf === 'title') { const ci = citem(ui.modal.id); ci.title = t.value; save(); render(); return; }
   if (t.dataset.cv && t.type !== 'checkbox' && t.tagName === 'INPUT' && t.type !== 'date') { const ci = citem(ui.modal.id); ci.values[t.dataset.cv] = t.type === 'number' ? (t.value === '' ? '' : +t.value) : t.value; save(); render(); return; }
@@ -1971,6 +2002,19 @@ document.addEventListener('change', e => {
   if (t.id === 'blk-file') { const pi = pendingImg; pendingImg = null; const file = t.files[0]; t.value = ''; if (!pi || !file) return; readImage(file, src => { const { b } = findBlock(pi.key, pi.bid); if (!b || !src) return; b.type = 'image'; b.src = src; const { bl, i } = findBlock(pi.key, pi.bid); const nb = B('p', ''); bl.splice(i + 1, 0, nb); touch(pi.key); rerenderEditor(pi.key, nb.id, 0); }); }
 });
 
+/* -> becomes →, <- becomes ←, <-> becomes ↔ (not inside `code`) */
+function autoArrow(el) {
+  const sel = getSelection(); if (!sel.rangeCount || !sel.getRangeAt(0).collapsed) return;
+  const pos = caretOffset(el); const text = el.innerText; const before = text.slice(0, pos);
+  if (((before.match(/`/g) || []).length) % 2 === 1) return;
+  let n = 0, out = '';
+  if (before.endsWith('->')) { n = 2; out = '→'; }
+  else if (before.endsWith('←>')) { n = 2; out = '↔'; }
+  else if (before.endsWith('<-')) { n = 2; out = '←'; }
+  if (!n) return;
+  for (let k = 0; k < n; k++) sel.modify('extend', 'backward', 'character');
+  document.execCommand('insertText', false, out);
+}
 function onBlockInput(el) {
   const key = el.closest('[data-ed]').dataset.ed; const { bl, b } = findBlock(key, el.dataset.bid); if (!b) return;
   let text = el.innerText.replace(/\n$/, ''); b.text = text;
@@ -1990,6 +2034,23 @@ function onBlockInput(el) {
   touch(key); ensureCaretVisible();
 }
 document.addEventListener('paste', e => {
+  const cell = e.target.closest && e.target.closest('.tcell');
+  if (cell) {
+    e.preventDefault();
+    const raw = ((e.clipboardData || window.clipboardData).getData('text/plain') || '').replace(/\r/g, '');
+    const key = cell.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, cell.dataset.bid);
+    if (b && /\t|\n/.test(raw.replace(/\n$/, ''))) {
+      const grid = raw.replace(/\n$/, '').split('\n').map(l => l.split('\t'));
+      const r0 = +cell.dataset.r, c0 = +cell.dataset.c;
+      const needC = Math.max(b.rows[0].length, c0 + Math.max(...grid.map(g => g.length)));
+      b.rows.forEach(row => { while (row.length < needC) row.push(''); });
+      while (b.rows.length < r0 + grid.length) b.rows.push(Array(needC).fill(''));
+      grid.forEach((g, ri) => g.forEach((v, ci) => { b.rows[r0 + ri][c0 + ci] = v.trim(); }));
+      touch(key); rerenderEditor(key); focusCell(key, b.id, r0 + grid.length - 1, c0 + grid[grid.length - 1].length - 1);
+      toast(`표에 ${grid.length}행을 붙여넣었어요`);
+    } else document.execCommand('insertText', false, raw);
+    return;
+  }
   const el = e.target.closest && e.target.closest('.bk-text'); if (!el) return;
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
@@ -2001,6 +2062,7 @@ document.addEventListener('paste', e => {
 document.addEventListener('keydown', e => {
   const t = e.target;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); const q = $('#q'); if (q) { if (window.innerWidth < 860 && !ui.navOpen) { ui.navOpen = true; render(); } $('#q').focus(); } return; }
+  if (t.classList && t.classList.contains('tcell')) return onCellKey(e, t);
   if (t.classList && t.classList.contains('bk-text')) return onBlockKey(e, t);
   const typing = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); undo(); return; }
@@ -2027,6 +2089,28 @@ function commitNewFolder(v) {
   if (!v) { render(); return; }
   const f = { id: uid(), space: nf.space, name: v, parent: nf.parent, ord: Date.now() };
   mutate(() => { S.folders.push(f); if (nf.parent) ui.open[nf.parent] = true; }, `‘${v}’ 폴더를 만들었어요`);
+}
+function focusCell(key, bid, r, c) {
+  const el = document.querySelector(`[data-ed="${key}"] .tcell[data-bid="${bid}"][data-r="${r}"][data-c="${c}"]`); if (el) placeCaret(el, 'end');
+}
+function onCellKey(e, el) {
+  if (e.isComposing) return;
+  const key = el.closest('[data-ed]').dataset.ed; const { bl, i, b } = findBlock(key, el.dataset.bid); if (!b) return;
+  const r = +el.dataset.r, c = +el.dataset.c, R = b.rows.length, C = b.rows[0].length;
+  const addRow = () => { b.rows.push(Array(C).fill('')); };
+  const leave = () => { const nb = B('p', ''); bl.splice(i + 1, 0, nb); touch(key); rerenderEditor(key, nb.id, 0); };
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    let nr = r, nc = c + (e.shiftKey ? -1 : 1);
+    if (nc >= C) { nc = 0; nr++; } if (nc < 0) { nc = C - 1; nr--; }
+    if (nr < 0) return;
+    if (nr >= R) { addRow(); touch(key); rerenderEditor(key); }
+    focusCell(key, b.id, nr, nc); return;
+  }
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); leave(); return; }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (r + 1 >= R) { addRow(); touch(key); rerenderEditor(key); } focusCell(key, b.id, r + 1, c); return; }
+  if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); document.execCommand('insertLineBreak'); return; }
+  if (e.key === 'Escape') { e.preventDefault(); const nx = bl[i + 1]; if (nx && nx.type !== 'table' && nx.type !== 'divider' && nx.type !== 'image') rerenderEditor(key, nx.id, 0); else leave(); }
 }
 function onBlockKey(e, el) {
   const key = el.closest('[data-ed]').dataset.ed; const { bl, i, b } = findBlock(key, el.dataset.bid); if (!b) return;
@@ -2063,6 +2147,7 @@ function onBlockKey(e, el) {
     if ((b.indent || 0) > 0) { e.preventDefault(); b.indent--; touch(key); rerenderEditor(key, b.id, 0); return; }
     if (i > 0) {
       e.preventDefault(); const prev = bl[i - 1];
+      if (prev.type === 'table') { const rr = prev.rows.length - 1, cc = prev.rows[0].length - 1; if (!b.text) { bl.splice(i, 1); touch(key); rerenderEditor(key); } focusCell(key, prev.id, rr, cc); return; }
       if (['divider', 'image'].includes(prev.type)) { bl.splice(i - 1, 1); touch(key); rerenderEditor(key, b.id, 0); return; }
       const p = prev.text.length; prev.text += b.text; bl.splice(i, 1); touch(key); rerenderEditor(key, prev.id, p); return;
     }
