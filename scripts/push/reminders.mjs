@@ -17,7 +17,7 @@ export function zoned(y, mo, d, h, mi, tz) {
 }
 
 export function fireTime(it, settings, tz) {
-  if (!it || !it.date || it.done) return null;
+  if (!it || !it.date || it.done || it.cancel) return null;
   const st = { ...DEFAULTS, ...(settings || {}) };
   const r = it.remind || '';
   if (r === 'off') return null;
