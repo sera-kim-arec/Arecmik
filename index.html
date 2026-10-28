@@ -570,6 +570,15 @@ code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospa
 .links-list .mention{font-size:12.5px;line-height:1.9}
 .mpick .mp-h{font-size:11.5px;font-weight:700;color:var(--muted);padding:4px 8px 6px}
 .mpick button{height:auto;min-height:40px;padding:5px 8px}
+.dlg-body .links{border-top:0;margin-top:2px;padding-top:6px}
+.mention .unlink{margin-left:4px;opacity:.45;font-size:10px;padding:0 2px;border-radius:4px}
+.mention .unlink:hover{opacity:1;background:rgba(0,0,0,.08)}
+.links.panel{width:100%;box-sizing:border-box;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:4px 0 14px;padding:10px 12px;border:0;border-radius:12px;background:var(--sunken)}
+.links-pill{cursor:pointer;color:var(--faint);gap:4px}
+.links-pill.has{color:var(--fg2)}
+.links-pill.on{background:var(--blue-soft);color:var(--blue-ink)}
+.links-pill svg{width:14px;height:14px}
+.links-pill .caret{font-size:10px;margin-left:2px}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1322,10 +1331,10 @@ function vDoc(d) {
   const p = d.projectId && proj(d.projectId);
   return `${topbar(crumbs('노트', d.folder, 'nfolder', d.title || '제목 없음'), `<span class="hint">${ago(d.updated)}</span><button class="btn sm ${ui.confirm === 'doc:' + d.id ? 'warn' : 'ghost danger'}" data-act="deldoc" data-id="${d.id}">${ui.confirm === 'doc:' + d.id ? '한 번 더 누르면 삭제' : '삭제'}</button>`)}
   <article class="doc">
-    <div class="meta-row"><label class="pill">${I.proj}<select data-df="projectId" aria-label="연결할 프로젝트"><option value="">프로젝트 연결 안 함</option>${S.projects.map(x => `<option value="${x.id}" ${x.id === d.projectId ? 'selected' : ''}>${esc(x.title)}</option>`).join('')}</select></label>${p ? `<button class="tag ${pcls(p)}" style="border:0;cursor:pointer;height:24px" data-act="open" data-kind="project" data-id="${p.id}">프로젝트 열기</button>` : ''}</div>
+    <div class="meta-row"><label class="pill">${I.proj}<select data-df="projectId" aria-label="연결할 프로젝트"><option value="">프로젝트 연결 안 함</option>${S.projects.map(x => `<option value="${x.id}" ${x.id === d.projectId ? 'selected' : ''}>${esc(x.title)}</option>`).join('')}</select></label>${p ? `<button class="tag ${pcls(p)}" style="border:0;cursor:pointer;height:24px" data-act="open" data-kind="project" data-id="${p.id}">프로젝트 열기</button>` : ''}${linksPill('doc:' + d.id)}</div>
     <input class="doc-title" id="doc-title" data-df="title" value="${esc(d.title)}" placeholder="제목 없음" aria-label="노트 제목">
+    ${ui.linksOpen === 'doc:' + d.id ? linksHTML('doc:' + d.id, 'doc:' + d.id, true) : ''}
     ${editorHTML('doc:' + d.id)}
-    ${linksHTML('doc:' + d.id, 'doc:' + d.id)}
   </article>`;
 }
 function vFolderPage(space, fid) {
@@ -1423,10 +1432,10 @@ function vPost(p) {
       <span class="grow"></span>
       <label class="chk-lbl glass"><input type="checkbox" id="cover-cal" data-pf="coverOnCal" ${p.coverOnCal ? 'checked' : ''}>달력 대표 이미지</label>
     </div></div>
-    <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label></div>
+    <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}</div>
     <input class="doc-title" id="post-title" data-pf="title" value="${esc(p.title)}" placeholder="제목" aria-label="글 제목">
+    ${ui.linksOpen === 'post:' + p.id ? linksHTML('post:' + p.id, 'post:' + p.id, true) : ''}
     ${editorHTML('post:' + p.id)}
-    ${linksHTML('post:' + p.id, 'post:' + p.id)}
   </article>`;
 }
 
@@ -1536,7 +1545,7 @@ function dlgItem(it) {
       ${it.date ? `<label for="f-remind">알림</label><div class="frow"><select id="f-remind" class="inp" data-f="remind">${remindOptions(it)}</select>${!notifyOn() ? '<button class="btn sm ghost" data-act="settings">알림 켜기</button>' : fireTime(it) != null ? `<span class="hint">${new Date(fireTime(it)).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })}에 알려드려요</span>` : ''}</div>` : ''}
       <label for="f-proj">프로젝트</label><div class="frow"><select id="f-proj" class="inp" data-f="projectId">${projOptions(it.projectId)}</select>${it.projectId && proj(it.projectId) ? `<button class="btn sm ghost" data-act="toproj" data-id="${it.projectId}">프로젝트 보기</button>` : ''}</div>
     </div></div>
-  <div class="dlg-body">${it.parentId ? '' : subsHTML(it)}<div class="lbl" style="padding-top:${it.parentId ? 0 : 14}px">메모</div>${editorHTML('item:' + it.id)}${linksHTML('item:' + it.id, 'item:' + it.id)}</div></div>`;
+  <div class="dlg-body">${it.parentId ? '' : subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
 }
 function remindOptions(it) {
   const st = settingsOf(); const r = it.remind || '';
@@ -1574,7 +1583,7 @@ function dlgProject(p) {
       <div><div class="lbl" style="padding-top:0">일정</div><div class="plist">${evs.map(row).join('') || '<div class="empty">연결된 일정이 없어요</div>'}</div>
         <div class="lbl">노트</div><div class="plist">${ds.map(d => `<div class="prow">${I.note}<button class="tlink" data-act="opendoc" data-id="${d.id}"><span>${esc(d.title || '제목 없음')}</span></button><span class="sub">${esc((folder(d.folder) || {}).name || '')}</span></div>`).join('') || '<div class="empty">노트에서 이 프로젝트를 연결하면 여기에 모여요</div>'}</div></div>
     </div>
-    <div class="lbl">프로젝트 메모</div>${editorHTML('project:' + p.id)}${linksHTML('project:' + p.id, 'project:' + p.id)}
+    ${linksHTML('project:' + p.id, 'project:' + p.id)}<div class="lbl" style="padding-top:14px">프로젝트 메모</div>${editorHTML('project:' + p.id)}
   </div></div>`;
 }
 function dlgSettings() {
@@ -2000,6 +2009,8 @@ const ACT = {
   tcoldel: t => tableEdit(t, b => { if (b.rows[0].length > 1) b.rows.forEach(r => r.pop()); return [0, b.rows[0].length - 1]; }),
   mpick: t => pickMention(+t.dataset.i),
   mopen: (t, e) => { e.preventDefault(); openRef(t.dataset.ref); },
+  unlink: (t, e) => { e.stopPropagation(); const [k, id] = t.dataset.key.split(':'); const ent = refTarget(k, id); if (!ent) return; mutate(() => { ent.links = (ent.links || []).filter(r => r !== t.dataset.ref); }, '연결을 끊었어요'); },
+  linkstog: t => { ui.linksOpen = ui.linksOpen === t.dataset.ref ? null : t.dataset.ref; render(); },
   linkpick: t => { mention = { key: t.dataset.key, bid: '', q: '', idx: 0, anchor: t }; drawMention(); },
   bcopy: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; const done = () => toast('코드를 복사했어요'); if (navigator.clipboard) navigator.clipboard.writeText(b.text).then(done).catch(() => toast('복사하지 못했어요. 직접 선택해서 복사해 주세요')); },
   bdel: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const i = bl.findIndex(b => b.id === t.dataset.bid); if (i >= 0) bl.splice(i, 1); touch(key); rerenderEditor(key); },
@@ -2119,10 +2130,11 @@ function tokenFor(o) { return `@[${(o.title || '제목 없음').replace(/[\[\]]/
 function pickMention(i) {
   const m = mention; const o = m && m.opts && m.opts[i]; if (!o) return;
   closeMention();
-  if (m.anchor) { // "노트 연결" button: add a line with the link to this editor
-    const bl = edBlocks(m.key); const last = bl[bl.length - 1];
-    if (last && last.type === 'p' && !last.text) last.text = tokenFor(o) + ' '; else bl.push(B('p', tokenFor(o) + ' '));
-    touch(m.key); renderModal(); render(); toast(`‘${o.title}’과 연결했어요`); return;
+  if (m.anchor) { // "노트·항목 연결" button: keep the link on the entity, not in its text
+    const [k, id] = m.key.split(':'); const ent = refTarget(k, id); if (!ent) return;
+    const ref = o.kind + ':' + o.id;
+    if ((ent.links || []).includes(ref)) { toast('이미 연결돼 있어요'); return; }
+    mutate(() => { ent.links = [...(ent.links || []), ref]; }, `‘${o.title}’과 연결했어요`); return;
   }
   const el = document.querySelector(`[data-ed="${m.key}"] .bk-text[data-bid="${m.bid}"]`); if (!el) return;
   placeCaret(el, m.at); const sel = getSelection();
@@ -2145,18 +2157,40 @@ function openRef(ref) {
 }
 function backlinks(ref) {
   const needle = '](' + ref + ')'; const out = [];
-  const has = bl => (bl || []).some(b => (b.text || '').includes(needle) || (b.rows || []).some(r => r.some(c => (c || '').includes(needle))));
-  S.items.forEach(x => { if (has(x.memo)) out.push({ ref: 'item:' + x.id, title: x.title || '제목 없음', sub: x.kind === 'event' ? '일정' : '할일' }); });
-  S.projects.forEach(x => { if (has(x.memo)) out.push({ ref: 'project:' + x.id, title: x.title, sub: '프로젝트' }); });
-  S.docs.forEach(x => { if (has(x.blocks)) out.push({ ref: 'doc:' + x.id, title: x.title || '제목 없음', sub: '노트' }); });
-  S.posts.forEach(x => { if (has(x.blocks)) out.push({ ref: 'post:' + x.id, title: x.title || '제목 없음', sub: 'LIFE 글' }); });
-  if (has(S.memo)) out.push({ ref: '', title: '상시 메모', sub: '캘린더 오른쪽 패널' });
+  const hasB = bl => (bl || []).some(b => (b.text || '').includes(needle) || (b.rows || []).some(r => r.some(c => (c || '').includes(needle))));
+  let cur = null; const has = bl => hasB(bl) || !!(cur && (cur.links || []).includes(ref));
+  const each = (arr, fn) => arr.forEach(x => { cur = x; fn(x); }); cur = null;
+  each(S.items, x => { if (has(x.memo)) out.push({ ref: 'item:' + x.id, title: x.title || '제목 없음', sub: x.kind === 'event' ? '일정' : '할일' }); });
+  each(S.projects, x => { if (has(x.memo)) out.push({ ref: 'project:' + x.id, title: x.title, sub: '프로젝트' }); });
+  each(S.docs, x => { if (has(x.blocks)) out.push({ ref: 'doc:' + x.id, title: x.title || '제목 없음', sub: '노트' }); });
+  each(S.posts, x => { if (has(x.blocks)) out.push({ ref: 'post:' + x.id, title: x.title || '제목 없음', sub: 'LIFE 글' }); });
+  cur = null; if (has(S.memo)) out.push({ ref: '', title: '상시 메모', sub: '캘린더 오른쪽 패널' });
   return out.filter(x => x.ref !== ref);
 }
-function linksHTML(ref, key) {
-  const bl = backlinks(ref);
-  return `<div class="links"><div class="links-h"><span class="lbl" style="padding:0">연결 ${bl.length ? bl.length : ''}</span>${key ? `<button class="btn sm ghost" data-act="linkpick" data-key="${key}">${I.plus}노트·항목 연결</button>` : ''}</div>
-  ${bl.length ? `<div class="links-list">${bl.map(x => `<button class="mention m-${x.ref.split(':')[0]}" ${x.ref ? `data-act="mopen" data-ref="${x.ref}"` : 'data-act="go" data-view="work"'}>${KIND_ICON[x.ref.split(':')[0]] || '◎'} ${esc(x.title)} <span class="muted" style="font-weight:400">· ${esc(x.sub)}에서 언급</span></button>`).join('')}</div>` : `<p class="hint" style="margin:2px 2px 0">글에서 @를 입력하면 일정·할일·노트를 연결할 수 있어요.</p>`}</div>`;
+function outlinks(key) {
+  const out = []; const seen = new Set();
+  const scan = t => { MREG.lastIndex = 0; let m; while ((m = MREG.exec(t || ''))) { const ref = m[2] + ':' + m[3]; if (seen.has(ref)) continue; seen.add(ref); const o = refTarget(m[2], m[3]); out.push({ ref, title: o ? (o.title || '제목 없음') : m[1], gone: !o, out: true }); } };
+  (edBlocks(key) || []).forEach(b => { scan(b.text); (b.rows || []).forEach(r => r.forEach(scan)); });
+  const [k, id] = key.split(':'); const ent = refTarget(k, id);
+  ((ent && ent.links) || []).forEach(ref => { if (seen.has(ref)) return; seen.add(ref); const [rk, rid] = ref.split(':'); const o = refTarget(rk, rid); out.push({ ref, title: o ? (o.title || '제목 없음') : '지워진 항목', gone: !o, out: true, manual: true }); });
+  return out;
+}
+function allLinks(ref) {
+  const outs = outlinks(ref); const ins = backlinks(ref).filter(x => !outs.some(o => o.ref === x.ref && x.ref));
+  return [...outs, ...ins];
+}
+function linksPill(ref) {
+  const n = allLinks(ref).length; const on = ui.linksOpen === ref;
+  return `<button class="pill links-pill ${n ? 'has' : ''} ${on ? 'on' : ''}" data-act="linkstog" data-ref="${ref}" aria-expanded="${on}">${I.link}연결${n ? ' ' + n : ''}<span class="caret">${on ? '▴' : '▾'}</span></button>`;
+}
+function linkCls(x) { const k = x.ref.split(':')[0]; if (k === 'item') { const o = item(x.ref.split(':')[1]); return o ? (o.kind === 'event' ? 'ev' : 'td') : 'item'; } return k; }
+function linksHTML(ref, key, panel) {
+  const bl = allLinks(ref);
+  const add = key ? `<button class="btn sm ghost" data-act="linkpick" data-key="${key}">${I.plus}노트·항목 연결</button>` : '';
+  const chips = bl.map(x => `<button class="mention m-${linkCls(x)} ${x.gone ? 'gone' : ''}" ${x.ref ? `data-act="mopen" data-ref="${x.ref}"` : 'data-act="go" data-view="work"'} title="${x.out ? '이 글에서 연결함' : esc(x.sub) + '에서 이 글을 언급함'}">${KIND_ICON[x.ref.split(':')[0]] || '◎'} ${esc(x.title)}${x.out ? '' : ` <span class="muted" style="font-weight:400">· ${esc(x.sub)}에서 언급</span>`}${x.manual ? `<span class="unlink" data-act="unlink" data-key="${ref}" data-ref="${x.ref}" title="연결 끊기" aria-label="연결 끊기">✕</span>` : ''}</button>`).join('');
+  if (panel) return `<div class="links panel">${bl.length ? `<div class="links-list">${chips}</div>` : '<p class="hint" style="margin:0">아직 연결된 게 없어요. 본문에서 @를 입력해도 연결돼요.</p>'}<div>${add}</div></div>`;
+  return `<div class="links"><div class="links-h"><span class="lbl" style="padding:0">연결 ${bl.length || ''}</span>${add}</div>
+  ${bl.length ? `<div class="links-list">${chips}</div>` : `<p class="hint" style="margin:2px 2px 0">메모에서 @를 입력해도 일정·할일·노트를 연결할 수 있어요.</p>`}</div>`;
 }
 function onBlockInput(el) {
   const key = el.closest('[data-ed]').dataset.ed; const { bl, b } = findBlock(key, el.dataset.bid); if (!b) return;
