@@ -557,6 +557,19 @@ code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospa
 .tbl-tools button:disabled{opacity:.4;cursor:default}
 .tbl-hint{font-size:11.5px;color:var(--faint);margin-right:6px}
 @media (hover:none){ .tbl-tools{opacity:1} .tbl-hint{display:none} }
+/* ---- mentions & links ---- */
+.mention{display:inline-flex;align-items:center;gap:3px;max-width:100%;vertical-align:baseline;border:0;border-radius:7px;padding:0 7px;margin:0 1px;font-size:.92em;font-weight:600;line-height:1.6;background:var(--blue-soft);color:var(--blue-ink);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:none}
+.mention:hover{filter:brightness(.97);text-decoration:underline;text-underline-offset:2px}
+.mention.m-td{background:var(--green-soft);color:var(--green-ink)}
+.mention.m-doc,.mention.m-post{background:var(--sunken);color:var(--fg2)}
+.mention.m-project{background:var(--lemon-soft);color:var(--lemon-ink)}
+.mention.gone{background:var(--sunken);color:var(--faint);text-decoration:line-through}
+.links{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:6px}
+.links-h{display:flex;align-items:center;justify-content:space-between}
+.links-list{display:flex;flex-wrap:wrap;gap:6px}
+.links-list .mention{font-size:12.5px;line-height:1.9}
+.mpick .mp-h{font-size:11.5px;font-weight:700;color:var(--muted);padding:4px 8px 6px}
+.mpick button{height:auto;min-height:40px;padding:5px 8px}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1012,7 +1025,7 @@ const folder = id => S.folders.find(x => x.id === id);
 const projEnd = p => p.done || p.end || (TODAY >= p.start ? TODAY : p.start);
 const projStatus = p => p.done ? `완료 · ${fmtShort(p.done)}` : p.end ? (TODAY > p.end ? '기한 지남' : `진행 중 · ${fmtShort(p.end)}까지`) : '상시 진행';
 const pcls = p => `c-${p ? p.color : 'blue'}`;
-const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'link'); return b ? b.text : ''; };
+const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'link'); return b ? plainText(b.text) : ''; };
 const coverStyle = c => c && c.img ? `background-image:url('${c.img}')` : c ? `background-color:${c.tone}` : '';
 
 /* ---------- ui state ---------- */
@@ -1165,7 +1178,7 @@ function vWork() {
   else body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map(x => `<span>${x}</span>`).join('')}</div>${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
-const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image').map(b => b.text).filter(Boolean).join(' · ');
+const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image' && b.type !== 'table').map(b => plainText(b.text)).filter(Boolean).join(' · ');
 function weekLogHTML(ws) {
   const days = [...Array(7)].map((_, i) => addDays(ws, i));
   let nDone = 0, nEv = 0, nMemo = 0; const pids = new Set();
@@ -1312,6 +1325,7 @@ function vDoc(d) {
     <div class="meta-row"><label class="pill">${I.proj}<select data-df="projectId" aria-label="연결할 프로젝트"><option value="">프로젝트 연결 안 함</option>${S.projects.map(x => `<option value="${x.id}" ${x.id === d.projectId ? 'selected' : ''}>${esc(x.title)}</option>`).join('')}</select></label>${p ? `<button class="tag ${pcls(p)}" style="border:0;cursor:pointer;height:24px" data-act="open" data-kind="project" data-id="${p.id}">프로젝트 열기</button>` : ''}</div>
     <input class="doc-title" id="doc-title" data-df="title" value="${esc(d.title)}" placeholder="제목 없음" aria-label="노트 제목">
     ${editorHTML('doc:' + d.id)}
+    ${linksHTML('doc:' + d.id, 'doc:' + d.id)}
   </article>`;
 }
 function vFolderPage(space, fid) {
@@ -1412,6 +1426,7 @@ function vPost(p) {
     <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label></div>
     <input class="doc-title" id="post-title" data-pf="title" value="${esc(p.title)}" placeholder="제목" aria-label="글 제목">
     ${editorHTML('post:' + p.id)}
+    ${linksHTML('post:' + p.id, 'post:' + p.id)}
   </article>`;
 }
 
@@ -1520,7 +1535,7 @@ function dlgItem(it) {
       ${it.date ? `<label for="f-remind">알림</label><div class="frow"><select id="f-remind" class="inp" data-f="remind">${remindOptions(it)}</select>${!notifyOn() ? '<button class="btn sm ghost" data-act="settings">알림 켜기</button>' : fireTime(it) != null ? `<span class="hint">${new Date(fireTime(it)).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })}에 알려드려요</span>` : ''}</div>` : ''}
       <label for="f-proj">프로젝트</label><div class="frow"><select id="f-proj" class="inp" data-f="projectId">${projOptions(it.projectId)}</select>${it.projectId && proj(it.projectId) ? `<button class="btn sm ghost" data-act="toproj" data-id="${it.projectId}">프로젝트 보기</button>` : ''}</div>
     </div></div>
-  <div class="dlg-body">${it.parentId ? '' : subsHTML(it)}<div class="lbl" style="padding-top:${it.parentId ? 0 : 14}px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
+  <div class="dlg-body">${it.parentId ? '' : subsHTML(it)}<div class="lbl" style="padding-top:${it.parentId ? 0 : 14}px">메모</div>${editorHTML('item:' + it.id)}${linksHTML('item:' + it.id, 'item:' + it.id)}</div></div>`;
 }
 function remindOptions(it) {
   const st = settingsOf(); const r = it.remind || '';
@@ -1558,7 +1573,7 @@ function dlgProject(p) {
       <div><div class="lbl" style="padding-top:0">일정</div><div class="plist">${evs.map(row).join('') || '<div class="empty">연결된 일정이 없어요</div>'}</div>
         <div class="lbl">노트</div><div class="plist">${ds.map(d => `<div class="prow">${I.note}<button class="tlink" data-act="opendoc" data-id="${d.id}"><span>${esc(d.title || '제목 없음')}</span></button><span class="sub">${esc((folder(d.folder) || {}).name || '')}</span></div>`).join('') || '<div class="empty">노트에서 이 프로젝트를 연결하면 여기에 모여요</div>'}</div></div>
     </div>
-    <div class="lbl">프로젝트 메모</div>${editorHTML('project:' + p.id)}
+    <div class="lbl">프로젝트 메모</div>${editorHTML('project:' + p.id)}${linksHTML('project:' + p.id, 'project:' + p.id)}
   </div></div>`;
 }
 function dlgSettings() {
@@ -1623,7 +1638,19 @@ function edBlocks(key) {
   return o[prop];
 }
 function touch(key) { const [k, id] = key.split(':'); if (k === 'doc' && doc(id)) doc(id).updated = Date.now(); save(); }
-const inl = t => esc(t).replace(/`([^`\n]+)`/g, '<code class="ic">`$1`</code>');
+const KIND_ICON = { item: '◷', doc: '▤', post: '✎', project: '▦', citem: '★' };
+function refTarget(kind, id) { return kind === 'item' ? item(id) : kind === 'doc' ? doc(id) : kind === 'post' ? post(id) : kind === 'project' ? proj(id) : kind === 'citem' ? citem(id) : null; }
+function chipHTML2(tok, label, kind, id) {
+  const o = refTarget(kind, id); const k = kind === 'item' && o ? (o.kind === 'event' ? 'ev' : 'td') : kind;
+  const name = o ? (o.title || '제목 없음') : label;
+  return `<span class="mention m-${k} ${o ? '' : 'gone'}" contenteditable="false" data-tok="${esc(tok)}" data-act="mopen" data-ref="${kind}:${id}" title="${o ? '눌러서 열기' : '지워진 항목'}">${KIND_ICON[kind] || '@'} ${esc(name)}</span>`;
+}
+const inlCode = t => esc(t).replace(/`([^`\n]+)`/g, '<code class="ic">`$1`</code>');
+function inl(t) {
+  t = String(t || ''); let out = '', last = 0; MREG.lastIndex = 0; let m;
+  while ((m = MREG.exec(t))) { out += inlCode(t.slice(last, m.index)) + chipHTML2(m[0], m[1], m[2], m[3]); last = m.index + m[0].length; }
+  return out + inlCode(t.slice(last));
+}
 const PH = { p: '/ 블록 추가 · Tab 하위 항목', h: '제목', todo: '할일', bullet: '목록', num: '번호 목록', quote: '인용', callout: '강조할 내용', link: '링크 주소를 붙여넣으세요' };
 function editorHTML(key, small) {
   const bl = edBlocks(key); if (!bl) return '';
@@ -1664,17 +1691,53 @@ function rerenderEditor(key, bid, pos) {
   el.outerHTML = editorHTML(key, small);
   if (bid) { const t = document.querySelector(`[data-ed="${key}"] .bk-text[data-bid="${bid}"]`); if (t) placeCaret(t, pos); }
 }
+const MREG = /@\[([^\]]*)\]\((item|doc|post|project|citem):([A-Za-z0-9_-]+)\)/g;
+const plainText = t => String(t || '').replace(MREG, '@$1');
+function serNode(n) {
+  if (n.nodeType === 3) return n.nodeValue;
+  if (n.nodeType !== 1) return '';
+  if (n.classList.contains('mention')) return n.dataset.tok || '';
+  if (n.nodeName === 'BR') return '\n';
+  let out = ''; n.childNodes.forEach(c => { out += serNode(c); });
+  if (n.nodeName === 'DIV' && n.previousSibling) out = '\n' + out;
+  return out;
+}
+function serText(el) { let out = ''; el.childNodes.forEach(c => { out += serNode(c); }); return out.replace(/\n$/, ''); }
 function caretOffset(el) {
   const s = getSelection(); if (!s.rangeCount) return 0;
-  const r = s.getRangeAt(0); const pre = r.cloneRange(); pre.selectNodeContents(el); pre.setEnd(r.endContainer, r.endOffset);
-  return pre.toString().length;
+  const r = s.getRangeAt(0); const ec = r.endContainer, eo = r.endOffset;
+  if (ec === el) { let c = 0; for (let k = 0; k < eo; k++) c += serNode(el.childNodes[k]).length; return c; }
+  let count = 0, done = false;
+  const walk = n => {
+    if (done) return;
+    if (n === ec) {
+      if (n.nodeType === 3) count += eo; else for (let k = 0; k < eo; k++) count += serNode(n.childNodes[k]).length;
+      done = true; return;
+    }
+    if (n.nodeType === 3) { count += n.nodeValue.length; return; }
+    if (n.nodeType !== 1) return;
+    if (n.classList.contains('mention')) { count += (n.dataset.tok || '').length; if (n.contains(ec)) done = true; return; }
+    if (n.nodeName === 'BR') { count += 1; return; }
+    if (n.nodeName === 'DIV' && n.previousSibling) count += 1;
+    for (const c of n.childNodes) { walk(c); if (done) return; }
+  };
+  for (const c of el.childNodes) { walk(c); if (done) break; }
+  return count;
 }
 function placeCaret(el, pos) {
-  el.focus(); const s = getSelection(); const r = document.createRange();
+  el.focus({ preventScroll: true }); const s = getSelection(); const r = document.createRange();
   if (pos === 'end' || pos == null) { r.selectNodeContents(el); r.collapse(false); }
   else {
-    let rem = pos, done = false; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let t;
-    while ((t = w.nextNode())) { if (rem <= t.length) { r.setStart(t, rem); done = true; break; } rem -= t.length; }
+    let rem = pos, done = false;
+    const walk = n => {
+      if (done) return;
+      if (n.nodeType === 3) { if (rem <= n.nodeValue.length) { r.setStart(n, rem); done = true; } else rem -= n.nodeValue.length; return; }
+      if (n.nodeType !== 1) return;
+      if (n.classList.contains('mention')) { const L = (n.dataset.tok || '').length; if (rem < L || rem === 0) { r.setStartBefore(n); done = true; } else if (rem === L) { r.setStartAfter(n); done = true; } else rem -= L; return; }
+      if (n.nodeName === 'BR') { if (rem === 0) { r.setStartBefore(n); done = true; } else rem -= 1; return; }
+      for (const c of n.childNodes) { walk(c); if (done) return; }
+    };
+    for (const c of el.childNodes) { walk(c); if (done) break; }
     if (!done) { r.selectNodeContents(el); r.collapse(false); } else r.collapse(true);
   }
   s.removeAllRanges(); s.addRange(r);
@@ -1926,6 +1989,9 @@ const ACT = {
   tcol: t => tableEdit(t, b => { b.rows.forEach(r => r.push('')); return [0, b.rows[0].length - 1]; }),
   trowdel: t => tableEdit(t, b => { if (b.rows.length > 1) b.rows.pop(); return [b.rows.length - 1, 0]; }),
   tcoldel: t => tableEdit(t, b => { if (b.rows[0].length > 1) b.rows.forEach(r => r.pop()); return [0, b.rows[0].length - 1]; }),
+  mpick: t => pickMention(+t.dataset.i),
+  mopen: (t, e) => { e.preventDefault(); openRef(t.dataset.ref); },
+  linkpick: t => { mention = { key: t.dataset.key, bid: '', q: '', idx: 0, anchor: t }; drawMention(); },
   bcopy: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; const done = () => toast('코드를 복사했어요'); if (navigator.clipboard) navigator.clipboard.writeText(b.text).then(done).catch(() => toast('복사하지 못했어요. 직접 선택해서 복사해 주세요')); },
   bdel: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const i = bl.findIndex(b => b.id === t.dataset.bid); if (i >= 0) bl.splice(i, 1); touch(key); rerenderEditor(key); },
   pickimg: t => { pendingImg = { key: t.closest('[data-ed]').dataset.ed, bid: t.dataset.bid }; $('#blk-file').click(); }
@@ -1946,6 +2012,7 @@ document.addEventListener('click', e => {
   if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); return; }
   if (!e.target.closest('.sres') && !e.target.closest('.search')) closeSearch(true);
   if (slash && !e.target.closest('.slash') && !e.target.closest('.bk-text')) closeSlash();
+  if (mention && !e.target.closest('.mpick') && !e.target.closest('.bk-text') && !e.target.closest('[data-act="linkpick"]')) closeMention();
   const t = e.target.closest('[data-act]'); if (!t) return;
   const fn = ACT[t.dataset.act]; if (!fn) return;
   if (t.tagName === 'A') e.preventDefault();
@@ -1956,6 +2023,7 @@ pop.addEventListener('mousedown', e => { if (e.target.closest('.slash')) e.preve
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'q') { ui.search = t.value; drawSearch(); return; }
+  if (t.id === 'mp-q' && mention) { mention.q = t.value; mention.idx = 0; drawMention(); return; }
   if (t.classList.contains('tcell')) { autoArrow(t); const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (b && b.rows) { b.rows[+t.dataset.r][+t.dataset.c] = t.innerText.replace(/\n$/, ''); touch(key); } return; }
   if (t.classList.contains('bk-text')) { if (!t.classList.contains('code-text')) autoArrow(t); return onBlockInput(t); }
   if (t.dataset.f !== undefined && t.dataset.f === 'title') { const m = ui.modal; const o = modalTarget(); if (o) { o.title = t.value; save(); render(); } return; }
@@ -2005,7 +2073,7 @@ document.addEventListener('change', e => {
 /* -> becomes →, <- becomes ←, <-> becomes ↔ (not inside `code`) */
 function autoArrow(el) {
   const sel = getSelection(); if (!sel.rangeCount || !sel.getRangeAt(0).collapsed) return;
-  const pos = caretOffset(el); const text = el.innerText; const before = text.slice(0, pos);
+  const pos = caretOffset(el); const text = serText(el); const before = text.slice(0, pos);
   if (((before.match(/`/g) || []).length) % 2 === 1) return;
   let n = 0, out = '';
   if (before.endsWith('->')) { n = 2; out = '→'; }
@@ -2015,19 +2083,90 @@ function autoArrow(el) {
   for (let k = 0; k < n; k++) sel.modify('extend', 'backward', 'character');
   document.execCommand('insertText', false, out);
 }
+/* @ mentions */
+let mention = null;
+function mentionCandidates(q, selfRef) {
+  q = (q || '').toLowerCase(); const out = [];
+  const add = (kind, o, sub) => { const ref = kind + ':' + o.id; if (ref === selfRef) return; const t = o.title || ''; if (q && !t.toLowerCase().includes(q)) return; out.push({ kind, id: o.id, title: t || '제목 없음', sub, o }); };
+  S.items.slice().sort((a, b) => (a.done - b.done) || (b.date || '').localeCompare(a.date || '')).forEach(it => add('item', it, `${it.kind === 'event' ? '일정' : '할일'}${it.date ? ' · ' + fmtShort(it.date) : ''}${it.done ? ' · 완료' : ''}`));
+  S.docs.forEach(d => add('doc', d, '노트 · ' + ((folder(d.folder) || {}).name || '')));
+  S.projects.forEach(p => add('project', p, '프로젝트'));
+  S.posts.forEach(p => add('post', p, 'LIFE 글 · ' + fmtDot(p.date)));
+  return out.slice(0, 8);
+}
+function editorSelfRef(key) { const [k, id] = key.split(':'); return k === 'doc' || k === 'post' || k === 'item' || k === 'project' ? k + ':' + id : ''; }
+function drawMention() {
+  if (!mention) return;
+  const opts = mentionCandidates(mention.q, editorSelfRef(mention.key)); mention.opts = opts; mention.idx = Math.min(mention.idx, Math.max(0, opts.length - 1));
+  let r = mention.anchor ? mention.anchor.getBoundingClientRect() : caretRect();
+  if (!r) { const el = document.querySelector(`[data-ed="${mention.key}"] .bk-text[data-bid="${mention.bid}"]`); r = el && el.getBoundingClientRect(); }
+  if (!r) return;
+  const top = Math.min(r.bottom + 6, window.innerHeight - 330), left = Math.min(r.left, window.innerWidth - 300);
+  pop.innerHTML = `<div class="slash mpick" role="listbox" aria-label="연결할 항목" style="top:${Math.max(8, top)}px;left:${Math.max(8, left)}px;width:290px"><div class="mp-h">${mention.anchor ? '연결할 노트·항목 찾기' : '연결할 항목'}</div>${mention.anchor ? `<input id="mp-q" class="inp" style="width:100%;box-sizing:border-box;margin-bottom:6px" placeholder="제목으로 찾기" value="${esc(mention.q)}" autocomplete="off">` : ''}${opts.map((o, i) => `<button role="option" class="${i === mention.idx ? 'on' : ''}" data-act="mpick" data-i="${i}"><span class="si">${KIND_ICON[o.kind]}</span><span style="display:flex;flex-direction:column;min-width:0;line-height:1.3"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.title)}</span><span class="sk" style="margin:0">${esc(o.sub)}</span></span></button>`).join('') || '<div class="empty" style="padding:8px 10px">찾는 항목이 없어요</div>'}</div>`;
+  const qi = document.getElementById('mp-q'); if (qi && document.activeElement !== qi) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
+}
+function closeMention() { if (mention) { mention = null; pop.innerHTML = ''; } }
+function tokenFor(o) { return `@[${(o.title || '제목 없음').replace(/[\[\]]/g, '')}](${o.kind}:${o.id})`; }
+function pickMention(i) {
+  const m = mention; const o = m && m.opts && m.opts[i]; if (!o) return;
+  closeMention();
+  if (m.anchor) { // "노트 연결" button: add a line with the link to this editor
+    const bl = edBlocks(m.key); const last = bl[bl.length - 1];
+    if (last && last.type === 'p' && !last.text) last.text = tokenFor(o) + ' '; else bl.push(B('p', tokenFor(o) + ' '));
+    touch(m.key); renderModal(); render(); toast(`‘${o.title}’과 연결했어요`); return;
+  }
+  const el = document.querySelector(`[data-ed="${m.key}"] .bk-text[data-bid="${m.bid}"]`); if (!el) return;
+  placeCaret(el, m.at); const sel = getSelection();
+  for (let k = 0; k < m.q.length + 1; k++) sel.modify('extend', 'backward', 'character');
+  document.execCommand('insertText', false, tokenFor(o) + ' ');
+  const { b } = findBlock(m.key, m.bid); if (!b) return;
+  b.text = serText(el); const pos = caretOffset(el); touch(m.key); rerenderEditor(m.key, b.id, pos);
+}
+function openRef(ref) {
+  const [kind, id] = ref.split(':'); const o = refTarget(kind, id);
+  if (!o) { toast('지워진 항목이에요'); return; }
+  closeMention();
+  if (kind === 'item' || kind === 'project' || kind === 'citem') {
+    const cur = ui.modal; ui.modalBack = cur && cur.kind !== 'quick' && cur.kind !== 'settings' ? { kind: cur.kind, id: cur.id, label: (modalTarget() || {}).title || '뒤로' } : null;
+    ui.modal = { kind, id }; renderModal(); return;
+  }
+  if (ui.modal) { ui.modal = null; ui.modalBack = null; renderModal(); }
+  if (kind === 'doc') { ui.noteDoc = id; ui.noteFolder = o.folder; folderPath(o.folder).forEach(f => { ui.open[f.id] = true; }); go('notes'); }
+  else if (kind === 'post') { ui.postId = id; ui.lifeFolder = o.folder; go('posts'); }
+}
+function backlinks(ref) {
+  const needle = '](' + ref + ')'; const out = [];
+  const has = bl => (bl || []).some(b => (b.text || '').includes(needle) || (b.rows || []).some(r => r.some(c => (c || '').includes(needle))));
+  S.items.forEach(x => { if (has(x.memo)) out.push({ ref: 'item:' + x.id, title: x.title || '제목 없음', sub: x.kind === 'event' ? '일정' : '할일' }); });
+  S.projects.forEach(x => { if (has(x.memo)) out.push({ ref: 'project:' + x.id, title: x.title, sub: '프로젝트' }); });
+  S.docs.forEach(x => { if (has(x.blocks)) out.push({ ref: 'doc:' + x.id, title: x.title || '제목 없음', sub: '노트' }); });
+  S.posts.forEach(x => { if (has(x.blocks)) out.push({ ref: 'post:' + x.id, title: x.title || '제목 없음', sub: 'LIFE 글' }); });
+  if (has(S.memo)) out.push({ ref: '', title: '상시 메모', sub: '캘린더 오른쪽 패널' });
+  return out.filter(x => x.ref !== ref);
+}
+function linksHTML(ref, key) {
+  const bl = backlinks(ref);
+  return `<div class="links"><div class="links-h"><span class="lbl" style="padding:0">연결 ${bl.length ? bl.length : ''}</span>${key ? `<button class="btn sm ghost" data-act="linkpick" data-key="${key}">${I.plus}노트·항목 연결</button>` : ''}</div>
+  ${bl.length ? `<div class="links-list">${bl.map(x => `<button class="mention m-${x.ref.split(':')[0]}" ${x.ref ? `data-act="mopen" data-ref="${x.ref}"` : 'data-act="go" data-view="work"'}>${KIND_ICON[x.ref.split(':')[0]] || '◎'} ${esc(x.title)} <span class="muted" style="font-weight:400">· ${esc(x.sub)}에서 언급</span></button>`).join('')}</div>` : `<p class="hint" style="margin:2px 2px 0">글에서 @를 입력하면 일정·할일·노트를 연결할 수 있어요.</p>`}</div>`;
+}
 function onBlockInput(el) {
   const key = el.closest('[data-ed]').dataset.ed; const { bl, b } = findBlock(key, el.dataset.bid); if (!b) return;
-  let text = el.innerText.replace(/\n$/, ''); b.text = text;
+  let text = serText(el); b.text = text;
   const edEl = el.closest('[data-ed]'); edEl.classList.toggle('ed-empty', bl.length === 1 && !text && b.type === 'p');
   if (b.type === 'p' && /^```\s?$/.test(text)) { b.type = 'code'; b.text = ''; touch(key); closeSlash(); rerenderEditor(key, b.id, 0); return; }
   if (b.type === 'p' && /^(---|—-|———)$/.test(text)) { b.type = 'divider'; b.text = ''; const nb = B('p', ''); bl.splice(bl.indexOf(b) + 1, 0, nb); touch(key); closeSlash(); rerenderEditor(key, nb.id, 0); return; }
   if (b.type !== 'code' && b.type !== 'link' && text.includes('`')) {
     const want = inl(text);
-    if (el.innerHTML !== want && (text.match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
+    if (el.innerHTML !== want && (text.replace(MREG, '').match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
   }
   if (b.type === 'p') {
     const rules = [[/^[-*] /, 'bullet'], [/^\[ ?\] /, 'todo'], [/^# /, 'h'], [/^> /, 'quote'], [/^1\. /, 'num']];
     for (const [re, ty] of rules) if (re.test(text)) { b.type = ty; b.text = text.replace(re, ''); if (ty === 'todo') b.done = false; touch(key); closeSlash(); rerenderEditor(key, b.id, 0); return; }
+  }
+  if (b.type !== 'code' && b.type !== 'link') {
+    const at = caretOffset(el); const mm = text.slice(0, at).match(/(?:^|\s)@([^\s@\[\]()]{0,20})$/);
+    if (mm) { const ed = el.closest('[data-ed]').dataset.ed; if (!mention || mention.bid !== b.id) mention = { key: ed, bid: b.id, idx: 0 }; mention.q = mm[1]; mention.at = at; mention.anchor = null; drawMention(); }
+    else closeMention();
   }
   if (text.startsWith('/') && !text.includes(' ') && b.type !== 'link' && b.type !== 'code') { if (!slash || slash.bid !== b.id) openSlash(key, b.id); slash.q = text.slice(1); slash.idx = 0; drawSlash(); }
   else if (slash) closeSlash();
@@ -2068,6 +2207,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); undo(); return; }
   if (e.key === 'Escape') {
     if (slash) { closeSlash(); return; }
+    if (mention) { closeMention(); return; }
     if (t.id === 'q' || ui.search) { closeSearch(); t.blur && t.blur(); return; }
     if (t.id === 'nf') { ui.newFolder = null; render(); return; }
     if (ui.modal) { closeModal(); return; }
@@ -2076,6 +2216,7 @@ document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.isComposing) return;
   if (t.id === 'sub-add') { const v = t.value.trim(); if (!v) return; const par = item(ui.modal.id); mutate(() => { const it = createItem('todo', v, null); it.parentId = par.id; it.projectId = par.projectId; }); ui.modal.focus = 'sub-add'; renderModal(); return; }
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
+  if (t.id === 'mp-q' && mention) { e.preventDefault(); pickMention(mention.idx); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
   if (t.id === 'day-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, ui.sel); }, `${fmtMD(ui.sel)}에 할일을 추가했어요`); ui.focusId = 'day-add'; render(); return; }
   if (t.id === 'qa-title') { e.preventDefault(); quickAdd('todo'); return; }
@@ -2113,6 +2254,13 @@ function onCellKey(e, el) {
   if (e.key === 'Escape') { e.preventDefault(); const nx = bl[i + 1]; if (nx && nx.type !== 'table' && nx.type !== 'divider' && nx.type !== 'image') rerenderEditor(key, nx.id, 0); else leave(); }
 }
 function onBlockKey(e, el) {
+  if (mention && !mention.anchor && mention.bid === el.dataset.bid && mention.opts) {
+    const n = mention.opts.length;
+    if (e.key === 'ArrowDown' && n) { e.preventDefault(); mention.idx = (mention.idx + 1) % n; drawMention(); return; }
+    if (e.key === 'ArrowUp' && n) { e.preventDefault(); mention.idx = (mention.idx - 1 + n) % n; drawMention(); return; }
+    if ((e.key === 'Enter' || e.key === 'Tab') && n) { e.preventDefault(); mention.at = caretOffset(el); pickMention(mention.idx); return; }
+    if (e.key === 'Escape') { e.preventDefault(); closeMention(); return; }
+  }
   const key = el.closest('[data-ed]').dataset.ed; const { bl, i, b } = findBlock(key, el.dataset.bid); if (!b) return;
   if (slash && slash.bid === b.id) {
     const opts = slashOptions();
@@ -2128,7 +2276,7 @@ function onBlockKey(e, el) {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); leave(); return; }
     if (e.key === 'Enter') { e.preventDefault(); document.execCommand('insertLineBreak'); return; }
     if (e.key === 'Tab') { e.preventDefault(); document.execCommand('insertText', false, '  '); return; }
-    if (e.key === 'ArrowDown' && caretOffset(el) >= el.innerText.replace(/\n$/, '').length) { e.preventDefault(); const nx = bl[i + 1]; if (nx && nx.type !== 'divider' && nx.type !== 'image') rerenderEditor(key, nx.id, 0); else leave(); return; }
+    if (e.key === 'ArrowDown' && caretOffset(el) >= serText(el).length) { e.preventDefault(); const nx = bl[i + 1]; if (nx && nx.type !== 'divider' && nx.type !== 'image') rerenderEditor(key, nx.id, 0); else leave(); return; }
     if (e.key === 'Backspace' && collapsed && caretOffset(el) === 0 && !b.text) { e.preventDefault(); b.type = 'p'; touch(key); rerenderEditor(key, b.id, 0); return; }
     if (e.key === 'Backspace') return;
   }
