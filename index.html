@@ -449,6 +449,37 @@ table.tbl{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}
 .sync-dot.warn{background:var(--rose)}
 .foot-row{display:flex;flex-wrap:wrap;gap:4px 12px}
 label.link-btn{cursor:pointer}
+/* ---- week view + weekly log ---- */
+.btn.on-soft{background:var(--lemon-soft);color:var(--lemon-ink);border-color:transparent;font-weight:600}
+.dow .tdow{color:var(--lemon-ink)}
+.wlog{padding:18px 20px 32px;display:flex;flex-direction:column;gap:16px}
+.wlog-sum{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;font-size:13px;color:var(--muted)}
+.wlog-sum b{font-size:22px;color:var(--fg);margin-right:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.wlog-ps{display:flex;flex-wrap:wrap;gap:6px}
+.wlog-grid{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.wlog-days{flex:999 1 420px;min-width:0;display:flex;flex-direction:column}
+.wlog-note{flex:1 1 260px;max-width:100%;position:sticky;top:80px}
+.lday{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.lday:last-child{border-bottom:0}
+.lday-h{display:flex;flex-direction:column;align-items:center;padding-top:2px}
+.lday-h b{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.25;padding:0 6px;border-radius:10px}
+.lday-h span{font-size:12px;color:var(--muted)}
+.lday.is-today .lday-h b{background:var(--lemon);color:var(--on-lemon)}
+.lday.empty-day{padding:8px 0;align-items:center}
+.lday.empty-day .lday-h{flex-direction:row;gap:6px;justify-content:center}
+.lday.empty-day .lday-h b{font-size:14px;color:var(--muted)}
+.lday-b{display:flex;flex-direction:column;gap:2px;min-width:0;justify-content:center}
+.lrow{display:flex;gap:10px;align-items:flex-start;width:100%;padding:7px 8px;border:0;border-radius:9px;background:transparent;text-align:left;cursor:pointer;color:var(--fg)}
+.lrow:hover{background:var(--hover)}
+.lic{width:16px;height:16px;border-radius:5px;flex:none;margin-top:2px;display:flex;align-items:center;justify-content:center;color:#FFFFFF;border:1.5px solid var(--faint);box-sizing:border-box}
+.lic svg{opacity:0}
+.lic.dn{background:var(--green);border-color:var(--green)}
+.lic.dn svg{opacity:1}
+.lic.ev{border:0;width:8px;height:8px;border-radius:4px;margin:6px 4px 0}
+.ltx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lt{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:14px}
+.lt b{font-weight:500}
+.lm{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -614,7 +645,13 @@ function entityMap(st) {
   const m = {};
   COLS.forEach(c => (st[c] || []).forEach(e => { m[c + '__' + e.id] = JSON.stringify(e); }));
   m.meta__memo = JSON.stringify({ id: 'memo', memo: st.memo });
+  m.meta__weeks = weeksJSON(st);
   return m;
+}
+function weeksJSON(st) {
+  const wn = {};
+  Object.keys(st.weekNotes || {}).sort().forEach(k => { const bl = st.weekNotes[k]; if ((bl || []).some(b => (b.text || '').trim() || b.src)) wn[k] = bl; });
+  return JSON.stringify({ id: 'weeks', weeks: wn });
 }
 function save() {
   if (!loaded) return;
@@ -646,13 +683,13 @@ function buildState(rows) {
   const st = { v: 1, memo: [B('p', '')] }; COLS.forEach(c => { st[c] = []; });
   rows.forEach(r => {
     const c = r.key.split('__')[0];
-    try { const o = JSON.parse(r.j); if (c === 'meta') st.memo = o.memo && o.memo.length ? o.memo : st.memo; else if (st[c]) st[c].push(o); } catch (e) { /* skip a broken row */ }
+    try { const o = JSON.parse(r.j); if (r.key === 'meta__weeks') st.weekNotes = o.weeks || {}; else if (c === 'meta') st.memo = o.memo && o.memo.length ? o.memo : st.memo; else if (st[c]) st[c].push(o); } catch (e) { /* skip a broken row */ }
   });
   ['folders', 'collections'].forEach(c => st[c].sort((a, b) => (a.ord || 0) - (b.ord || 0)));
   return st;
 }
 function localJSON(c, id) {
-  if (c === 'meta') return JSON.stringify({ id: 'memo', memo: S.memo });
+  if (c === 'meta') return id === 'weeks' ? weeksJSON(S) : JSON.stringify({ id: 'memo', memo: S.memo });
   const e = (S[c] || []).find(x => x.id === id); return e ? JSON.stringify(e) : null;
 }
 function applyRemote(changes) {
@@ -667,7 +704,7 @@ function applyRemote(changes) {
     const j = ch.doc.data().j; if (synced[k] === j) return;
     synced[k] = j; if (localJSON(c, id) === j) return;
     let o; try { o = JSON.parse(j); } catch (e) { return; }
-    if (c === 'meta') S.memo = o.memo;
+    if (c === 'meta') { if (id === 'weeks') S.weekNotes = o.weeks || {}; else S.memo = o.memo; }
     else if (S[c]) { const i = S[c].findIndex(e => e.id === id); if (i >= 0) S[c][i] = o; else S[c].push(o); }
     touched = true;
   });
@@ -892,16 +929,48 @@ function dayItems(d) {
     .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'event' ? -1 : 1) || (a.kind === 'event' ? (a.start || '99').localeCompare(b.start || '99') : (a.done - b.done)));
 }
 function itemColor(it) { const p = it.projectId && proj(it.projectId); return p ? `var(--${p.color})` : 'var(--blue)'; }
+function weekStart(d) { const dd = parse(d); return addDays(d, -((dd.getDay() + 6) % 7)); }
+const DOW = ['월', '화', '수', '목', '금', '토', '일'];
 function vWork() {
+  const wk = ui.calView === 'week';
   const { y, m, weeks } = monthRange(ui.month);
   const selWeek = weeks.find(w => ui.sel >= w && ui.sel <= addDays(w, 6));
-  return `<div class="cal-wrap"><section class="cal-main">
-  ${topbar(`<h1 class="h1">${y}년 ${m}월</h1><div class="pager"><button class="btn icon" data-act="month" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="month" data-d="1" aria-label="다음 달">${I.right}</button></div><button class="btn" data-act="today">오늘</button>`,
-    `<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`)}
-  <div class="cal-scroll"><div class="cal">
-  <div class="dow">${['월', '화', '수', '목', '금', '토', '일'].map(x => `<span>${x}</span>`).join('')}</div>
-  ${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}
-  </div></div></section>${panelWork()}</div>`;
+  const ws = weekStart(ui.sel), we = addDays(ws, 6); const a = parse(ws), b = parse(we);
+  const title = wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
+  const nav = wk ? 'week' : 'month';
+  const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div>`;
+  const right = `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
+  let body;
+  if (wk && ui.weekLog) body = weekLogHTML(ws);
+  else if (wk) body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map((x, i) => `<span class="${addDays(ws, i) === TODAY ? 'tdow' : ''}">${x}</span>`).join('')}</div>${weekRow(ws, true, 0)}</div></div>`;
+  else body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map(x => `<span>${x}</span>`).join('')}</div>${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
+  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${body}</section>${panelWork()}</div>`;
+}
+const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image').map(b => b.text).filter(Boolean).join(' · ');
+function weekLogHTML(ws) {
+  const days = [...Array(7)].map((_, i) => addDays(ws, i));
+  let nDone = 0, nEv = 0, nMemo = 0; const pids = new Set();
+  const row = it => {
+    const p = it.projectId && proj(it.projectId); const mp = memoPreview(it.memo);
+    const when = it.kind === 'event' ? (it.end ? `${fmtShort(it.date)}–${fmtShort(it.end)}` : it.start || '하루 종일') : '';
+    return `<button class="lrow" data-act="open" data-kind="item" data-id="${it.id}"><span class="lic ${it.kind === 'event' ? 'ev' : it.done ? 'dn' : ''}" ${it.kind === 'event' ? `style="background:${itemColor(it)}"` : ''}>${it.kind === 'event' ? '' : I.check}</span><span class="ltx"><span class="lt"><b>${esc(it.title || '제목 없음')}</b>${when ? `<span class="muted">${when}</span>` : ''}${p ? `<span class="tag ${pcls(p)}">${esc(p.title)}</span>` : ''}</span>${mp ? `<span class="lm">${esc(mp)}</span>` : ''}</span></button>`;
+  };
+  const html = days.map(d => {
+    const evs = S.items.filter(it => it.kind === 'event' && it.date && (it.date === d || (d === ws && it.date < ws && (it.end || '') >= ws))).sort((x, y) => (x.start || '99').localeCompare(y.start || '99'));
+    const done = S.items.filter(it => it.kind === 'todo' && it.date === d && it.done);
+    const noted = S.items.filter(it => it.kind === 'todo' && it.date === d && !it.done && memoPreview(it.memo));
+    const all = [...evs, ...done, ...noted];
+    nDone += done.length; nEv += evs.length;
+    all.forEach(it => { if (it.projectId) pids.add(it.projectId); if (memoPreview(it.memo)) nMemo++; });
+    const dd = parse(d);
+    return `<section class="lday ${all.length ? '' : 'empty-day'} ${d === TODAY ? 'is-today' : ''}"><div class="lday-h"><b>${dd.getDate()}</b><span>${WD[dd.getDay()]}</span></div><div class="lday-b">${all.map(row).join('') || '<span class="muted" style="font-size:13px">기록 없음</span>'}</div></section>`;
+  }).join('');
+  const ps = [...pids].map(proj).filter(Boolean);
+  return `<div class="wlog">
+    <div class="wlog-sum"><span><b>${nDone}</b>완료</span><span><b>${nEv}</b>일정</span><span><b>${nMemo}</b>메모</span>${ps.length ? `<span class="wlog-ps">${ps.map(p => `<button class="tag ${pcls(p)}" style="border:0;cursor:pointer;height:24px" data-act="open" data-kind="project" data-id="${p.id}">${esc(p.title)}</button>`).join('')}</span>` : ''}</div>
+    <div class="wlog-grid"><div class="wlog-days">${html}</div>
+      <aside class="card wlog-note" aria-label="이번 주 메모"><div class="card-title">이번 주 메모</div>${editorHTML('week:' + ws, true)}<p class="hint" style="margin:6px 2px 0">쓸 말이 있을 때만 적어요. 비워두면 아무것도 남지 않아요.</p></aside>
+    </div></div>`;
 }
 function weekRow(ws, isSel, month) {
   const days = [...Array(7)].map((_, i) => addDays(ws, i)); const we = days[6];
@@ -914,7 +983,7 @@ function weekRow(ws, isSel, month) {
   const nl = lanes.length;
   let h = `<div class="wk ${isSel ? 'sel' : ''}" style="grid-template-rows:32px ${nl ? `repeat(${nl},25px) ` : ''}1fr">`;
   days.forEach((d, i) => {
-    const dd = parse(d); const other = dd.getMonth() + 1 !== month;
+    const dd = parse(d); const other = month ? dd.getMonth() + 1 !== month : false;
     const cls = ['cell']; if (other) cls.push('other'); if (i >= 5) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === 6) cls.push('last');
     const label = dd.getDate() === 1 && d !== TODAY ? `${dd.getMonth() + 1}월 1일` : dd.getDate();
     h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}</div>`;
@@ -1283,6 +1352,7 @@ function dlgCitem(ci) {
 /* ---------- block editor ---------- */
 function edBlocks(key) {
   const [k, id] = key.split(':');
+  if (k === 'week') { S.weekNotes = S.weekNotes || {}; if (!Array.isArray(S.weekNotes[id]) || !S.weekNotes[id].length) S.weekNotes[id] = [B('p', '')]; return S.weekNotes[id]; }
   const o = k === 'memo' ? S : k === 'item' ? item(id) : k === 'project' ? proj(id) : k === 'doc' ? doc(id) : k === 'post' ? post(id) : null;
   if (!o) return null;
   const prop = k === 'memo' ? 'memo' : (k === 'item' || k === 'project') ? 'memo' : 'blocks';
@@ -1435,6 +1505,9 @@ const ACT = {
   export: () => exportBackup(),
   undo: () => undo(),
   month: t => { const [y, m] = ui.month.split('-').map(Number); const d = new Date(y, m - 1 + (+t.dataset.d), 1); ui.month = iso(d).slice(0, 7); render(); },
+  calview: t => { ui.calView = t.dataset.v; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); },
+  week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
+  weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
   selday: t => { ui.sel = t.dataset.date; render(); },
   quick: () => openModal('quick', null, 'qa-title'),
@@ -1591,7 +1664,7 @@ document.addEventListener('change', e => {
   if (t.dataset.ncf === 'onCal') { ui.draft.fields[+t.dataset.i].onCal = t.checked; return; }
   if (t.id === 'import-file' && t.files[0]) {
     const fr = new FileReader();
-    fr.onload = () => { try { const d = JSON.parse(fr.result); const st = d.state || d; if (!Array.isArray(st.items) || !Array.isArray(st.folders)) throw new Error('form'); mutate(() => { S = { v: 1, memo: st.memo || [B('p', '')], ...Object.fromEntries(COLS.map(c => [c, st[c] || []])) }; resetUi(); }, '백업을 불러왔어요'); } catch (e) { toast('Arecmik 백업 파일이 아니에요'); } };
+    fr.onload = () => { try { const d = JSON.parse(fr.result); const st = d.state || d; if (!Array.isArray(st.items) || !Array.isArray(st.folders)) throw new Error('form'); mutate(() => { S = { v: 1, memo: st.memo || [B('p', '')], weekNotes: st.weekNotes || {}, ...Object.fromEntries(COLS.map(c => [c, st[c] || []])) }; resetUi(); }, '백업을 불러왔어요'); } catch (e) { toast('Arecmik 백업 파일이 아니에요'); } };
     fr.readAsText(t.files[0]); t.value = ''; return;
   }
   if (t.id === 'cover-file' && t.files[0]) { const p = post(ui.postId); readImage(t.files[0], src => { if (!src) { toast('사진을 읽지 못했어요'); return; } mutate(() => { p.cover.img = src; p.coverOnCal = true; }, '대표 사진을 넣었어요'); }); return; }
