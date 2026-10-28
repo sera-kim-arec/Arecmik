@@ -261,7 +261,9 @@ body.resizing,body.resizing *{cursor:ew-resize!important;user-select:none}
 .bk-todo.done .bk-text{text-decoration:line-through;color:var(--muted)}
 .bk .chk{margin-top:.38em;width:16px;height:16px;border-color:var(--faint)}
 .bk .chk.on{background:var(--faint)}
-.bk-dot{width:6px;height:6px;border-radius:3px;background:var(--fg);margin:.7em 5px 0 6px;flex:none}
+.bk-dot{width:6px;height:6px;border-radius:3px;background:var(--fg);margin:.7em 5px 0 6px;flex:none;box-sizing:border-box}
+.bk-dot.d1{background:transparent;border:1.5px solid var(--fg)}
+.bk-dot.d2{border-radius:1px;width:5px;height:5px;margin-top:calc(.7em + .5px)}
 .bk-num{min-width:20px;color:var(--fg2);font-variant-numeric:tabular-nums;padding-top:1px}
 .bk-divider{padding:10px 0}
 .bk-divider hr{width:100%;border:0;border-top:1px solid var(--line);margin:0}
@@ -1691,8 +1693,15 @@ function blockHTML(b, i, bl, kids) {
   if (b.type === 'link') return `<div class="bk bk-link" ${ind} data-bid="${b.id}">${txt(PH.link)}${isURL(b.text) ? `<a class="link-card" href="${esc(b.text)}" target="_blank" rel="noopener"><span class="lc-i">${I.link}</span><span class="lc-t"><b>${esc(host(b.text))}</b><span>링크 스크랩 · 눌러서 열기</span></span></a>` : ''}</div>`;
   let pre = '';
   if (b.type === 'todo') pre = `<button class="chk ${b.done ? 'on' : ''}" data-act="bcheck" data-bid="${b.id}" aria-label="체크">${I.check}</button>`;
-  else if (b.type === 'bullet') pre = '<span class="bk-dot"></span>';
-  else if (b.type === 'num') { let n = 1; for (let j = i - 1; j >= 0 && bl[j].type === 'num' && (bl[j].indent || 0) === (b.indent || 0); j--) n++; pre = `<span class="bk-num">${n}.</span>`; }
+  else if (b.type === 'bullet') pre = `<span class="bk-dot d${(b.indent || 0) % 3}"></span>`;
+  else if (b.type === 'num') {
+    const lv = b.indent || 0; let n = 1;
+    for (let j = i - 1; j >= 0; j--) { const x = bl[j], xl = x.indent || 0; if (xl > lv) continue; if (xl < lv || x.type !== 'num') break; n++; }
+    const roman = k => { const t = [[10, 'x'], [9, 'ix'], [5, 'v'], [4, 'iv'], [1, 'i']]; let o = ''; t.forEach(([v, r]) => { while (k >= v) { o += r; k -= v; } }); return o; };
+    const alpha = k => { let o = ''; while (k > 0) { k--; o = String.fromCharCode(97 + k % 26) + o; k = Math.floor(k / 26); } return o; };
+    const lab = lv % 3 === 1 ? alpha(n) : lv % 3 === 2 ? roman(n) : n;
+    pre = `<span class="bk-num">${lab}.</span>`;
+  }
   return `<div class="bk bk-${b.type} ${b.done ? 'done' : ''} ${b.indent ? 'sub' : ''}" ${ind} data-bid="${b.id}">${tw}${pre}${txt(PH[b.type] || '')}${b.collapsed && kids ? `<span class="bk-more">하위 ${lastDescendant(bl, i) - i}개</span>` : ''}</div>`;
 }
 function rerenderEditor(key, bid, pos) {
