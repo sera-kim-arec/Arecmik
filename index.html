@@ -1527,6 +1527,7 @@ function dlgItem(it) {
     ${it.parentId && item(it.parentId) ? `<button class="parent-link" data-act="openparent" data-id="${it.parentId}">↳ ${esc(item(it.parentId).title || '제목 없음')}<span>상위 항목 열기</span></button>` : ''}
     <input class="title-input" id="dlg-title" data-f="title" value="${esc(it.title)}" placeholder="제목" aria-label="제목">
     <div class="fgrid">
+    <label>종류</label><div class="frow"><div class="seg inline" role="radiogroup" aria-label="종류"><button role="radio" aria-checked="${!ev}" class="${ev ? '' : 'on'}" data-act="setkind" data-k="todo">할일</button><button role="radio" aria-checked="${ev}" class="${ev ? 'on' : ''}" data-act="setkind" data-k="event">일정</button></div></div>
     ${ev ? `<label for="f-date">날짜</label><div class="frow"><input type="date" id="f-date" class="inp" data-f="date" value="${it.date || ''}"><span class="muted">~</span><input type="date" id="f-end" class="inp" data-f="end" value="${it.end || ''}" min="${it.date || ''}" aria-label="끝 날짜">${it.end ? '<button class="btn sm ghost" data-act="clearend">하루 일정으로</button>' : '<span class="hint">끝 날짜를 넣으면 기간 일정</span>'}</div>
       <label for="f-start">시간</label><div class="frow"><input type="time" id="f-start" class="inp" data-f="start" value="${it.start || ''}"><span class="muted">–</span><input type="time" id="f-finish" class="inp" data-f="finish" value="${it.finish || ''}" aria-label="끝 시간">${it.start ? '<button class="btn sm ghost" data-act="cleartime">시간 빼기</button>' : '<span class="hint">비워두면 하루 종일</span>'}</div>`
     : `<label>완료</label><div class="frow"><button class="chk lg ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><span class="muted">${it.done ? '완료했어요' : '아직 안 했어요'}</span></div>
@@ -1922,6 +1923,14 @@ const ACT = {
     if (back && modalTargetOf(back)) { ui.modal = { kind: back.kind, id: back.id }; renderModal(); }
   },
   clearend: () => { const it = item(ui.modal.id); mutate(() => { it.end = null; }); },
+  setkind: t => {
+    const it = item(ui.modal.id); const k = t.dataset.k; if (!it || it.kind === k) return;
+    mutate(() => {
+      it.kind = k;
+      if (k === 'event') { if (!it.date) it.date = ui.sel || TODAY; it.done = false; }
+      else { it.end = null; it.finish = null; }
+    }, k === 'event' ? '일정으로 바꿨어요' : '할일로 바꿨어요');
+  },
   cleardate: () => { const it = item(ui.modal.id); mutate(() => { it.date = null; }, '날짜 없는 할일로 옮겼어요'); },
   projnoend: () => { const p = proj(ui.modal.id); mutate(() => { p.end = null; }); },
   pstate: t => { const p = proj(ui.modal.id); mutate(() => { p.done = t.dataset.v === 'done' ? (p.done || TODAY) : null; }, t.dataset.v === 'done' ? '프로젝트를 완료했어요' : null); },
