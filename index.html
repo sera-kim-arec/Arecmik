@@ -581,6 +581,13 @@ code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospa
 .links-pill.on{background:var(--blue-soft);color:var(--blue-ink)}
 .links-pill svg{width:14px;height:14px}
 .links-pill .caret{font-size:10px;margin-left:2px}
+/* ---- toggle block ---- */
+.bk-tg{flex:none;width:22px;height:22px;margin:.15em 2px 0 0;border:0;border-radius:5px;background:transparent;color:var(--fg2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform .15s}
+.bk-tg svg{width:11px;height:11px}
+.bk-tg.closed{transform:rotate(-90deg)}
+.bk-tg:hover{background:var(--hover)}
+.tg-empty{color:var(--faint);font-size:.92em;cursor:text;padding-top:2px;padding-bottom:2px;padding-left:calc(var(--ind,0) * 26px + 2px)}
+.tg-empty:hover{color:var(--muted)}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1663,7 +1670,7 @@ function inl(t) {
   while ((m = MREG.exec(t))) { out += inlCode(t.slice(last, m.index)) + chipHTML2(m[0], m[1], m[2], m[3]); last = m.index + m[0].length; }
   return out + inlCode(t.slice(last));
 }
-const PH = { p: '/ 블록 추가 · Tab 하위 항목', h: '제목', todo: '할일', bullet: '목록', num: '번호 목록', quote: '인용', callout: '강조할 내용', link: '링크 주소를 붙여넣으세요' };
+const PH = { p: '/ 블록 추가 · Tab 하위 항목', h: '제목', todo: '할일', bullet: '목록', num: '번호 목록', quote: '인용', callout: '강조할 내용', link: '링크 주소를 붙여넣으세요', toggle: '토글 제목' };
 function editorHTML(key, small) {
   const bl = edBlocks(key); if (!bl) return '';
   const empty = bl.length === 1 && bl[0].type === 'p' && !bl[0].text;
@@ -1673,13 +1680,14 @@ function editorHTML(key, small) {
     const kids = i + 1 < bl.length && (bl[i + 1].indent || 0) > lv;
     if (lv > hideBelow) return blockHTML(b, i, bl, kids).replace('<div class="bk', '<div hidden class="bk');
     hideBelow = b.collapsed && kids ? lv : Infinity;
-    return blockHTML(b, i, bl, kids);
+    const empt = b.type === 'toggle' && !kids && !b.collapsed ? `<div class="bk tg-empty" style="--ind:${lv + 1}" data-act="tgadd" data-tg="${b.id}">비어 있는 토글이에요. 눌러서 내용을 넣거나, 제목 끝에서 Enter</div>` : '';
+    return blockHTML(b, i, bl, kids) + empt;
   });
   return `<div class="ed ${small ? 'sm' : ''} ${empty ? 'ed-empty' : ''}" data-ed="${key}">${parts.join('')}<div class="ed-tail" data-act="edtail"></div></div>`;
 }
 function lastDescendant(bl, i) { const lv = bl[i].indent || 0; let j = i; while (j + 1 < bl.length && (bl[j + 1].indent || 0) > lv) j++; return j; }
 function blockHTML(b, i, bl, kids) {
-  const tw = kids ? `<button class="bk-tw ${b.collapsed ? 'closed' : ''}" data-act="bfold" data-bid="${b.id}" aria-label="${b.collapsed ? '하위 항목 펼치기' : '하위 항목 접기'}" aria-expanded="${!b.collapsed}">${b.collapsed ? I.chevR : I.chevD}</button>` : '';
+  const tw = kids && b.type !== 'toggle' ? `<button class="bk-tw ${b.collapsed ? 'closed' : ''}" data-act="bfold" data-bid="${b.id}" aria-label="${b.collapsed ? '하위 항목 펼치기' : '하위 항목 접기'}" aria-expanded="${!b.collapsed}">${b.collapsed ? I.chevR : I.chevD}</button>` : '';
   const ind = `style="--ind:${b.indent || 0}"`;
   const txt = ph => `<div class="bk-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="${ph}">${b.type === 'link' ? esc(b.text) : inl(b.text)}</div>`;
   if (b.type === 'table') {
@@ -1692,7 +1700,8 @@ function blockHTML(b, i, bl, kids) {
   if (b.type === 'image') return b.src ? `<div class="bk bk-img" data-bid="${b.id}"><img src="${b.src}" alt=""><button class="btn sm glass" data-act="bdel" data-bid="${b.id}">사진 삭제</button></div>` : `<div class="bk" data-bid="${b.id}"><button class="btn sm" data-act="pickimg" data-bid="${b.id}">${I.img}사진 고르기</button><button class="btn sm ghost" data-act="bdel" data-bid="${b.id}">취소</button></div>`;
   if (b.type === 'link') return `<div class="bk bk-link" ${ind} data-bid="${b.id}">${txt(PH.link)}${isURL(b.text) ? `<a class="link-card" href="${esc(b.text)}" target="_blank" rel="noopener"><span class="lc-i">${I.link}</span><span class="lc-t"><b>${esc(host(b.text))}</b><span>링크 스크랩 · 눌러서 열기</span></span></a>` : ''}</div>`;
   let pre = '';
-  if (b.type === 'todo') pre = `<button class="chk ${b.done ? 'on' : ''}" data-act="bcheck" data-bid="${b.id}" aria-label="체크">${I.check}</button>`;
+  if (b.type === 'toggle') pre = `<button class="bk-tg ${b.collapsed ? 'closed' : ''}" data-act="bfold" data-bid="${b.id}" aria-label="${b.collapsed ? '펼치기' : '접기'}" aria-expanded="${!b.collapsed}">${I.chevD}</button>`;
+  else if (b.type === 'todo') pre = `<button class="chk ${b.done ? 'on' : ''}" data-act="bcheck" data-bid="${b.id}" aria-label="체크">${I.check}</button>`;
   else if (b.type === 'bullet') pre = `<span class="bk-dot d${(b.indent || 0) % 3}"></span>`;
   else if (b.type === 'num') {
     const lv = b.indent || 0; let n = 1;
@@ -1702,7 +1711,7 @@ function blockHTML(b, i, bl, kids) {
     const lab = lv % 3 === 1 ? alpha(n) : lv % 3 === 2 ? roman(n) : n;
     pre = `<span class="bk-num">${lab}.</span>`;
   }
-  return `<div class="bk bk-${b.type} ${b.done ? 'done' : ''} ${b.indent ? 'sub' : ''}" ${ind} data-bid="${b.id}">${tw}${pre}${txt(PH[b.type] || '')}${b.collapsed && kids ? `<span class="bk-more">하위 ${lastDescendant(bl, i) - i}개</span>` : ''}</div>`;
+  return `<div class="bk bk-${b.type} ${b.done ? 'done' : ''} ${b.indent ? 'sub' : ''}" ${ind} data-bid="${b.id}">${tw}${pre}${txt(PH[b.type] || '')}${b.collapsed && kids ? `<span class="bk-more">${b.type === 'toggle' ? '' : '하위 '}${lastDescendant(bl, i) - i}개</span>` : ''}</div>`;
 }
 function rerenderEditor(key, bid, pos) {
   const el = document.querySelector(`[data-ed="${key}"]`); if (!el) return;
@@ -1789,7 +1798,7 @@ document.addEventListener('keyup', e => {
   if (!e.target.classList || !e.target.classList.contains('bk-text')) return;
   if (['ArrowDown', 'ArrowUp', 'Enter', 'PageDown', 'PageUp', 'Backspace'].includes(e.key)) ensureCaretVisible();
 });
-const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['table', '▦', '표', ''], ['code', '{ }', '코드 블록', '```'], ['divider', '—', '구분선', '---']];
+const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['toggle', '▸', '토글', '>> '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['table', '▦', '표', ''], ['code', '{ }', '코드 블록', '```'], ['divider', '—', '구분선', '---']];
 let slash = null;
 function openSlash(key, bid) { slash = { key, bid, idx: 0, q: '' }; drawSlash(); }
 function closeSlash() { slash = null; pop.innerHTML = ''; }
@@ -2009,6 +2018,7 @@ const ACT = {
     else if (k === 'citem') { ui.collId = citem(id).coll; go('collections'); openModal('citem', id); }
   },
   bcheck: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.done = !b.done; touch(key); rerenderEditor(key); },
+  tgadd: t => { const key = t.closest('[data-ed]').dataset.ed; const { bl, i, b } = findBlock(key, t.dataset.tg); if (!b) return; const nb = B('p', '', { indent: (b.indent || 0) + 1 }); bl.splice(i + 1, 0, nb); touch(key); rerenderEditor(key, nb.id, 0); },
   bfold: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.collapsed = !b.collapsed; touch(key); rerenderEditor(key); },
   slashpick: t => { if (slash) applyType(slash.key, slash.bid, t.dataset.t); },
   edtail: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const last = bl[bl.length - 1]; if (last && last.type === 'p' && !last.text) { rerenderEditor(key, last.id, 0); return; } const nb = B('p', ''); bl.push(nb); touch(key); rerenderEditor(key, nb.id, 0); },
@@ -2212,7 +2222,7 @@ function onBlockInput(el) {
     if (el.innerHTML !== want && (text.replace(MREG, '').match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
   }
   if (b.type === 'p') {
-    const rules = [[/^[-*] /, 'bullet'], [/^\[ ?\] /, 'todo'], [/^# /, 'h'], [/^> /, 'quote'], [/^1\. /, 'num']];
+    const rules = [[/^[-*] /, 'bullet'], [/^\[ ?\] /, 'todo'], [/^# /, 'h'], [/^> /, 'quote'], [/^1\. /, 'num'], [/^>> /, 'toggle']];
     for (const [re, ty] of rules) if (re.test(text)) { b.type = ty; b.text = text.replace(re, ''); if (ty === 'todo') b.done = false; touch(key); closeSlash(); rerenderEditor(key, b.id, 0); return; }
   }
   if (b.type !== 'code' && b.type !== 'link') {
@@ -2335,7 +2345,12 @@ function onBlockKey(e, el) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     const pos = caretOffset(el); const text = b.text;
-    if (!text && ['todo', 'bullet', 'num', 'quote', 'callout', 'h'].includes(b.type)) { b.type = 'p'; touch(key); rerenderEditor(key, b.id, 0); return; }
+    if (b.type === 'toggle' && (text || i + 1 < bl.length && (bl[i + 1].indent || 0) > (b.indent || 0))) {
+      b.text = text.slice(0, pos);
+      if (b.collapsed) { const nb = B('toggle', text.slice(pos), { indent: b.indent || 0 }); bl.splice(lastDescendant(bl, i) + 1, 0, nb); touch(key); rerenderEditor(key, nb.id, 0); return; }
+      const nb = B('p', text.slice(pos), { indent: (b.indent || 0) + 1 }); bl.splice(i + 1, 0, nb); touch(key); rerenderEditor(key, nb.id, 0); return;
+    }
+    if (!text && ['todo', 'bullet', 'num', 'quote', 'callout', 'h', 'toggle'].includes(b.type)) { b.type = 'p'; touch(key); rerenderEditor(key, b.id, 0); return; }
     b.text = text.slice(0, pos);
     const nt = ['todo', 'bullet', 'num'].includes(b.type) ? b.type : 'p';
     const nb = B(nt, text.slice(pos), { indent: b.indent || 0 }); if (nt === 'todo') nb.done = false;
