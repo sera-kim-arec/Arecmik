@@ -531,6 +531,13 @@ body.resizing,body.resizing *{cursor:col-resize!important;user-select:none}
 .tree-row.drop-after{box-shadow:inset 0 -2px 0 var(--blue)}
 .tree-row.drop-hi{background:var(--blue-soft)!important;outline:1.5px solid var(--blue);outline-offset:-1.5px}
 .sec-head.drop-hi{background:var(--blue-soft);border-radius:6px;outline:none}
+/* ---- code ---- */
+code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospace;font-size:.88em;background:var(--sunken);color:var(--rose-ink);border-radius:5px;padding:1px 4px}
+.bk-code{flex-direction:column;align-items:stretch;gap:0;margin:6px 0;border-radius:12px;background:var(--sunken);box-shadow:inset 0 0 0 1px var(--line-soft);overflow:hidden}
+.code-h{display:flex;align-items:center;justify-content:space-between;padding:6px 10px 0 14px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.code-copy{border:0;background:transparent;color:var(--muted);font-size:11.5px;font-weight:600;border-radius:6px;padding:3px 8px;cursor:pointer}
+.code-copy:hover{background:var(--hover);color:var(--fg)}
+.bk-code .code-text{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospace;font-size:13px;line-height:1.6;padding:6px 14px 12px;white-space:pre-wrap;tab-size:2;overflow-x:auto;width:100%;box-sizing:border-box}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1597,6 +1604,7 @@ function edBlocks(key) {
   return o[prop];
 }
 function touch(key) { const [k, id] = key.split(':'); if (k === 'doc' && doc(id)) doc(id).updated = Date.now(); save(); }
+const inl = t => esc(t).replace(/`([^`\n]+)`/g, '<code class="ic">`$1`</code>');
 const PH = { p: '/ 블록 추가 · Tab 하위 항목', h: '제목', todo: '할일', bullet: '목록', num: '번호 목록', quote: '인용', callout: '강조할 내용', link: '링크 주소를 붙여넣으세요' };
 function editorHTML(key, small) {
   const bl = edBlocks(key); if (!bl) return '';
@@ -1615,7 +1623,8 @@ function lastDescendant(bl, i) { const lv = bl[i].indent || 0; let j = i; while 
 function blockHTML(b, i, bl, kids) {
   const tw = kids ? `<button class="bk-tw ${b.collapsed ? 'closed' : ''}" data-act="bfold" data-bid="${b.id}" aria-label="${b.collapsed ? '하위 항목 펼치기' : '하위 항목 접기'}" aria-expanded="${!b.collapsed}">${b.collapsed ? I.chevR : I.chevD}</button>` : '';
   const ind = `style="--ind:${b.indent || 0}"`;
-  const txt = ph => `<div class="bk-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="${ph}">${esc(b.text)}</div>`;
+  const txt = ph => `<div class="bk-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="${ph}">${b.type === 'link' ? esc(b.text) : inl(b.text)}</div>`;
+  if (b.type === 'code') return `<div class="bk bk-code" ${ind} data-bid="${b.id}"><div class="code-h"><span>코드</span><button class="code-copy" data-act="bcopy" data-bid="${b.id}">복사</button></div><div class="bk-text code-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="코드를 입력하세요 · Ctrl+Enter로 빠져나가기">${esc(b.text)}</div></div>`;
   if (b.type === 'divider') return `<div class="bk bk-divider" data-bid="${b.id}"><hr></div>`;
   if (b.type === 'image') return b.src ? `<div class="bk bk-img" data-bid="${b.id}"><img src="${b.src}" alt=""><button class="btn sm glass" data-act="bdel" data-bid="${b.id}">사진 삭제</button></div>` : `<div class="bk" data-bid="${b.id}"><button class="btn sm" data-act="pickimg" data-bid="${b.id}">${I.img}사진 고르기</button><button class="btn sm ghost" data-act="bdel" data-bid="${b.id}">취소</button></div>`;
   if (b.type === 'link') return `<div class="bk bk-link" ${ind} data-bid="${b.id}">${txt(PH.link)}${isURL(b.text) ? `<a class="link-card" href="${esc(b.text)}" target="_blank" rel="noopener"><span class="lc-i">${I.link}</span><span class="lc-t"><b>${esc(host(b.text))}</b><span>링크 스크랩 · 눌러서 열기</span></span></a>` : ''}</div>`;
@@ -1645,8 +1654,36 @@ function placeCaret(el, pos) {
     if (!done) { r.selectNodeContents(el); r.collapse(false); } else r.collapse(true);
   }
   s.removeAllRanges(); s.addRange(r);
+  ensureCaretVisible();
 }
-const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['divider', '—', '구분선', '']];
+function caretRect() {
+  const sel = getSelection(); if (!sel.rangeCount) return null;
+  const r = sel.getRangeAt(0).getBoundingClientRect(); return r && (r.top || r.bottom) ? r : null;
+}
+function placeAtX(el, x, fromTop) {
+  const r = el.getBoundingClientRect(); const lh = parseFloat(getComputedStyle(el).lineHeight) || 22;
+  const y = fromTop ? r.top + lh / 2 : r.bottom - lh / 2;
+  const inView = y > 0 && y < window.innerHeight;
+  const rg = inView && document.caretRangeFromPoint ? document.caretRangeFromPoint(Math.min(Math.max(x, r.left + 1), r.right - 1), y) : null;
+  if (rg && el.contains(rg.startContainer)) { el.focus({ preventScroll: true }); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); ensureCaretVisible(); }
+  else placeCaret(el, fromTop ? 0 : 'end');
+}
+/* keep the text cursor on screen while writing */
+function ensureCaretVisible() {
+  const sel = getSelection(); if (!sel.rangeCount) return;
+  const node = sel.anchorNode; const host = node && (node.nodeType === 1 ? node : node.parentElement); if (!host) return;
+  const sc = host.closest('.scrim, .cal-wrap > .panel, .cal-main, .main'); if (!sc) return;
+  let r = sel.getRangeAt(0).getBoundingClientRect();
+  if (!r || (r.top === 0 && r.bottom === 0)) r = (host.closest('.bk-text') || host).getBoundingClientRect();
+  const cr = sc.getBoundingClientRect(); const top = sc.classList.contains('scrim') ? 32 : 84, bottom = 72;
+  if (r.bottom > cr.bottom - bottom) sc.scrollBy({ top: r.bottom - cr.bottom + bottom });
+  else if (r.top < cr.top + top) sc.scrollBy({ top: r.top - cr.top - top });
+}
+document.addEventListener('keyup', e => {
+  if (!e.target.classList || !e.target.classList.contains('bk-text')) return;
+  if (['ArrowDown', 'ArrowUp', 'Enter', 'PageDown', 'PageUp', 'Backspace'].includes(e.key)) ensureCaretVisible();
+});
+const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['code', '{ }', '코드 블록', '```'], ['divider', '—', '구분선', '---']];
 let slash = null;
 function openSlash(key, bid) { slash = { key, bid, idx: 0, q: '' }; drawSlash(); }
 function closeSlash() { slash = null; pop.innerHTML = ''; }
@@ -1859,6 +1896,7 @@ const ACT = {
   bfold: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.collapsed = !b.collapsed; touch(key); rerenderEditor(key); },
   slashpick: t => { if (slash) applyType(slash.key, slash.bid, t.dataset.t); },
   edtail: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const last = bl[bl.length - 1]; if (last && last.type === 'p' && !last.text) { rerenderEditor(key, last.id, 0); return; } const nb = B('p', ''); bl.push(nb); touch(key); rerenderEditor(key, nb.id, 0); },
+  bcopy: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; const done = () => toast('코드를 복사했어요'); if (navigator.clipboard) navigator.clipboard.writeText(b.text).then(done).catch(() => toast('복사하지 못했어요. 직접 선택해서 복사해 주세요')); },
   bdel: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const i = bl.findIndex(b => b.id === t.dataset.bid); if (i >= 0) bl.splice(i, 1); touch(key); rerenderEditor(key); },
   pickimg: t => { pendingImg = { key: t.closest('[data-ed]').dataset.ed, bid: t.dataset.bid }; $('#blk-file').click(); }
 };
@@ -1937,20 +1975,26 @@ function onBlockInput(el) {
   const key = el.closest('[data-ed]').dataset.ed; const { bl, b } = findBlock(key, el.dataset.bid); if (!b) return;
   let text = el.innerText.replace(/\n$/, ''); b.text = text;
   const edEl = el.closest('[data-ed]'); edEl.classList.toggle('ed-empty', bl.length === 1 && !text && b.type === 'p');
+  if (b.type === 'p' && /^```\s?$/.test(text)) { b.type = 'code'; b.text = ''; touch(key); closeSlash(); rerenderEditor(key, b.id, 0); return; }
+  if (b.type === 'p' && /^(---|—-|———)$/.test(text)) { b.type = 'divider'; b.text = ''; const nb = B('p', ''); bl.splice(bl.indexOf(b) + 1, 0, nb); touch(key); closeSlash(); rerenderEditor(key, nb.id, 0); return; }
+  if (b.type !== 'code' && b.type !== 'link' && text.includes('`')) {
+    const want = inl(text);
+    if (el.innerHTML !== want && (text.match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
+  }
   if (b.type === 'p') {
     const rules = [[/^[-*] /, 'bullet'], [/^\[ ?\] /, 'todo'], [/^# /, 'h'], [/^> /, 'quote'], [/^1\. /, 'num']];
     for (const [re, ty] of rules) if (re.test(text)) { b.type = ty; b.text = text.replace(re, ''); if (ty === 'todo') b.done = false; touch(key); closeSlash(); rerenderEditor(key, b.id, 0); return; }
   }
-  if (text.startsWith('/') && !text.includes(' ') && b.type !== 'link') { if (!slash || slash.bid !== b.id) openSlash(key, b.id); slash.q = text.slice(1); slash.idx = 0; drawSlash(); }
+  if (text.startsWith('/') && !text.includes(' ') && b.type !== 'link' && b.type !== 'code') { if (!slash || slash.bid !== b.id) openSlash(key, b.id); slash.q = text.slice(1); slash.idx = 0; drawSlash(); }
   else if (slash) closeSlash();
-  touch(key);
+  touch(key); ensureCaretVisible();
 }
 document.addEventListener('paste', e => {
   const el = e.target.closest && e.target.closest('.bk-text'); if (!el) return;
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
   const key = el.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, el.dataset.bid);
-  if (b && !b.text && isURL(text.trim()) && b.type !== 'link') { b.type = 'link'; b.text = text.trim(); touch(key); rerenderEditor(key, b.id, 'end'); toast('링크를 스크랩 카드로 바꿨어요'); return; }
+  if (b && !b.text && isURL(text.trim()) && b.type !== 'link' && b.type !== 'code') { b.type = 'link'; b.text = text.trim(); touch(key); rerenderEditor(key, b.id, 'end'); toast('링크를 스크랩 카드로 바꿨어요'); return; }
   document.execCommand('insertText', false, text);
 });
 
@@ -1995,6 +2039,15 @@ function onBlockKey(e, el) {
   }
   if (e.isComposing) return;
   const sel = getSelection(); const collapsed = sel.rangeCount && sel.getRangeAt(0).collapsed;
+  if (b.type === 'code') {
+    const leave = () => { const nb = B('p', ''); bl.splice(i + 1, 0, nb); touch(key); rerenderEditor(key, nb.id, 0); };
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); leave(); return; }
+    if (e.key === 'Enter') { e.preventDefault(); document.execCommand('insertLineBreak'); return; }
+    if (e.key === 'Tab') { e.preventDefault(); document.execCommand('insertText', false, '  '); return; }
+    if (e.key === 'ArrowDown' && caretOffset(el) >= el.innerText.replace(/\n$/, '').length) { e.preventDefault(); const nx = bl[i + 1]; if (nx && nx.type !== 'divider' && nx.type !== 'image') rerenderEditor(key, nx.id, 0); else leave(); return; }
+    if (e.key === 'Backspace' && collapsed && caretOffset(el) === 0 && !b.text) { e.preventDefault(); b.type = 'p'; touch(key); rerenderEditor(key, b.id, 0); return; }
+    if (e.key === 'Backspace') return;
+  }
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     const pos = caretOffset(el); const text = b.text;
@@ -2021,8 +2074,14 @@ function onBlockKey(e, el) {
     if (!e.shiftKey && i > 0) { let p = i - 1; while (p > 0 && (bl[p].indent || 0) > (b.indent || 0)) p--; if (bl[p].collapsed) bl[p].collapsed = false; }
     b.indent = Math.max(0, Math.min(max, (b.indent || 0) + (e.shiftKey ? -1 : 1))); touch(key); rerenderEditor(key, b.id, pos); return;
   }
-  if (e.key === 'ArrowUp' && caretOffset(el) === 0 && i > 0) { const prevEl = el.closest('[data-ed]').querySelectorAll('.bk-text'); const arr = [...prevEl]; const k = arr.indexOf(el); if (k > 0) { e.preventDefault(); placeCaret(arr[k - 1], 'end'); } return; }
-  if (e.key === 'ArrowDown' && caretOffset(el) === el.innerText.replace(/\n$/, '').length) { const arr = [...el.closest('[data-ed]').querySelectorAll('.bk-text')]; const k = arr.indexOf(el); if (k < arr.length - 1) { e.preventDefault(); placeCaret(arr[k + 1], 0); } }
+  if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && !e.shiftKey && collapsed) {
+    const arr = [...el.closest('[data-ed]').querySelectorAll('.bk-text')].filter(x => x.offsetParent !== null); const k = arr.indexOf(el);
+    const down = e.key === 'ArrowDown'; const next = arr[k + (down ? 1 : -1)]; if (!next) return;
+    const cr = caretRect(); const er = el.getBoundingClientRect(); const lh = parseFloat(getComputedStyle(el).lineHeight) || 22;
+    const edge = !cr ? true : down ? cr.bottom > er.bottom - lh * 0.75 : cr.top < er.top + lh * 0.75;
+    if (!edge) return;
+    e.preventDefault(); placeAtX(next, cr ? cr.left : er.left, down);
+  }
 }
 
 /* drag & drop */
