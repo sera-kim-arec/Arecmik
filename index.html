@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Arecmik</title>
 <meta name="theme-color" content="#FFFFFF">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json?v=2">
+<link rel="icon" type="image/png" href="icon-192-lemon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon-lemon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
@@ -888,7 +888,7 @@ function ringItem(it, test) {
   const kind = it.kind === 'event' ? '일정' : '할일';
   const body = test ? '알림이 이렇게 와요' : `${kind} · ${whenText(it)}`;
   if ('Notification' in window && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) {
-    const opt = { body, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'arecmik-' + it.id, data: { id: it.id }, requireInteraction: true, renotify: true };
+    const opt = { body, icon: 'icon-192-lemon.png', badge: 'icon-192-lemon.png', tag: 'arecmik-' + it.id, data: { id: it.id }, requireInteraction: true, renotify: true };
     if (swReg && swReg.showNotification) swReg.showNotification(it.title || '알림', opt).catch(() => { /* blocked */ });
     else { try { const n = new Notification(it.title || '알림', opt); n.onclick = () => { window.focus(); openItem(it.id); n.close(); }; } catch (e) { /* unsupported here */ } }
   }

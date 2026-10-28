@@ -23,6 +23,6 @@ self.addEventListener('push', e => {
     const list = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const shown = list.find(c => c.visibilityState === 'visible');
     if (shown) { shown.postMessage({ ring: d }); return; }
-    await self.registration.showNotification(d.title || 'Arecmik', { body: d.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: 'arecmik-' + (d.id || 'push'), data: { id: d.id }, requireInteraction: true, renotify: true });
+    await self.registration.showNotification(d.title || 'Arecmik', { body: d.body || '', icon: 'icon-192-lemon.png', badge: 'icon-192-lemon.png', tag: 'arecmik-' + (d.id || 'push'), data: { id: d.id }, requireInteraction: true, renotify: true });
   })());
 });
