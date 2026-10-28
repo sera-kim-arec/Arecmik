@@ -753,7 +753,7 @@ async function boot() {
   }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(r => { swReg = r; }).catch(() => { /* notifications fall back to the page */ });
-    navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.open) openItem(e.data.open); });
+    navigator.serviceWorker.addEventListener('message', e => { if (!e.data) return; if (e.data.open) openItem(e.data.open); if (e.data.ring) { const r = e.data.ring; fired.add(r.key || ''); toastAction(`알림 · ${r.title} (${r.body})`, '열기', () => openItem(r.id)); } });
   }
   try {
     const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -761,7 +761,7 @@ async function boot() {
     const app = A.initializeApp(FB_CONFIG); const auth = Au.getAuth(app);
     const db = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) });
     fb = {
-      db, doc: F.doc, writeBatch: F.writeBatch,
+      db, doc: F.doc, writeBatch: F.writeBatch, setDoc: F.setDoc, deleteDoc: F.deleteDoc,
       login: () => Au.signInWithPopup(auth, new Au.GoogleAuthProvider()),
       loginRedirect: () => Au.signInWithRedirect(auth, new Au.GoogleAuthProvider()),
       logout: () => Au.signOut(auth)
@@ -771,6 +771,8 @@ async function boot() {
       if (unsub) { unsub(); unsub = null; }
       if (!user) { me = null; loaded = false; synced = {}; renderGate('login'); return; }
       me = user; loaded = false; synced = {}; renderGate('loading');
+      if (logUnsub) logUnsub();
+      logUnsub = F.onSnapshot(F.doc(db, 'users', user.uid, 'arecmik2push', 'log'), d => { const sent = (d.data() || {}).sent || {}; Object.keys(sent).forEach(k => fired.add(k)); }, () => { /* no log yet */ });
       let first = true;
       unsub = F.onSnapshot(F.collection(db, 'users', user.uid, NS), { includeMetadataChanges: true }, snap => {
         if (first) {
@@ -822,7 +824,31 @@ function remindText(it) {
   return (UNTIMED.find(x => x[0] === (r === '' || !isNaN(+r) ? st.untimed : r)) || [0, ''])[1];
 }
 let fired; try { fired = new Set(JSON.parse(localStorage.getItem('arecmik-fired') || '[]')); } catch (e) { fired = new Set(); }
-let swReg = null;
+let swReg = null, logUnsub = null;
+const VAPID_PUBLIC = 'BEfRYpvT3nE53dP86dK8ubzFSS03GzXe6mjS7i-cIK-CzfbCrJgqXaD671yZyQ9Um89xkfJoWhr25AA13Vbl9vg';
+function pushId() { try { return localStorage.getItem('arecmik-push') || ''; } catch (e) { return ''; } }
+function setPushId(v) { try { if (v) localStorage.setItem('arecmik-push', v); else localStorage.removeItem('arecmik-push'); } catch (e) { /* storage blocked */ } }
+const pushDoc = id => fb.doc(fb.db, 'users', me.uid, 'arecmik2push', id);
+function b64ToBytes(b) { const p = '='.repeat((4 - b.length % 4) % 4); const raw = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(raw, c => c.charCodeAt(0)); }
+function strHash(x) { let h = 0; for (let i = 0; i < x.length; i++) h = (h * 31 + x.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+async function enablePush() {
+  if (!fb || !me) return;
+  if (!swReg || !('PushManager' in window)) { toast('이 브라우저는 앱을 닫았을 때 알림을 지원하지 않아요. 폰에서는 홈 화면에 추가한 앱으로 열어주세요'); return; }
+  const perm = await Notification.requestPermission(); if (perm !== 'granted') { toast('알림이 허용되지 않았어요'); return; }
+  setNotifyOn(true);
+  try {
+    const sub = (await swReg.pushManager.getSubscription()) || await swReg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(VAPID_PUBLIC) });
+    const id = 'sub_' + strHash(sub.endpoint);
+    fb.setDoc(pushDoc(id), { type: 'sub', sub: JSON.stringify(sub), tz: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Seoul', ua: navigator.userAgent.slice(0, 140), created: Date.now() }).catch(err => toast('기기 등록에 실패했어요 (' + (err.code || err.message) + ')'));
+    setPushId(id); toast('이제 앱을 닫아도 이 기기로 알림이 와요'); render(); renderModal();
+  } catch (err) { toast('알림 등록에 실패했어요 (' + (err.message || err) + ')'); }
+}
+async function disablePush() {
+  const id = pushId();
+  try { const sub = swReg && await swReg.pushManager.getSubscription(); if (sub) await sub.unsubscribe(); } catch (e) { /* already gone */ }
+  if (id && fb && me) fb.deleteDoc(pushDoc(id)).catch(() => { /* offline: removed later by the sender */ });
+  setPushId(''); toast('이 기기는 앱이 열려 있을 때만 알려드려요'); render(); renderModal();
+}
 function checkReminders() {
   if (!loaded || !notifyOn()) return;
   const now = Date.now(); let changed = false;
@@ -830,6 +856,7 @@ function checkReminders() {
     const t = fireTime(it); if (t == null || t > now || now - t > 15 * 60000) return;
     const key = it.id + '|' + t; if (fired.has(key)) return;
     fired.add(key); changed = true; ringItem(it);
+    if (fb && me && fb.setDoc) fb.setDoc(pushDoc('log'), { sent: { [key]: Date.now() } }, { merge: true }).catch(() => { /* offline */ });
   });
   if (changed) { try { localStorage.setItem('arecmik-fired', JSON.stringify([...fired].slice(-400))); } catch (e) { /* storage blocked */ } }
 }
@@ -1423,13 +1450,14 @@ function dlgSettings() {
     <div class="title-input" style="font-size:22px">알림</div>
     <div class="set-row"><div><b>이 기기에서 알림 받기</b><span class="hint">${!sup ? '이 브라우저는 알림을 지원하지 않아요' : perm === 'denied' ? '브라우저에서 알림이 차단돼 있어요. 주소창 왼쪽 자물쇠 → 알림 허용으로 바꿔주세요' : on ? '켜져 있어요' : '꺼져 있어요'}</span></div>
       ${sup && perm !== 'denied' ? `<button class="btn ${on ? '' : 'primary'}" data-act="${on ? 'notifyoff' : 'notifyon'}">${on ? '끄기' : '켜기'}</button>` : ''}</div>
+    ${on && me ? `<div class="set-row"><div><b>앱을 닫아도 알림 받기</b><span class="hint">${pushId() ? '켜져 있어요 · 최대 5~10분 늦게 올 수 있어요' : '꺼져 있어요 · 지금은 앱이 열려 있을 때만 와요'}</span></div><button class="btn ${pushId() ? '' : 'primary'}" data-act="${pushId() ? 'pushoff' : 'pushon'}">${pushId() ? '끄기' : '켜기'}</button></div>` : ''}
   </div>
   <div class="dlg-body">
     <div class="fgrid" style="grid-template-columns:150px minmax(0,1fr)">
       <label for="set-min">시간 있는 항목</label><select id="set-min" class="inp" data-set="remindMin">${REMIND_MIN.map(([m, l]) => `<option value="${m}" ${m === +st.remindMin ? 'selected' : ''}>${l}</option>`).join('')}</select>
       <label for="set-untimed">시간 없는 항목</label><select id="set-untimed" class="inp" data-set="untimed">${UNTIMED.map(([v, l]) => `<option value="${v}" ${v === st.untimed ? 'selected' : ''}>${l}</option>`).join('')}</select>
     </div>
-    <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>Arecmik이 열려 있을 때(PC 탭이나 폰 앱) 알려드려요. 완전히 닫혀 있으면 알림이 오지 않아요.</p>
+    <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>‘앱을 닫아도 알림 받기’를 켜지 않은 기기는 Arecmik이 열려 있을 때만 알려드려요.</p>
     ${on ? '<div><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
   </div></div>`;
 }
@@ -1628,6 +1656,8 @@ const ACT = {
     if (!('Notification' in window)) { toast('이 브라우저는 알림을 지원하지 않아요'); return; }
     Notification.requestPermission().then(p => { if (p === 'granted') { setNotifyOn(true); toast('알림을 켰어요'); checkReminders(); } else toast('알림이 허용되지 않았어요'); render(); renderModal(); });
   },
+  pushon: () => { enablePush(); },
+  pushoff: () => { disablePush(); },
   notifyoff: () => { setNotifyOn(false); toast('이 기기의 알림을 껐어요'); render(); renderModal(); },
   notifytest: () => ringItem({ id: 'test', title: 'Arecmik 테스트 알림', kind: 'todo', date: TODAY, start: '' }, true),
   toastgo: () => { $('#toast').hidden = true; const f = toastFn; toastFn = null; if (f) f(); },

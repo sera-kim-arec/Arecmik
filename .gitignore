@@ -8,3 +8,4 @@ android/**/build/
 signing.properties
 *.apk.idsig
 editor/node_modules/
+node_modules/
