@@ -614,6 +614,8 @@ code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospa
 .seg button.st-cancel{color:var(--rose-ink)}
 .mv-pick{position:relative;overflow:hidden}
 .mv-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.dow .sun,.ldow .sun{color:var(--rose-ink)}
+.dow .sat,.ldow .sat{color:var(--blue-ink)}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -946,7 +948,10 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = S.settings || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9' }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend }; }
+const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
+const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
+const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
 function notifyOn() { try { return localStorage.getItem('arecmik-notify') === 'on'; } catch (e) { return false; } }
 function setNotifyOn(v) { try { localStorage.setItem('arecmik-notify', v ? 'on' : 'off'); } catch (e) { /* storage blocked */ } }
 const minLabel = m => (REMIND_MIN.find(x => x[0] === +m) || [0, `${m}분 전`])[1];
@@ -1222,10 +1227,10 @@ function viewHTML() {
 /* ---------- WORK: calendar ---------- */
 function monthRange(month) {
   const first = `${month}-01`; const fd = parse(first);
-  const gs = addDays(first, -((fd.getDay() + 6) % 7));
+  const gs = addDays(first, -((fd.getDay() - wsDay() + 7) % 7));
   const [y, m] = month.split('-').map(Number);
   const last = iso(new Date(y, m, 0)); const ld = parse(last);
-  const ge = addDays(last, 6 - ((ld.getDay() + 6) % 7));
+  const ge = addDays(last, 6 - ((ld.getDay() - wsDay() + 7) % 7));
   const weeks = []; for (let w = gs; w <= ge; w = addDays(w, 7)) weeks.push(w);
   return { y, m, gs, ge, weeks };
 }
@@ -1234,21 +1239,20 @@ function dayItems(d) {
     .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'event' ? -1 : 1) || (a.kind === 'event' ? (a.start || '99').localeCompare(b.start || '99') : (a.done - b.done) || (a.start || '99').localeCompare(b.start || '99')));
 }
 function itemColor(it) { const p = it.projectId && proj(it.projectId); return p ? `var(--${p.color})` : 'var(--blue)'; }
-function weekStart(d) { const dd = parse(d); return addDays(d, -((dd.getDay() + 6) % 7)); }
-const DOW = ['월', '화', '수', '목', '금', '토', '일'];
+function weekStart(d) { const dd = parse(d); return addDays(d, -((dd.getDay() - wsDay() + 7) % 7)); }
 function vWork() {
   const wk = ui.calView === 'week';
   const { y, m, weeks } = monthRange(ui.month);
   const selWeek = weeks.find(w => ui.sel >= w && ui.sel <= addDays(w, 6));
-  const ws = weekStart(ui.sel), we = addDays(ws, 6); const a = parse(ws), b = parse(we);
+  const ws = weekStart(ui.sel), we = addDays(ws, 6); const vd = visDays(ws); const a = parse(vd[0]), b = parse(vd[vd.length - 1]);
   const title = wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
   const nav = wk ? 'week' : 'month';
   const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div>`;
-  const right = `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
+  const right = `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
   let body;
   if (wk && ui.weekLog) body = weekLogHTML(ws);
-  else if (wk) body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map((x, i) => `<span class="${addDays(ws, i) === TODAY ? 'tdow' : ''}">${x}</span>`).join('')}</div>${weekRow(ws, true, 0)}</div></div>`;
-  else body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map(x => `<span>${x}</span>`).join('')}</div>${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
+  else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
+  else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
 const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image' && b.type !== 'table').map(b => plainText(b.text)).filter(Boolean).join(' · ');
@@ -1277,8 +1281,15 @@ function weekLogHTML(ws) {
       <aside class="card wlog-note" aria-label="이번 주 메모"><div class="card-title">이번 주 메모</div>${editorHTML('week:' + ws, true)}<p class="hint" style="margin:6px 2px 0">쓸 말이 있을 때만 적어요. 비워두면 아무것도 남지 않아요.</p></aside>
     </div></div>`;
 }
+function visDays(ws) { const all = [...Array(7)].map((_, i) => addDays(ws, i)); return settingsOf().hideWeekend ? all.filter(d => !isWeekend(d)) : all; }
+function dowHTML(ws) {
+  const vd = visDays(ws);
+  return `<div class="dow" style="grid-template-columns:repeat(${vd.length},minmax(0,1fr))">${vd.map(d => { const g = parse(d).getDay(); return `<span class="${g === 0 ? 'sun' : g === 6 ? 'sat' : ''} ${ui.calView === 'week' && d === TODAY ? 'tdow' : ''}">${'일월화수목금토'[g]}</span>`; }).join('')}</div>`;
+}
 function weekRow(ws, isSel, month) {
-  const days = [...Array(7)].map((_, i) => addDays(ws, i)); const we = days[6];
+  const all = [...Array(7)].map((_, i) => addDays(ws, i)); const we = all[6];
+  const days = visDays(ws); const N = days.length;
+  const colOf = (d, dir) => { if (dir > 0) { const k = days.findIndex(x => x >= d); return k; } let k = -1; days.forEach((x, j) => { if (x <= d) k = j; }); return k; };
   const spans = [];
   S.projects.forEach(p => { const s = p.start, e = projEnd(p); if (e < ws || s > we) return; spans.push({ k: 'p', o: p, s, e }); });
   S.items.forEach(it => { if (it.kind === 'event' && it.date && it.end && it.end > it.date && !(it.end < ws || it.date > we)) spans.push({ k: 'e', o: it, s: it.date, e: it.end }); });
@@ -1286,22 +1297,23 @@ function weekRow(ws, isSel, month) {
   const lanes = [];
   spans.forEach(sp => { let li = lanes.findIndex(end => end < sp.s); if (li < 0) { li = lanes.length; lanes.push(sp.e); } else lanes[li] = sp.e; sp.lane = li; });
   const nl = lanes.length;
-  let h = `<div class="wk ${isSel ? 'sel' : ''}" style="grid-template-rows:32px ${nl ? `repeat(${nl},25px) ` : ''}1fr">`;
+  let h = `<div class="wk ${isSel ? 'sel' : ''}" style="grid-template-columns:repeat(${N},minmax(0,1fr));grid-template-rows:32px ${nl ? `repeat(${nl},25px) ` : ''}1fr">`;
   days.forEach((d, i) => {
     const dd = parse(d); const other = month ? dd.getMonth() + 1 !== month : false;
-    const cls = ['cell']; if (other) cls.push('other'); if (i >= 5) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === 6) cls.push('last');
+    const cls = ['cell']; if (other) cls.push('other'); if (isWeekend(d)) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === N - 1) cls.push('last');
     const label = dd.getDate() === 1 && d !== TODAY ? `${dd.getMonth() + 1}월 1일` : dd.getDate();
     h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}</div>`;
   });
   spans.forEach(sp => {
-    const a = sp.s < ws ? 0 : diff(ws, sp.s); const b = sp.e > we ? 6 : diff(ws, sp.e);
-    const cl = sp.s < ws, cr = sp.e > we;
+    const a = colOf(sp.s < ws ? ws : sp.s, 1), b = colOf(sp.e > we ? we : sp.e, -1);
+    if (a < 0 || b < 0 || b < a) return;
+    const cl = sp.s < ws || sp.s < days[a], cr = sp.e > we || sp.e > days[b];
     if (sp.k === 'p') {
       const p = sp.o; const meta = cr ? '' : p.done ? `완료 ${fmtShort(p.done)}` : p.end ? `${fmtShort(p.end)}까지` : '진행 중';
       h += `<div class="bar proj ${pcls(p)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" data-act="open" data-kind="project" data-id="${p.id}" data-drop="project:${p.id}" title="${esc(p.title)} — 할일을 여기로 끌어오면 이 프로젝트에 들어가요"><span class="bt">${esc(p.title)}</span><span class="meta">${meta}</span>${!cr && !p.done ? `<span class="handle" data-resize="project:${p.id}" title="끌어서 끝 날짜 조정"></span>` : ''}</div>`;
     } else {
       const it = sp.o;
-      h += `<div class="bar ev ${evState(it)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}"><span class="dot" style="background:${itemColor(it)}"></span><span class="bt">${esc(it.title || '제목 없음')}</span><span class="meta">${cr ? '' : `${fmtShort(it.date)}–${fmtShort(it.end)}`}</span>${!cr ? `<span class="handle" data-resize="event:${it.id}" title="끌어서 기간 조정"></span>` : ''}</div>`;
+      h += `<div class="bar ev ${evState(it)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}"><span class="dot" style="background:${itemColor(it)}"></span><span class="bt">${esc(it.title || '제목 없음')}</span><span class="meta">${cr || b === a ? '' : `${fmtShort(it.date)}–${fmtShort(it.end)}`}</span>${!cr ? `<span class="handle" data-resize="event:${it.id}" title="끌어서 기간 조정"></span>` : ''}</div>`;
     }
   });
   days.forEach((d, i) => {
@@ -1445,7 +1457,7 @@ function vLife() {
   }).join('');
   return `${topbar(`<h1 class="h1">${y}년 ${m}월</h1><div class="pager"><button class="btn icon" data-act="lmonth" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="lmonth" data-d="1" aria-label="다음 달">${I.right}</button></div><button class="btn" data-act="ltoday">오늘</button>`,
     `<span class="hint">날짜에 마우스를 올리면 + 로 글을 쓸 수 있어요</span>`)}
-  <div class="lpad"><div class="ldow">${['월', '화', '수', '목', '금', '토', '일'].map(x => `<span>${x}</span>`).join('')}</div><div class="lgrid">${tiles}</div></div>`;
+  <div class="lpad"><div class="ldow">${dowNames().map(x => `<span class="${x === '일' ? 'sun' : x === '토' ? 'sat' : ''}">${x}</span>`).join('')}</div><div class="lgrid">${tiles}</div></div>`;
 }
 function drawDayPop(d) {
   const recs = dayRecords(d); const el = document.querySelector(`.tile[data-date="${d}"]`); if (!el || !recs.length) return;
@@ -1670,6 +1682,9 @@ function dlgSettings() {
     <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>‘앱을 닫아도 알림 받기’를 켜지 않은 기기는 Arecmik이 열려 있을 때만 알려드려요.</p>
     <div class="set-row" style="margin-top:12px"><div><b>알림 소리</b><span class="hint">알림 카드가 뜰 때 짧은 소리를 내요 (이 기기)</span></div><button class="btn" data-act="soundtoggle" aria-pressed="${soundOn()}">${soundOn() ? '켜짐' : '꺼짐'}</button></div>
     ${on ? '<div style="margin-top:12px"><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
+    <div class="set-sec" style="margin-top:22px">달력</div>
+    <div class="set-row"><div><b>한 주 시작</b><span class="hint">WORK·LIFE 달력 모두에 적용돼요</span></div><div class="seg inline"><button class="${settingsOf().weekStart === 'sun' ? 'on' : ''}" data-act="setweek" data-v="sun">일요일</button><button class="${settingsOf().weekStart === 'mon' ? 'on' : ''}" data-act="setweek" data-v="mon">월요일</button></div></div>
+    <div class="set-row"><div><b>WORK 달력에 주말 보이기</b><span class="hint">달력 위 ‘주말’ 버튼으로도 바꿀 수 있어요</span></div><div class="seg inline"><button class="${!settingsOf().hideWeekend ? 'on' : ''}" data-act="setwe" data-v="show">보이기</button><button class="${settingsOf().hideWeekend ? 'on' : ''}" data-act="setwe" data-v="hide">숨기기</button></div></div>
     <div class="set-sec" style="margin-top:22px">데이터</div>
     <div class="set-row"><div><b>백업</b><span class="hint">전체 기록을 파일 하나로 받아두거나, 받아둔 파일로 되돌려요</span></div><span class="frow"><button class="btn" data-act="export">백업 받기</button><label class="btn" for="import-file">불러오기</label><input type="file" id="import-file" accept="application/json,.json" hidden></span></div>
     ${me ? `<div class="set-sec" style="margin-top:22px">계정</div>
@@ -2007,6 +2022,9 @@ const ACT = {
     if (back && modalTargetOf(back)) { ui.modal = { kind: back.kind, id: back.id }; renderModal(); }
   },
   clearend: () => { const it = item(ui.modal.id); mutate(() => { it.end = null; }); },
+  weekend: () => { const h = !settingsOf().hideWeekend; S.settings = { ...(S.settings || {}), hideWeekend: h }; save(); render(); toast(h ? '주말을 숨겼어요' : '주말을 보여줘요'); },
+  setwe: t => { S.settings = { ...(S.settings || {}), hideWeekend: t.dataset.v === 'hide' }; save(); render(); renderModal(); },
+  setweek: t => { S.settings = { ...(S.settings || {}), weekStart: t.dataset.v }; save(); render(); renderModal(); },
   evstate: t => { const it = item(ui.modal.id); if (!it) return; const v = t.dataset.v; mutate(() => { it.done = v === 'done'; it.cancel = v === 'cancel'; }, v === 'cancel' ? '일정을 취소로 표시했어요' : v === 'done' ? '일정을 완료로 표시했어요' : '예정으로 되돌렸어요'); },
   evdone: (t, e) => { e.stopPropagation(); const it = item(t.dataset.id); if (!it) return; mutate(() => { it.done = !it.done; if (it.done) it.cancel = false; }, it.done ? '완료를 취소했어요' : `‘${it.title || '일정'}’ 완료`); },
   postpone: t => { const it = item(ui.modal.id); if (!it || !it.date) return; const base = it.date < TODAY ? TODAY : it.date; const to = addDays(base, +t.dataset.d); mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); },
