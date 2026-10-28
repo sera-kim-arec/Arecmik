@@ -492,8 +492,8 @@ label.link-btn{cursor:pointer}
 .subs-h{display:flex;align-items:center;gap:10px;padding:0 2px 4px}
 .pbar{flex:1;max-width:160px;height:5px;border-radius:3px;background:var(--sunken);overflow:hidden}
 .pbar span{display:block;height:100%;background:var(--green);border-radius:3px}
-.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--sunken)}
-.set-row>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.set-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px;padding:12px 14px;border-radius:12px;background:var(--sunken)}
+.set-row>div{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 180px}
 .set-row b{font-size:14px}
 /* ---- reminder cards ---- */
 .rcards{position:fixed;top:calc(16px + env(safe-area-inset-top, 0px));right:max(16px, env(safe-area-inset-right, 0px));z-index:95;display:flex;flex-direction:column;gap:10px;width:360px;max-width:calc(100vw - 32px);pointer-events:none}
@@ -507,6 +507,13 @@ label.link-btn{cursor:pointer}
 .rc-b{font-size:13px;color:var(--muted)}
 .rc-act{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 @media (prefers-reduced-motion: reduce){ .rcard{animation:none} }
+.side-foot{flex-direction:row;align-items:center;gap:8px}
+.side-foot .sync{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.foot-bell{font-size:11px;font-weight:600;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:6px;padding:1px 7px;white-space:nowrap}
+.gear-btn{flex:none;width:34px;height:34px;border:0;border-radius:10px;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.gear-btn:hover{background:var(--hover);color:var(--fg)}
+.set-sec{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em;padding:2px 2px 8px}
+.set-row+.set-row{margin-top:8px}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -633,6 +640,7 @@ const I = {
   menu: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   grid: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
   up: '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  gear: '<svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
   down: '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 
@@ -1015,7 +1023,7 @@ function sidebar() {
   <div class="seg" role="group" aria-label="공간 전환"><button class="${!life ? 'on' : ''}" data-act="go" data-view="work">WORK</button><button class="${life ? 'on' : ''}" data-act="go" data-view="life">LIFE</button></div>
   <label class="search">${I.search}<input id="q" type="search" placeholder="전체 검색" autocomplete="off" value="${esc(ui.search)}" aria-label="전체 검색"><kbd>Ctrl K</kbd></label>
   ${life ? lifeNav() : workNav()}
-  <div class="side-foot"><span class="sync"><span class="sync-dot ${syncCls}"></span><span id="sync-text">${esc(syncText)}</span></span><span>${esc(me ? (me.displayName || me.email || '') : '테스트 모드')}</span><span class="foot-row"><button class="link-btn" data-act="settings">알림 ${notifyOn() ? '켜짐' : '설정'}</button><button class="link-btn" data-act="export">백업 받기</button><label class="link-btn" for="import-file">백업 불러오기</label><input type="file" id="import-file" accept="application/json,.json" hidden>${me ? `<button class="link-btn" data-act="logout">${ui.confirm === 'logout' ? '한 번 더 누르면 로그아웃' : '로그아웃'}</button>` : ''}</span></div>
+  <div class="side-foot"><span class="sync" title="${esc(me ? (me.displayName || me.email || '') : '테스트 모드')}"><span class="sync-dot ${syncCls}"></span><span id="sync-text">${esc(syncText)}</span></span>${notifyOn() ? '<span class="foot-bell" title="알림 켜짐">알림 켜짐</span>' : ''}<button class="gear-btn" data-act="settings" aria-label="설정" title="설정">${I.gear}</button></div>
   </aside>`;
 }
 const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.view === view ? 'on' : ''}" data-act="go" data-view="${view}">${icon}<span>${label}</span>${extra}</button>`;
@@ -1505,9 +1513,10 @@ function dlgProject(p) {
 }
 function dlgSettings() {
   const st = settingsOf(); const sup = 'Notification' in window; const perm = sup ? Notification.permission : 'unsupported'; const on = notifyOn() && perm === 'granted';
-  return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="알림 설정">
-  <div class="dlg-head"><div class="dlg-top"><span class="kind">설정</span><span class="grow"></span><button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
-    <div class="title-input" style="font-size:22px">알림</div>
+  return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="설정">
+  <div class="dlg-head"><div class="dlg-top"><span class="grow"></span><button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
+    <div class="title-input" style="font-size:22px;margin-top:-34px">설정</div>
+    <div class="set-sec">알림</div>
     <div class="set-row"><div><b>이 기기에서 알림 받기</b><span class="hint">${!sup ? '이 브라우저는 알림을 지원하지 않아요' : perm === 'denied' ? '브라우저에서 알림이 차단돼 있어요. 주소창 왼쪽 자물쇠 → 알림 허용으로 바꿔주세요' : on ? '켜져 있어요' : '꺼져 있어요'}</span></div>
       ${sup && perm !== 'denied' ? `<button class="btn ${on ? '' : 'primary'}" data-act="${on ? 'notifyoff' : 'notifyon'}">${on ? '끄기' : '켜기'}</button>` : ''}</div>
     ${on && me ? `<div class="set-row"><div><b>앱을 닫아도 알림 받기</b><span class="hint">${pushId() ? '켜져 있어요 · 최대 5~10분 늦게 올 수 있어요' : '꺼져 있어요 · 지금은 앱이 열려 있을 때만 와요'}</span></div><button class="btn ${pushId() ? '' : 'primary'}" data-act="${pushId() ? 'pushoff' : 'pushon'}">${pushId() ? '끄기' : '켜기'}</button></div>` : ''}
@@ -1520,6 +1529,10 @@ function dlgSettings() {
     <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>‘앱을 닫아도 알림 받기’를 켜지 않은 기기는 Arecmik이 열려 있을 때만 알려드려요.</p>
     <div class="set-row" style="margin-top:12px"><div><b>알림 소리</b><span class="hint">알림 카드가 뜰 때 짧은 소리를 내요 (이 기기)</span></div><button class="btn" data-act="soundtoggle" aria-pressed="${soundOn()}">${soundOn() ? '켜짐' : '꺼짐'}</button></div>
     ${on ? '<div style="margin-top:12px"><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
+    <div class="set-sec" style="margin-top:22px">데이터</div>
+    <div class="set-row"><div><b>백업</b><span class="hint">전체 기록을 파일 하나로 받아두거나, 받아둔 파일로 되돌려요</span></div><span class="frow"><button class="btn" data-act="export">백업 받기</button><label class="btn" for="import-file">불러오기</label><input type="file" id="import-file" accept="application/json,.json" hidden></span></div>
+    ${me ? `<div class="set-sec" style="margin-top:22px">계정</div>
+    <div class="set-row"><div><b>${esc(me.displayName || 'Google 계정')}</b><span class="hint">${esc(me.email || '')}</span></div><button class="btn ${ui.confirm === 'logout' ? 'warn' : ''}" data-act="logout">${ui.confirm === 'logout' ? '한 번 더 누르면 로그아웃' : '로그아웃'}</button></div>` : ''}
   </div></div>`;
 }
 function dlgQuick() {
@@ -1707,7 +1720,7 @@ const ACT = {
   menu: () => { ui.navOpen = !ui.navOpen; render(); },
   login: () => { if (!fb) return; fb.login().catch(e => { if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment', 'auth/cancelled-popup-request'].includes(e.code)) fb.loginRedirect(); else if (e.code !== 'auth/popup-closed-by-user') toast('로그인하지 못했어요 (' + e.code + ')'); }); },
   reload: () => location.reload(),
-  logout: () => { if (ui.confirm !== 'logout') { ui.confirm = 'logout'; render(); return; } ui.confirm = null; flush(); fb.logout().then(() => location.reload()); },
+  logout: () => { if (ui.confirm !== 'logout') { ui.confirm = 'logout'; renderModal(); return; } ui.confirm = null; flush(); fb.logout().then(() => location.reload()); },
   export: () => exportBackup(),
   undo: () => undo(),
   month: t => { const [y, m] = ui.month.split('-').map(Number); const d = new Date(y, m - 1 + (+t.dataset.d), 1); ui.month = iso(d).slice(0, 7); render(); },
