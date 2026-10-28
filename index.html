@@ -64,7 +64,7 @@ svg{flex:none}
 .c-violet{--pc:var(--violet);--pc-bg:var(--violet-soft);--pc-ink:var(--violet-ink)}
 .c-rose{--pc:var(--rose);--pc-bg:var(--rose-soft);--pc-ink:var(--rose-ink)}
 
-.app{display:grid;grid-template-columns:252px minmax(0,1fr);height:100%}
+.app{position:relative;display:grid;grid-template-columns:var(--side-w, 252px) minmax(0,1fr);height:100%}
 .side{background:var(--side);border-right:1px solid var(--line-soft);overflow-y:auto;padding-block:16px 18px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:12px;display:flex;flex-direction:column;gap:16px}
 .main{overflow:auto;min-width:0;position:relative;background:var(--bg)}
 .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;padding:0 4px}
@@ -182,7 +182,7 @@ svg{flex:none}
 .chk.lg{width:20px;height:20px;border-radius:6px}
 body.resizing,body.resizing *{cursor:ew-resize!important;user-select:none}
 
-.panel{width:330px;flex:none;border-left:1px solid var(--line);background:var(--panel);padding-block:16px 32px;padding-left:16px;padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
+.panel{width:var(--panel-w, 360px);box-sizing:border-box;flex:none;border-left:1px solid var(--line);background:var(--panel);padding-block:16px 32px;padding-left:16px;padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
 .card-title{font-size:15px;font-weight:700;padding:2px 4px 8px}
 .addline{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border-radius:9px;background:var(--sunken);color:var(--muted)}
@@ -514,6 +514,16 @@ label.link-btn{cursor:pointer}
 .gear-btn:hover{background:var(--hover);color:var(--fg)}
 .set-sec{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em;padding:2px 2px 8px}
 .set-row+.set-row{margin-top:8px}
+/* ---- pane resizers ---- */
+.rz{position:relative;z-index:6;cursor:col-resize;touch-action:none}
+.rz::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:transparent;transition:background .15s}
+.rz:hover::after,.rz.on::after,.rz:focus-visible::after{background:var(--blue)}
+.rz:focus-visible{outline:none}
+.rz-side{position:absolute;top:0;bottom:0;left:calc(var(--side-w, 252px) - 4px);width:8px}
+.rz-panel{flex:none;width:8px;margin:0 -4px;align-self:stretch}
+body.resizing,body.resizing *{cursor:col-resize!important;user-select:none}
+@media (max-width:1100px){ .rz-panel{display:none} }
+@media (max-width:860px){ .rz-side{display:none} }
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -995,7 +1005,7 @@ function render() {
     if (ae.classList.contains('bk-text')) keep = { key: ae.closest('[data-ed]').dataset.ed, bid: ae.dataset.bid, pos: caretOffset(ae) };
     else if (ae.id && ae.tagName === 'INPUT') keep = { id: ae.id, s: ae.selectionStart, e: ae.selectionEnd };
   }
-  app.innerHTML = `<div class="app ${ui.navOpen ? 'nav-open' : ''}">${sidebar()}<div class="nav-scrim" data-act="menu"></div><main class="main">${viewHTML()}</main></div>`;
+  app.innerHTML = `<div class="app ${ui.navOpen ? 'nav-open' : ''}">${sidebar()}<div class="rz rz-side" data-rz="side" role="separator" aria-orientation="vertical" aria-label="사이드바 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div><div class="nav-scrim" data-act="menu"></div><main class="main">${viewHTML()}</main></div>`;
   const m2 = $('.main'); if (m2) m2.scrollTop = st;
   const c2 = $('.cal-scroll'); if (c2) c2.scrollLeft = sl;
   const s2 = $('.side'); if (s2) s2.scrollTop = ss;
@@ -1113,7 +1123,7 @@ function vWork() {
   if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map((x, i) => `<span class="${addDays(ws, i) === TODAY ? 'tdow' : ''}">${x}</span>`).join('')}</div>${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal"><div class="dow">${DOW.map(x => `<span>${x}</span>`).join('')}</div>${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
-  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${body}</section>${panelWork()}</div>`;
+  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
 const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image').map(b => b.text).filter(Boolean).join(' · ');
 function weekLogHTML(ws) {
@@ -2035,6 +2045,34 @@ document.addEventListener('drop', e => {
   }
 });
 
+/* pane widths: drag the edges of the sidebar and the right panel */
+const PANE = { side: { v: '--side-w', def: 252, min: 200, max: 420 }, panel: { v: '--panel-w', def: 360, min: 290, max: 640 } };
+function setPane(k, w, keep) {
+  const c = PANE[k]; w = Math.round(Math.max(c.min, Math.min(c.max, w)));
+  document.documentElement.style.setProperty(c.v, w + 'px');
+  if (keep) { try { localStorage.setItem('arecmik-pane-' + k, String(w)); } catch (e) { /* storage blocked */ } }
+}
+Object.keys(PANE).forEach(k => { try { const w = +localStorage.getItem('arecmik-pane-' + k); if (w) setPane(k, w); } catch (e) { /* storage blocked */ } });
+let paneDrag = null;
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest && e.target.closest('[data-rz]'); if (!h || e.button !== 0) return;
+  e.preventDefault(); paneDrag = h.dataset.rz; h.classList.add('on'); document.body.classList.add('resizing');
+});
+document.addEventListener('pointermove', e => {
+  if (!paneDrag) return;
+  setPane(paneDrag, paneDrag === 'side' ? e.clientX : window.innerWidth - e.clientX);
+});
+document.addEventListener('pointerup', () => {
+  if (!paneDrag) return; const k = paneDrag; paneDrag = null; document.body.classList.remove('resizing');
+  document.querySelectorAll('.rz.on').forEach(x => x.classList.remove('on'));
+  setPane(k, parseInt(getComputedStyle(document.documentElement).getPropertyValue(PANE[k].v)) || PANE[k].def, true);
+});
+document.addEventListener('dblclick', e => { const h = e.target.closest && e.target.closest('[data-rz]'); if (!h) return; const k = h.dataset.rz; setPane(k, PANE[k].def, true); toast('원래 너비로 돌아갔어요'); });
+document.addEventListener('keydown', e => {
+  const h = e.target.closest && e.target.closest('[data-rz]'); if (!h || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  e.preventDefault(); const k = h.dataset.rz; const cur = parseInt(getComputedStyle(document.documentElement).getPropertyValue(PANE[k].v)) || PANE[k].def;
+  const d = (e.key === 'ArrowRight' ? 16 : -16) * (k === 'side' ? 1 : -1); setPane(k, cur + d, true);
+});
 /* resize bars */
 let rs = null;
 document.addEventListener('pointerdown', e => {
