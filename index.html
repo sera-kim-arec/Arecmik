@@ -663,6 +663,89 @@ code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospa
   .frow{flex-wrap:wrap}
   .doc .ed{margin-left:0}
 }
+/* ---- quick add ---- */
+.cell{position:relative}
+.cell-add{position:absolute;top:5px;right:5px;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .12s;padding:0}
+.cell-add svg{width:12px;height:12px}
+.cell:hover .cell-add,.cell-add:focus-visible{opacity:1}
+.cell-add:hover{background:var(--hover);color:var(--fg)}
+.qc{position:fixed;z-index:70;background:var(--surface);border-radius:14px;box-shadow:var(--shadow-lg),0 0 0 1px var(--line-soft);padding:10px;display:flex;flex-direction:column;gap:8px}
+.qc-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
+.qc .inp{width:100%;box-sizing:border-box;height:36px;font-size:14px}
+.qc-f{font-size:11.5px;color:var(--faint)}
+.seg.sm button{height:26px;font-size:12px;padding:0 9px}
+@media (hover:none){ .cell-add{display:none} }
+/* ---- phone polish ---- */
+@media (max-width:640px){
+  .main{background:var(--side)}
+  .mtop{background:var(--bg);border-bottom:0;gap:4px;padding-top:calc(10px + env(safe-area-inset-top, 0px));padding-bottom:6px}
+  .mtop .menu-btn{border:0;background:transparent;margin-left:-6px}
+  .mtitle{display:flex;align-items:baseline;gap:6px;margin:0 2px 0 2px}
+  .mtitle b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .mtitle span{font-size:13px;color:var(--muted);font-weight:600}
+  .mchev{width:30px;height:30px;border:0;border-radius:15px;background:transparent;color:var(--fg2);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+  .mchev:active{background:var(--hover)}
+  .mpill{height:28px;padding:0 12px;border:0;border-radius:14px;background:var(--lemon-soft);color:var(--lemon-ink);font:inherit;font-size:12.5px;font-weight:700;margin-right:6px;cursor:pointer}
+  .mcal{background:var(--bg);border-bottom:0;border-radius:0 0 22px 22px;box-shadow:0 6px 18px rgba(0,0,0,.05);padding-bottom:8px}
+  .mday{height:48px}
+  .mday .n{width:32px;height:32px;border-radius:16px;font-size:15px}
+  .mday.sel .n{background:var(--fg);color:var(--bg)!important}
+  .mday.today:not(.sel) .n{background:var(--lemon);color:var(--on-lemon)!important}
+  .mday .dots{gap:3px;height:5px}
+  .mday .dots i{width:5px;height:5px}
+  .mday .dots i.td{background:transparent;box-shadow:inset 0 0 0 1.3px var(--muted)}
+  .mgrip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 0}
+  .mcal-nav{display:none}
+  .mlist{gap:12px;padding-top:16px}
+  .mdl-h{display:flex;align-items:center;gap:8px;padding:0 4px}
+  .mdl-h h2{font-size:18px;font-weight:800;margin:0;letter-spacing:-.01em}
+  .mdl-h h2 span{font-weight:600;color:var(--muted);font-size:15px}
+  .mtoday{font-size:11.5px;font-weight:700;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:8px;padding:2px 8px}
+  .mcount{font-size:12.5px;color:var(--muted);font-weight:600}
+  .mcomp{display:flex;align-items:center;gap:6px;background:var(--surface);border-radius:16px;padding:6px 6px 6px 12px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 0 0 1px var(--line-soft)}
+  .mcomp:focus-within{box-shadow:0 0 0 2px var(--lemon),0 4px 14px rgba(0,0,0,.06)}
+  .mc-ic{color:var(--muted);display:flex}
+  .mc-ic svg{width:16px;height:16px}
+  .mcomp input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:var(--fg);height:36px}
+  .mc-kinds{display:flex;background:var(--sunken);border-radius:11px;padding:2px;gap:2px;flex:none}
+  .mc-kinds button{border:0;background:transparent;font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);height:30px;padding:0 10px;border-radius:9px;cursor:pointer}
+  .mc-kinds button.on{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+  .mprojs{display:flex;gap:6px;flex-wrap:wrap;padding:0 2px}
+  .mempty{text-align:center;color:var(--faint);font-size:13.5px;padding:18px 0 6px}
+  .mgroup{display:flex;flex-direction:column;gap:6px}
+  .mg-h{font-size:12px;font-weight:700;color:var(--muted);padding:0 6px;letter-spacing:.02em}
+  .mg-b{background:var(--surface);border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 0 0 1px var(--line-soft);overflow:hidden}
+  .mrow{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;min-height:56px;padding:10px 14px;border:0;background:transparent;text-align:left;font:inherit;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .mrow+.mrow{border-top:1px solid var(--line-soft)}
+  .mrow:active{background:var(--hover)}
+  .mtime{width:42px;flex:none;display:flex;flex-direction:column;font-variant-numeric:tabular-nums;line-height:1.25}
+  .mtime b{font-size:13.5px;font-weight:700}
+  .mtime b.allday{font-size:12.5px;color:var(--muted);font-weight:700}
+  .mtime small{font-size:11.5px;color:var(--faint)}
+  .mbar{width:4px;align-self:stretch;border-radius:2px;flex:none;min-height:28px}
+  .mtx{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;border:0;background:transparent;text-align:left;font:inherit;color:inherit;padding:0;cursor:pointer}
+  .mtx b{font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mtx>span{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .mtx>span i{font-style:normal;color:var(--faint)}
+  .mtx em{font-style:normal;font-weight:700;font-size:11.5px;border-radius:5px;padding:0 6px}
+  .mtx em.st{background:var(--sunken);color:var(--muted)}
+  .mtx em.st.ok{background:var(--lemon-soft);color:var(--lemon-ink)}
+  .mtx em.mv{background:var(--lemon-soft);color:var(--lemon-ink)}
+  .mtx .pt{font-weight:600;color:var(--pc-ink)}
+  .mrow.td .chk{width:22px;height:22px;flex:none;border-radius:11px}
+  .mrow.td.done .mtx b{text-decoration:line-through;color:var(--muted)}
+  .mrow.ev.done{opacity:.55}
+  .mrow.ev.cancel .mtx b{text-decoration:line-through;color:var(--muted)}
+  .tabbar{padding-top:4px}
+  .tabbar button{gap:2px;font-size:11px}
+  .tabbar .ti{position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:30px;border-radius:15px;transition:background .15s}
+  .tabbar .ti svg{width:20px;height:20px}
+  .tabbar button.on .ti{background:var(--lemon-soft);color:var(--on-lemon)}
+  .tabbar .ti b{position:absolute;top:0;right:6px;min-width:16px;height:16px;line-height:16px;text-align:center;font-size:10px;background:var(--fg);color:var(--bg);border-radius:8px;padding:0 4px;box-sizing:border-box}
+  .fab{background:var(--lemon);color:var(--on-lemon);box-shadow:0 8px 22px rgba(160,130,0,.28)}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom, 0px));max-width:calc(100vw - 32px);white-space:nowrap}
+  .mprojs .tag{box-shadow:none;border:0}
+}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1195,6 +1278,32 @@ function alignFoot() {
   document.documentElement.style.setProperty('--foot-gap', gap + 'px');
 }
 window.addEventListener('resize', alignFoot);
+function madd(kind, keep) {
+  const inp = $('#m-add'); const v = inp ? inp.value.trim() : ''; if (!v) { if (inp) inp.focus(); return; }
+  ui.qkind = kind; const d = ui.sel;
+  mutate(() => { createItem(kind, v, d); }, `${fmtMD(d)}에 ${kind === 'event' ? '일정' : '할일'}을 추가했어요`);
+  if (keep) { ui.focusId = 'm-add'; render(); }
+}
+let qc = null, lastSel = null;
+function openQC(date) {
+  qc = { date, kind: ui.qkind || 'event' }; ui.sel = date; render(); drawQC('');
+}
+function drawQC(val) {
+  if (!qc) return;
+  const cell = document.querySelector(`.wk .cell[data-date="${qc.date}"]`); const r = cell ? cell.getBoundingClientRect() : { left: 200, top: 120, right: 400, bottom: 160 };
+  const w = 300; let left = Math.min(r.left + 4, window.innerWidth - w - 12); let top = r.top + 34; if (top + 140 > window.innerHeight) top = Math.max(12, r.top - 140);
+  pop.innerHTML = `<div class="qc" role="dialog" aria-label="빠르게 추가" style="left:${Math.max(12, left)}px;top:${top}px;width:${w}px">
+    <div class="qc-h"><b>${fmtFull(qc.date)}</b><div class="seg inline sm" role="radiogroup" aria-label="종류"><button role="radio" aria-checked="${qc.kind === 'event'}" class="${qc.kind === 'event' ? 'on' : ''}" data-act="qckind" data-k="event">일정</button><button role="radio" aria-checked="${qc.kind === 'todo'}" class="${qc.kind === 'todo' ? 'on' : ''}" data-act="qckind" data-k="todo">할일</button></div></div>
+    <input id="qc-in" class="inp" placeholder="${qc.kind === 'event' ? '일정' : '할일'} 제목 · 예: 3시 팀 회의" autocomplete="off" value="${esc(val || '')}">
+    <div class="qc-f">Enter 저장 · Tab 종류 바꾸기 · Esc 닫기</div></div>`;
+  const inp = document.getElementById('qc-in'); inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+}
+function closeQC() { if (qc) { qc = null; pop.innerHTML = ''; } }
+function saveQC() {
+  const inp = document.getElementById('qc-in'); if (!qc || !inp) return; const v = inp.value.trim(); if (!v) { closeQC(); return; }
+  const { date, kind } = qc; ui.qkind = kind; closeQC();
+  let it; mutate(() => { it = createItem(kind, v, date); }, `${fmtMD(date)}에 ${kind === 'event' ? '일정' : '할일'}을 추가했어요`);
+}
 let swipe0 = null;
 document.addEventListener('touchstart', e => { const z = e.target.closest && e.target.closest('[data-swipe]'); swipe0 = z && e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY, k: z.dataset.swipe } : null; }, { passive: true });
 document.addEventListener('touchend', e => {
@@ -1276,11 +1385,11 @@ function tabbar() {
   const v = ui.view; const on = k => (k === 'work' ? v === 'work' || v === 'projects' : k === 'mtodo' ? v === 'mtodo' : k === 'notes' ? v === 'notes' : isLife()) ? 'on' : '';
   const n = S.items.filter(i => i.kind === 'todo' && !i.date && !i.done).length;
   return `<nav class="tabbar" aria-label="아래 메뉴">
-    <button class="${on('work')}" data-act="go" data-view="work">${I.cal}<span>캘린더</span></button>
-    <button class="${on('mtodo')}" data-act="go" data-view="mtodo">${I.check}<span>할일${n ? ` <b>${n}</b>` : ''}</span></button>
-    <button class="${on('notes')}" data-act="mnotes">${I.note}<span>노트</span></button>
-    <button class="${on('life')}" data-act="go" data-view="life">${I.pen}<span>LIFE</span></button>
-  </nav>${v === 'work' || v === 'mtodo' ? `<button class="fab" data-act="quick" aria-label="새 항목">${I.plus}</button>` : ''}`;
+    <button class="${on('work')}" data-act="go" data-view="work"><span class="ti">${I.cal}</span><span>캘린더</span></button>
+    <button class="${on('mtodo')}" data-act="go" data-view="mtodo"><span class="ti">${I.check}${n ? `<b>${n}</b>` : ''}</span><span>할일</span></button>
+    <button class="${on('notes')}" data-act="mnotes"><span class="ti">${I.note}</span><span>노트</span></button>
+    <button class="${on('life')}" data-act="go" data-view="life"><span class="ti">${I.pen}</span><span>LIFE</span></button>
+  </nav>${v === 'work' || v === 'mtodo' ? `<button class="fab" data-act="fab" aria-label="새 항목">${I.plus}</button>` : ''}`;
 }
 function viewHTML() {
   switch (ui.view) {
@@ -1374,7 +1483,7 @@ function weekRow(ws, isSel, month) {
     const dd = parse(d); const other = month ? dd.getMonth() + 1 !== month : false;
     const cls = ['cell']; if (other) cls.push('other'); if (isWeekend(d)) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === N - 1) cls.push('last');
     const label = dd.getDate() === 1 && d !== TODAY ? `${dd.getMonth() + 1}월 1일` : dd.getDate();
-    h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}</div>`;
+    h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}<button class="cell-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가 (날짜를 두 번 눌러도 돼요)">${I.plus}</button></div>`;
   });
   spans.forEach(sp => {
     const a = colOf(sp.s < ws ? ws : sp.s, 1), b = colOf(sp.e > we ? we : sp.e, -1);
@@ -1429,6 +1538,29 @@ function inboxCard() {
 function vTodoM() {
   return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${inboxCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
 }
+function mDayList(d) {
+  const dd = parse(d);
+  const evs = S.items.filter(it => it.kind === 'event' && it.date && it.date <= d && (it.end || it.date) >= d).sort((a, b) => (a.start || '').localeCompare(b.start || ''));
+  const tds = S.items.filter(it => it.kind === 'todo' && it.date === d).sort((a, b) => a.done - b.done || (a.start || '99').localeCompare(b.start || '99'));
+  const ps = S.projects.filter(p => p.start <= d && projEnd(p) >= d);
+  const k = ui.qkind || 'event';
+  const sub = it => { const p = it.projectId && proj(it.projectId); const bits = []; if (it.end) bits.push(`${fmtShort(it.date)} – ${fmtShort(it.end)}`); if (p) bits.push(`<span class="pt ${pcls(p)}">${esc(p.title)}</span>`); const k2 = kidsOf(it.id); if (k2.length) bits.push(`하위 ${k2.filter(x => x.done).length}/${k2.length}`); return bits.join('<i>·</i>'); };
+  const evRow = it => { const st = evState(it); const s2 = sub(it); return `<button class="mrow ev ${st}" data-act="open" data-kind="item" data-id="${it.id}">
+      <span class="mtime">${it.start ? `<b>${it.start}</b>${it.finish ? `<small>${it.finish}</small>` : ''}` : '<b class="allday">종일</b>'}</span>
+      <span class="mbar" style="background:${it.cancel ? 'var(--faint)' : itemColor(it)}"></span>
+      <span class="mtx"><b>${esc(it.title || '제목 없음')}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span></button>`; };
+  const tdRow = it => { const s2 = sub(it); const ml = !it.done && moveLabel(it); return `<div class="mrow td ${it.done ? 'done' : ''}">
+      <button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>
+      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${esc(it.title || '제목 없음')}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button></div>`; };
+  const nOpen = tds.filter(x => !x.done).length;
+  return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${nOpen}/${tds.length}` : ''}</span></div>
+  <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
+    <div class="mc-kinds" role="group" aria-label="추가할 종류"><button class="${k === 'event' ? 'on' : ''}" data-act="mkind" data-k="event">일정</button><button class="${k === 'todo' ? 'on' : ''}" data-act="mkind" data-k="todo">할일</button></div></div>
+  ${ps.length ? `<div class="mprojs">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${esc(p.title)}</button>`).join('')}</div>` : ''}
+  ${evs.length || tds.length ? '' : '<div class="mempty">비어 있는 날이에요</div>'}
+  ${evs.length ? `<div class="mgroup"><div class="mg-h">일정</div><div class="mg-b">${evs.map(evRow).join('')}</div></div>` : ''}
+  ${tds.length ? `<div class="mgroup"><div class="mg-h">할일</div><div class="mg-b">${tds.map(tdRow).join('')}</div></div>` : ''}`;
+}
 /* phone calendar: compact grid with dots + the chosen day's list */
 function vWorkM() {
   const wk = ui.calView === 'week';
@@ -1451,13 +1583,16 @@ function vWorkM() {
     return `<button class="${cls.join(' ')}" data-act="selday" data-date="${d}" aria-label="${fmtFull(d)}" aria-pressed="${d === ui.sel}"><span class="n">${dd.getDate()}</span><span class="dots">${dots(d)}</span></button>`;
   }).join('')).join('');
   const cols = `grid-template-columns:repeat(${vd0.length},minmax(0,1fr))`;
-  return `${topbar(`<h1 class="h1">${title}</h1>`, `<button class="btn sm" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div>`)}
+  return `<div class="topbar mtop"><button class="btn icon menu-btn" data-act="menu" aria-label="메뉴">${I.menu}</button>
+    <div class="mtitle"><b>${wk ? title : `${m}월`}</b>${wk ? '' : `<span>${y}</span>`}</div>
+    <button class="mchev" data-act="${nav}" data-d="-1" aria-label="${wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="mchev" data-act="${nav}" data-d="1" aria-label="${wk ? '다음 주' : '다음 달'}">${I.right}</button>
+    <span class="grow"></span>${ui.sel !== TODAY || ui.month !== TODAY.slice(0, 7) ? '<button class="mpill" data-act="today">오늘</button>' : ''}<div class="seg inline sm" role="group" aria-label="달력 보기"><button class="${!wk ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div></div>
   <div class="mcal" data-swipe="${nav}">
     <div class="mdow" style="${cols}">${vd0.map(d => { const g = parse(d).getDay(); return `<span class="${g === 0 ? 'sun' : g === 6 ? 'sat' : ''}">${'일월화수목금토'[g]}</span>`; }).join('')}</div>
     <div class="mgrid" style="${cols}">${grid}</div>
-    <div class="mcal-nav"><button class="btn icon sm" data-act="${nav}" data-d="-1" aria-label="${wk ? '이전 주' : '이전 달'}">${I.left}</button><span class="hint">옆으로 밀어서 ${wk ? '주' : '달'} 넘기기</span><button class="btn icon sm" data-act="${nav}" data-d="1" aria-label="${wk ? '다음 주' : '다음 달'}">${I.right}</button></div>
+    <div class="mgrip" aria-hidden="true"></div>
   </div>
-  <div class="mpage">${daySection()}</div>`;
+  <div class="mpage mlist">${mDayList(ui.sel)}</div>`;
 }
 function daySection() {
   const d = ui.sel;
@@ -2064,9 +2199,20 @@ function deleteFolder(id) {
     ui.confirm = null;
   }, `‘${f.name}’ 폴더를 지웠어요`);
 }
+function parseQuick(v) {
+  const m = String(v).trim().match(/^(오전|오후|아침|저녁|밤)?\s*(\d{1,2})(?::(\d{2})|\s*시(?:\s*(반|\d{1,2})\s*분?)?)\s+(.+)$/);
+  if (!m) return { title: String(v).trim(), start: '' };
+  let h = +m[2]; const mi = m[3] ? +m[3] : m[4] === '반' ? 30 : m[4] ? +m[4] : 0;
+  const pm = m[1] === '오후' || m[1] === '저녁' || m[1] === '밤';
+  if (pm && h < 12) h += 12; else if ((m[1] === '오전' || m[1] === '아침') && h === 12) h = 0; else if (!m[1] && !m[3] && h >= 1 && h <= 7) h += 12;
+  if (h > 23 || mi > 59) return { title: String(v).trim(), start: '' };
+  return { title: m[5].trim(), start: `${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}` };
+}
 function createItem(kind, title, date) {
+  let start = '';
+  if (date) { const q = parseQuick(title); title = q.title; start = q.start; }
   const base = { id: uid(), title, projectId: null, memo: [B('p', '')] };
-  const it = kind === 'event' ? { ...base, kind, date: date || ui.sel, end: null, start: '', finish: '' } : { ...base, kind, date: date || null, done: false };
+  const it = kind === 'event' ? { ...base, kind, date: date || ui.sel, end: null, start, finish: '' } : { ...base, kind, date: date || null, done: false, start };
   S.items.push(it); return it;
 }
 function newPost(opts = {}) {
@@ -2107,7 +2253,15 @@ const ACT = {
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
-  selday: t => { ui.sel = t.dataset.date; if (isMob()) ui.month = ui.sel.slice(0, 7); render(); },
+  selday: t => {
+    const d = t.dataset.date; const now = Date.now();
+    if (lastSel && lastSel.d === d && now - lastSel.t < 450) { lastSel = null; if (isMob()) { const m = $('#m-add'); if (m) m.focus(); } else openQC(d); return; }
+    lastSel = { d, t: now }; ui.sel = d; if (isMob()) ui.month = ui.sel.slice(0, 7); render();
+  },
+  qcopen: (t, e) => { e.stopPropagation(); openQC(t.dataset.date); },
+  qckind: t => { if (!qc) return; const v = ($('#qc-in') || {}).value || ''; qc.kind = t.dataset.k; drawQC(v); },
+  mkind: t => { ui.qkind = t.dataset.k; const v = ($('#m-add') || {}).value || ''; const m = $('#m-add'); if (m && m.value.trim()) { madd(t.dataset.k); return; } render(); const m2 = $('#m-add'); if (m2) { m2.value = v; } },
+  fab: () => { if (ui.view === 'mtodo') { const i = $('#inbox-add'); if (i) { i.scrollIntoView({ block: 'center' }); i.focus(); } return; } const m = $('#m-add'); if (m) { m.scrollIntoView({ block: 'center', behavior: 'smooth' }); m.focus(); } else openModal('quick'); },
   quick: () => openModal('quick', null, 'qa-title'),
   qadd: t => quickAdd(t.dataset.kind),
   open: t => { ui.modalBack = null; openModal(t.dataset.kind, t.dataset.id); },
@@ -2242,6 +2396,7 @@ document.addEventListener('click', e => {
   if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); return; }
   if (!e.target.closest('.sres') && !e.target.closest('.search')) closeSearch(true);
   if (slash && !e.target.closest('.slash') && !e.target.closest('.bk-text')) closeSlash();
+  if (qc && !e.target.closest('.qc') && !e.target.closest('[data-act="qcopen"]') && !e.target.closest('[data-act="selday"]')) closeQC();
   if (mention && !e.target.closest('.mpick') && !e.target.closest('.bk-text') && !e.target.closest('[data-act="linkpick"]')) closeMention();
   const t = e.target.closest('[data-act]'); if (!t) return;
   const fn = ACT[t.dataset.act]; if (!fn) return;
@@ -2459,6 +2614,12 @@ document.addEventListener('keydown', e => {
   if (t.classList && t.classList.contains('bk-text')) return onBlockKey(e, t);
   const typing = t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); undo(); return; }
+  if (t.id === 'qc-in') {
+    if (e.key === 'Tab') { e.preventDefault(); qc.kind = qc.kind === 'event' ? 'todo' : 'event'; drawQC(t.value); return; }
+    if (e.key === 'Escape') { e.preventDefault(); closeQC(); return; }
+    if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); saveQC(); return; }
+    return;
+  }
   if (e.key === 'Escape') {
     if (slash) { closeSlash(); return; }
     if (mention) { closeMention(); return; }
@@ -2472,6 +2633,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
   if (t.id === 'mp-q' && mention) { e.preventDefault(); pickMention(mention.idx); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
+  if (t.id === 'm-add') { e.preventDefault(); madd(ui.qkind || 'event', true); return; }
   if (t.id === 'day-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, ui.sel); }, `${fmtMD(ui.sel)}에 할일을 추가했어요`); ui.focusId = 'day-add'; render(); return; }
   if (t.id === 'qa-title') { e.preventDefault(); quickAdd('todo'); return; }
   if (t.id === 'ptodo-add') { const v = t.value.trim(); if (!v) return; const pid = ui.modal.id; mutate(() => { const it = createItem('todo', v, null); it.projectId = pid; }); ui.modal.focus = 'ptodo-add'; renderModal(); return; }
