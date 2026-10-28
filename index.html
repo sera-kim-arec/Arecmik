@@ -525,6 +525,12 @@ label.link-btn{cursor:pointer}
 body.resizing,body.resizing *{cursor:col-resize!important;user-select:none}
 @media (max-width:1100px){ .rz-panel{display:none} }
 @media (max-width:860px){ .rz-side{display:none} }
+/* ---- folder drag & drop ---- */
+.tree-row[draggable="true"]{cursor:default}
+.tree-row.drop-before{box-shadow:inset 0 2px 0 var(--blue)}
+.tree-row.drop-after{box-shadow:inset 0 -2px 0 var(--blue)}
+.tree-row.drop-hi{background:var(--blue-soft)!important;outline:1.5px solid var(--blue);outline-offset:-1.5px}
+.sec-head.drop-hi{background:var(--blue-soft);border-radius:6px;outline:none}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1048,12 +1054,12 @@ const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.
 function workNav() {
   const active = S.projects.filter(p => !p.done).length;
   return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
-  <div class="sec"><div class="sec-head"><span>노트</span><button class="mini" data-act="newfolder" data-space="work" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
+  <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="newfolder" data-space="work" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('work', null, 0)}</div>`;
 }
 function lifeNav() {
   return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
-  <div class="sec"><div class="sec-head"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
+  <div class="sec"><div class="sec-head" data-drop="froot:life"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('life', null, 0)}</div>
   <div class="sec"><div class="sec-head"><span>컬렉션</span><button class="mini" data-act="newcoll" aria-label="새 컬렉션" title="새 컬렉션">${I.plus}</button></div>
   ${S.collections.map(c => `<button class="nav-item ${ui.view === 'collections' && ui.collId === c.id ? 'on' : ''}" data-act="opencoll" data-id="${c.id}"><span>${esc(c.name)}</span><span class="cnt">${S.citems.filter(x => x.coll === c.id).length}</span></button>`).join('')}
@@ -1074,7 +1080,7 @@ function tree(space, parent, depth) {
     const has = kids || docs.length;
     const open = !!ui.open[f.id];
     const on = space === 'work' ? (ui.view === 'notes' && !ui.noteDoc && ui.noteFolder === f.id) : (ui.view === 'posts' && !ui.postId && ui.lifeFolder === f.id);
-    h += `<div class="tree-row ${on ? 'on' : ''}" style="padding-left:${4 + depth * 16}px">
+    h += `<div class="tree-row ${on ? 'on' : ''}" style="padding-left:${4 + depth * 16}px" draggable="true" data-drag="folder:${f.id}" data-drop="folder:${f.id}">
       <button class="tw" data-act="fold" data-id="${f.id}" aria-label="${open ? '접기' : '펼치기'}" ${has ? '' : 'tabindex="-1" style="visibility:hidden"'}>${open ? I.chevD : I.chevR}</button>
       <button class="nm" data-act="${space === 'work' ? 'nfolder' : 'lfolder'}" data-id="${f.id}">${I.folder}<span>${esc(f.name)}</span></button>
       <span class="cnt">${folderCount(f)}</span>
@@ -1082,7 +1088,7 @@ function tree(space, parent, depth) {
     if (open || (ui.newFolder && ui.newFolder.parent === f.id)) {
       h += tree(space, f.id, depth + 1);
       h += newFolderRow(space, f.id, depth + 1);
-      if (open) docs.forEach(d => { h += `<button class="tree-doc ${ui.view === 'notes' && ui.noteDoc === d.id ? 'on' : ''}" style="padding-left:${30 + depth * 16}px" data-act="opendoc" data-id="${d.id}">${I.note}<span>${esc(d.title || '제목 없음')}</span></button>`; });
+      if (open) docs.forEach(d => { h += `<button class="tree-doc ${ui.view === 'notes' && ui.noteDoc === d.id ? 'on' : ''}" style="padding-left:${30 + depth * 16}px" data-act="opendoc" data-id="${d.id}" draggable="true" data-drag="doc:${d.id}">${I.note}<span>${esc(d.title || '제목 없음')}</span></button>`; });
     }
   });
   if (parent === null) h += newFolderRow(space, null, 0);
@@ -1293,7 +1299,7 @@ function vFolderPage(space, fid) {
   <div class="page">
     ${f ? `<input class="h1-input" data-fname="${f.id}" value="${esc(f.name)}" aria-label="폴더 이름">` : `<h1 class="h1">${root}</h1>`}
     ${subs.length ? `<div><div class="lbl">하위 폴더</div><div class="fcards">${subs.map(x => `<button class="fcard" data-act="${act}" data-id="${x.id}">${I.folder}${esc(x.name)}<span class="c">${folderCount(x)}</span></button>`).join('')}</div></div>` : ''}
-    ${isWork && f ? `<div><div class="lbl">노트 ${docs.length}개</div>${docs.length ? `<div class="dlist">${docs.map(x => { const p = x.projectId && proj(x.projectId); return `<button class="drow" data-act="opendoc" data-id="${x.id}">${I.note}<span class="dt"><b>${esc(x.title || '제목 없음')}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span>${p ? `<span class="tag ${pcls(p)}">${esc(p.title)}</span>` : ''}<span class="dm">${ago(x.updated)}</span></button>`; }).join('')}</div>` : `<div class="empty">이 폴더에 노트가 없어요. 오른쪽 위 ‘새 노트’로 시작해 보세요.</div>`}</div>` : ''}
+    ${isWork && f ? `<div><div class="lbl">노트 ${docs.length}개</div>${docs.length ? `<div class="dlist">${docs.map(x => { const p = x.projectId && proj(x.projectId); return `<button class="drow" data-act="opendoc" data-id="${x.id}" draggable="true" data-drag="doc:${x.id}">${I.note}<span class="dt"><b>${esc(x.title || '제목 없음')}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span>${p ? `<span class="tag ${pcls(p)}">${esc(p.title)}</span>` : ''}<span class="dm">${ago(x.updated)}</span></button>`; }).join('')}</div>` : `<div class="empty">이 폴더에 노트가 없어요. 오른쪽 위 ‘새 노트’로 시작해 보세요.</div>`}</div>` : ''}
     ${!f ? `<div class="empty">왼쪽에서 폴더를 고르거나 새 폴더를 만들어 보세요. 폴더 이름 옆 + 로 하위 폴더를 만들 수 있어요.</div>` : ''}
     ${f ? `<div class="foot-actions"><button class="btn sm ${ui.confirm === 'folder:' + f.id ? 'warn' : 'ghost danger'}" data-act="delfolder" data-id="${f.id}">${ui.confirm === 'folder:' + f.id ? '한 번 더 누르면 폴더 삭제 (안의 내용은 위 폴더로 옮겨져요)' : '폴더 삭제'}</button></div>` : ''}
   </div>`;
@@ -1363,7 +1369,7 @@ function vPosts() {
     <input class="h1-input" data-fname="${f.id}" value="${esc(f.name)}" aria-label="폴더 이름">
     ${subs.length ? `<div class="fcards">${subs.map(x => `<button class="fcard" data-act="lfolder" data-id="${x.id}">${I.folder}${esc(x.name)}<span class="c">${folderCount(x)}</span></button>`).join('')}</div>` : ''}
     <div class="lbl">글 ${posts.length}개</div>
-    ${posts.length ? `<div class="pgrid">${posts.map(x => `<button class="pcard" data-act="openpost" data-id="${x.id}"><span class="pc-c" style="${coverStyle(x.cover)}"></span><span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(x.title || '제목 없음')}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`).join('')}</div>` : `<div class="empty">아직 글이 없어요. ‘새 글’로 첫 기록을 남겨보세요.</div>`}
+    ${posts.length ? `<div class="pgrid">${posts.map(x => `<button class="pcard" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}"><span class="pc-c" style="${coverStyle(x.cover)}"></span><span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(x.title || '제목 없음')}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`).join('')}</div>` : `<div class="empty">아직 글이 없어요. ‘새 글’로 첫 기록을 남겨보세요.</div>`}
     <div class="foot-actions"><button class="btn sm ${ui.confirm === 'folder:' + f.id ? 'warn' : 'ghost danger'}" data-act="delfolder" data-id="${f.id}">${ui.confirm === 'folder:' + f.id ? '한 번 더 누르면 폴더 삭제 (안의 글은 위 폴더로 옮겨져요)' : '폴더 삭제'}</button></div>
   </div>`;
 }
@@ -2020,26 +2026,70 @@ function onBlockKey(e, el) {
 }
 
 /* drag & drop */
-let dragId = null, hiEl = null;
-function setHi(el) { if (hiEl === el) return; if (hiEl) hiEl.classList.remove('drop-hi'); hiEl = el; if (el) el.classList.add('drop-hi'); }
+let dragId = null, dragKind = null, hiEl = null, hiPos = '';
+function setHi(el, pos = '') {
+  if (hiEl === el && hiPos === pos) return;
+  if (hiEl) hiEl.classList.remove('drop-hi', 'drop-before', 'drop-after');
+  hiEl = el; hiPos = pos;
+  if (el) el.classList.add(pos === 'before' ? 'drop-before' : pos === 'after' ? 'drop-after' : 'drop-hi');
+}
+function folderZone(z, e) { const r = z.getBoundingClientRect(); const y = (e.clientY - r.top) / r.height; return y < 0.28 ? 'before' : y > 0.72 ? 'after' : 'into'; }
+function isInside(childId, parentId) { let f = folder(childId); while (f) { if (f.parent === parentId) return true; f = f.parent ? folder(f.parent) : null; } return false; }
+function canDrop(kind, zk, zv) {
+  if (kind === 'item') return ['day', 'inbox', 'project'].includes(zk);
+  if (zk === 'froot') { const f = kind === 'folder' && folder(dragId); return !!f && f.space === zv; }
+  if (zk !== 'folder') return false;
+  const target = folder(zv); if (!target) return false;
+  if (kind === 'folder') { const f = folder(dragId); return !!f && f.id !== zv && f.space === target.space && !isInside(zv, f.id); }
+  if (kind === 'doc') return target.space === 'work';
+  if (kind === 'post') return target.space === 'life';
+  return false;
+}
+function moveFolder(id, targetId, pos) {
+  const f = folder(id), t = targetId && folder(targetId);
+  const parent = pos === 'into' ? targetId : pos === 'root' ? null : t.parent;
+  const sibs = S.folders.filter(x => x.space === f.space && x.parent === parent && x.id !== id);
+  let at = sibs.length;
+  if (pos === 'before' || pos === 'after') at = sibs.findIndex(x => x.id === targetId) + (pos === 'after' ? 1 : 0);
+  sibs.splice(at, 0, f);
+  f.parent = parent;
+  sibs.forEach((x, i) => { x.ord = i; });
+  S.folders.sort((a, b) => (a.ord || 0) - (b.ord || 0));
+  if (pos === 'into') ui.open[targetId] = true;
+}
 document.addEventListener('dragstart', e => {
   if (rs) { e.preventDefault(); return; }
   const el = e.target.closest && e.target.closest('[data-drag]'); if (!el) return;
-  dragId = el.dataset.drag.split(':')[1];
+  [dragKind, dragId] = el.dataset.drag.split(':');
   e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragId); } catch (err) { /* ignore */ }
   el.classList.add('dragging');
 });
-document.addEventListener('dragend', e => { const el = e.target.closest && e.target.closest('[data-drag]'); if (el) el.classList.remove('dragging'); dragId = null; setHi(null); });
+document.addEventListener('dragend', e => { const el = e.target.closest && e.target.closest('[data-drag]'); if (el) el.classList.remove('dragging'); dragId = null; dragKind = null; setHi(null); });
 document.addEventListener('dragover', e => {
   if (!dragId) return; const z = e.target.closest && e.target.closest('[data-drop]'); if (!z) { setHi(null); return; }
-  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
   const [k, v] = z.dataset.drop.split(':');
+  if (!canDrop(dragKind, k, v)) { setHi(null); return; }
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  if (k === 'folder') { setHi(z, dragKind === 'folder' ? folderZone(z, e) : 'into'); return; }
   setHi(k === 'day' ? document.querySelector(`.cell[data-date="${v}"]`) : z);
 });
 document.addEventListener('drop', e => {
   if (!dragId) return; const z = e.target.closest && e.target.closest('[data-drop]'); if (!z) return;
-  e.preventDefault(); const id = dragId; dragId = null; setHi(null);
-  const [k, v] = z.dataset.drop.split(':'); const it = item(id); if (!it) return;
+  const [k, v] = z.dataset.drop.split(':');
+  if (!canDrop(dragKind, k, v)) return;
+  e.preventDefault(); const id = dragId, kind = dragKind; const pos = k === 'folder' && kind === 'folder' ? folderZone(z, e) : 'into';
+  dragId = null; dragKind = null; setHi(null);
+  if (kind === 'folder') {
+    const f = folder(id); const t = k === 'folder' ? folder(v) : null;
+    mutate(() => moveFolder(id, t ? t.id : null, k === 'froot' ? 'root' : pos), k === 'froot' ? `‘${f.name}’을 맨 위 단계로 옮겼어요` : pos === 'into' ? `‘${f.name}’을 ‘${t.name}’ 안에 넣었어요` : '폴더 순서를 바꿨어요');
+    return;
+  }
+  if (kind === 'doc' || kind === 'post') {
+    const o = kind === 'doc' ? doc(id) : post(id); const t = folder(v); if (!o || !t || o.folder === v) return;
+    mutate(() => { o.folder = v; if (kind === 'doc') { o.updated = Date.now(); if (ui.noteDoc === id) ui.noteFolder = v; } }, `‘${o.title || '제목 없음'}’을 ‘${t.name}’로 옮겼어요`);
+    return;
+  }
+  const it = item(id); if (!it) return;
   if (k === 'day') {
     if (it.date === v) return;
     mutate(() => { if (it.kind === 'event' && it.end) { const len = diff(it.date, it.end); it.end = addDays(v, len); } it.date = v; ui.sel = v; }, `‘${it.title}’을 ${fmtMD(v)}로 옮겼어요`);
