@@ -495,6 +495,18 @@ label.link-btn{cursor:pointer}
 .set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--sunken)}
 .set-row>div{display:flex;flex-direction:column;gap:2px;min-width:0}
 .set-row b{font-size:14px}
+/* ---- reminder cards ---- */
+.rcards{position:fixed;top:calc(16px + env(safe-area-inset-top, 0px));right:max(16px, env(safe-area-inset-right, 0px));z-index:95;display:flex;flex-direction:column;gap:10px;width:360px;max-width:calc(100vw - 32px);pointer-events:none}
+.rcard{pointer-events:auto;display:flex;gap:12px;padding:14px 14px 14px 14px;background:var(--surface);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.22),0 0 0 1px var(--line);border-left:4px solid var(--lemon);animation:rcin .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes rcin{from{opacity:0;transform:translateY(-10px) scale(.98)}to{opacity:1;transform:none}}
+.rc-ic .logo-svg{width:40px;height:40px;border-radius:12px}
+.rc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rc-top{display:flex;align-items:center;justify-content:space-between}
+.rc-kind{font-size:11.5px;font-weight:700;color:var(--lemon-ink);letter-spacing:.02em}
+.rc-t{font-size:16.5px;font-weight:700;letter-spacing:-.02em;line-height:1.35;word-break:break-word}
+.rc-b{font-size:13px;color:var(--muted)}
+.rc-act{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+@media (prefers-reduced-motion: reduce){ .rcard{animation:none} }
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -573,6 +585,7 @@ body{letter-spacing:-.003em;line-height:1.5}
 <div id="layer"></div>
 <div id="pop"></div>
 <div class="toast" id="toast" role="status" hidden></div>
+<div class="rcards" id="rcards" aria-live="assertive"></div>
 <input type="file" id="blk-file" accept="image/*" hidden>
 
 <script>
@@ -753,7 +766,7 @@ async function boot() {
   }
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').then(r => { swReg = r; }).catch(() => { /* notifications fall back to the page */ });
-    navigator.serviceWorker.addEventListener('message', e => { if (!e.data) return; if (e.data.open) openItem(e.data.open); if (e.data.ring) { const r = e.data.ring; fired.add(r.key || ''); toastAction(`알림 · ${r.title} (${r.body})`, '열기', () => openItem(r.id)); } });
+    navigator.serviceWorker.addEventListener('message', e => { if (!e.data) return; if (e.data.open) openItem(e.data.open); if (e.data.ring) { const r = e.data.ring; if (r.key) fired.add(r.key); const it = item(r.id); showCard({ id: r.id, title: r.title, body: r.body, kind: it ? it.kind : 'todo' }); } });
   }
   try {
     const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -860,16 +873,63 @@ function checkReminders() {
   });
   if (changed) { try { localStorage.setItem('arecmik-fired', JSON.stringify([...fired].slice(-400))); } catch (e) { /* storage blocked */ } }
 }
+function whenText(it) {
+  return it.start ? `${it.date === TODAY ? '오늘' : fmtMD(it.date)} ${it.start}${it.finish ? `–${it.finish}` : ''}` : `${it.date === TODAY ? '오늘' : fmtMD(it.date)} · 하루 종일`;
+}
 function ringItem(it, test) {
   const kind = it.kind === 'event' ? '일정' : '할일';
-  const when = it.start ? `${it.date === TODAY ? '오늘' : fmtMD(it.date)} ${it.start}${it.finish ? `–${it.finish}` : ''}` : `${it.date === TODAY ? '오늘' : fmtMD(it.date)} · 하루 종일`;
-  const body = test ? '알림이 이렇게 와요' : `${kind} · ${when}`;
-  if ('Notification' in window && Notification.permission === 'granted') {
-    const opt = { body, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'arecmik-' + it.id, data: { id: it.id } };
+  const body = test ? '알림이 이렇게 와요' : `${kind} · ${whenText(it)}`;
+  if ('Notification' in window && Notification.permission === 'granted' && (document.hidden || !document.hasFocus())) {
+    const opt = { body, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'arecmik-' + it.id, data: { id: it.id }, requireInteraction: true, renotify: true };
     if (swReg && swReg.showNotification) swReg.showNotification(it.title || '알림', opt).catch(() => { /* blocked */ });
     else { try { const n = new Notification(it.title || '알림', opt); n.onclick = () => { window.focus(); openItem(it.id); n.close(); }; } catch (e) { /* unsupported here */ } }
   }
-  if (!test) toastAction(`알림 · ${it.title || '제목 없음'} (${when})`, '열기', () => openItem(it.id));
+  showCard({ id: it.id, title: it.title || '제목 없음', body, kind: it.kind, test: !!test });
+}
+/* in-app reminder cards */
+const cards = [];
+function showCard(c) {
+  const i = cards.findIndex(x => x.id === c.id); if (i >= 0) cards.splice(i, 1);
+  cards.unshift(c); if (cards.length > 4) cards.length = 4;
+  drawCards(); chime(); blinkTitle(c.title);
+}
+function drawCards() {
+  const el = document.getElementById('rcards'); if (!el) return;
+  el.innerHTML = cards.map(c => {
+    const it = item(c.id); const done = it && it.done;
+    return `<div class="rcard" role="alertdialog" aria-label="알림 ${esc(c.title)}">
+      <div class="rc-ic">${LOGO_SVG}</div>
+      <div class="rc-main">
+        <div class="rc-top"><span class="rc-kind">${c.test ? '테스트' : '알림'}</span><button class="mini" data-act="rcclose" data-id="${esc(c.id)}" aria-label="알림 닫기">${I.x}</button></div>
+        <div class="rc-t">${esc(c.title)}</div>
+        <div class="rc-b">${esc(c.body)}</div>
+        ${c.test ? '' : `<div class="rc-act"><button class="btn sm primary" data-act="rcopen" data-id="${esc(c.id)}">열기</button>${c.kind === 'todo' && it ? `<button class="btn sm" data-act="rcdone" data-id="${esc(c.id)}">${done ? '완료됨' : '완료'}</button>` : ''}<button class="btn sm ghost" data-act="rcsnooze" data-id="${esc(c.id)}">10분 뒤 다시</button></div>`}
+      </div></div>`;
+  }).join('');
+  if (!cards.length) stopBlink();
+}
+function dropCard(id) { const i = cards.findIndex(x => x.id === id); if (i >= 0) cards.splice(i, 1); drawCards(); }
+let blinkT = null, baseTitle = document.title;
+function blinkTitle(t) {
+  stopBlink(); let on = false;
+  blinkT = setInterval(() => { on = !on; document.title = on ? `● 알림 · ${t}` : baseTitle; }, 1000);
+}
+function stopBlink() { if (blinkT) { clearInterval(blinkT); blinkT = null; } document.title = baseTitle; }
+window.addEventListener('focus', () => { if (blinkT) { stopBlink(); } });
+function soundOn() { try { return localStorage.getItem('arecmik-sound') !== 'off'; } catch (e) { return true; } }
+let audioCtx = null;
+function chime() {
+  if (!soundOn()) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t0 = audioCtx.currentTime;
+    [[880, 0], [1318.5, 0.16]].forEach(([f, dt]) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = f; o.connect(g); g.connect(audioCtx.destination);
+      g.gain.setValueAtTime(0.0001, t0 + dt); g.gain.exponentialRampToValueAtTime(0.18, t0 + dt + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 0.5);
+      o.start(t0 + dt); o.stop(t0 + dt + 0.55);
+    });
+  } catch (e) { /* audio not allowed yet */ }
 }
 function openItem(id) { const it = item(id); if (!it) return; if (it.date) { ui.sel = it.date; ui.month = it.date.slice(0, 7); } go('work'); openModal('item', id); }
 setInterval(checkReminders, 20000);
@@ -1458,7 +1518,8 @@ function dlgSettings() {
       <label for="set-untimed">시간 없는 항목</label><select id="set-untimed" class="inp" data-set="untimed">${UNTIMED.map(([v, l]) => `<option value="${v}" ${v === st.untimed ? 'selected' : ''}>${l}</option>`).join('')}</select>
     </div>
     <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>‘앱을 닫아도 알림 받기’를 켜지 않은 기기는 Arecmik이 열려 있을 때만 알려드려요.</p>
-    ${on ? '<div><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
+    <div class="set-row" style="margin-top:12px"><div><b>알림 소리</b><span class="hint">알림 카드가 뜰 때 짧은 소리를 내요 (이 기기)</span></div><button class="btn" data-act="soundtoggle" aria-pressed="${soundOn()}">${soundOn() ? '켜짐' : '꺼짐'}</button></div>
+    ${on ? '<div style="margin-top:12px"><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
   </div></div>`;
 }
 function dlgQuick() {
@@ -1660,6 +1721,11 @@ const ACT = {
   pushoff: () => { disablePush(); },
   notifyoff: () => { setNotifyOn(false); toast('이 기기의 알림을 껐어요'); render(); renderModal(); },
   notifytest: () => ringItem({ id: 'test', title: 'Arecmik 테스트 알림', kind: 'todo', date: TODAY, start: '' }, true),
+  rcclose: t => dropCard(t.dataset.id),
+  rcopen: t => { dropCard(t.dataset.id); window.focus(); openItem(t.dataset.id); },
+  rcdone: t => { const it = item(t.dataset.id); if (it && !it.done) mutate(() => { it.done = true; }, `‘${it.title}’ 완료`); dropCard(t.dataset.id); },
+  rcsnooze: t => { const id = t.dataset.id; dropCard(id); toast('10분 뒤에 다시 알려드릴게요'); setTimeout(() => { const it = item(id); if (it && !it.done) ringItem(it); }, 10 * 60000); },
+  soundtoggle: () => { try { localStorage.setItem('arecmik-sound', soundOn() ? 'off' : 'on'); } catch (e) { /* storage blocked */ } if (soundOn()) chime(); renderModal(); },
   toastgo: () => { $('#toast').hidden = true; const f = toastFn; toastFn = null; if (f) f(); },
   openparent: t => { ui.modalBack = null; ui.modal = { kind: 'item', id: t.dataset.id }; renderModal(); },
   calview: t => { ui.calView = t.dataset.v; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); },
