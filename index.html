@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Arecmik</title>
-<meta name="theme-color" content="#E9EDF3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#F3F5F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#23262D" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.json?v=2">
 <link rel="icon" type="image/png" href="icon-192-lemon.png">
@@ -881,24 +881,40 @@ body{letter-spacing:-.003em;line-height:1.5}
 @media (prefers-reduced-motion: reduce){ .btn:active{transform:none} .tile.has:hover,.pcard:hover{transform:none} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 
+/* ---- routines ---- */
+.rlist{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.rrow{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:12px}
+.rrow .chk{width:18px;height:18px;border-radius:50%}
+.rtx{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1;border:0;background:transparent;text-align:left;font:inherit;color:var(--fg);cursor:pointer;padding:0}
+.rtx b{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rtx span{font-size:11.5px;color:var(--muted)}
+.rtx i{font-style:normal;color:var(--faint);margin:0 4px}
+.rrow.done .rtx b{color:var(--muted)}
+.rrow.due .rtx span{color:var(--lemon-ink);font-weight:600}
+.rnote{flex:none;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.rnote:hover{color:var(--fg);box-shadow:var(--nm-out-xs, var(--shadow))}
+.rdue{font-size:11px;font-weight:700;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:20px;padding:1px 8px;margin-left:4px;vertical-align:1px}
+.rlog{display:flex;flex-wrap:wrap;gap:6px}
+.rlog span{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--sunken);color:var(--fg2)}
+@media (max-width:640px){ .rrow{padding:10px 6px} .rtx b{font-size:15px} .rrow .chk{width:22px;height:22px} }
 /* ===================== Soft (neumorphic) theme =====================
    One background colour for every surface; depth comes from paired light/dark shadows.
    Raised = things you press or that hold a group. Pressed-in = inputs, chosen tabs, the active nav row.
    Lemon is the only accent. */
 :root{
-  --bg:#E9EDF3; --side:#E9EDF3; --panel:#E9EDF3; --surface:#E9EDF3; --sunken:#E1E6ED; --hover:#E3E8EF; --dim:#E6EAF0; --sel:#EDF0E2;
+  --bg:#F3F5F9; --side:#F3F5F9; --panel:#F3F5F9; --surface:#F3F5F9; --sunken:#ECEFF4; --hover:#EDF0F5; --dim:#F0F2F6; --sel:#F8F6E8;
   --line:rgba(150,163,184,.32); --line-soft:rgba(150,163,184,.2);
   --fg:#262A33; --fg2:#434957; --muted:#6F7686; --faint:#A2A9B6;
-  --lemon:#F6D84C; --lemon-soft:#F7EDB8; --lemon-ink:#6A5200; --on-lemon:#2A2400;
+  --lemon:#FFDA45; --lemon-soft:#FFF3BF; --lemon-ink:#6A5200; --on-lemon:#2A2400;
   --ink-btn:#262A33; --ink-btn-fg:#FFFFFF;
-  --hi:rgba(255,255,255,.95); --lo:rgba(163,177,198,.62); --lo2:rgba(163,177,198,.38);
+  --hi:#FFFFFF; --lo:rgba(170,182,203,.5); --lo2:rgba(170,182,203,.3);
   --nm-out:-6px -6px 14px var(--hi), 6px 6px 14px var(--lo);
   --nm-out-sm:-3px -3px 7px var(--hi), 3px 3px 7px var(--lo);
   --nm-out-xs:-2px -2px 4px var(--hi), 2px 2px 4px var(--lo2);
   --nm-in:inset 3px 3px 7px var(--lo), inset -3px -3px 7px var(--hi);
   --nm-in-sm:inset 2px 2px 4px var(--lo), inset -2px -2px 4px var(--hi);
   --shadow:var(--nm-out-xs); --shadow-md:var(--nm-out-sm); --shadow-lg:-10px -10px 30px rgba(255,255,255,.7), 14px 18px 40px rgba(120,134,158,.45);
-  --scrim:rgba(214,220,230,.55);
+  --scrim:rgba(225,230,238,.5);
   --r-lg:22px; --r-md:16px; --r-sm:12px; --we:transparent;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
@@ -924,31 +940,33 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 /* ---- buttons ---- */
 .btn{border:0;border-radius:var(--r-sm);background:var(--bg);box-shadow:var(--nm-out-sm);font-weight:600;color:var(--fg2);transition:box-shadow .15s, transform .1s, color .15s}
 .btn:hover{color:var(--fg)}
-.btn:active,.btn.on,.btn.on-soft{box-shadow:var(--nm-in-sm);transform:none}
+.btn:active{box-shadow:var(--nm-in-sm);transform:none}
+.btn.on,.btn.on-soft{box-shadow:var(--nm-out-sm);color:var(--lemon-ink)}
 .btn.on-soft{background:var(--bg);color:var(--lemon-ink)}
 .btn.primary{background:var(--lemon);color:var(--on-lemon);box-shadow:-4px -4px 10px var(--hi), 4px 5px 12px rgba(190,160,30,.38)}
 .btn.primary:active{box-shadow:inset 3px 3px 6px rgba(150,120,10,.35), inset -2px -2px 5px rgba(255,255,255,.5)}
 .btn.ghost{box-shadow:none;background:transparent}
 .btn.ghost:hover{box-shadow:var(--nm-out-xs)}
 .btn.icon{border-radius:50%}
-.btn.warn{box-shadow:var(--nm-in-sm)}
+.btn.warn{box-shadow:var(--nm-out-sm)}
 .gear-btn{border-radius:50%;box-shadow:var(--nm-out-sm)}
 .gear-btn:active{box-shadow:var(--nm-in-sm)}
 .mini{border-radius:50%}
 .mini:hover{background:transparent;box-shadow:var(--nm-out-xs)}
 
 /* ---- segmented controls: a pressed track, the chosen part pops out ---- */
-.seg{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm);padding:4px;gap:4px}
+.seg{background:transparent;box-shadow:none;border-radius:var(--r-sm);padding:3px;gap:6px}
+.seg button{color:var(--muted)}
 .seg button{border-radius:9px}
-.seg button.on{background:var(--bg);box-shadow:var(--nm-out-xs);color:var(--fg)}
+.seg button.on{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
 
 /* ---- fields are pressed in ---- */
-.inp,.addline,.search,.mcomp,.sub-inline,.qc .inp{border:0;background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm)}
-.inp:focus,.addline:focus-within,.search:focus-within,.mcomp:focus-within,.sub-inline:focus-within{box-shadow:var(--nm-in-sm), 0 0 0 2px var(--lemon)}
+.inp,.addline,.search,.mcomp,.sub-inline,.qc .inp{border:0;background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
+.inp:focus,.addline:focus-within,.search:focus-within,.mcomp:focus-within,.sub-inline:focus-within{box-shadow:var(--nm-out-sm), 0 0 0 2px var(--lemon)}
 .search kbd{background:var(--bg);box-shadow:var(--nm-out-xs);border:0}
 
 /* ---- checkboxes: little pressed wells; checked = lemon pillow ---- */
-.chk{border:0;border-radius:6px;background:var(--bg);box-shadow:var(--nm-in-sm);color:transparent}
+.chk{border:0;border-radius:6px;background:var(--bg);box-shadow:var(--nm-out-xs);color:transparent}
 .chk.on{background:var(--lemon);color:var(--on-lemon);box-shadow:-1px -1px 3px var(--hi), 2px 2px 4px rgba(190,160,30,.4)}
 .chk.lg{border-radius:8px}
 
@@ -956,17 +974,17 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 .card,.dlg-body .links.panel,.links.panel{border:0;background:var(--bg);box-shadow:var(--nm-out);border-radius:var(--r-lg)}
 .dialog,.dialog.sm{background:var(--bg);box-shadow:var(--shadow-lg);border-radius:28px}
 .dlg-head{border-bottom:0}
-.kind{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:20px}
+.kind{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
 .kind.ev{color:var(--blue-ink)}
 .autosave{color:var(--faint)}
 .subs{border-bottom:0}
 .slash,.sres,.qc{border:0;background:var(--bg);box-shadow:var(--shadow-lg);border-radius:var(--r-md)}
-.slash button.on,.sres button:hover,.slash button:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.slash button.on,.sres button:hover,.slash button:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
 .toast{border-radius:20px}
 
 /* ---- sidebar ---- */
 .nav-item,.tree-row,.tree-doc{border-radius:var(--r-sm)}
-.nav-item.on,.tree-row.on,.tree-doc.on{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--fg)}
+.nav-item.on,.tree-row.on,.tree-doc.on{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
 .nav-item:hover,.tree-row:hover,.tree-doc:hover{background:var(--hover)}
 .side .seg{margin-bottom:2px}
 .brand svg{filter:drop-shadow(2px 3px 4px var(--lo2))}
@@ -980,7 +998,7 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 .cell{border-right:1px solid var(--line-soft)}
 .cell.other,.cell.we{background:transparent}
 .cell.other .num{opacity:.55}
-.cell.selday{background:var(--bg);box-shadow:inset 3px 3px 8px var(--lo2), inset -3px -3px 8px var(--hi)}
+.cell.selday{background:var(--sel);box-shadow:var(--nm-out-sm);border-radius:14px;position:relative;z-index:1}
 .num.today{background:var(--lemon);color:var(--on-lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.42)}
 .chip{border-radius:10px}
 .chip.ev{background:var(--bg);box-shadow:var(--nm-out-xs)}
@@ -996,9 +1014,9 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 /* ---- right panel rows ---- */
 .evrow{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm);margin-bottom:8px}
 .evrow:hover{box-shadow:var(--nm-out-sm)}
-.evrow.cancel{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.evrow.cancel{background:var(--bg);box-shadow:none;opacity:.7}
 .trow{border-radius:var(--r-sm)}
-.trow:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.trow:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
 .prog{border-radius:20px}
 .prog.all{background:var(--lemon-soft);color:var(--lemon-ink)}
 .mvb,.stb{border-radius:20px}
@@ -1006,23 +1024,23 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 /* ---- notes & LIFE lists ---- */
 .fcard,.pcard,.pline{border:0;background:var(--bg);box-shadow:var(--nm-out-sm);border-radius:var(--r-md)}
 .fcard:hover,.pcard:hover,.pline:hover{box-shadow:var(--nm-out);transform:none}
-.pcard .pc-c{margin:8px 8px 0;border-radius:12px;box-shadow:var(--nm-in-sm)}
+.pcard .pc-c{margin:8px 8px 0;border-radius:12px;box-shadow:none}
 .dlist{background:transparent;border:0;box-shadow:none;display:flex;flex-direction:column;gap:10px}
 .drow{border:0;border-radius:var(--r-md);background:var(--bg);box-shadow:var(--nm-out-sm)}
 .ychips button{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
-.ychips button.on{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--lemon-ink)}
+.ychips button.on{background:var(--lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.35);color:var(--on-lemon)}
 .lgrid{gap:10px}
 .tile{background-color:var(--bg);box-shadow:var(--nm-out-sm);border-radius:var(--r-md)}
 .tile.has{box-shadow:var(--nm-out-sm)}
-.tile.sel{box-shadow:var(--nm-in);outline:none}
+.tile.sel{box-shadow:var(--nm-out);outline:2px solid var(--lemon);outline-offset:-2px}
 .tile .n.today{background:var(--lemon);color:var(--on-lemon)}
 .tile-add{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:50%}
-.cover{border-radius:var(--r-lg);box-shadow:var(--nm-in)}
+.cover{border-radius:var(--r-lg);box-shadow:var(--nm-out-sm)}
 .lday{border-bottom:0}
-.lrow:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.lrow:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
 
 /* ---- editor bits ---- */
-.bk-code{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm)}
+.bk-code{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
 .tbl-scroll{box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
 .mention{border-radius:20px}
 .rcard{background:var(--bg);box-shadow:var(--shadow-lg);border-radius:22px}
@@ -1032,23 +1050,23 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
   .main{background:var(--bg)}
   .mtop{background:var(--bg)}
   .mcal{background:var(--bg);box-shadow:var(--nm-out);border-radius:0 0 28px 28px;margin-bottom:6px}
-  .mday.sel .n{background:var(--bg);color:var(--fg)!important;box-shadow:var(--nm-in-sm)}
+  .mday.sel .n{background:var(--bg);color:var(--fg)!important;box-shadow:var(--nm-out-sm)}
   .mday.today:not(.sel) .n{background:var(--lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.4)}
-  .mday.today.sel .n{background:var(--lemon);box-shadow:inset 2px 2px 5px rgba(150,120,10,.35), inset -2px -2px 4px rgba(255,255,255,.45)}
-  .mgrip{background:transparent;box-shadow:var(--nm-in-sm);height:6px;width:40px;border-radius:3px}
+  .mday.today.sel .n{background:var(--lemon);box-shadow:-3px -3px 7px var(--hi), 3px 4px 9px rgba(190,160,30,.45)}
+  .mgrip{background:var(--line);box-shadow:none;height:5px;width:40px;border-radius:3px}
   .mchev{border-radius:50%}
   .mchev:active{box-shadow:var(--nm-in-sm);background:transparent}
   .mpill{background:var(--bg);box-shadow:var(--nm-out-xs);color:var(--lemon-ink)}
   .mtoday{background:var(--lemon);color:var(--on-lemon);border-radius:20px}
-  .mcomp{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:18px}
-  .mc-kinds{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:12px}
-  .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-xs)}
+  .mcomp{background:var(--bg);box-shadow:var(--nm-out-sm);border-radius:18px}
+  .mc-kinds{background:transparent;box-shadow:none;border-radius:12px;gap:4px}
+  .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-sm)}
   .mg-b{background:var(--bg);box-shadow:var(--nm-out);border-radius:var(--r-lg)}
   .mrow+.mrow{border-top:1px solid var(--line-soft)}
   .mrow:active{background:var(--bg);box-shadow:var(--nm-in-sm)}
   .mrow.td .chk{border-radius:50%}
   .tabbar{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom, 0px));border:0;border-radius:26px;background:var(--bg);box-shadow:var(--nm-out);backdrop-filter:none;-webkit-backdrop-filter:none;padding:6px 6px 6px}
-  .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--fg)}
+  .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
   .tabbar button.on .ti svg{color:var(--lemon-ink)}
   .tabbar .ti b{background:var(--lemon);color:var(--on-lemon)}
   .fab{bottom:calc(92px + env(safe-area-inset-bottom, 0px));box-shadow:-5px -5px 12px var(--hi), 6px 8px 16px rgba(190,160,30,.42)}
@@ -1135,7 +1153,7 @@ function starter() {
       { id: uid(), space: 'life', name: '일기', parent: null, ord: t + 2 },
       { id: uid(), space: 'life', name: '스크랩', parent: null, ord: t + 3 }
     ],
-    docs: [], posts: [], citems: [],
+    docs: [], posts: [], citems: [], routines: [],
     collections: [
       { id: uid(), name: '책', view: 'cards', ord: t + 4, fields: [{ id: uid(), name: '상태', type: 'select', options: ['위시리스트', '읽는 중', '다 읽음'] }, { id: uid(), name: '저자', type: 'text' }, { id: uid(), name: '별점', type: 'rating' }, { id: uid(), name: '다 읽은 날', type: 'date', onCal: true }, { id: uid(), name: '한 줄 메모', type: 'text' }] },
       { id: uid(), name: '영화', view: 'cards', ord: t + 5, fields: [{ id: uid(), name: '상태', type: 'select', options: ['위시리스트', '봤음'] }, { id: uid(), name: '감독', type: 'text' }, { id: uid(), name: '본 날', type: 'date', onCal: true }, { id: uid(), name: '별점', type: 'rating' }] }
@@ -1147,7 +1165,7 @@ const optCls = (f, v) => { const o = f.options || []; const i = o.indexOf(v); if
 /* ---------- sync (Firebase) ---------- */
 const FB_CONFIG = { apiKey: 'AIzaSyASyW3vWV3s7cgwEO_MenOZzX3qhgb852U', authDomain: 'arecmik-25699.firebaseapp.com', projectId: 'arecmik-25699', storageBucket: 'arecmik-25699.firebasestorage.app', messagingSenderId: '952722999275', appId: '1:952722999275:web:94b7c48055edd6e8d63bae' };
 const NS = 'arecmik2';
-const COLS = ['projects', 'items', 'folders', 'docs', 'posts', 'collections', 'citems'];
+const COLS = ['projects', 'items', 'folders', 'docs', 'posts', 'collections', 'citems', 'routines'];
 let fb = null, me = null, synced = {}, syncT = null, loaded = false, unsub = null;
 let syncText = '연결 중', syncCls = 'busy';
 function setSync(text, cls) {
@@ -1810,10 +1828,71 @@ function panelWork() {
   const open = inbox.filter(i => !i.done), done = inbox.filter(i => i.done);
   const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
-  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button></div>
-  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : inboxCard()}
+  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button></div>
+  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : inboxCard()}
   ${daySection()}
   </aside>`;
+}
+/* ---------- WORK routines: repeat work with no fixed date ---------- */
+const RFREQ = [['daily', '매일'], ['weekly', '매주'], ['monthly', '매달'], ['any', '수시']];
+const routine = id => (S.routines || []).find(r => r.id === id);
+function rPeriodStart(r) {
+  if (r.freq === 'weekly') return weekStart(TODAY);
+  if (r.freq === 'monthly') return TODAY.slice(0, 8) + '01';
+  return TODAY;
+}
+const rLast = r => (r.log || []).slice().sort().pop() || null;
+const rDone = r => (r.log || []).some(d => d >= rPeriodStart(r) && d <= TODAY);
+function rDue(r) {
+  if (rDone(r) || r.freq === 'any') return false;
+  if (r.freq === 'weekly' && r.dow != null && r.dow !== '') return parse(TODAY).getDay() === +r.dow || (() => { const ws = weekStart(TODAY); for (let d = ws; d <= TODAY; d = addDays(d, 1)) if (parse(d).getDay() === +r.dow) return true; return false; })();
+  if (r.freq === 'monthly' && r.dom) return +TODAY.slice(8, 10) >= +r.dom;
+  return true;
+}
+function rWhen(r) {
+  const f = (RFREQ.find(x => x[0] === r.freq) || RFREQ[3])[1];
+  if (r.freq === 'weekly' && r.dow !== '' && r.dow != null) return `${f} ${WD[+r.dow]}요일`;
+  if (r.freq === 'monthly' && r.dom) return `${f} ${r.dom}일`;
+  return f;
+}
+function rAgo(r) {
+  const l = rLast(r); if (!l) return '아직 안 함';
+  const n = diff(l, TODAY); return n === 0 ? '오늘 함' : n === 1 ? '어제 함' : `${n}일 전`;
+}
+function routineRows() {
+  const list = (S.routines || []).slice().sort((a, b) => (rDue(b) - rDue(a)) || (rDone(a) - rDone(b)) || (a.ord || 0) - (b.ord || 0));
+  return list.map(r => { const done = rDone(r), due = rDue(r); const doc0 = r.noteId && doc(r.noteId);
+    return `<div class="rrow ${done ? 'done' : ''} ${due ? 'due' : ''}">
+      <button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button>
+      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${esc(r.title || '이름 없는 루틴')}</b><span>${rWhen(r)}<i>·</i>${rAgo(r)}</span></button>
+      ${doc0 ? `<button class="rnote" data-act="opendoc" data-id="${doc0.id}" title="매뉴얼 노트 열기: ${esc(doc0.title || '제목 없음')}" aria-label="매뉴얼 노트 열기">${I.note}</button>` : ''}
+    </div>`; }).join('');
+}
+function routineCard() {
+  const n = (S.routines || []).length; const due = (S.routines || []).filter(rDue).length;
+  return `<div class="card rcard2">
+    <div class="card-title">루틴${due ? ` <span class="rdue">할 차례 ${due}</span>` : ''}</div>
+    <label class="addline">${I.plus}<input id="routine-add" placeholder="반복하는 업무 적고 Enter" autocomplete="off" aria-label="루틴 추가"></label>
+    <div class="rlist">${routineRows() || '<div class="empty">날짜 없이 반복하는 업무를 적어 두세요. 체크하면 이번 주기에 한 것으로 남고, 다음 주기에 다시 비워져요.</div>'}</div>
+  </div>`;
+}
+function dlgRoutine(r) {
+  const docs = S.docs.slice().sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+  const log = (r.log || []).slice().sort().reverse();
+  return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="${esc(r.title || '루틴')}">
+  <div class="dlg-head"><div class="dlg-top"><span class="kind">루틴</span><span class="autosave">${I.check}자동 저장</span><span class="grow"></span>
+    <button class="btn sm ${ui.confirm === 'routine:' + r.id ? 'warn' : 'ghost danger'}" data-act="rdel" data-id="${r.id}">${ui.confirm === 'routine:' + r.id ? '한 번 더 누르면 삭제' : '삭제'}</button>
+    <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
+    <input class="title-input" id="rt-title" data-rf="title" value="${esc(r.title)}" placeholder="루틴 이름" aria-label="루틴 이름">
+    <div class="fgrid">
+      <label>주기</label><div class="frow"><div class="seg inline" role="radiogroup" aria-label="주기">${RFREQ.map(([v, l]) => `<button role="radio" aria-checked="${r.freq === v}" class="${r.freq === v ? 'on' : ''}" data-act="rfreq" data-v="${v}">${l}</button>`).join('')}</div></div>
+      ${r.freq === 'weekly' ? `<label for="rt-dow">요일</label><div class="frow"><select id="rt-dow" class="inp" data-rf="dow"><option value="">아무 요일</option>${WD.map((w, i) => `<option value="${i}" ${String(r.dow) === String(i) ? 'selected' : ''}>${w}요일</option>`).join('')}</select></div>` : ''}
+      ${r.freq === 'monthly' ? `<label for="rt-dom">날짜</label><div class="frow"><select id="rt-dom" class="inp" data-rf="dom"><option value="">아무 날</option>${[...Array(28)].map((_, i) => `<option value="${i + 1}" ${String(r.dom) === String(i + 1) ? 'selected' : ''}>${i + 1}일</option>`).join('')}</select><span class="hint">이 날부터 ‘할 차례’로 보여요</span></div>` : ''}
+      <label for="rt-note">매뉴얼</label><div class="frow"><select id="rt-note" class="inp" data-rf="noteId"><option value="">연결 안 함</option>${docs.map(d => `<option value="${d.id}" ${d.id === r.noteId ? 'selected' : ''}>${esc(d.title || '제목 없음')}</option>`).join('')}</select>${r.noteId && doc(r.noteId) ? `<button class="btn sm" data-act="opendoc" data-id="${r.noteId}">열기</button>` : `<button class="btn sm" data-act="rmanual" data-id="${r.id}">${I.plus}새 매뉴얼 노트</button>`}</div>
+    </div></div>
+  <div class="dlg-body"><div class="lbl" style="padding-top:2px">한 날 ${log.length ? log.length + '번' : ''}</div>
+    ${log.length ? `<div class="rlog">${log.slice(0, 24).map(d => `<span>${fmtShort(d)}</span>`).join('')}${log.length > 24 ? `<span class="muted">외 ${log.length - 24}번</span>` : ''}</div>` : '<p class="hint" style="margin:2px">아직 기록이 없어요. 목록에서 체크하면 오늘 날짜로 남아요.</p>'}
+  </div></div>`;
 }
 function inboxCard() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
@@ -1827,7 +1906,7 @@ function inboxCard() {
   </div>`;
 }
 function vTodoM() {
-  return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${inboxCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
+  return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${inboxCard()}${routineCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
 }
 function mDayList(d) {
   const dd = parse(d);
@@ -2146,14 +2225,14 @@ function ncPreview() {
 /* ---------- dialogs ---------- */
 function modalTarget() {
   const m = ui.modal; if (!m) return null;
-  if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'quick') return true; return null;
+  if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'routine') return routine(m.id); if (m.kind === 'quick') return true; return null;
 }
 function renderModal() {
   const m = ui.modal; const t = modalTarget();
   if (!m || !t) { layer.innerHTML = ''; return; }
   const st = $('.scrim') ? $('.scrim').scrollTop : 0;
   let h = '';
-  if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings();
+  if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings(); else if (m.kind === 'routine') h = dlgRoutine(t);
   layer.innerHTML = `<div class="scrim" data-act="scrim">${h}</div>`;
   $('.scrim').scrollTop = st;
   if (m.focus) { const el = document.getElementById(m.focus); m.focus = null; if (el) { el.focus(); if (el.select) el.select(); } }
@@ -2610,6 +2689,17 @@ const ACT = {
   close: () => closeModal(),
   scrim: (t, e) => { if (e.target === t) closeModal(); },
   toggle: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.done = !it.done; }, it.done ? null : `‘${it.title}’ 완료`); },
+  rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
+  ropen: t => openModal('routine', t.dataset.id),
+  rfreq: t => { const r = routine(ui.modal.id); if (!r) return; mutate(() => { r.freq = t.dataset.v; }); },
+  rdel: t => { const id = t.dataset.id; if (ui.confirm !== 'routine:' + id) { ui.confirm = 'routine:' + id; renderModal(); return; } ui.confirm = null; const r = routine(id); ui.modal = null; mutate(() => { S.routines = S.routines.filter(x => x.id !== id); }, `‘${r ? r.title : '루틴'}’을 지웠어요`); },
+  rmanual: t => {
+    const r = routine(t.dataset.id); if (!r) return;
+    let f = S.folders.find(x => x.space === 'work' && x.name === '루틴 매뉴얼');
+    const d = { id: uid(), folder: null, title: r.title || '루틴 매뉴얼', projectId: null, blocks: [B('todo', ''), B('p', '')], updated: Date.now() };
+    mutate(() => { if (!f) { f = { id: uid(), space: 'work', name: '루틴 매뉴얼', parent: null, ord: Date.now() }; S.folders.push(f); } d.folder = f.id; S.docs.push(d); r.noteId = d.id; }, '매뉴얼 노트를 만들었어요');
+    ui.modal = null; renderModal(); ui.noteDoc = d.id; ui.noteFolder = f.id; go('notes'); setTimeout(() => { const ed = $('.doc .bk-text'); if (ed) placeCaret(ed, 0); }, 30);
+  },
   ptab: t => { ui.panelTab = t.dataset.tab; render(); },
   inboxdone: () => { ui.showInboxDone = !ui.showInboxDone; render(); },
   pdone: () => { ui.showPDone = !ui.showPDone; renderModal(); },
@@ -2777,6 +2867,7 @@ document.addEventListener('focusin', e => { const t = e.target; if (t.matches &&
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set) { const k = t.dataset.set; mutate(() => { S.settings = { ...(S.settings || {}), [k]: k === 'remindMin' ? +t.value : t.value }; }, '알림 기본값을 바꿨어요'); return; }
+  if (t.dataset && t.dataset.rf && ui.modal && ui.modal.kind === 'routine') { const r = routine(ui.modal.id); if (!r) return; const k = t.dataset.rf; mutate(() => { r[k] = k === 'noteId' ? (t.value || null) : t.value; }); return; }
   if (t.id === 'f-move' && t.value) { const it = item(ui.modal.id); const to = t.value; if (it && to !== it.date) mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); return; }
   if (t.dataset.f !== undefined && t.dataset.f !== 'title') {
     const m = ui.modal; const o = modalTarget(); if (!o) return; const f = t.dataset.f; const v = t.value;
@@ -2995,6 +3086,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'sub-add') { const v = t.value.trim(); if (!v) return; const par = item(ui.modal.id); mutate(() => { const it = createItem('todo', v, null); it.parentId = par.id; it.projectId = par.projectId; }); ui.modal.focus = 'sub-add'; renderModal(); return; }
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
   if (t.id === 'mp-q' && mention) { e.preventDefault(); pickMention(mention.idx); return; }
+  if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
   if (t.id === 'subq') { e.preventDefault(); const v = t.value.trim(); const pid = ui.subFor; if (!v) { ui.subFor = null; render(); return; } addSub(pid, v); ui.subFor = pid; ui.focusId = 'subq'; render(); return; }
   if (t.id === 'm-add') { e.preventDefault(); madd(ui.qkind || 'event', true); return; }
