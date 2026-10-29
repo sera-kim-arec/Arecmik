@@ -775,6 +775,16 @@ code.ic{font-family:ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, '
   .sub-inline{margin:0;border-radius:0;height:46px;padding:0 14px 0 30px;background:var(--dim);border-top:1px solid var(--line-soft)}
   .sub-inline input{font-size:15.5px}
 }
+/* ---- clearer sub + and a bigger chosen day ---- */
+.chip-sub{position:absolute!important;right:6px;top:50%;transform:translateY(-50%);width:20px!important;height:20px!important;margin:0!important;border-radius:6px!important;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.18);color:var(--fg)!important;z-index:3}
+.chip-sub svg{width:11px!important;height:11px!important}
+.chip:hover .chip-sub,.bar:hover .chip-sub{display:inline-flex!important}
+.bar .chip-sub{display:none}
+.chip:hover .tt{padding-right:22px}
+.chip.ev .handle{z-index:4}
+.dow,.wk{transition:grid-template-columns .18s ease}
+.cell.selday .num{font-size:14px;height:26px;min-width:26px;border-radius:13px}
+.cell.selday .chip,.cell.selday ~ .items .chip{font-size:12.5px}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -1492,10 +1502,15 @@ function weekLogHTML(ws) {
       <aside class="card wlog-note" aria-label="이번 주 메모"><div class="card-title">이번 주 메모</div>${editorHTML('week:' + ws, true)}<p class="hint" style="margin:6px 2px 0">쓸 말이 있을 때만 적어요. 비워두면 아무것도 남지 않아요.</p></aside>
     </div></div>`;
 }
+function colTpl(days) {
+  if (ui.calView === 'week' || isMob()) return `repeat(${days.length},minmax(0,1fr))`;
+  const g = parse(ui.sel).getDay();
+  return days.map(d => parse(d).getDay() === g ? 'minmax(0,1.9fr)' : 'minmax(0,1fr)').join(' ');
+}
 function visDays(ws) { const all = [...Array(7)].map((_, i) => addDays(ws, i)); return settingsOf().hideWeekend ? all.filter(d => !isWeekend(d)) : all; }
 function dowHTML(ws) {
   const vd = visDays(ws);
-  return `<div class="dow" style="grid-template-columns:repeat(${vd.length},minmax(0,1fr))">${vd.map(d => { const g = parse(d).getDay(); return `<span class="${g === 0 ? 'sun' : g === 6 ? 'sat' : ''} ${ui.calView === 'week' && d === TODAY ? 'tdow' : ''}">${'일월화수목금토'[g]}</span>`; }).join('')}</div>`;
+  return `<div class="dow" style="grid-template-columns:${colTpl(vd)}">${vd.map(d => { const g = parse(d).getDay(); return `<span class="${g === 0 ? 'sun' : g === 6 ? 'sat' : ''} ${ui.calView === 'week' && d === TODAY ? 'tdow' : ''}">${'일월화수목금토'[g]}</span>`; }).join('')}</div>`;
 }
 function weekRow(ws, isSel, month) {
   const all = [...Array(7)].map((_, i) => addDays(ws, i)); const we = all[6];
@@ -1508,7 +1523,7 @@ function weekRow(ws, isSel, month) {
   const lanes = [];
   spans.forEach(sp => { let li = lanes.findIndex(end => end < sp.s); if (li < 0) { li = lanes.length; lanes.push(sp.e); } else lanes[li] = sp.e; sp.lane = li; });
   const nl = lanes.length;
-  let h = `<div class="wk ${isSel ? 'sel' : ''}" style="grid-template-columns:repeat(${N},minmax(0,1fr));grid-template-rows:32px ${nl ? `repeat(${nl},25px) ` : ''}1fr">`;
+  let h = `<div class="wk ${isSel ? 'sel' : ''}" style="grid-template-columns:${colTpl(days)};grid-template-rows:32px ${nl ? `repeat(${nl},25px) ` : ''}1fr">`;
   days.forEach((d, i) => {
     const dd = parse(d); const other = month ? dd.getMonth() + 1 !== month : false;
     const cls = ['cell']; if (other) cls.push('other'); if (isWeekend(d)) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === N - 1) cls.push('last');
@@ -1524,7 +1539,7 @@ function weekRow(ws, isSel, month) {
       h += `<div class="bar proj ${pcls(p)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" data-act="open" data-kind="project" data-id="${p.id}" data-drop="project:${p.id}" title="${esc(p.title)} — 할일을 여기로 끌어오면 이 프로젝트에 들어가요"><span class="bt">${esc(p.title)}</span><span class="meta">${meta}</span>${!cr && !p.done ? `<span class="handle" data-resize="project:${p.id}" title="끌어서 끝 날짜 조정"></span>` : ''}</div>`;
     } else {
       const it = sp.o;
-      h += `<div class="bar ev ${evState(it)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}"><span class="dot" style="background:${itemColor(it)}"></span><span class="bt">${rnT(it)}</span><span class="meta">${cr || b === a ? '' : `${fmtShort(it.date)}–${fmtShort(it.end)}`}</span>${!cr ? `<span class="handle" data-resize="event:${it.id}" title="끌어서 기간 조정"></span>` : ''}</div>`;
+      h += `<div class="bar ev ${evState(it)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}"><span class="dot" style="background:${itemColor(it)}"></span><span class="bt">${rnT(it)}</span><span class="meta">${cr || b === a ? '' : `${fmtShort(it.date)}–${fmtShort(it.end)}`}</span><span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.plus}</span>${!cr ? `<span class="handle" data-resize="event:${it.id}" title="끌어서 기간 조정"></span>` : ''}</div>`;
     }
   });
   days.forEach((d, i) => {
