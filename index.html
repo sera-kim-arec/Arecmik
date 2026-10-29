@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Arecmik</title>
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#E9EDF3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#23262D" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.json?v=2">
 <link rel="icon" type="image/png" href="icon-192-lemon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon-lemon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 /* Layout: sidebar | main view | right panel. Clean neutral grays, lemon as the one brand accent. */
 :root{
@@ -24,7 +25,7 @@
   --ink-btn:#1D1D1F; --ink-btn-fg:#FFFFFF;
   --shadow:0 1px 2px rgba(0,0,0,.07); --shadow-md:0 8px 24px rgba(0,0,0,.10); --shadow-lg:0 24px 60px rgba(0,0,0,.22);
   --scrim:rgba(20,20,22,.32);
-  --font:'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif;
+  --font:'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#151517; --side:#1B1B1E; --panel:#19191C; --surface:#1F1F23; --sunken:#29292E; --hover:#2E2E34; --dim:#19191C;
@@ -785,6 +786,31 @@ code.ic{font-family:ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, '
 .dow,.wk{transition:grid-template-columns .18s ease}
 .cell.selday .num{font-size:14px;height:26px;min-width:26px;border-radius:13px}
 .cell.selday .chip,.cell.selday ~ .items .chip{font-size:12.5px}
+/* ---- diary grouping ---- */
+.ptools{display:flex;align-items:center;gap:8px;margin:6px 0 4px}
+.ychips{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+.ychips button{border:0;background:var(--sunken);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;border-radius:14px;padding:5px 12px;cursor:pointer}
+.ychips button.on{background:var(--lemon-soft);color:var(--lemon-ink)}
+.pyear{margin-top:8px;scroll-margin-top:70px}
+.py-h{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;font:inherit;color:var(--fg);padding:8px 2px;cursor:pointer;text-align:left}
+.py-h b{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.py-c{display:flex;color:var(--muted)}
+.py-n{font-size:12.5px;color:var(--muted);font-weight:600}
+.pmonth{margin:6px 0 16px}
+.pm-h{display:flex;align-items:baseline;gap:6px;margin:4px 2px 10px}
+.pm-h b{font-size:14px;font-weight:700}
+.pm-h span{font-size:12px;color:var(--faint);font-weight:600}
+.plines{display:flex;flex-direction:column;gap:6px}
+.pline{display:flex;align-items:center;gap:14px;width:100%;border:0;background:var(--surface);border-radius:14px;padding:10px 14px;text-align:left;font:inherit;color:var(--fg);cursor:pointer}
+.pl-d{display:flex;flex-direction:column;align-items:center;width:30px;flex:none;line-height:1.15}
+.pl-d b{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.pl-d span{font-size:11px;color:var(--muted);font-weight:700}
+.pl-d .sun{color:var(--rose-ink)} .pl-d .sat{color:var(--blue-ink)}
+.pl-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.pl-t b{font-size:14.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-t span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-t span.solo{color:var(--fg2);font-size:14px}
+.pl-img{width:44px;height:44px;border-radius:10px;background-size:cover;background-position:center;flex:none}
 /* ---- polish pass ---- */
 :root{ --r-sm:8px; --r:10px; --r-lg:14px; --we:#FBFBFC; }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --we:#18181B; } }
@@ -854,6 +880,186 @@ body{letter-spacing:-.003em;line-height:1.5}
 .side-foot{border-top-color:var(--line)}
 @media (prefers-reduced-motion: reduce){ .btn:active{transform:none} .tile.has:hover,.pcard:hover{transform:none} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+
+/* ===================== Soft (neumorphic) theme =====================
+   One background colour for every surface; depth comes from paired light/dark shadows.
+   Raised = things you press or that hold a group. Pressed-in = inputs, chosen tabs, the active nav row.
+   Lemon is the only accent. */
+:root{
+  --bg:#E9EDF3; --side:#E9EDF3; --panel:#E9EDF3; --surface:#E9EDF3; --sunken:#E1E6ED; --hover:#E3E8EF; --dim:#E6EAF0; --sel:#EDF0E2;
+  --line:rgba(150,163,184,.32); --line-soft:rgba(150,163,184,.2);
+  --fg:#262A33; --fg2:#434957; --muted:#6F7686; --faint:#A2A9B6;
+  --lemon:#F6D84C; --lemon-soft:#F7EDB8; --lemon-ink:#6A5200; --on-lemon:#2A2400;
+  --ink-btn:#262A33; --ink-btn-fg:#FFFFFF;
+  --hi:rgba(255,255,255,.95); --lo:rgba(163,177,198,.62); --lo2:rgba(163,177,198,.38);
+  --nm-out:-6px -6px 14px var(--hi), 6px 6px 14px var(--lo);
+  --nm-out-sm:-3px -3px 7px var(--hi), 3px 3px 7px var(--lo);
+  --nm-out-xs:-2px -2px 4px var(--hi), 2px 2px 4px var(--lo2);
+  --nm-in:inset 3px 3px 7px var(--lo), inset -3px -3px 7px var(--hi);
+  --nm-in-sm:inset 2px 2px 4px var(--lo), inset -2px -2px 4px var(--hi);
+  --shadow:var(--nm-out-xs); --shadow-md:var(--nm-out-sm); --shadow-lg:-10px -10px 30px rgba(255,255,255,.7), 14px 18px 40px rgba(120,134,158,.45);
+  --scrim:rgba(214,220,230,.55);
+  --r-lg:22px; --r-md:16px; --r-sm:12px; --we:transparent;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#23262D; --side:#23262D; --panel:#23262D; --surface:#23262D; --sunken:#1E2127; --hover:#282C34; --dim:#21242A; --sel:#2A2A24;
+  --line:rgba(0,0,0,.28); --line-soft:rgba(0,0,0,.2);
+  --fg:#ECEEF2; --fg2:#C9CDD6; --muted:#9097A4; --faint:#5F6672;
+  --lemon:#E8CB45; --lemon-soft:#3A3519; --lemon-ink:#F3DF8A; --on-lemon:#231F05;
+  --ink-btn:#ECEEF2; --ink-btn-fg:#23262D;
+  --hi:rgba(255,255,255,.055); --lo:rgba(0,0,0,.5); --lo2:rgba(0,0,0,.38);
+  --shadow-lg:-8px -8px 24px rgba(255,255,255,.04), 14px 18px 40px rgba(0,0,0,.6);
+  --scrim:rgba(10,12,16,.55); --we:transparent;
+} }
+:root[data-theme="dark"]{ --we:transparent; }
+.cell.we:not(.other):not(.selday){background:transparent}
+
+/* ---- shell ---- */
+body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
+.side{border-right:0}
+.panel{border-left:0}
+.topbar{border-bottom:0}
+.side-foot{border-top:0}
+
+/* ---- buttons ---- */
+.btn{border:0;border-radius:var(--r-sm);background:var(--bg);box-shadow:var(--nm-out-sm);font-weight:600;color:var(--fg2);transition:box-shadow .15s, transform .1s, color .15s}
+.btn:hover{color:var(--fg)}
+.btn:active,.btn.on,.btn.on-soft{box-shadow:var(--nm-in-sm);transform:none}
+.btn.on-soft{background:var(--bg);color:var(--lemon-ink)}
+.btn.primary{background:var(--lemon);color:var(--on-lemon);box-shadow:-4px -4px 10px var(--hi), 4px 5px 12px rgba(190,160,30,.38)}
+.btn.primary:active{box-shadow:inset 3px 3px 6px rgba(150,120,10,.35), inset -2px -2px 5px rgba(255,255,255,.5)}
+.btn.ghost{box-shadow:none;background:transparent}
+.btn.ghost:hover{box-shadow:var(--nm-out-xs)}
+.btn.icon{border-radius:50%}
+.btn.warn{box-shadow:var(--nm-in-sm)}
+.gear-btn{border-radius:50%;box-shadow:var(--nm-out-sm)}
+.gear-btn:active{box-shadow:var(--nm-in-sm)}
+.mini{border-radius:50%}
+.mini:hover{background:transparent;box-shadow:var(--nm-out-xs)}
+
+/* ---- segmented controls: a pressed track, the chosen part pops out ---- */
+.seg{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm);padding:4px;gap:4px}
+.seg button{border-radius:9px}
+.seg button.on{background:var(--bg);box-shadow:var(--nm-out-xs);color:var(--fg)}
+
+/* ---- fields are pressed in ---- */
+.inp,.addline,.search,.mcomp,.sub-inline,.qc .inp{border:0;background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm)}
+.inp:focus,.addline:focus-within,.search:focus-within,.mcomp:focus-within,.sub-inline:focus-within{box-shadow:var(--nm-in-sm), 0 0 0 2px var(--lemon)}
+.search kbd{background:var(--bg);box-shadow:var(--nm-out-xs);border:0}
+
+/* ---- checkboxes: little pressed wells; checked = lemon pillow ---- */
+.chk{border:0;border-radius:6px;background:var(--bg);box-shadow:var(--nm-in-sm);color:transparent}
+.chk.on{background:var(--lemon);color:var(--on-lemon);box-shadow:-1px -1px 3px var(--hi), 2px 2px 4px rgba(190,160,30,.4)}
+.chk.lg{border-radius:8px}
+
+/* ---- groups ---- */
+.card,.dlg-body .links.panel,.links.panel{border:0;background:var(--bg);box-shadow:var(--nm-out);border-radius:var(--r-lg)}
+.dialog,.dialog.sm{background:var(--bg);box-shadow:var(--shadow-lg);border-radius:28px}
+.dlg-head{border-bottom:0}
+.kind{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:20px}
+.kind.ev{color:var(--blue-ink)}
+.autosave{color:var(--faint)}
+.subs{border-bottom:0}
+.slash,.sres,.qc{border:0;background:var(--bg);box-shadow:var(--shadow-lg);border-radius:var(--r-md)}
+.slash button.on,.sres button:hover,.slash button:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.toast{border-radius:20px}
+
+/* ---- sidebar ---- */
+.nav-item,.tree-row,.tree-doc{border-radius:var(--r-sm)}
+.nav-item.on,.tree-row.on,.tree-doc.on{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--fg)}
+.nav-item:hover,.tree-row:hover,.tree-doc:hover{background:var(--hover)}
+.side .seg{margin-bottom:2px}
+.brand svg{filter:drop-shadow(2px 3px 4px var(--lo2))}
+
+/* ---- pills and tags ---- */
+.pill{border:0;background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
+.tag{border-radius:20px}
+
+/* ---- WORK calendar: soft grid, today and the chosen day float ---- */
+.wk,.dow{border-bottom:1px solid var(--line-soft)}
+.cell{border-right:1px solid var(--line-soft)}
+.cell.other,.cell.we{background:transparent}
+.cell.other .num{opacity:.55}
+.cell.selday{background:var(--bg);box-shadow:inset 3px 3px 8px var(--lo2), inset -3px -3px 8px var(--hi)}
+.num.today{background:var(--lemon);color:var(--on-lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.42)}
+.chip{border-radius:10px}
+.chip.ev{background:var(--bg);box-shadow:var(--nm-out-xs)}
+.chip.ev:hover{background:var(--bg);box-shadow:var(--nm-out-sm)}
+.chip:not(.ev):hover{background:var(--hover)}
+.bar{border-radius:20px;box-shadow:var(--nm-out-xs)}
+.bar.ev{background:var(--bg)}
+.chip-sub{background:var(--bg)!important;box-shadow:var(--nm-out-xs)!important;border-radius:50%!important}
+.cell-add{border-radius:50%}
+.cell-add:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+.more{border-radius:20px}
+
+/* ---- right panel rows ---- */
+.evrow{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm);margin-bottom:8px}
+.evrow:hover{box-shadow:var(--nm-out-sm)}
+.evrow.cancel{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.trow{border-radius:var(--r-sm)}
+.trow:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
+.prog{border-radius:20px}
+.prog.all{background:var(--lemon-soft);color:var(--lemon-ink)}
+.mvb,.stb{border-radius:20px}
+
+/* ---- notes & LIFE lists ---- */
+.fcard,.pcard,.pline{border:0;background:var(--bg);box-shadow:var(--nm-out-sm);border-radius:var(--r-md)}
+.fcard:hover,.pcard:hover,.pline:hover{box-shadow:var(--nm-out);transform:none}
+.pcard .pc-c{margin:8px 8px 0;border-radius:12px;box-shadow:var(--nm-in-sm)}
+.dlist{background:transparent;border:0;box-shadow:none;display:flex;flex-direction:column;gap:10px}
+.drow{border:0;border-radius:var(--r-md);background:var(--bg);box-shadow:var(--nm-out-sm)}
+.ychips button{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
+.ychips button.on{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--lemon-ink)}
+.lgrid{gap:10px}
+.tile{background-color:var(--bg);box-shadow:var(--nm-out-sm);border-radius:var(--r-md)}
+.tile.has{box-shadow:var(--nm-out-sm)}
+.tile.sel{box-shadow:var(--nm-in);outline:none}
+.tile .n.today{background:var(--lemon);color:var(--on-lemon)}
+.tile-add{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:50%}
+.cover{border-radius:var(--r-lg);box-shadow:var(--nm-in)}
+.lday{border-bottom:0}
+.lrow:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
+
+/* ---- editor bits ---- */
+.bk-code{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm)}
+.tbl-scroll{box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
+.mention{border-radius:20px}
+.rcard{background:var(--bg);box-shadow:var(--shadow-lg);border-radius:22px}
+
+/* ---- phone ---- */
+@media (max-width:640px){
+  .main{background:var(--bg)}
+  .mtop{background:var(--bg)}
+  .mcal{background:var(--bg);box-shadow:var(--nm-out);border-radius:0 0 28px 28px;margin-bottom:6px}
+  .mday.sel .n{background:var(--bg);color:var(--fg)!important;box-shadow:var(--nm-in-sm)}
+  .mday.today:not(.sel) .n{background:var(--lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.4)}
+  .mday.today.sel .n{background:var(--lemon);box-shadow:inset 2px 2px 5px rgba(150,120,10,.35), inset -2px -2px 4px rgba(255,255,255,.45)}
+  .mgrip{background:transparent;box-shadow:var(--nm-in-sm);height:6px;width:40px;border-radius:3px}
+  .mchev{border-radius:50%}
+  .mchev:active{box-shadow:var(--nm-in-sm);background:transparent}
+  .mpill{background:var(--bg);box-shadow:var(--nm-out-xs);color:var(--lemon-ink)}
+  .mtoday{background:var(--lemon);color:var(--on-lemon);border-radius:20px}
+  .mcomp{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:18px}
+  .mc-kinds{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:12px}
+  .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-xs)}
+  .mg-b{background:var(--bg);box-shadow:var(--nm-out);border-radius:var(--r-lg)}
+  .mrow+.mrow{border-top:1px solid var(--line-soft)}
+  .mrow:active{background:var(--bg);box-shadow:var(--nm-in-sm)}
+  .mrow.td .chk{border-radius:50%}
+  .tabbar{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom, 0px));border:0;border-radius:26px;background:var(--bg);box-shadow:var(--nm-out);backdrop-filter:none;-webkit-backdrop-filter:none;padding:6px 6px 6px}
+  .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--fg)}
+  .tabbar button.on .ti svg{color:var(--lemon-ink)}
+  .tabbar .ti b{background:var(--lemon);color:var(--on-lemon)}
+  .fab{bottom:calc(92px + env(safe-area-inset-bottom, 0px));box-shadow:-5px -5px 12px var(--hi), 6px 8px 16px rgba(190,160,30,.42)}
+  .fab:active{box-shadow:inset 3px 3px 6px rgba(150,120,10,.35), inset -2px -2px 5px rgba(255,255,255,.5)}
+  .main{padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
+  .toast{bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
+  .scrim{padding-top:20px}
+  .dialog,.dialog.sm{border-radius:28px 28px 0 0}
+  .mlife-sel .btn.primary{border-radius:20px}
+}
+@media (prefers-reduced-motion: reduce){ .btn,.chip,.pcard{transition:none} }
 </style>
 
 </head>
@@ -1282,6 +1488,7 @@ const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
 const ui = {
+  pview: (() => { try { return localStorage.getItem('arecmik-pview') || 'card'; } catch (e) { return 'card'; } })(),
   view: VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'work',
   month: TODAY.slice(0, 7), sel: TODAY, panelTab: 'todo', showInboxDone: false,
   open: { f1: true, f2: true, lf2: true }, noteFolder: 'f2', noteDoc: 'n1',
@@ -1773,6 +1980,33 @@ function dayCover(recs) {
   const c = recs.find(r => r.t === 'citem');
   return c ? { img: c.o.img, tone: c.o.tone } : null;
 }
+const dayLabel = d => { const x = parse(d); return `${x.getMonth() + 1}월 ${x.getDate()}일 (${WD[x.getDay()]})`; };
+const postTitle = p => p.title || dayLabel(p.date);
+function isDiaryFolder(fid) { let f = folder(fid); while (f) { if ((f.name || '').trim() === '일기') return true; f = f.parent ? folder(f.parent) : null; } return false; }
+function postCard(x) {
+  return `<button class="pcard" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}"><span class="pc-c" style="${coverStyle(x.cover)}"></span><span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(postTitle(x))}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`;
+}
+function postLine(x) {
+  const d = parse(x.date); const ft = firstText(x.blocks);
+  return `<button class="pline" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}">
+    <span class="pl-d"><b>${d.getDate()}</b><span class="${d.getDay() === 0 ? 'sun' : d.getDay() === 6 ? 'sat' : ''}">${WD[d.getDay()]}</span></span>
+    <span class="pl-t">${x.title ? `<b>${esc(x.title)}</b>` : ''}<span class="${x.title ? '' : 'solo'}">${esc(ft) || '내용 없음'}</span></span>
+    ${x.cover && x.cover.img ? `<span class="pl-img" style="${coverStyle(x.cover)}"></span>` : ''}</button>`;
+}
+function postGroups(posts) {
+  if (!posts.length) return `<div class="empty">아직 글이 없어요. ‘새 글’로 첫 기록을 남겨보세요.</div>`;
+  const years = [...new Set(posts.map(x => x.date.slice(0, 4)))];
+  const cy = TODAY.slice(0, 4); const firstOpen = years.includes(cy) ? cy : years[0];
+  const open = y => (ui.pyears && y in ui.pyears) ? ui.pyears[y] : y === firstOpen;
+  const view = ui.pview || 'card';
+  const chips = years.length > 1 ? `<div class="ychips">${years.map(y => `<button class="${open(y) ? 'on' : ''}" data-act="pyear" data-y="${y}">${y}</button>`).join('')}</div>` : '';
+  return chips + years.map(y => {
+    const yp = posts.filter(x => x.date.startsWith(y)); const isOpen = open(y);
+    const months = [...new Set(yp.map(x => x.date.slice(5, 7)))];
+    return `<section class="pyear" id="py-${y}"><button class="py-h" data-act="pyfold" data-y="${y}" aria-expanded="${isOpen}"><span class="py-c">${isOpen ? I.chevD : I.chevR}</span><b>${y}년</b><span class="py-n">${yp.length}개</span></button>
+      ${isOpen ? months.map(m => { const mp = yp.filter(x => x.date.slice(5, 7) === m); return `<div class="pmonth"><div class="pm-h"><b>${+m}월</b><span>${mp.length}</span></div>${view === 'list' ? `<div class="plines">${mp.map(postLine).join('')}</div>` : `<div class="pgrid">${mp.map(postCard).join('')}</div>`}</div>`; }).join('') : ''}</section>`;
+  }).join('');
+}
 function recLabel(recs) {
   const names = [];
   recs.forEach(r => { const n = r.t === 'post' ? (folder(r.o.folder) || {}).name : r.c.name; if (n && !names.includes(n)) names.push(n); });
@@ -1795,7 +2029,7 @@ function drawDayPop(d) {
   const r = el.getBoundingClientRect();
   const left = Math.min(Math.max(8, r.left), window.innerWidth - 390); const top = Math.min(r.bottom + 6, window.innerHeight - 260);
   pop.innerHTML = `<div class="sres" role="dialog" aria-label="${fmtMD(d)} 기록" style="top:${Math.max(8, top)}px;left:${left}px"><div class="sg">${fmtFull(d)}</div>${recs.map(x => x.t === 'post'
-    ? `<button data-act="openpost" data-id="${x.o.id}"><b>${esc(x.o.title || '제목 없음')}</b><span>${esc((folder(x.o.folder) || {}).name || '')}</span></button>`
+    ? `<button data-act="openpost" data-id="${x.o.id}"><b>${esc(postTitle(x.o))}</b><span>${esc((folder(x.o.folder) || {}).name || '')}</span></button>`
     : `<button data-act="openci" data-id="${x.o.id}"><b>${esc(x.o.title || '이름 없음')}</b><span>${esc(x.c.name)} · ${esc(x.f.name)}</span></button>`).join('')}</div>`;
 }
 function lifeDay() {
@@ -1824,8 +2058,8 @@ function vPosts() {
   <div class="page">
     <input class="h1-input" data-fname="${f.id}" value="${esc(f.name)}" aria-label="폴더 이름">
     ${subs.length ? `<div class="fcards">${subs.map(x => `<button class="fcard" data-act="lfolder" data-id="${x.id}">${I.folder}${esc(x.name)}<span class="c">${folderCount(x)}</span></button>`).join('')}</div>` : ''}
-    <div class="lbl">글 ${posts.length}개</div>
-    ${posts.length ? `<div class="pgrid">${posts.map(x => `<button class="pcard" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}"><span class="pc-c" style="${coverStyle(x.cover)}"></span><span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(x.title || '제목 없음')}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`).join('')}</div>` : `<div class="empty">아직 글이 없어요. ‘새 글’로 첫 기록을 남겨보세요.</div>`}
+    <div class="ptools"><span class="lbl" style="padding:0">글 ${posts.length}개${isDiaryFolder(fid) ? ' · 하루에 한 편' : ''}</span><span class="grow"></span><div class="seg inline sm" role="group" aria-label="보기"><button class="${(ui.pview || 'card') === 'card' ? 'on' : ''}" data-act="pview" data-v="card">카드</button><button class="${ui.pview === 'list' ? 'on' : ''}" data-act="pview" data-v="list">목록</button></div></div>
+    ${postGroups(posts)}
     <div class="foot-actions"><button class="btn sm ${ui.confirm === 'folder:' + f.id ? 'warn' : 'ghost danger'}" data-act="delfolder" data-id="${f.id}">${ui.confirm === 'folder:' + f.id ? '한 번 더 누르면 폴더 삭제 (안의 글은 위 폴더로 옮겨져요)' : '폴더 삭제'}</button></div>
   </div>`;
 }
@@ -1840,7 +2074,7 @@ function vPost(p) {
       <label class="chk-lbl glass"><input type="checkbox" id="cover-cal" data-pf="coverOnCal" ${p.coverOnCal ? 'checked' : ''}>달력 대표 이미지</label>
     </div></div>
     <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}</div>
-    <input class="doc-title" id="post-title" data-pf="title" value="${esc(p.title)}" placeholder="제목" aria-label="글 제목">
+    <input class="doc-title" id="post-title" data-pf="title" value="${esc(p.title)}" placeholder="${isDiaryFolder(p.folder) ? esc(dayLabel(p.date)) : '제목'}" aria-label="글 제목">
     ${ui.linksOpen === 'post:' + p.id ? linksHTML('post:' + p.id, 'post:' + p.id, true) : ''}
     ${editorHTML('post:' + p.id)}
   </article>`;
@@ -2259,7 +2493,7 @@ function searchResults(q) {
   S.projects.forEach(p => { if (has(p.title) || has(bt(p.memo))) out.push({ g: '프로젝트', t: p.title, s: projStatus(p), k: 'project', id: p.id }); });
   if (has(bt(S.memo))) out.push({ g: '상시 메모', t: '상시 메모', s: '캘린더 오른쪽 패널', k: 'memo', id: '' });
   S.docs.forEach(d => { if (has(d.title) || has(bt(d.blocks))) out.push({ g: '노트', t: d.title || '제목 없음', s: folderPath(d.folder).map(f => f.name).join(' / '), k: 'doc', id: d.id }); });
-  S.posts.forEach(p => { if (has(p.title) || has(bt(p.blocks))) out.push({ g: 'LIFE 글', t: p.title || '제목 없음', s: `${fmtDot(p.date)} · ${(folder(p.folder) || {}).name || ''}`, k: 'post', id: p.id }); });
+  S.posts.forEach(p => { if (has(p.title) || has(bt(p.blocks))) out.push({ g: 'LIFE 글', t: postTitle(p), s: `${fmtDot(p.date)} · ${(folder(p.folder) || {}).name || ''}`, k: 'post', id: p.id }); });
   S.citems.forEach(ci => { const c = coll(ci.coll); if (c && (has(ci.title) || Object.values(ci.values).some(v => typeof v === 'string' && has(v)))) out.push({ g: '컬렉션', t: ci.title || '이름 없음', s: c.name, k: 'citem', id: ci.id }); });
   return out.slice(0, 30);
 }
@@ -2319,9 +2553,11 @@ function createItem(kind, title, date) {
 function newPost(opts = {}) {
   const fid = opts.folder || (ui.lifeFolder && folder(ui.lifeFolder) ? ui.lifeFolder : (S.folders.find(f => f.space === 'life') || {}).id);
   if (!fid) { toast('먼저 폴더를 만들어 주세요'); return; }
+  if (isDiaryFolder(fid)) { const ex = S.posts.find(x => x.folder === fid && x.date === (opts.date || TODAY)); if (ex) { ui.postId = ex.id; ui.lifeFolder = fid; go('posts'); toast(`${dayLabel(ex.date)} 일기를 열었어요`); return; } }
   const p = { id: uid(), folder: fid, date: opts.date || TODAY, title: '', cover: { tone: randTone(), img: null }, coverOnCal: false, blocks: [B('p', '')] };
   snapshot(); S.posts.push(p); save();
-  ui.postId = p.id; ui.lifeFolder = fid; ui.focusId = 'post-title'; go('posts');
+  ui.postId = p.id; ui.lifeFolder = fid; ui.focusId = isDiaryFolder(fid) ? null : 'post-title'; go('posts');
+  if (isDiaryFolder(fid)) setTimeout(() => { const ed = $('.doc .bk-text'); if (ed) placeCaret(ed, 0); }, 30);
 }
 function tableEdit(t, fn) { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b || !b.rows) return; const [r, c] = fn(b); touch(key); rerenderEditor(key); focusCell(key, b.id, r, c); }
 const ACT = {
@@ -2395,6 +2631,9 @@ const ACT = {
   setwe: t => { S.settings = { ...(S.settings || {}), hideWeekend: t.dataset.v === 'hide' }; save(); render(); renderModal(); },
   setweek: t => { S.settings = { ...(S.settings || {}), weekStart: t.dataset.v }; save(); render(); renderModal(); },
   mnotes: () => { if (ui.view === 'notes' || !ui.noteDoc) { ui.noteDoc = null; ui.noteFolder = null; } go('notes'); },
+  pview: t => { ui.pview = t.dataset.v; try { localStorage.setItem('arecmik-pview', ui.pview); } catch (e) { /* storage blocked */ } render(); },
+  pyfold: t => { const y = t.dataset.y; const cur = $('#py-' + y); const isOpen = t.getAttribute('aria-expanded') === 'true'; ui.pyears = { ...(ui.pyears || {}), [y]: !isOpen }; render(); },
+  pyear: t => { const y = t.dataset.y; ui.pyears = { ...(ui.pyears || {}), [y]: true }; render(); const el = $('#py-' + y); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   evstate: t => { const it = item(ui.modal.id); if (!it) return; const v = t.dataset.v; mutate(() => { it.done = v === 'done'; it.cancel = v === 'cancel'; }, v === 'cancel' ? '일정을 취소로 표시했어요' : v === 'done' ? '일정을 완료로 표시했어요' : '예정으로 되돌렸어요'); },
   evdone: (t, e) => { e.stopPropagation(); const it = item(t.dataset.id); if (!it) return; mutate(() => { it.done = !it.done; if (it.done) it.cancel = false; }, it.done ? '완료를 취소했어요' : `‘${it.title || '일정'}’ 완료`); },
   postpone: t => { const it = item(ui.modal.id); if (!it || !it.date) return; const base = it.date < TODAY ? TODAY : it.date; const to = addDays(base, +t.dataset.d); mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); },
