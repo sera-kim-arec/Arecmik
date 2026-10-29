@@ -882,6 +882,7 @@ body{letter-spacing:-.003em;line-height:1.5}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 
 /* ---- routines ---- */
+.rdue-c{color:var(--lemon-ink)!important;font-weight:700}
 .rlist{display:flex;flex-direction:column;gap:2px;margin-top:6px}
 .rrow{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:12px}
 .rrow .chk{width:18px;height:18px;border-radius:50%}
@@ -940,33 +941,31 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 /* ---- buttons ---- */
 .btn{border:0;border-radius:var(--r-sm);background:var(--bg);box-shadow:var(--nm-out-sm);font-weight:600;color:var(--fg2);transition:box-shadow .15s, transform .1s, color .15s}
 .btn:hover{color:var(--fg)}
-.btn:active{box-shadow:var(--nm-in-sm);transform:none}
-.btn.on,.btn.on-soft{box-shadow:var(--nm-out-sm);color:var(--lemon-ink)}
+.btn:active,.btn.on,.btn.on-soft{box-shadow:var(--nm-in-sm);transform:none}
 .btn.on-soft{background:var(--bg);color:var(--lemon-ink)}
 .btn.primary{background:var(--lemon);color:var(--on-lemon);box-shadow:-4px -4px 10px var(--hi), 4px 5px 12px rgba(190,160,30,.38)}
 .btn.primary:active{box-shadow:inset 3px 3px 6px rgba(150,120,10,.35), inset -2px -2px 5px rgba(255,255,255,.5)}
 .btn.ghost{box-shadow:none;background:transparent}
 .btn.ghost:hover{box-shadow:var(--nm-out-xs)}
 .btn.icon{border-radius:50%}
-.btn.warn{box-shadow:var(--nm-out-sm)}
+.btn.warn{box-shadow:var(--nm-in-sm)}
 .gear-btn{border-radius:50%;box-shadow:var(--nm-out-sm)}
 .gear-btn:active{box-shadow:var(--nm-in-sm)}
 .mini{border-radius:50%}
 .mini:hover{background:transparent;box-shadow:var(--nm-out-xs)}
 
 /* ---- segmented controls: a pressed track, the chosen part pops out ---- */
-.seg{background:transparent;box-shadow:none;border-radius:var(--r-sm);padding:3px;gap:6px}
-.seg button{color:var(--muted)}
+.seg{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm);padding:4px;gap:4px}
 .seg button{border-radius:9px}
-.seg button.on{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
+.seg button.on{background:var(--bg);box-shadow:var(--nm-out-xs);color:var(--fg)}
 
 /* ---- fields are pressed in ---- */
-.inp,.addline,.search,.mcomp,.sub-inline,.qc .inp{border:0;background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
-.inp:focus,.addline:focus-within,.search:focus-within,.mcomp:focus-within,.sub-inline:focus-within{box-shadow:var(--nm-out-sm), 0 0 0 2px var(--lemon)}
+.inp,.addline,.search,.mcomp,.sub-inline,.qc .inp{border:0;background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm)}
+.inp:focus,.addline:focus-within,.search:focus-within,.mcomp:focus-within,.sub-inline:focus-within{box-shadow:var(--nm-in-sm), 0 0 0 2px var(--lemon)}
 .search kbd{background:var(--bg);box-shadow:var(--nm-out-xs);border:0}
 
 /* ---- checkboxes: little pressed wells; checked = lemon pillow ---- */
-.chk{border:0;border-radius:6px;background:var(--bg);box-shadow:var(--nm-out-xs);color:transparent}
+.chk{border:0;border-radius:6px;background:var(--bg);box-shadow:var(--nm-in-sm);color:transparent}
 .chk.on{background:var(--lemon);color:var(--on-lemon);box-shadow:-1px -1px 3px var(--hi), 2px 2px 4px rgba(190,160,30,.4)}
 .chk.lg{border-radius:8px}
 
@@ -974,17 +973,17 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 .card,.dlg-body .links.panel,.links.panel{border:0;background:var(--bg);box-shadow:var(--nm-out);border-radius:var(--r-lg)}
 .dialog,.dialog.sm{background:var(--bg);box-shadow:var(--shadow-lg);border-radius:28px}
 .dlg-head{border-bottom:0}
-.kind{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
+.kind{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:20px}
 .kind.ev{color:var(--blue-ink)}
 .autosave{color:var(--faint)}
 .subs{border-bottom:0}
 .slash,.sres,.qc{border:0;background:var(--bg);box-shadow:var(--shadow-lg);border-radius:var(--r-md)}
-.slash button.on,.sres button:hover,.slash button:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+.slash button.on,.sres button:hover,.slash button:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
 .toast{border-radius:20px}
 
 /* ---- sidebar ---- */
 .nav-item,.tree-row,.tree-doc{border-radius:var(--r-sm)}
-.nav-item.on,.tree-row.on,.tree-doc.on{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
+.nav-item.on,.tree-row.on,.tree-doc.on{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--fg)}
 .nav-item:hover,.tree-row:hover,.tree-doc:hover{background:var(--hover)}
 .side .seg{margin-bottom:2px}
 .brand svg{filter:drop-shadow(2px 3px 4px var(--lo2))}
@@ -998,7 +997,7 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 .cell{border-right:1px solid var(--line-soft)}
 .cell.other,.cell.we{background:transparent}
 .cell.other .num{opacity:.55}
-.cell.selday{background:var(--sel);box-shadow:var(--nm-out-sm);border-radius:14px;position:relative;z-index:1}
+.cell.selday{background:var(--bg);box-shadow:inset 3px 3px 8px var(--lo2), inset -3px -3px 8px var(--hi)}
 .num.today{background:var(--lemon);color:var(--on-lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.42)}
 .chip{border-radius:10px}
 .chip.ev{background:var(--bg);box-shadow:var(--nm-out-xs)}
@@ -1014,9 +1013,9 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 /* ---- right panel rows ---- */
 .evrow{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm);margin-bottom:8px}
 .evrow:hover{box-shadow:var(--nm-out-sm)}
-.evrow.cancel{background:var(--bg);box-shadow:none;opacity:.7}
+.evrow.cancel{background:var(--bg);box-shadow:var(--nm-in-sm)}
 .trow{border-radius:var(--r-sm)}
-.trow:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+.trow:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
 .prog{border-radius:20px}
 .prog.all{background:var(--lemon-soft);color:var(--lemon-ink)}
 .mvb,.stb{border-radius:20px}
@@ -1024,23 +1023,23 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
 /* ---- notes & LIFE lists ---- */
 .fcard,.pcard,.pline{border:0;background:var(--bg);box-shadow:var(--nm-out-sm);border-radius:var(--r-md)}
 .fcard:hover,.pcard:hover,.pline:hover{box-shadow:var(--nm-out);transform:none}
-.pcard .pc-c{margin:8px 8px 0;border-radius:12px;box-shadow:none}
+.pcard .pc-c{margin:8px 8px 0;border-radius:12px;box-shadow:var(--nm-in-sm)}
 .dlist{background:transparent;border:0;box-shadow:none;display:flex;flex-direction:column;gap:10px}
 .drow{border:0;border-radius:var(--r-md);background:var(--bg);box-shadow:var(--nm-out-sm)}
 .ychips button{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
-.ychips button.on{background:var(--lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.35);color:var(--on-lemon)}
+.ychips button.on{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--lemon-ink)}
 .lgrid{gap:10px}
 .tile{background-color:var(--bg);box-shadow:var(--nm-out-sm);border-radius:var(--r-md)}
 .tile.has{box-shadow:var(--nm-out-sm)}
-.tile.sel{box-shadow:var(--nm-out);outline:2px solid var(--lemon);outline-offset:-2px}
+.tile.sel{box-shadow:var(--nm-in);outline:none}
 .tile .n.today{background:var(--lemon);color:var(--on-lemon)}
 .tile-add{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:50%}
-.cover{border-radius:var(--r-lg);box-shadow:var(--nm-out-sm)}
+.cover{border-radius:var(--r-lg);box-shadow:var(--nm-in)}
 .lday{border-bottom:0}
-.lrow:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+.lrow:hover{background:var(--bg);box-shadow:var(--nm-in-sm)}
 
 /* ---- editor bits ---- */
-.bk-code{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
+.bk-code{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:var(--r-sm)}
 .tbl-scroll{box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
 .mention{border-radius:20px}
 .rcard{background:var(--bg);box-shadow:var(--shadow-lg);border-radius:22px}
@@ -1050,23 +1049,23 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
   .main{background:var(--bg)}
   .mtop{background:var(--bg)}
   .mcal{background:var(--bg);box-shadow:var(--nm-out);border-radius:0 0 28px 28px;margin-bottom:6px}
-  .mday.sel .n{background:var(--bg);color:var(--fg)!important;box-shadow:var(--nm-out-sm)}
+  .mday.sel .n{background:var(--bg);color:var(--fg)!important;box-shadow:var(--nm-in-sm)}
   .mday.today:not(.sel) .n{background:var(--lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.4)}
-  .mday.today.sel .n{background:var(--lemon);box-shadow:-3px -3px 7px var(--hi), 3px 4px 9px rgba(190,160,30,.45)}
-  .mgrip{background:var(--line);box-shadow:none;height:5px;width:40px;border-radius:3px}
+  .mday.today.sel .n{background:var(--lemon);box-shadow:inset 2px 2px 5px rgba(150,120,10,.35), inset -2px -2px 4px rgba(255,255,255,.45)}
+  .mgrip{background:transparent;box-shadow:var(--nm-in-sm);height:6px;width:40px;border-radius:3px}
   .mchev{border-radius:50%}
   .mchev:active{box-shadow:var(--nm-in-sm);background:transparent}
   .mpill{background:var(--bg);box-shadow:var(--nm-out-xs);color:var(--lemon-ink)}
   .mtoday{background:var(--lemon);color:var(--on-lemon);border-radius:20px}
-  .mcomp{background:var(--bg);box-shadow:var(--nm-out-sm);border-radius:18px}
-  .mc-kinds{background:transparent;box-shadow:none;border-radius:12px;gap:4px}
-  .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-sm)}
+  .mcomp{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:18px}
+  .mc-kinds{background:var(--bg);box-shadow:var(--nm-in-sm);border-radius:12px}
+  .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-xs)}
   .mg-b{background:var(--bg);box-shadow:var(--nm-out);border-radius:var(--r-lg)}
   .mrow+.mrow{border-top:1px solid var(--line-soft)}
   .mrow:active{background:var(--bg);box-shadow:var(--nm-in-sm)}
   .mrow.td .chk{border-radius:50%}
   .tabbar{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom, 0px));border:0;border-radius:26px;background:var(--bg);box-shadow:var(--nm-out);backdrop-filter:none;-webkit-backdrop-filter:none;padding:6px 6px 6px}
-  .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
+  .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-in-sm);color:var(--fg)}
   .tabbar button.on .ti svg{color:var(--lemon-ink)}
   .tabbar .ti b{background:var(--lemon);color:var(--on-lemon)}
   .fab{bottom:calc(92px + env(safe-area-inset-bottom, 0px));box-shadow:-5px -5px 12px var(--hi), 6px 8px 16px rgba(190,160,30,.42)}
@@ -1078,6 +1077,38 @@ body,.app,.main,.side,.panel,.topbar{background:var(--bg)}
   .mlife-sel .btn.primary{border-radius:20px}
 }
 @media (prefers-reduced-motion: reduce){ .btn,.chip,.pcard{transition:none} }
+
+/* ---- optional raised look (설정 → 디자인 → 볼록) ---- */
+html.raised .btn:active{box-shadow:var(--nm-in-sm);transform:none}
+html.raised .btn.on,html.raised .btn.on-soft{box-shadow:var(--nm-out-sm);color:var(--lemon-ink)}
+html.raised .btn.warn{box-shadow:var(--nm-out-sm)}
+html.raised .seg{background:transparent;box-shadow:none;border-radius:var(--r-sm);padding:3px;gap:6px}
+html.raised .seg button{color:var(--muted)}
+html.raised .seg button.on{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
+html.raised .inp,html.raised .addline,html.raised .search,html.raised .mcomp,html.raised .sub-inline,html.raised .qc .inp{border:0;background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
+html.raised .inp:focus,html.raised .addline:focus-within,html.raised .search:focus-within,html.raised .mcomp:focus-within,html.raised .sub-inline:focus-within{box-shadow:var(--nm-out-sm), 0 0 0 2px var(--lemon)}
+html.raised .chk{border:0;border-radius:6px;background:var(--bg);box-shadow:var(--nm-out-xs);color:transparent}
+html.raised .kind{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:20px}
+html.raised .slash button.on,html.raised .sres button:hover,html.raised .slash button:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+html.raised .nav-item.on,html.raised .tree-row.on,html.raised .tree-doc.on{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
+html.raised .cell.selday{background:var(--sel);box-shadow:var(--nm-out-sm);border-radius:14px;position:relative;z-index:1}
+html.raised .evrow.cancel{background:var(--bg);box-shadow:none;opacity:.7}
+html.raised .trow:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+html.raised .pcard .pc-c{margin:8px 8px 0;border-radius:12px;box-shadow:none}
+html.raised .ychips button.on{background:var(--lemon);box-shadow:-2px -2px 5px var(--hi), 2px 3px 6px rgba(190,160,30,.35);color:var(--on-lemon)}
+html.raised .tile.sel{box-shadow:var(--nm-out);outline:2px solid var(--lemon);outline-offset:-2px}
+html.raised .cover{border-radius:var(--r-lg);box-shadow:var(--nm-out-sm)}
+html.raised .lrow:hover{background:var(--bg);box-shadow:var(--nm-out-xs)}
+html.raised .bk-code{background:var(--bg);box-shadow:var(--nm-out-xs);border-radius:var(--r-sm)}
+@media (max-width:640px){
+html.raised .mday.sel .n{background:var(--bg);color:var(--fg)!important;box-shadow:var(--nm-out-sm)}
+html.raised .mday.today.sel .n{background:var(--lemon);box-shadow:-3px -3px 7px var(--hi), 3px 4px 9px rgba(190,160,30,.45)}
+html.raised .mgrip{background:var(--line);box-shadow:none;height:5px;width:40px;border-radius:3px}
+html.raised .mcomp{background:var(--bg);box-shadow:var(--nm-out-sm);border-radius:18px}
+html.raised .mc-kinds{background:transparent;box-shadow:none;border-radius:12px;gap:4px}
+html.raised .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-sm)}
+html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
+}
 </style>
 
 </head>
@@ -1132,6 +1163,7 @@ const I = {
   pen: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
   grip: '<svg width="10" height="14" viewBox="0 0 10 14" aria-hidden="true"><circle cx="3" cy="3" r="1.2" fill="currentColor"/><circle cx="7" cy="3" r="1.2" fill="currentColor"/><circle cx="3" cy="7" r="1.2" fill="currentColor"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/><circle cx="3" cy="11" r="1.2" fill="currentColor"/><circle cx="7" cy="11" r="1.2" fill="currentColor"/></svg>',
   img: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M5 17l5-4 3 2.5 3-2.5 3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+  repeat: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg>',
   sub: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v8a3 3 0 0 0 3 3h10"/><path d="M15 11l4 4-4 4"/></svg>',
   menu: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   grid: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
@@ -1342,7 +1374,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: st.depth === 'raised' ? 'raised' : 'pressed' }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -1519,6 +1551,7 @@ const isLife = () => ['life', 'posts', 'collections', 'new-collection'].includes
 /* ---------- render ---------- */
 const app = $('#app'), layer = $('#layer'), pop = $('#pop');
 function render() {
+  document.documentElement.classList.toggle('raised', settingsOf().depth === 'raised');
   const main = $('.main'); const st = main ? main.scrollTop : 0;
   const cs = $('.cal-scroll'); const sl = cs ? cs.scrollLeft : 0;
   const side = $('.side'); const ss = side ? side.scrollTop : 0;
@@ -1605,7 +1638,8 @@ function sidebar() {
 const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.view === view ? 'on' : ''}" data-act="go" data-view="${view}">${icon}<span>${label}</span>${extra}</button>`;
 function workNav() {
   const active = S.projects.filter(p => !p.done).length;
-  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
+  const rd = (S.routines || []).filter(rDue).length;
+  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}<button class="nav-item ${ui.view === 'work' && ui.panelTab === 'routine' ? 'on' : ''}" data-act="gortn">${I.repeat}<span>루틴</span>${rd ? `<span class="cnt rdue-c">${rd}</span>` : ''}</button>${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="newfolder" data-space="work" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('work', null, 0)}</div>`;
 }
@@ -2326,6 +2360,8 @@ function dlgSettings() {
     <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>‘앱을 닫아도 알림 받기’를 켜지 않은 기기는 Arecmik이 열려 있을 때만 알려드려요.</p>
     <div class="set-row" style="margin-top:12px"><div><b>알림 소리</b><span class="hint">알림 카드가 뜰 때 짧은 소리를 내요 (이 기기)</span></div><button class="btn" data-act="soundtoggle" aria-pressed="${soundOn()}">${soundOn() ? '켜짐' : '꺼짐'}</button></div>
     ${on ? '<div style="margin-top:12px"><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
+    <div class="set-sec" style="margin-top:22px">디자인</div>
+    <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button></div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
     <div class="set-row"><div><b>한 주 시작</b><span class="hint">WORK·LIFE 달력 모두에 적용돼요</span></div><div class="seg inline"><button class="${settingsOf().weekStart === 'sun' ? 'on' : ''}" data-act="setweek" data-v="sun">일요일</button><button class="${settingsOf().weekStart === 'mon' ? 'on' : ''}" data-act="setweek" data-v="mon">월요일</button></div></div>
     <div class="set-row"><div><b>WORK 달력에 주말 보이기</b><span class="hint">달력 위 ‘주말’ 버튼으로도 바꿀 수 있어요</span></div><div class="seg inline"><button class="${!settingsOf().hideWeekend ? 'on' : ''}" data-act="setwe" data-v="show">보이기</button><button class="${settingsOf().hideWeekend ? 'on' : ''}" data-act="setwe" data-v="hide">숨기기</button></div></div>
@@ -2719,6 +2755,8 @@ const ACT = {
   clearend: () => { const it = item(ui.modal.id); mutate(() => { it.end = null; }); },
   weekend: () => { const h = !settingsOf().hideWeekend; S.settings = { ...(S.settings || {}), hideWeekend: h }; save(); render(); toast(h ? '주말을 숨겼어요' : '주말을 보여줘요'); },
   setwe: t => { S.settings = { ...(S.settings || {}), hideWeekend: t.dataset.v === 'hide' }; save(); render(); renderModal(); },
+  gortn: () => { ui.panelTab = 'routine'; if (isMob()) { go('mtodo'); return; } if (ui.view !== 'work') go('work'); else { ui.navOpen = false; render(); } },
+  setdepth: t => { S.settings = { ...(S.settings || {}), depth: t.dataset.v }; save(); render(); renderModal(); },
   setweek: t => { S.settings = { ...(S.settings || {}), weekStart: t.dataset.v }; save(); render(); renderModal(); },
   mnotes: () => { if (ui.view === 'notes' || !ui.noteDoc) { ui.noteDoc = null; ui.noteFolder = null; } go('notes'); },
   pview: t => { ui.pview = t.dataset.v; try { localStorage.setItem('arecmik-pview', ui.pview); } catch (e) { /* storage blocked */ } render(); },
