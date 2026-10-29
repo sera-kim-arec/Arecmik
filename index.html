@@ -534,7 +534,10 @@ body.resizing,body.resizing *{cursor:col-resize!important;user-select:none}
 .tree-row.drop-hi{background:var(--blue-soft)!important;outline:1.5px solid var(--blue);outline-offset:-1.5px}
 .sec-head.drop-hi{background:var(--blue-soft);border-radius:6px;outline:none}
 /* ---- code ---- */
-code.ic{font-family:ui-monospace, 'Cascadia Code', Consolas, 'D2Coding', monospace;font-size:.88em;background:var(--sunken);color:var(--rose-ink);border-radius:5px;padding:1px 4px}
+code.ic{font-family:ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, 'D2Coding', monospace;font-size:.86em;background:var(--ic-bg);color:var(--ic-fg);border-radius:4px;padding:.15em .38em;line-height:1.4}
+.icm{font-size:0;letter-spacing:0}
+:root{--ic-bg:rgba(135,131,120,.15);--ic-fg:#EB5757}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ic-bg:rgba(135,131,120,.24);--ic-fg:#FF7369 } }
 .bk-code{flex-direction:column;align-items:stretch;gap:0;margin:6px 0;border-radius:12px;background:var(--sunken);box-shadow:inset 0 0 0 1px var(--line-soft);overflow:hidden}
 .code-h{display:flex;align-items:center;justify-content:space-between;padding:6px 10px 0 14px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em}
 .code-copy{border:0;background:transparent;color:var(--muted);font-size:11.5px;font-weight:600;border-radius:6px;padding:3px 8px;cursor:pointer}
@@ -2003,7 +2006,7 @@ function chipHTML2(tok, label, kind, id) {
   const name = o ? (o.title || '제목 없음') : label;
   return `<span class="mention m-${k} ${o ? '' : 'gone'}" contenteditable="false" data-tok="${esc(tok)}" data-act="mopen" data-ref="${kind}:${id}" title="${o ? '눌러서 열기' : '지워진 항목'}">${KIND_ICON[kind] || '@'} ${esc(name)}</span>`;
 }
-const inlCode = t => esc(t).replace(/`([^`\n]+)`/g, '<code class="ic">`$1`</code>');
+const inlCode = t => esc(t).replace(/`([^`\n]+)`/g, '<code class="ic"><span class="icm">`</span>$1<span class="icm">`</span></code>');
 function inl(t) {
   t = String(t || ''); let out = '', last = 0; MREG.lastIndex = 0; let m;
   while ((m = MREG.exec(t))) { out += inlCode(t.slice(last, m.index)) + chipHTML2(m[0], m[1], m[2], m[3]); last = m.index + m[0].length; }
@@ -2059,7 +2062,7 @@ function rerenderEditor(key, bid, pos) {
   if (bid) { const t = document.querySelector(`[data-ed="${key}"] .bk-text[data-bid="${bid}"]`); if (t) placeCaret(t, pos); }
 }
 const MREG = /@\[([^\]]*)\]\((item|doc|post|project|citem):([A-Za-z0-9_-]+)\)/g;
-const plainText = t => String(t || '').replace(MREG, '@$1');
+const plainText = t => String(t || '').replace(MREG, '@$1').replace(/`([^`\n]+)`/g, '$1');
 function serNode(n) {
   if (n.nodeType === 3) return n.nodeValue;
   if (n.nodeType !== 1) return '';
@@ -2098,7 +2101,16 @@ function placeCaret(el, pos) {
     let rem = pos, done = false;
     const walk = n => {
       if (done) return;
-      if (n.nodeType === 3) { if (rem <= n.nodeValue.length) { r.setStart(n, rem); done = true; } else rem -= n.nodeValue.length; return; }
+      if (n.nodeType === 3) {
+        if (rem <= n.nodeValue.length) {
+          const pm = n.parentNode; const code = pm && pm.classList && pm.classList.contains('icm') ? pm.parentNode : null;
+          if (code && rem === n.nodeValue.length && !pm.nextSibling) r.setStartAfter(code);
+          else if (code && rem === 0 && !pm.previousSibling) r.setStartBefore(code);
+          else if (code && rem === n.nodeValue.length && !pm.previousSibling && pm.nextSibling && pm.nextSibling.nodeType === 3) r.setStart(pm.nextSibling, 0);
+          else r.setStart(n, rem);
+          done = true;
+        } else rem -= n.nodeValue.length; return;
+      }
       if (n.nodeType !== 1) return;
       if (n.classList.contains('mention')) { const L = (n.dataset.tok || '').length; if (rem < L || rem === 0) { r.setStartBefore(n); done = true; } else if (rem === L) { r.setStartAfter(n); done = true; } else rem -= L; return; }
       if (n.nodeName === 'BR') { if (rem === 0) { r.setStartBefore(n); done = true; } else rem -= 1; return; }
@@ -2433,6 +2445,9 @@ document.addEventListener('click', e => {
 });
 pop.addEventListener('mousedown', e => { if (e.target.closest('.slash')) e.preventDefault(); });
 
+let composing = false;
+document.addEventListener('compositionstart', () => { composing = true; });
+document.addEventListener('compositionend', e => { composing = false; const t = e.target; if (t && t.classList && t.classList.contains('bk-text') && serText(t).includes('`')) setTimeout(() => { if (document.contains(t)) onBlockInput(t); }, 0); });
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'q') { ui.search = t.value; drawSearch(); return; }
@@ -2594,7 +2609,7 @@ function onBlockInput(el) {
   if (b.type === 'p' && /^(---|—-|———)$/.test(text)) { b.type = 'divider'; b.text = ''; const nb = B('p', ''); bl.splice(bl.indexOf(b) + 1, 0, nb); touch(key); closeSlash(); rerenderEditor(key, nb.id, 0); return; }
   if (b.type !== 'code' && b.type !== 'link' && text.includes('`')) {
     const want = inl(text);
-    if (el.innerHTML !== want && (text.replace(MREG, '').match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
+    if (!composing && el.innerHTML !== want && (text.replace(MREG, '').match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
   }
   if (b.type === 'p') {
     const rules = [[/^[-*] /, 'bullet'], [/^\[ ?\] /, 'todo'], [/^# /, 'h'], [/^> /, 'quote'], [/^1\. /, 'num'], [/^>> /, 'toggle']];
@@ -2704,7 +2719,19 @@ function onCellKey(e, el) {
   if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); document.execCommand('insertLineBreak'); return; }
   if (e.key === 'Escape') { e.preventDefault(); const nx = bl[i + 1]; if (nx && nx.type !== 'table' && nx.type !== 'divider' && nx.type !== 'image') rerenderEditor(key, nx.id, 0); else leave(); }
 }
+function codeRanges(t) { const out = []; const re = /`([^`\n]+)`/g; let m; while ((m = re.exec(t))) out.push([m.index, m.index + m[0].length]); return out; }
+function toggleInlineCode(el) {
+  const key = el.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, el.dataset.bid); if (!b || b.type === 'code') return;
+  const sel = getSelection(); if (!sel.rangeCount) return;
+  const t = serText(el); const end = caretOffset(el); const len = sel.toString().length; const start = Math.max(0, end - len);
+  const hit = codeRanges(t).find(([a, z]) => (len ? start >= a && end <= z : end > a && end < z) || (len && start <= a && end >= z));
+  if (hit) { const [a, z] = hit; b.text = t.slice(0, a) + t.slice(a + 1, z - 1) + t.slice(z); touch(key); rerenderEditor(key, b.id, Math.max(a, Math.min(end - 1, z - 2))); return; }
+  if (!len) { toast('글자를 선택하고 Ctrl+E를 누르면 코드로 바뀌어요'); return; }
+  const mid = t.slice(start, end).replace(/`/g, ''); if (!mid.trim()) return;
+  b.text = t.slice(0, start) + '`' + mid + '`' + t.slice(end); touch(key); rerenderEditor(key, b.id, start + mid.length + 2);
+}
 function onBlockKey(e, el) {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'e') { e.preventDefault(); toggleInlineCode(el); return; }
   if (mention && !mention.anchor && mention.bid === el.dataset.bid && mention.opts) {
     const n = mention.opts.length;
     if (e.key === 'ArrowDown' && n) { e.preventDefault(); mention.idx = (mention.idx + 1) % n; drawMention(); return; }
