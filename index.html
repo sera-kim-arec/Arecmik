@@ -1550,9 +1550,12 @@ function weekRow(ws, isSel, month) {
   return h + '</div>';
 }
 const kidsOf = id => S.items.filter(x => x.parentId === id);
+const depthOf = it => { let n = 0, x = it; while (x && x.parentId && n < 10) { x = item(x.parentId); n++; } return n; };
+const descOf = id => { const out = []; const walk = pid => kidsOf(pid).forEach(k => { out.push(k); walk(k.id); }); walk(id); return out; };
 function nestOrder(list) {
   const ids = new Set(list.map(x => x.id)); const out = [];
-  list.forEach(x => { if (x.parentId && ids.has(x.parentId)) return; out.push(x); list.forEach(k => { if (k.parentId === x.id) out.push(k); }); });
+  const put = x => { out.push(x); list.forEach(k => { if (k.parentId === x.id) put(k); }); };
+  list.forEach(x => { if (x.parentId && ids.has(x.parentId)) return; put(x); });
   return out;
 }
 function subInline(it) {
@@ -1584,11 +1587,11 @@ function progHTML(it) { const k = kidsOf(it.id); if (!k.length) return ''; const
 function parentLabel(it) { const pa = it.parentId && item(it.parentId); return pa ? `<span class="ptl">↳ ${esc(pa.title || '제목 없음')}</span>` : ''; }
 function chipHTML(it) {
   if (it.kind === 'event') return `<div class="chip ev ${evState(it)}" style="--chip:${itemColor(it)}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${it.cancel ? ' (취소됨)' : it.done ? ' (완료)' : ''}"><button class="evck" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}" title="${it.done ? '완료 취소' : '완료로 표시'}"><span class="dot" style="background:${itemColor(it)}"></span>${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${rnT(it)}</span>${it.moves && it.moves.length ? '<span class="mvi" title="미룬 일정">↷</span>' : ''}${progHTML(it)}<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span><span class="handle" data-resize="event:${it.id}" title="오른쪽으로 끌면 기간 일정이 돼요"></span></div>`;
-  return `<div class="chip ${it.done ? 'done' : ''}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${moveLabel(it) ? ' · ' + moveLabel(it) : ''}"><button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${it.parentId ? '<span class="subic">↳</span>' : ''}${rnT(it)}${parentLabel(it)}</span>${it.moves && it.moves.length && !it.done ? '<span class="mvi">↷</span>' : ''}${progHTML(it)}${it.parentId ? '' : `<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>`;
+  return `<div class="chip ${it.done ? 'done' : ''}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${moveLabel(it) ? ' · ' + moveLabel(it) : ''}"><button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${it.parentId ? '<span class="subic">↳</span>' : ''}${rnT(it)}${parentLabel(it)}</span>${it.moves && it.moves.length && !it.done ? '<span class="mvi">↷</span>' : ''}${progHTML(it)}${`<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>`;
 }
 function trow(it, drag = true) {
   const p = it.projectId && proj(it.projectId);
-  return `<div class="trow ${it.done ? 'done' : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${esc(p.title)}</span>` : ''}</button>${it.parentId ? '' : `<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`;
+  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${esc(p.title)}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`;
 }
 function panelWork() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
@@ -1624,10 +1627,10 @@ function mDayList(d) {
   const evRow = it => { const st = evState(it); const s2 = sub(it); return `<button class="mrow ev ${st}" data-act="open" data-kind="item" data-id="${it.id}">
       <span class="mtime">${it.start ? `<b>${it.start}</b>${it.finish ? `<small>${it.finish}</small>` : ''}` : '<b class="allday">종일</b>'}</span>
       <span class="mbar" style="background:${it.cancel ? 'var(--faint)' : itemColor(it)}"></span>
-      <span class="mtx"><b>${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${it.parentId ? '' : `<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; };
-  const tdRow = it => { const s2 = sub(it); const ml = !it.done && moveLabel(it); return `<div class="mrow td ${it.done ? 'done' : ''}">
+      <span class="mtx"><b>${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; };
+  const tdRow = it => { const s2 = sub(it); const ml = !it.done && moveLabel(it); return `<div class="mrow td ${it.done ? 'done' : ''}" style="${depthOf(it) ? `padding-left:${14 + Math.min(depthOf(it), 3) * 18}px` : ''}">
       <button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>
-      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${it.parentId ? '' : `<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`; };
+      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`; };
   const nOpen = tds.filter(x => !x.done).length;
   return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
   <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
@@ -1680,7 +1683,7 @@ function daySection() {
     <div class="day-add"><label class="addline"><input id="day-add" placeholder="제목 입력" autocomplete="off" aria-label="이 날에 추가할 제목"></label><button class="btn sm" data-act="dayadd" data-kind="event">일정</button><button class="btn sm" data-act="dayadd" data-kind="todo">할일</button></div>
     ${ps.length ? `<div class="projline">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${esc(p.title)}</button>`).join('')}</div>` : ''}
     <div class="lbl">일정</div>
-    ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${esc(p.title)}</span>` : ''}</span>${it.parentId ? '' : `<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
+    ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${esc(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
     <div class="lbl">할일</div>
     <div class="tlist" style="padding-top:0">${tds.map(it => trow(it, !isMob())).join('') || '<div class="empty">할일이 없어요</div>'}</div>
   </div></section>`;
@@ -1925,7 +1928,7 @@ function closeModal() {
 const projOptions = sel => `<option value="">없음</option>${S.projects.map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${esc(p.title)}${p.done ? ' (완료)' : ''}</option>`).join('')}`;
 function dlgHeadTop(kindLabel, kindCls, delAct, id) {
   return `<div class="dlg-top"><span class="kind ${kindCls}">${kindLabel}</span><span class="autosave" title="바꾸는 즉시 저장돼요">${I.check}자동 저장</span>${ui.modalBack ? `<button class="btn sm ghost" data-act="mback">${I.left}${esc(ui.modalBack.label)}</button>` : ''}<span class="grow"></span>
-  <button class="btn sm ${ui.confirm === delAct + id ? 'warn' : 'ghost danger'}" data-act="del" data-what="${delAct}" data-id="${id}">${ui.confirm === delAct + id ? (delAct === 'item:' && kidsOf(id).length ? `하위 ${kidsOf(id).length}개도 함께 삭제` : '한 번 더 누르면 삭제') : '삭제'}</button>
+  <button class="btn sm ${ui.confirm === delAct + id ? 'warn' : 'ghost danger'}" data-act="del" data-what="${delAct}" data-id="${id}">${ui.confirm === delAct + id ? (delAct === 'item:' && descOf(id).length ? `하위 ${descOf(id).length}개도 함께 삭제` : '한 번 더 누르면 삭제') : '삭제'}</button>
   <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>`;
 }
 function dlgItem(it) {
@@ -1946,7 +1949,7 @@ function dlgItem(it) {
       ${it.date ? `<label>미루기</label><div class="frow"><button class="btn sm" data-act="postpone" data-d="1">내일로</button><button class="btn sm" data-act="postpone" data-d="7">다음 주로</button><label class="btn sm ghost mv-pick">다른 날…<input type="date" id="f-move" min="${addDays(it.date, 1)}" aria-label="미룰 날짜"></label>${moveLabel(it) ? `<span class="hint">${esc((it.moves || []).map(m => fmtShort(m.f)).concat(fmtShort(it.date)).join(' → '))}</span>` : ''}</div>` : ''}
       <label for="f-proj">프로젝트</label><div class="frow"><select id="f-proj" class="inp" data-f="projectId">${projOptions(it.projectId)}</select>${it.projectId && proj(it.projectId) ? `<button class="btn sm ghost" data-act="toproj" data-id="${it.projectId}">프로젝트 보기</button>` : ''}</div>
     </div></div>
-  <div class="dlg-body">${it.parentId ? '' : subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
+  <div class="dlg-body">${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
 }
 function remindOptions(it) {
   const st = settingsOf(); const r = it.remind || '';
@@ -2376,7 +2379,7 @@ const ACT = {
     const [w, id] = [t.dataset.what, t.dataset.id];
     const back = ui.modalBack; ui.modal = null; ui.modalBack = null; ui.confirm = null;
     mutate(() => {
-      if (w === 'item:') S.items = S.items.filter(x => x.id !== id && x.parentId !== id);
+      if (w === 'item:') { const gone = new Set([id, ...descOf(id).map(x => x.id)]); S.items = S.items.filter(x => !gone.has(x.id)); }
       if (w === 'project:') { S.projects = S.projects.filter(x => x.id !== id); S.items.forEach(x => { if (x.projectId === id) x.projectId = null; }); S.docs.forEach(x => { if (x.projectId === id) x.projectId = null; }); }
       if (w === 'citem:') S.citems = S.citems.filter(x => x.id !== id);
     }, '삭제했어요');
