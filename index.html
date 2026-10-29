@@ -908,7 +908,7 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .xcats{flex-wrap:wrap;gap:6px}
 .xchip{border:0;font:inherit;font-size:13px;font-weight:600;color:var(--fg2);background:var(--surface);box-shadow:var(--nm-out-xs, var(--shadow));border-radius:20px;padding:5px 11px;cursor:pointer}
 .xchip.on{background:var(--lemon);color:var(--on-lemon)}
-.xcat-in{width:110px;height:30px;border-radius:20px!important}
+.xcat-in{width:170px;height:30px;border-radius:20px!important}
 .xta{width:100%;box-sizing:border-box;height:auto;min-height:80px;padding:10px 12px;resize:vertical;line-height:1.5;font:inherit;font-size:15px}
 #x-next{width:100%;box-sizing:border-box;height:40px;font-size:15px}
 @media (hover:none){ .xci .btn{opacity:1} }
@@ -936,6 +936,8 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .mretro .dr-t{font-size:15px}
 @media (max-width:640px){ .xgr-h{grid-template-columns:84px minmax(0,1fr) 24px auto;gap:8px} }
 .xhead{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.xhead-t{font-size:14px;font-weight:700}
+.xopt{color:var(--muted)}
 .xman{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 22px;padding:14px 16px;margin-bottom:14px}
 .xman-col{display:flex;flex-direction:column;gap:6px;min-width:0}
 .xman-row{display:flex;gap:4px;align-items:center}
@@ -2001,7 +2003,7 @@ function dlgRoutine(r) {
 /* ---------- 복기: mistakes and feedback, monthly review ---------- */
 const RKIND = { mistake: '실수', feedback: '받은 피드백' };
 const RIMP = [['me', '나만'], ['team', '팀'], ['ext', '외부']];
-const retroCats = () => (S.settings && S.settings.retroCats) || ['확인 누락', '일정', '소통', '문서·숫자', '기타'];
+const retroCats = () => (S.settings && S.settings.retroCats) || [];
 const retroAreas = () => (S.settings && S.settings.retroAreas) || [];
 const XLIST = { cat: ['retroCats', retroCats, '유형'], area: ['retroAreas', retroAreas, '업무'] };
 const retro = id => (S.retros || []).find(x => x.id === id);
@@ -2012,14 +2014,14 @@ function retroCheckList() {
   const seen = new Set(); const groups = {};
   (S.retros || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(r => {
     const t = (r.next || '').trim(); if (!t) return; const k = t.replace(/\s+/g, ' '); if (seen.has(k)) return; seen.add(k);
-    (groups[r.cat || '기타'] = groups[r.cat || '기타'] || []).push(r);
+    const g = r.area || r.cat || '업무 미지정'; (groups[g] = groups[g] || []).push(r);
   });
   return groups;
 }
 function dayRetros(d) {
   const list = (S.retros || []).filter(x => x.date === d && (x.what || x.next));
   if (!list.length) return '';
-  return `<div class="lbl">복기</div><div class="dretro">${list.map(r => `<button class="dr" data-act="xopen" data-id="${r.id}"><span class="xk ${r.kind}">${RKIND[r.kind] || '실수'}</span><span class="dr-t">${esc(r.what || r.next)}</span>${r.cat ? `<span class="dr-c">${esc(r.cat)}</span>` : ''}</button>`).join('')}</div>`;
+  return `<div class="lbl">복기</div><div class="dretro">${list.map(r => `<button class="dr" data-act="xopen" data-id="${r.id}"><span class="xk ${r.kind}">${RKIND[r.kind] || '실수'}</span><span class="dr-t">${esc(r.what || r.next)}</span>${r.area || r.cat ? `<span class="dr-c">${esc(r.area || r.cat)}</span>` : ''}</button>`).join('')}</div>`;
 }
 function retroRow(r) {
   const it = r.itemId && item(r.itemId);
@@ -2033,7 +2035,7 @@ function vRetro() {
   const prev = retrosIn(prevMonth(m));
   const nMis = list.filter(x => x.kind !== 'feedback').length, nFb = list.filter(x => x.kind === 'feedback').length;
   const pMis = prev.filter(x => x.kind !== 'feedback').length;
-  const by = ui.xby === 'area' ? 'area' : 'cat'; const none = by === 'area' ? '업무 미지정' : '분류 안 함'; const keyOf = x => x[by] || none;
+  const hasCat = retroCats().length || (S.retros || []).some(x => x.cat); const by = ui.xby === 'cat' && hasCat ? 'cat' : 'area'; const none = by === 'area' ? '업무 미지정' : '분류 안 함'; const keyOf = x => x[by] || none;
   const cats = [...new Set([...XLIST[by][1](), ...list.map(keyOf)])];
   const rows = cats.map(c => ({ c, n: list.filter(x => keyOf(x) === c).length, p: prev.filter(x => keyOf(x) === c).length })).filter(r => r.n || r.p).sort((a, b) => b.n - a.n || b.p - a.p);
   const max = Math.max(1, ...rows.map(r => Math.max(r.n, r.p)));
@@ -2051,7 +2053,7 @@ function vRetro() {
     </div>
     <div class="xcols">
       <section>
-        <div class="xhead"><div class="seg inline sm" role="group" aria-label="묶는 기준"><button class="${by === 'cat' ? 'on' : ''}" data-act="xby" data-v="cat">유형별</button><button class="${by === 'area' ? 'on' : ''}" data-act="xby" data-v="area">업무별</button></div><span class="hint">이번 달 · 옅은 막대는 지난달</span><span class="grow"></span><button class="btn sm ghost" data-act="xmanage">${ui.xmanage ? '관리 닫기' : '유형·업무 관리'}</button></div>
+        <div class="xhead">${hasCat ? `<div class="seg inline sm" role="group" aria-label="묶는 기준"><button class="${by === 'area' ? 'on' : ''}" data-act="xby" data-v="area">업무별</button><button class="${by === 'cat' ? 'on' : ''}" data-act="xby" data-v="cat">유형별</button></div>` : '<b class="xhead-t">업무별</b>'}<span class="hint">이번 달 · 옅은 막대는 지난달</span><span class="grow"></span><button class="btn sm ghost" data-act="xmanage">${ui.xmanage ? '관리 닫기' : '업무 관리'}</button></div>
         ${ui.xmanage ? xManager() : ''}
         <div class="card xgroups">${rows.length ? rows.map(r => `<div class="xgr ${open === r.c ? 'open' : ''}">
           <button class="xgr-h" data-act="xcat" data-c="${esc(r.c)}" aria-expanded="${open === r.c}"><span class="xgr-n">${esc(r.c)}</span><span class="xbar"><i class="pv" style="width:${r.p / max * 100}%"></i><i class="cu" style="width:${r.n / max * 100}%"></i></span><b>${r.n}</b>${r.n >= 2 ? '<span class="xwarn">반복</span>' : ''}</button>
@@ -2068,7 +2070,7 @@ function vRetro() {
 }
 function xManager() {
   const box = k => { const [, get, label] = XLIST[k]; return `<div class="xman-col"><div class="xg-h">${label}</div>${get().map(v => `<div class="xman-row"><input class="inp" data-xren="${k}" data-old="${esc(v)}" value="${esc(v)}" aria-label="${label} 이름"><button class="btn sm icon ghost" data-act="xrm" data-k="${k}" data-v="${esc(v)}" aria-label="${esc(v)} 지우기" title="지우기 (기록은 남아요)">${I.x}</button></div>`).join('') || '<div class="hint" style="padding:4px 2px">아직 없어요</div>'}<input class="inp xman-add" data-xadd="${k}" placeholder="+ 새 ${label} · Enter" autocomplete="off"></div>`; };
-  return `<div class="card xman">${box('cat')}${box('area')}<p class="hint" style="grid-column:1/-1;margin:0">이름을 바꾸면 지난 기록에도 함께 바뀌어요. 지워도 이미 남긴 기록은 그대로예요.</p></div>`;
+  return `<div class="card xman">${box('area')}${box('cat')}<p class="hint" style="grid-column:1/-1;margin:0">이름을 바꾸면 지난 기록에도 함께 바뀌어요. 지워도 이미 남긴 기록은 그대로예요.</p></div>`;
 }
 function dlgRetro(r) {
   const cats = retroCats(); const it = r.itemId && item(r.itemId);
@@ -2078,8 +2080,8 @@ function dlgRetro(r) {
     <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
     <div class="fgrid">
       <label>종류</label><div class="frow"><div class="seg inline">${Object.entries(RKIND).map(([k, l]) => `<button class="${r.kind === k ? 'on' : ''}" data-act="xset" data-k="kind" data-v="${k}">${l}</button>`).join('')}</div></div>
-      <label>유형</label><div class="frow xcats">${cats.map(c => `<button class="xchip ${r.cat === c ? 'on' : ''}" data-act="xset" data-k="cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xcat-new" class="inp xcat-in" placeholder="+ 유형 추가" autocomplete="off"></div>
-      <label>업무</label><div class="frow xcats">${retroAreas().map(c => `<button class="xchip ${r.area === c ? 'on' : ''}" data-act="xset" data-k="area" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xarea-new" class="inp xcat-in" placeholder="+ 업무 추가" autocomplete="off"></div>
+      <label>업무</label><div class="frow xcats">${retroAreas().map(c => `<button class="xchip ${r.area === c ? 'on' : ''}" data-act="xset" data-k="area" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xarea-new" class="inp xcat-in" placeholder="${retroAreas().length ? '+ 업무 추가' : '+ 업무 이름 (예: 채용)'}" autocomplete="off"></div>
+      ${cats.length || r.cat || ui.xshowcat ? `<label>유형</label><div class="frow xcats">${cats.map(c => `<button class="xchip ${r.cat === c ? 'on' : ''}" data-act="xset" data-k="cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xcat-new" class="inp xcat-in" placeholder="+ 유형 추가" autocomplete="off"></div>` : `<span></span><div class="frow"><button class="btn sm ghost xopt" data-act="xshowcat">+ 유형도 나누기 (선택)</button></div>`}
       <label>영향</label><div class="frow"><div class="seg inline">${RIMP.map(([k, l]) => `<button class="${(r.impact || 'me') === k ? 'on' : ''}" data-act="xset" data-k="impact" data-v="${k}">${l}</button>`).join('')}</div></div>
       <label for="x-date">날짜</label><div class="frow"><input type="date" id="x-date" class="inp" data-xf="date" value="${r.date}">${it ? `<button class="btn sm ghost" data-act="open" data-kind="item" data-id="${it.id}">◷ ${esc(it.title || '제목 없음')}</button>` : ''}</div>
     </div></div>
@@ -2098,9 +2100,9 @@ function newRetro(itemId, opts = {}) {
   setTimeout(() => { const t = document.getElementById(opts.what ? 'x-next' : 'x-what'); if (t) t.focus(); }, 30);
 }
 function retroSaveHint(r) {
-  if (!r || r.kind !== 'mistake' || !r.cat) return;
-  const n = retrosIn(monthOf(r.date)).filter(x => x.kind === 'mistake' && x.cat === r.cat).length;
-  if (n >= 2) toast(`‘${r.cat}’ 실수가 이번 달 ${n}번째예요. 확인 목록을 한 번 훑어보세요`);
+  if (!r || r.kind !== 'mistake' || !r.area) return;
+  const n = retrosIn(monthOf(r.date)).filter(x => x.kind === 'mistake' && x.area === r.area).length;
+  if (n >= 2) toast(`‘${r.area}’ 업무에서 이번 달 ${n}번째 실수예요. 확인 목록을 한 번 훑어보세요`);
 }
 function inboxCard() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
@@ -2907,6 +2909,7 @@ const ACT = {
   xopen: t => { ui.modalBack = null; openModal('retro', t.dataset.id); },
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
+  xshowcat: () => { ui.xshowcat = true; renderModal(); const i = document.getElementById('xcat-new'); if (i) i.focus(); },
   xby: t => { ui.xby = t.dataset.v; ui.xcat = null; render(); },
   xmanage: () => { ui.xmanage = !ui.xmanage; render(); },
   xrm: t => { const k = t.dataset.k, v = t.dataset.v; const [sk, get] = XLIST[k]; mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().filter(x => x !== v) }; }, `‘${v}’을 목록에서 뺐어요`); },
