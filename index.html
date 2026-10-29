@@ -913,6 +913,35 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 #x-next{width:100%;box-sizing:border-box;height:40px;font-size:15px}
 @media (hover:none){ .xci .btn{opacity:1} }
 @media (max-width:860px){ .xcols{grid-template-columns:minmax(0,1fr)} .xstats{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.xstats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.ximp strong{font-weight:800}
+.xgroups{padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.xgr-h{display:grid;grid-template-columns:110px minmax(0,1fr) 28px auto;align-items:center;gap:12px;width:100%;border:0;background:transparent;font:inherit;color:var(--fg);padding:10px 8px;border-radius:12px;cursor:pointer;text-align:left}
+.xgr-h:hover,.xgr.open .xgr-h{background:var(--hover)}
+.xgr-n{font-size:14.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xbar{position:relative;height:10px;border-radius:5px;background:var(--sunken);overflow:hidden}
+.xbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.xbar .pv{background:var(--line)}
+.xbar .cu{background:var(--lemon);height:6px;top:2px}
+.xgr-h b{font-size:16px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.xwarn{font-size:11.5px;font-weight:700;color:var(--rose-ink);background:var(--rose-soft);border-radius:20px;padding:1px 8px}
+.xgr-b{display:flex;flex-direction:column;gap:8px;padding:6px 4px 12px}
+.dretro{display:flex;flex-direction:column;gap:4px}
+.dr{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;font:inherit;color:var(--fg);padding:6px 4px;border-radius:10px;cursor:pointer;text-align:left}
+.dr:hover{background:var(--hover)}
+.dr-t{flex:1;min-width:0;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dr-c{font-size:12px;color:var(--muted)}
+.mretro{padding:4px 10px}
+.mretro .dr{padding:12px 4px}
+.mretro .dr-t{font-size:15px}
+@media (max-width:640px){ .xgr-h{grid-template-columns:84px minmax(0,1fr) 24px auto;gap:8px} }
+.xhead{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.xman{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 22px;padding:14px 16px;margin-bottom:14px}
+.xman-col{display:flex;flex-direction:column;gap:6px;min-width:0}
+.xman-row{display:flex;gap:4px;align-items:center}
+.xman-row .inp{flex:1;min-width:0;width:auto;height:32px;box-sizing:border-box}
+.xman-add{height:32px;margin-top:2px;width:100%;box-sizing:border-box}
+@media (max-width:640px){ .xman{grid-template-columns:1fr} }
 /* ---- routines ---- */
 .set-title{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
 .rdue-c{color:var(--lemon-ink)!important;font-weight:700}
@@ -1625,8 +1654,8 @@ function drawQC(val) {
   const anchor = qc.parent ? document.querySelector(`.chip[data-id="${qc.parent}"], .bar[data-id="${qc.parent}"]`) : document.querySelector(`.wk .cell[data-date="${qc.date}"]`); const r0 = anchor ? anchor.getBoundingClientRect() : { left: 200, top: 120, right: 400, bottom: 160 }; const r = qc.parent ? { left: r0.left, top: r0.bottom - 30 } : r0;
   const w = 300; let left = Math.min(r.left + 4, window.innerWidth - w - 12); let top = r.top + 34; if (top + 140 > window.innerHeight) top = Math.max(12, r.top - 140);
   pop.innerHTML = `<div class="qc" role="dialog" aria-label="빠르게 추가" style="left:${Math.max(12, left)}px;top:${top}px;width:${w}px">
-    ${qc.parent ? `<div class="qc-h"><b class="qc-par">↳ ${esc((item(qc.parent) || {}).title || '제목 없음')}</b><span class="hint">하위 할일</span></div>` : `<div class="qc-h"><b>${fmtFull(qc.date)}</b><div class="seg inline sm" role="radiogroup" aria-label="종류"><button role="radio" aria-checked="${qc.kind === 'event'}" class="${qc.kind === 'event' ? 'on' : ''}" data-act="qckind" data-k="event">일정</button><button role="radio" aria-checked="${qc.kind === 'todo'}" class="${qc.kind === 'todo' ? 'on' : ''}" data-act="qckind" data-k="todo">할일</button></div></div>`}
-    <input id="qc-in" class="inp" placeholder="${qc.kind === 'event' ? '일정' : '할일'} 제목 · 예: 3시 팀 회의" autocomplete="off" value="${esc(val || '')}">
+    ${qc.parent ? `<div class="qc-h"><b class="qc-par">↳ ${esc((item(qc.parent) || {}).title || '제목 없음')}</b><span class="hint">하위 할일</span></div>` : `<div class="qc-h"><b>${fmtFull(qc.date)}</b><div class="seg inline sm" role="radiogroup" aria-label="종류"><button role="radio" aria-checked="${qc.kind === 'event'}" class="${qc.kind === 'event' ? 'on' : ''}" data-act="qckind" data-k="event">일정</button><button role="radio" aria-checked="${qc.kind === 'todo'}" class="${qc.kind === 'todo' ? 'on' : ''}" data-act="qckind" data-k="todo">할일</button><button role="radio" aria-checked="${qc.kind === 'retro'}" class="${qc.kind === 'retro' ? 'on' : ''}" data-act="qckind" data-k="retro">복기</button></div></div>`}
+    <input id="qc-in" class="inp" placeholder="${qc.kind === 'retro' ? '무슨 일이 있었나 · Enter 누르면 자세히 적기' : (qc.kind === 'event' ? '일정' : '할일') + ' 제목 · 예: 3시 팀 회의'}" autocomplete="off" value="${esc(val || '')}">
     <div class="qc-f">${qc.parent ? 'Enter 저장하고 이어서 쓰기 · Esc 닫기' : 'Enter 저장 · Tab 종류 바꾸기 · Esc 닫기'}</div></div>`;
   const inp = document.getElementById('qc-in'); inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
 }
@@ -1634,7 +1663,8 @@ function closeQC() { if (qc) { qc = null; pop.innerHTML = ''; } }
 function saveQC() {
   const inp = document.getElementById('qc-in'); if (!qc || !inp) return; const v = inp.value.trim(); if (!v) { closeQC(); return; }
   if (qc.parent) { const par = qc.parent, d = qc.date; inp.value = ''; addSub(par, v, d || null); qc = { date: d, kind: 'todo', parent: par }; drawQC(''); return; }
-  const { date, kind } = qc; ui.qkind = kind; closeQC();
+  if (qc.kind === 'retro') { const d = qc.date; closeQC(); newRetro(null, { date: d, what: v }); return; }
+  const { date, kind } = qc; ui.qkind = kind === 'retro' ? ui.qkind : kind; closeQC();
   let it; mutate(() => { it = createItem(kind, v, date); }, `${fmtMD(date)}에 ${kind === 'event' ? '일정' : '할일'}을 추가했어요`);
 }
 let swipe0 = null;
@@ -1673,7 +1703,7 @@ const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.
 function workNav() {
   const active = S.projects.filter(p => !p.done).length;
   const rd = (S.routines || []).filter(rDue).length;
-  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}<button class="nav-item ${ui.view === 'work' && ui.panelTab === 'routine' ? 'on' : ''}" data-act="gortn">${I.repeat}<span>루틴</span>${rd ? `<span class="cnt rdue-c">${rd}</span>` : ''}</button>${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
+  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="newfolder" data-space="work" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('work', null, 0)}</div>`;
 }
@@ -1972,6 +2002,8 @@ function dlgRoutine(r) {
 const RKIND = { mistake: '실수', feedback: '받은 피드백' };
 const RIMP = [['me', '나만'], ['team', '팀'], ['ext', '외부']];
 const retroCats = () => (S.settings && S.settings.retroCats) || ['확인 누락', '일정', '소통', '문서·숫자', '기타'];
+const retroAreas = () => (S.settings && S.settings.retroAreas) || [];
+const XLIST = { cat: ['retroCats', retroCats, '유형'], area: ['retroAreas', retroAreas, '업무'] };
 const retro = id => (S.retros || []).find(x => x.id === id);
 const monthOf = d => d.slice(0, 7);
 const prevMonth = m => { const [y, mm] = m.split('-').map(Number); return iso(new Date(y, mm - 2, 1)).slice(0, 7); };
@@ -1984,44 +2016,59 @@ function retroCheckList() {
   });
   return groups;
 }
+function dayRetros(d) {
+  const list = (S.retros || []).filter(x => x.date === d && (x.what || x.next));
+  if (!list.length) return '';
+  return `<div class="lbl">복기</div><div class="dretro">${list.map(r => `<button class="dr" data-act="xopen" data-id="${r.id}"><span class="xk ${r.kind}">${RKIND[r.kind] || '실수'}</span><span class="dr-t">${esc(r.what || r.next)}</span>${r.cat ? `<span class="dr-c">${esc(r.cat)}</span>` : ''}</button>`).join('')}</div>`;
+}
 function retroRow(r) {
   const it = r.itemId && item(r.itemId);
   return `<button class="xrow" data-act="xopen" data-id="${r.id}">
     <span class="xk ${r.kind}">${RKIND[r.kind] || '실수'}</span>
-    <span class="xt"><b>${esc(r.what || '(내용 없음)')}</b>${r.next ? `<span class="xn">다음엔 ${esc(r.next)}</span>` : ''}<span class="xm">${fmtShort(r.date)}${r.cat ? `<i>·</i>${esc(r.cat)}` : ''}${r.impact && r.impact !== 'me' ? `<i>·</i>${(RIMP.find(x => x[0] === r.impact) || ['', ''])[1]} 영향` : ''}${it ? `<i>·</i>◷ ${esc(it.title || '제목 없음')}` : ''}</span></span></button>`;
+    <span class="xt"><b>${esc(r.what || '(내용 없음)')}</b>${r.next ? `<span class="xn">다음엔 ${esc(r.next)}</span>` : ''}<span class="xm">${fmtShort(r.date)}${r.area ? `<i>·</i>${esc(r.area)}` : ''}${r.cat ? `<i>·</i>${esc(r.cat)}` : ''}${r.impact && r.impact !== 'me' ? `<i>·</i>${(RIMP.find(x => x[0] === r.impact) || ['', ''])[1]} 영향` : ''}${it ? `<i>·</i>◷ ${esc(it.title || '제목 없음')}` : ''}</span></span></button>`;
 }
 function vRetro() {
   const m = ui.rmonth || monthOf(TODAY); const [y, mm] = m.split('-').map(Number);
   const list = retrosIn(m).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const prev = retrosIn(prevMonth(m));
   const nMis = list.filter(x => x.kind !== 'feedback').length, nFb = list.filter(x => x.kind === 'feedback').length;
-  const cnt = {}; list.forEach(x => { if (x.cat) cnt[x.cat] = (cnt[x.cat] || 0) + 1; });
-  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
-  const topPrev = top ? prev.filter(x => x.cat === top[0]).length : 0;
+  const pMis = prev.filter(x => x.kind !== 'feedback').length;
+  const by = ui.xby === 'area' ? 'area' : 'cat'; const none = by === 'area' ? '업무 미지정' : '분류 안 함'; const keyOf = x => x[by] || none;
+  const cats = [...new Set([...XLIST[by][1](), ...list.map(keyOf)])];
+  const rows = cats.map(c => ({ c, n: list.filter(x => keyOf(x) === c).length, p: prev.filter(x => keyOf(x) === c).length })).filter(r => r.n || r.p).sort((a, b) => b.n - a.n || b.p - a.p);
+  const max = Math.max(1, ...rows.map(r => Math.max(r.n, r.p)));
   const imp = k => list.filter(x => (x.impact || 'me') === k).length;
   const groups = retroCheckList(); const gk = Object.keys(groups);
   const isCur = m === monthOf(TODAY);
-  return `${topbar(`<h1 class="h1">복기</h1><div class="pager"><button class="btn icon" data-act="rmonth" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="rmonth" data-d="1" aria-label="다음 달">${I.right}</button></div><b class="xmonth">${y}년 ${mm}월</b>${isCur ? '' : '<button class="btn sm" data-act="rmonth" data-d="0">이번 달</button>'}`, `<button class="btn primary" data-act="xnew">${I.plus}복기 남기기</button>`)}
+  const open = ui.xcat || null;
+  const diffTxt = (a, b) => a === b ? '지난달과 같아요' : a > b ? `지난달보다 ${a - b} 늘었어요` : `지난달보다 ${b - a} 줄었어요`;
+  return `${topbar(`<h1 class="h1">복기</h1><div class="pager"><button class="btn icon" data-act="rmonth" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="rmonth" data-d="1" aria-label="다음 달">${I.right}</button></div><b class="xmonth">${y}년 ${mm}월</b>${isCur ? '' : '<button class="btn sm" data-act="rmonth" data-d="0">이번 달</button>'}`, `<span class="hint">기록은 달력의 날짜나 할일 창에서 남겨요</span><button class="btn sm ghost" data-act="xnew">${I.plus}직접 남기기</button>`)}
   <div class="page xpage">
     <div class="xstats">
-      <div class="xs"><b>${nMis}</b><span>실수</span></div>
+      <div class="xs"><b>${nMis}</b><span>실수 · ${diffTxt(nMis, pMis)}</span></div>
       <div class="xs"><b>${nFb}</b><span>받은 피드백</span></div>
-      <div class="xs wide"><b>${top ? esc(top[0]) : '-'}</b><span>${top ? `가장 많았던 유형 · ${top[1]}번${topPrev ? ` (지난달 ${topPrev}번)` : ' (지난달 없음)'}` : '가장 많았던 유형'}</span></div>
-      <div class="xs wide"><b class="ximp">${RIMP.map(([k, l]) => `<em>${l} ${imp(k)}</em>`).join('')}</b><span>영향 범위</span></div>
+      <div class="xs"><b class="ximp">${RIMP.map(([k, l]) => `<em>${l} <strong>${imp(k)}</strong></em>`).join('')}</b><span>영향 범위</span></div>
     </div>
     <div class="xcols">
       <section>
-        <div class="lbl">${mm}월 기록 ${list.length ? list.length + '개' : ''}</div>
-        <div class="xlist">${list.map(retroRow).join('') || `<div class="empty">${isCur ? '아직 기록이 없어요. 실수했거나 피드백을 받았을 때 ‘복기 남기기’로 짧게 적어 두세요.' : '이 달에는 기록이 없어요.'}</div>`}</div>
+        <div class="xhead"><div class="seg inline sm" role="group" aria-label="묶는 기준"><button class="${by === 'cat' ? 'on' : ''}" data-act="xby" data-v="cat">유형별</button><button class="${by === 'area' ? 'on' : ''}" data-act="xby" data-v="area">업무별</button></div><span class="hint">이번 달 · 옅은 막대는 지난달</span><span class="grow"></span><button class="btn sm ghost" data-act="xmanage">${ui.xmanage ? '관리 닫기' : '유형·업무 관리'}</button></div>
+        ${ui.xmanage ? xManager() : ''}
+        <div class="card xgroups">${rows.length ? rows.map(r => `<div class="xgr ${open === r.c ? 'open' : ''}">
+          <button class="xgr-h" data-act="xcat" data-c="${esc(r.c)}" aria-expanded="${open === r.c}"><span class="xgr-n">${esc(r.c)}</span><span class="xbar"><i class="pv" style="width:${r.p / max * 100}%"></i><i class="cu" style="width:${r.n / max * 100}%"></i></span><b>${r.n}</b>${r.n >= 2 ? '<span class="xwarn">반복</span>' : ''}</button>
+          ${open === r.c ? `<div class="xgr-b">${list.filter(x => keyOf(x) === r.c).map(retroRow).join('') || '<div class="empty">이번 달엔 없어요</div>'}</div>` : ''}</div>`).join('') : `<div class="empty">${isCur ? '이번 달 기록이 없어요. 달력에서 날짜를 고르고 [복기]를 누르면 남길 수 있어요.' : '이 달에는 기록이 없어요.'}</div>`}</div>
         <div class="lbl" style="margin-top:22px">${mm}월 회고</div>
         <div class="card xnote">${editorHTML('rmonth:' + m)}</div>
       </section>
       <aside>
         <div class="lbl">확인 목록 <span class="hint" style="font-weight:500">‘다음엔’에 적은 것들</span></div>
-        <div class="card xcheck">${gk.length ? gk.map(c => `<div class="xg"><div class="xg-h">${esc(c)}</div>${groups[c].map(r => `<div class="xci"><span class="xdot"></span><span class="xct">${esc(r.next)}</span><button class="btn sm ghost" data-act="xroutine" data-id="${r.id}" title="루틴으로 만들어 매번 체크하기">루틴으로</button></div>`).join('')}</div>`).join('') : '<div class="empty">복기에 ‘다음엔’을 적으면 여기 유형별로 모여요. 일하기 전에 한 번씩 훑어보세요.</div>'}</div>
+        <div class="card xcheck">${gk.length ? gk.map(c => `<div class="xg"><div class="xg-h">${esc(c)}</div>${groups[c].map(r => `<div class="xci"><span class="xdot"></span><span class="xct">${esc(r.next)}</span><button class="btn sm ghost" data-act="xroutine" data-id="${r.id}" title="루틴으로 만들어 매번 체크하기">루틴으로</button></div>`).join('')}</div>`).join('') : '<div class="empty">복기에 ‘다음엔’을 적으면 여기 유형별로 모여요.</div>'}</div>
       </aside>
     </div>
   </div>`;
+}
+function xManager() {
+  const box = k => { const [, get, label] = XLIST[k]; return `<div class="xman-col"><div class="xg-h">${label}</div>${get().map(v => `<div class="xman-row"><input class="inp" data-xren="${k}" data-old="${esc(v)}" value="${esc(v)}" aria-label="${label} 이름"><button class="btn sm icon ghost" data-act="xrm" data-k="${k}" data-v="${esc(v)}" aria-label="${esc(v)} 지우기" title="지우기 (기록은 남아요)">${I.x}</button></div>`).join('') || '<div class="hint" style="padding:4px 2px">아직 없어요</div>'}<input class="inp xman-add" data-xadd="${k}" placeholder="+ 새 ${label} · Enter" autocomplete="off"></div>`; };
+  return `<div class="card xman">${box('cat')}${box('area')}<p class="hint" style="grid-column:1/-1;margin:0">이름을 바꾸면 지난 기록에도 함께 바뀌어요. 지워도 이미 남긴 기록은 그대로예요.</p></div>`;
 }
 function dlgRetro(r) {
   const cats = retroCats(); const it = r.itemId && item(r.itemId);
@@ -2032,6 +2079,7 @@ function dlgRetro(r) {
     <div class="fgrid">
       <label>종류</label><div class="frow"><div class="seg inline">${Object.entries(RKIND).map(([k, l]) => `<button class="${r.kind === k ? 'on' : ''}" data-act="xset" data-k="kind" data-v="${k}">${l}</button>`).join('')}</div></div>
       <label>유형</label><div class="frow xcats">${cats.map(c => `<button class="xchip ${r.cat === c ? 'on' : ''}" data-act="xset" data-k="cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xcat-new" class="inp xcat-in" placeholder="+ 유형 추가" autocomplete="off"></div>
+      <label>업무</label><div class="frow xcats">${retroAreas().map(c => `<button class="xchip ${r.area === c ? 'on' : ''}" data-act="xset" data-k="area" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xarea-new" class="inp xcat-in" placeholder="+ 업무 추가" autocomplete="off"></div>
       <label>영향</label><div class="frow"><div class="seg inline">${RIMP.map(([k, l]) => `<button class="${(r.impact || 'me') === k ? 'on' : ''}" data-act="xset" data-k="impact" data-v="${k}">${l}</button>`).join('')}</div></div>
       <label for="x-date">날짜</label><div class="frow"><input type="date" id="x-date" class="inp" data-xf="date" value="${r.date}">${it ? `<button class="btn sm ghost" data-act="open" data-kind="item" data-id="${it.id}">◷ ${esc(it.title || '제목 없음')}</button>` : ''}</div>
     </div></div>
@@ -2043,11 +2091,11 @@ function dlgRetro(r) {
     <p class="hint" style="margin:8px 2px 0">‘다음엔’에 적은 내용은 복기 화면의 확인 목록에 모여요.</p>
   </div></div>`;
 }
-function newRetro(itemId) {
+function newRetro(itemId, opts = {}) {
   const it = itemId && item(itemId);
-  const r = { id: uid(), date: it && it.date && it.date <= TODAY ? it.date : TODAY, kind: 'mistake', cat: '', impact: 'me', what: '', next: '', itemId: itemId || null, created: Date.now() };
+  const r = { id: uid(), date: opts.date || (it && it.date && it.date <= TODAY ? it.date : TODAY), kind: 'mistake', cat: '', impact: 'me', what: opts.what || '', next: '', itemId: itemId || null, created: Date.now() };
   S.retros = S.retros || []; S.retros.push(r); ui.modalBack = null; ui.modal = { kind: 'retro', id: r.id, isNew: true, focus: 'x-what' }; ui.confirm = null; renderModal();
-  setTimeout(() => { const t = document.getElementById('x-what'); if (t) t.focus(); }, 30);
+  setTimeout(() => { const t = document.getElementById(opts.what ? 'x-next' : 'x-what'); if (t) t.focus(); }, 30);
 }
 function retroSaveHint(r) {
   if (!r || r.kind !== 'mistake' || !r.cat) return;
@@ -2085,11 +2133,12 @@ function mDayList(d) {
   const nOpen = tds.filter(x => !x.done).length;
   return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
   <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
-    <div class="mc-kinds" role="group" aria-label="추가할 종류"><button class="${k === 'event' ? 'on' : ''}" data-act="mkind" data-k="event">일정</button><button class="${k === 'todo' ? 'on' : ''}" data-act="mkind" data-k="todo">할일</button></div></div>
+    <div class="mc-kinds" role="group" aria-label="추가할 종류"><button class="${k === 'event' ? 'on' : ''}" data-act="mkind" data-k="event">일정</button><button class="${k === 'todo' ? 'on' : ''}" data-act="mkind" data-k="todo">할일</button><button data-act="mkind" data-k="retro">복기</button></div></div>
   ${ps.length ? `<div class="mprojs">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${esc(p.title)}</button>`).join('')}</div>` : ''}
   ${evs.length || tds.length ? '' : '<div class="mempty">비어 있는 날이에요</div>'}
   ${evs.length ? `<div class="mgroup"><div class="mg-h">일정</div><div class="mg-b">${evs.map(evRow).join('')}</div></div>` : ''}
-  ${tds.length ? `<div class="mgroup"><div class="mg-h">할일</div><div class="mg-b">${tds.map(tdRow).join('')}</div></div>` : ''}`;
+  ${tds.length ? `<div class="mgroup"><div class="mg-h">할일</div><div class="mg-b">${tds.map(tdRow).join('')}</div></div>` : ''}
+  ${(S.retros || []).some(x => x.date === d && (x.what || x.next)) ? `<div class="mgroup"><div class="mg-h">복기</div><div class="mg-b mretro">${dayRetros(d).replace('<div class="lbl">복기</div>', '')}</div></div>` : ''}`;
 }
 /* phone calendar: compact grid with dots + the chosen day's list */
 function vWorkM() {
@@ -2131,12 +2180,13 @@ function daySection() {
   const ps = S.projects.filter(p => p.start <= d && projEnd(p) >= d);
   return `<section aria-label="선택한 날"><div class="day-h"><h2>${fmtFull(d)}</h2>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}</div>
   <div class="card">
-    <div class="day-add"><label class="addline"><input id="day-add" placeholder="제목 입력" autocomplete="off" aria-label="이 날에 추가할 제목"></label><button class="btn sm" data-act="dayadd" data-kind="event">일정</button><button class="btn sm" data-act="dayadd" data-kind="todo">할일</button></div>
+    <div class="day-add"><label class="addline"><input id="day-add" placeholder="제목 입력" autocomplete="off" aria-label="이 날에 추가할 제목"></label><button class="btn sm" data-act="dayadd" data-kind="event">일정</button><button class="btn sm" data-act="dayadd" data-kind="todo">할일</button><button class="btn sm" data-act="dayadd" data-kind="retro" title="실수나 받은 피드백을 이 날짜로 기록">복기</button></div>
     ${ps.length ? `<div class="projline">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${esc(p.title)}</button>`).join('')}</div>` : ''}
     <div class="lbl">일정</div>
     ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${esc(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
     <div class="lbl">할일</div>
     <div class="tlist" style="padding-top:0">${tds.map(it => trow(it, !isMob())).join('') || '<div class="empty">할일이 없어요</div>'}</div>
+    ${dayRetros(d)}
   </div></section>`;
 }
 
@@ -2842,7 +2892,7 @@ const ACT = {
   chipsub: (t, e) => { e.stopPropagation(); e.preventDefault(); const par = item(t.dataset.id); if (!par) return; qc = { date: par.date, kind: 'todo', parent: par.id }; drawQC(''); },
   qcopen: (t, e) => { e.stopPropagation(); openQC(t.dataset.date); },
   qckind: t => { if (!qc) return; const v = ($('#qc-in') || {}).value || ''; qc.kind = t.dataset.k; drawQC(v); },
-  mkind: t => { ui.qkind = t.dataset.k; const v = ($('#m-add') || {}).value || ''; const m = $('#m-add'); if (m && m.value.trim()) { madd(t.dataset.k); return; } render(); const m2 = $('#m-add'); if (m2) { m2.value = v; } },
+  mkind: t => { if (t.dataset.k === 'retro') { const m = $('#m-add'); const v = m ? m.value.trim() : ''; if (m) m.value = ''; newRetro(null, { date: ui.sel, what: v }); return; } ui.qkind = t.dataset.k; const v = ($('#m-add') || {}).value || ''; const m = $('#m-add'); if (m && m.value.trim()) { madd(t.dataset.k); return; } render(); const m2 = $('#m-add'); if (m2) { m2.value = v; } },
   fab: () => { if (ui.view === 'mtodo') { const i = $('#inbox-add'); if (i) { i.scrollIntoView({ block: 'center' }); i.focus(); } return; } const m = $('#m-add'); if (m) { m.scrollIntoView({ block: 'center', behavior: 'smooth' }); m.focus(); } else openModal('quick'); },
   quick: () => openModal('quick', null, 'qa-title'),
   qadd: t => quickAdd(t.dataset.kind),
@@ -2857,6 +2907,10 @@ const ACT = {
   xopen: t => { ui.modalBack = null; openModal('retro', t.dataset.id); },
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
+  xby: t => { ui.xby = t.dataset.v; ui.xcat = null; render(); },
+  xmanage: () => { ui.xmanage = !ui.xmanage; render(); },
+  xrm: t => { const k = t.dataset.k, v = t.dataset.v; const [sk, get] = XLIST[k]; mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().filter(x => x !== v) }; }, `‘${v}’을 목록에서 뺐어요`); },
+  xcat: t => { ui.xcat = ui.xcat === t.dataset.c ? null : t.dataset.c; render(); },
   rmonth: t => { const d = +t.dataset.d; ui.rmonth = d === 0 ? monthOf(TODAY) : (() => { const [y, m] = (ui.rmonth || monthOf(TODAY)).split('-').map(Number); return iso(new Date(y, m - 1 + d, 1)).slice(0, 7); })(); render(); },
   xroutine: t => { const r = retro(t.dataset.id); if (!r || !r.next) return; if ((S.routines || []).some(x => x.title === r.next)) { toast('이미 루틴에 있어요'); return; } mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: r.next, freq: 'any', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴에 추가했어요 · 주기는 루틴에서 바꿀 수 있어요'); },
   rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
@@ -2873,7 +2927,7 @@ const ACT = {
   ptab: t => { ui.panelTab = t.dataset.tab; render(); },
   inboxdone: () => { ui.showInboxDone = !ui.showInboxDone; render(); },
   pdone: () => { ui.showPDone = !ui.showPDone; renderModal(); },
-  dayadd: t => { const inp = $('#day-add'); const v = inp.value.trim(); if (!v) { inp.focus(); toast('제목을 먼저 적어주세요'); return; } mutate(() => { createItem(t.dataset.kind, v, ui.sel); }, `${fmtMD(ui.sel)}에 ${t.dataset.kind === 'event' ? '일정' : '할일'}을 추가했어요`); ui.focusId = 'day-add'; render(); },
+  dayadd: t => { const inp = $('#day-add'); const v = inp.value.trim(); if (t.dataset.kind === 'retro') { inp.value = ''; newRetro(null, { date: ui.sel, what: v }); return; } if (!v) { inp.focus(); toast('제목을 먼저 적어주세요'); return; } mutate(() => { createItem(t.dataset.kind, v, ui.sel); }, `${fmtMD(ui.sel)}에 ${t.dataset.kind === 'event' ? '일정' : '할일'}을 추가했어요`); ui.focusId = 'day-add'; render(); },
   del: t => {
     const key = t.dataset.what + t.dataset.id;
     if (ui.confirm !== key) { ui.confirm = key; renderModal(); return; }
@@ -3040,6 +3094,7 @@ document.addEventListener('focusin', e => { const t = e.target; if (t.matches &&
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set) { const k = t.dataset.set; mutate(() => { S.settings = { ...(S.settings || {}), [k]: k === 'remindMin' ? +t.value : t.value }; }, '알림 기본값을 바꿨어요'); return; }
+  if (t.dataset && t.dataset.xren) { const k = t.dataset.xren, old = t.dataset.old, v = t.value.trim(); const [sk, get] = XLIST[k]; if (!v || v === old) { t.value = old; return; } if (get().includes(v)) { toast('같은 이름이 이미 있어요'); t.value = old; return; } mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().map(x => x === old ? v : x) }; (S.retros || []).forEach(r => { if (r[k] === old) r[k] = v; }); }, `‘${old}’ → ‘${v}’로 바꿨어요`); return; }
   if (t.dataset && t.dataset.xf === 'date' && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r && t.value) { r.date = t.value; save(); } return; }
   if (t.dataset && t.dataset.rf && ui.modal && ui.modal.kind === 'routine') { const r = routine(ui.modal.id); if (!r) return; const k = t.dataset.rf; mutate(() => { r[k] = k === 'noteId' ? (t.value || null) : t.value; }); return; }
   if (t.id === 'f-move' && t.value) { const it = item(ui.modal.id); const to = t.value; if (it && to !== it.date) mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); return; }
@@ -3242,7 +3297,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); undo(); return; }
   if (t.id === 'qc-in') {
     if (e.key === 'Tab' && qc && qc.parent) { e.preventDefault(); return; }
-    if (e.key === 'Tab') { e.preventDefault(); qc.kind = qc.kind === 'event' ? 'todo' : 'event'; drawQC(t.value); return; }
+    if (e.key === 'Tab') { e.preventDefault(); qc.kind = qc.kind === 'event' ? 'todo' : qc.kind === 'todo' ? 'retro' : 'event'; drawQC(t.value); return; }
     if (e.key === 'Escape') { e.preventDefault(); closeQC(); return; }
     if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); saveQC(); return; }
     return;
@@ -3260,6 +3315,8 @@ document.addEventListener('keydown', e => {
   if (t.id === 'sub-add') { const v = t.value.trim(); if (!v) return; const par = item(ui.modal.id); mutate(() => { const it = createItem('todo', v, null); it.parentId = par.id; it.projectId = par.projectId; }); ui.modal.focus = 'sub-add'; renderModal(); return; }
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
   if (t.id === 'mp-q' && mention) { e.preventDefault(); pickMention(mention.idx); return; }
+  if (t.dataset && t.dataset.xadd) { e.preventDefault(); const k = t.dataset.xadd; const v = t.value.trim(); if (!v) return; const [sk, get] = XLIST[k]; if (!get().includes(v)) mutate(() => { S.settings = { ...(S.settings || {}), [sk]: [...get(), v] }; }); ui.focusId = null; render(); const n = document.querySelector(`[data-xadd="${k}"]`); if (n) n.focus(); return; }
+  if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
   if (t.id === 'xcat-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const cats = retroCats(); S.settings = { ...(S.settings || {}), retroCats: cats.includes(v) ? cats : [...cats, v] }; const r = retro(ui.modal.id); if (r) r.cat = v; save(); renderModal(); return; }
   if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
