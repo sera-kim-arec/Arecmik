@@ -2151,9 +2151,16 @@ document.addEventListener('keyup', e => {
 });
 const SLASH = [['p', 'T', '텍스트', ''], ['h', 'H', '제목', '# '], ['todo', '✓', '체크리스트', '[] '], ['bullet', '•', '글머리 목록', '- '], ['toggle', '▸', '토글', '>> '], ['num', '1.', '번호 목록', '1. '], ['quote', '❝', '인용', '> '], ['callout', '!', '강조 박스', ''], ['link', '↗', '링크 스크랩', 'URL 붙여넣기'], ['image', '▣', '사진', ''], ['table', '▦', '표', ''], ['code', '{ }', '코드 블록', '```'], ['divider', '—', '구분선', '---']];
 let slash = null;
-function openSlash(key, bid) { slash = { key, bid, idx: 0, q: '' }; drawSlash(); }
+function openSlash(key, bid) { slash = { key, bid, idx: 0, q: '' }; pop._st = 0; drawSlash(); }
 function closeSlash() { slash = null; pop.innerHTML = ''; }
 function slashOptions() { return SLASH.filter(o => !slash.q || o[2].includes(slash.q) || o[0].includes(slash.q)); }
+function keepOnVisible() {
+  const m = pop.querySelector('.slash'); const on = m && m.querySelector('.on'); if (!on) return;
+  if (pop._st) m.scrollTop = pop._st;
+  const r = on.getBoundingClientRect(), R = m.getBoundingClientRect();
+  if (r.bottom > R.bottom - 4) m.scrollTop += r.bottom - R.bottom + 6; else if (r.top < R.top + 4) m.scrollTop -= R.top - r.top + 6;
+  pop._st = m.scrollTop; m.onscroll = () => { pop._st = m.scrollTop; };
+}
 function drawSlash() {
   if (!slash) { pop.innerHTML = ''; return; }
   const el = document.querySelector(`[data-ed="${slash.key}"] .bk-text[data-bid="${slash.bid}"]`); if (!el) { closeSlash(); return; }
@@ -2162,6 +2169,7 @@ function drawSlash() {
   const r = el.getBoundingClientRect();
   const top = Math.min(r.bottom + 6, window.innerHeight - 350); const left = Math.min(r.left, window.innerWidth - 266);
   pop.innerHTML = `<div class="slash" role="menu" aria-label="블록 종류" style="top:${Math.max(8, top)}px;left:${Math.max(8, left)}px">${opts.map((o, i) => `<button role="menuitem" class="${i === slash.idx ? 'on' : ''}" data-act="slashpick" data-t="${o[0]}"><span class="si">${o[1]}</span>${o[2]}<span class="sk">${o[3]}</span></button>`).join('')}</div>`;
+  keepOnVisible();
 }
 function findBlock(key, bid) { const bl = edBlocks(key); if (!bl) return {}; const i = bl.findIndex(b => b.id === bid); return { bl, i, b: bl[i] }; }
 function applyType(key, bid, t) {
@@ -2525,6 +2533,7 @@ function mentionCandidates(q, selfRef) {
 }
 function editorSelfRef(key) { const [k, id] = key.split(':'); return k === 'doc' || k === 'post' || k === 'item' || k === 'project' ? k + ':' + id : ''; }
 function drawMention() {
+  if (mention && mention.idx === 0) pop._st = 0;
   if (!mention) return;
   const opts = mentionCandidates(mention.q, editorSelfRef(mention.key)); mention.opts = opts; mention.idx = Math.min(mention.idx, Math.max(0, opts.length - 1));
   let r = mention.anchor ? mention.anchor.getBoundingClientRect() : caretRect();
@@ -2532,6 +2541,7 @@ function drawMention() {
   if (!r) return;
   const top = Math.min(r.bottom + 6, window.innerHeight - 330), left = Math.min(r.left, window.innerWidth - 300);
   pop.innerHTML = `<div class="slash mpick" role="listbox" aria-label="연결할 항목" style="top:${Math.max(8, top)}px;left:${Math.max(8, left)}px;width:290px"><div class="mp-h">${mention.anchor ? '연결할 노트·항목 찾기' : '연결할 항목'}</div>${mention.anchor ? `<input id="mp-q" class="inp" style="width:100%;box-sizing:border-box;margin-bottom:6px" placeholder="제목으로 찾기" value="${esc(mention.q)}" autocomplete="off">` : ''}${opts.map((o, i) => `<button role="option" class="${i === mention.idx ? 'on' : ''}" data-act="mpick" data-i="${i}"><span class="si">${KIND_ICON[o.kind]}</span><span style="display:flex;flex-direction:column;min-width:0;line-height:1.3"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.title)}</span><span class="sk" style="margin:0">${esc(o.sub)}</span></span></button>`).join('') || '<div class="empty" style="padding:8px 10px">찾는 항목이 없어요</div>'}</div>`;
+  keepOnVisible();
   const qi = document.getElementById('mp-q'); if (qi && document.activeElement !== qi) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
 }
 function closeMention() { if (mention) { mention = null; pop.innerHTML = ''; } }
