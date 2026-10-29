@@ -1456,8 +1456,8 @@ function monthRange(month) {
   return { y, m, gs, ge, weeks };
 }
 function dayItems(d) {
-  return S.items.filter(it => it.date === d && !(it.kind === 'event' && it.end && it.end > it.date))
-    .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'event' ? -1 : 1) || (a.kind === 'event' ? (a.start || '99').localeCompare(b.start || '99') : (a.done - b.done) || (a.start || '99').localeCompare(b.start || '99')));
+  return nestOrder(S.items.filter(it => it.date === d && !(it.kind === 'event' && it.end && it.end > it.date))
+    .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'event' ? -1 : 1) || (a.kind === 'event' ? (a.start || '99').localeCompare(b.start || '99') : (a.done - b.done) || (a.start || '99').localeCompare(b.start || '99'))));
 }
 function itemColor(it) { const p = it.projectId && proj(it.projectId); return p ? `var(--${p.color})` : 'var(--blue)'; }
 function weekStart(d) { const dd = parse(d); return addDays(d, -((dd.getDay() - wsDay() + 7) % 7)); }
@@ -1504,7 +1504,7 @@ function weekLogHTML(ws) {
     </div></div>`;
 }
 function colTpl(days) {
-  if (ui.calView === 'week' || isMob()) return `repeat(${days.length},minmax(0,1fr))`;
+  if (isMob()) return `repeat(${days.length},minmax(0,1fr))`;
   const g = parse(ui.sel).getDay();
   return days.map(d => parse(d).getDay() === g ? 'minmax(0,1.9fr)' : 'minmax(0,1fr)').join(' ');
 }
@@ -1583,7 +1583,12 @@ function endRename(el, cancel) {
   if (!it || cancel || !v || v === it.title) { render(); renderModal(); return; }
   mutate(() => { it.title = v; }, '이름을 바꿨어요');
 }
-function progHTML(it) { const k = kidsOf(it.id); if (!k.length) return ''; const d = k.filter(x => x.done).length; return `<span class="prog ${d === k.length ? 'all' : ''}" title="하위 할일 ${d}/${k.length}">${d}/${k.length}</span>`; }
+function leafStats(id, forced0) {
+  let d = 0, t = 0;
+  const walk = (pid, forced) => kidsOf(pid).forEach(k => { const kk = kidsOf(k.id); if (kk.length) walk(k.id, forced || k.done); else { t++; if (forced || k.done) d++; } });
+  walk(id, !!forced0); return { d, t };
+}
+function progHTML(it) { const { d, t } = leafStats(it.id, it.done); if (!t) return ''; return `<span class="prog ${d === t ? 'all' : ''}" title="끝 단계 할일 ${t}개 중 ${d}개 완료">${d}/${t}</span>`; }
 function parentLabel(it) { const pa = it.parentId && item(it.parentId); return pa ? `<span class="ptl">↳ ${esc(pa.title || '제목 없음')}</span>` : ''; }
 function chipHTML(it) {
   if (it.kind === 'event') return `<div class="chip ev ${evState(it)}" style="--chip:${itemColor(it)}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${it.cancel ? ' (취소됨)' : it.done ? ' (완료)' : ''}"><button class="evck" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}" title="${it.done ? '완료 취소' : '완료로 표시'}"><span class="dot" style="background:${itemColor(it)}"></span>${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${rnT(it)}</span>${it.moves && it.moves.length ? '<span class="mvi" title="미룬 일정">↷</span>' : ''}${progHTML(it)}<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span><span class="handle" data-resize="event:${it.id}" title="오른쪽으로 끌면 기간 일정이 돼요"></span></div>`;
@@ -1623,7 +1628,7 @@ function mDayList(d) {
   const tds = nestOrder(S.items.filter(it => it.kind === 'todo' && it.date === d).sort((a, b) => a.done - b.done || (a.start || '99').localeCompare(b.start || '99')));
   const ps = S.projects.filter(p => p.start <= d && projEnd(p) >= d);
   const k = ui.qkind || 'event';
-  const sub = it => { const p = it.projectId && proj(it.projectId); const bits = []; if (it.end) bits.push(`${fmtShort(it.date)} – ${fmtShort(it.end)}`); if (p) bits.push(`<span class="pt ${pcls(p)}">${esc(p.title)}</span>`); const k2 = kidsOf(it.id); if (k2.length) bits.push(`하위 ${k2.filter(x => x.done).length}/${k2.length}`); return bits.join('<i>·</i>'); };
+  const sub = it => { const p = it.projectId && proj(it.projectId); const bits = []; if (it.end) bits.push(`${fmtShort(it.date)} – ${fmtShort(it.end)}`); if (p) bits.push(`<span class="pt ${pcls(p)}">${esc(p.title)}</span>`); const ls = leafStats(it.id); if (ls.t) bits.push(`하위 ${ls.d}/${ls.t}`); return bits.join('<i>·</i>'); };
   const evRow = it => { const st = evState(it); const s2 = sub(it); return `<button class="mrow ev ${st}" data-act="open" data-kind="item" data-id="${it.id}">
       <span class="mtime">${it.start ? `<b>${it.start}</b>${it.finish ? `<small>${it.finish}</small>` : ''}` : '<b class="allday">종일</b>'}</span>
       <span class="mbar" style="background:${it.cancel ? 'var(--faint)' : itemColor(it)}"></span>
@@ -1959,9 +1964,9 @@ function remindOptions(it) {
   return opts.map(([v, l]) => `<option value="${v}" ${v === r ? 'selected' : ''}>${l}</option>`).join('');
 }
 function subsHTML(it) {
-  const k = kidsOf(it.id).sort((a, b) => a.done - b.done); const d = k.filter(x => x.done).length;
-  return `<div class="subs"><div class="subs-h"><span class="lbl" style="padding:0">하위 할일 ${k.length ? `${d}/${k.length}` : ''}</span>${k.length ? `<span class="pbar"><span style="width:${Math.round(d / k.length * 100)}%"></span></span>` : ''}</div>
-  <div class="plist">${k.map(x => `<div class="prow"><button class="chk ${x.done ? 'on' : ''}" data-act="toggle" data-id="${x.id}" aria-label="완료 표시">${I.check}</button><button class="tlink" data-act="openback" data-id="${x.id}"><span style="${x.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${esc(x.title || '제목 없음')}</span></button><span class="sub">${x.date ? fmtShort(x.date) : '날짜 없음'}</span></div>`).join('')}</div>
+  const k = kidsOf(it.id).sort((a, b) => a.done - b.done); const { d, t } = leafStats(it.id);
+  return `<div class="subs"><div class="subs-h"><span class="lbl" style="padding:0">하위 할일 ${t ? `${d}/${t}` : ''}</span>${t ? `<span class="pbar"><span style="width:${Math.round(d / t * 100)}%"></span></span>` : ''}</div>
+  <div class="plist">${k.map(x => `<div class="prow"><button class="chk ${x.done ? 'on' : ''}" data-act="toggle" data-id="${x.id}" aria-label="완료 표시">${I.check}</button><button class="tlink" data-act="openback" data-id="${x.id}"><span style="${x.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${esc(x.title || '제목 없음')}</span> ${progHTML(x)}</button><span class="sub">${x.date ? fmtShort(x.date) : '날짜 없음'}</span></div>`).join('')}</div>
   <label class="addline" style="margin-top:4px">${I.plus}<input id="sub-add" placeholder="하위 할일 적고 Enter" autocomplete="off" aria-label="하위 할일 추가"></label>
   <p class="hint" style="margin:6px 2px 0">하위 할일도 일반 할일과 같아요. 날짜를 정하면 그 날 달력에, 비워두면 ‘날짜 없는 할일’에 보여요.</p></div>`;
 }
