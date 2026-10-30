@@ -944,6 +944,24 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .xman-row .inp{flex:1;min-width:0;width:auto;height:32px;box-sizing:border-box}
 .xman-add{height:32px;margin-top:2px;width:100%;box-sizing:border-box}
 @media (max-width:640px){ .xman{grid-template-columns:1fr} }
+/* ---- 책·영화 검색 ---- */
+.skey{width:220px;height:34px}
+.lk-q{height:42px;margin-top:2px}
+.lk-q input{font-size:15px}
+.lk-res{display:flex;flex-direction:column;gap:6px;min-height:120px;max-height:56vh;overflow-y:auto;padding:2px}
+.lk-row{display:flex;gap:12px;align-items:center;width:100%;border:0;background:transparent;font:inherit;color:var(--fg);text-align:left;padding:8px;border-radius:12px;cursor:pointer}
+.lk-row:hover,.lk-row:focus-visible{background:var(--bg);box-shadow:var(--nm-out-xs, var(--shadow))}
+.lk-img{width:44px;height:64px;border-radius:6px;background:var(--sunken) center/cover no-repeat;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.lk-t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lk-t b{font-size:15px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lk-t span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lk-msg{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px 6px;color:var(--muted);font-size:14px}
+.lk-msg b{color:var(--fg)}
+.linkbtn{border:0;background:none;padding:0;font:inherit;color:var(--blue-ink);text-decoration:underline;cursor:pointer}
+.ci-ext{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--muted)}
+.ci-ext p{margin:0;color:var(--fg2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.ci-ext a{color:var(--blue-ink);font-weight:600;font-size:13px}
+@media (max-width:640px){ .skey{width:100%} }
 /* ---- routines ---- */
 .set-title{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
 .rdue-c{color:var(--lemon-ink)!important;font-weight:700}
@@ -2380,6 +2398,63 @@ function fieldValueText(f, v) {
   if (f.type === 'select') return v ? `<span class="badge ${optCls(f, v)}">${esc(v)}</span>` : '';
   return esc(v || '');
 }
+/* ---------- 책·영화 검색 (Kakao book search, TMDB) ---------- */
+function collSource(c) { if (!c) return null; if (c.source) return c.source; const n = c.name || ''; return /책|도서|독서/.test(n) ? 'book' : /영화|드라마|무비/.test(n) ? 'movie' : null; }
+let look = null;
+async function lookupSearch(src, q) {
+  const st = S.settings || {};
+  if (src === 'book') {
+    if (!st.kakaoKey) throw new Error('nokey');
+    const r = await fetch(`https://dapi.kakao.com/v3/search/book?size=12&query=${encodeURIComponent(q)}`, { headers: { Authorization: 'KakaoAK ' + st.kakaoKey } });
+    if (r.status === 401 || r.status === 403) throw new Error('badkey'); if (!r.ok) throw new Error('fail');
+    const j = await r.json();
+    return (j.documents || []).map(d => ({ title: d.title, sub: [(d.authors || []).join(', '), d.publisher, (d.datetime || '').slice(0, 4)].filter(Boolean).join(' · '), img: d.thumbnail || null, authors: (d.authors || []).join(', '), publisher: d.publisher || '', date: (d.datetime || '').slice(0, 10), url: d.url || '', isbn: d.isbn || '' }));
+  }
+  if (!st.tmdbKey) throw new Error('nokey');
+  const k = st.tmdbKey; const bearer = k.length > 60; const auth = bearer ? { headers: { Authorization: 'Bearer ' + k } } : {};
+  const qs = p => `${p}${p.includes('?') ? '&' : '?'}language=ko-KR${bearer ? '' : '&api_key=' + encodeURIComponent(k)}`;
+  const r = await fetch(qs(`https://api.themoviedb.org/3/search/movie?include_adult=false&query=${encodeURIComponent(q)}`), auth);
+  if (r.status === 401) throw new Error('badkey'); if (!r.ok) throw new Error('fail');
+  const j = await r.json();
+  return (j.results || []).slice(0, 12).map(m => ({ title: m.title || m.original_title, sub: [(m.release_date || '').slice(0, 4), m.original_title && m.original_title !== m.title ? m.original_title : ''].filter(Boolean).join(' · '), img: m.poster_path ? 'https://image.tmdb.org/t/p/w342' + m.poster_path : null, date: m.release_date || '', tmdbId: m.id, overview: m.overview || '', fetchDirector: async () => { try { const c = await fetch(qs(`https://api.themoviedb.org/3/movie/${m.id}/credits`), auth); const cj = await c.json(); return (cj.crew || []).filter(x => x.job === 'Director').map(x => x.name).join(', '); } catch (e) { return ''; } } }));
+}
+function drawLookup() {
+  const L = look; if (!L) return;
+  const src = L.src; const kname = src === 'book' ? '카카오 책 검색 키' : 'TMDB 키';
+  const body = L.err === 'nokey' ? `<div class="lk-msg"><b>${kname}가 아직 없어요.</b><span>설정 → 책·영화 검색에 키를 붙여 넣으면 바로 검색돼요.</span><button class="btn sm" data-act="settings">설정 열기</button></div>`
+    : L.err === 'badkey' ? `<div class="lk-msg"><b>키가 맞지 않아요.</b><span>설정에서 ${kname}를 다시 확인해 주세요.</span><button class="btn sm" data-act="settings">설정 열기</button></div>`
+    : L.err ? `<div class="lk-msg"><b>검색하지 못했어요.</b><span>인터넷 연결을 확인하고 다시 시도해 주세요.</span></div>`
+    : L.busy ? '<div class="lk-msg"><span>찾는 중…</span></div>'
+    : L.res ? (L.res.length ? L.res.map((x, i) => `<button class="lk-row" data-act="lkpick" data-i="${i}"><span class="lk-img" style="${x.img ? `background-image:url('${x.img}')` : ''}"></span><span class="lk-t"><b>${esc(x.title)}</b><span>${esc(x.sub)}</span></span></button>`).join('') : '<div class="lk-msg"><span>찾는 결과가 없어요. 제목을 조금 다르게 적어 보세요.</span></div>')
+    : `<div class="lk-msg"><span>${src === 'book' ? '책 제목이나 저자를' : '영화 제목을'} 적고 Enter</span></div>`;
+  const res = document.getElementById('lk-res'); if (res) { res.innerHTML = body; return; }
+}
+function dlgLookup() {
+  const L = look; const c = coll(L.coll);
+  return `<div class="dialog sm lk" role="dialog" aria-modal="true" aria-label="${L.src === 'book' ? '책' : '영화'} 검색">
+  <div class="dlg-head"><div class="dlg-top"><span class="kind">${esc(c ? c.name : '')}</span><span class="grow"></span><button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
+    <label class="search lk-q">${I.search}<input id="lk-q" type="search" placeholder="${L.src === 'book' ? '예: 소년이 온다, 한강' : '예: 헤어질 결심'}" autocomplete="off" value="${esc(L.q || '')}" aria-label="검색어"></label></div>
+  <div class="dlg-body"><div id="lk-res" class="lk-res"></div>
+    <p class="hint" style="margin:8px 2px 0">${L.src === 'book' ? '카카오(다음) 책 검색' : 'TMDB'} 결과예요. 고르면 표지와 정보가 채워진 칸이 만들어져요. <button class="linkbtn" data-act="lkmanual">직접 적기</button></p></div></div>`;
+}
+async function runLookup(q) {
+  if (!look) return; look.q = q; look.err = null; look.res = null; if (!q.trim()) { drawLookup(); return; }
+  look.busy = true; drawLookup(); const my = look;
+  try { const res = await lookupSearch(my.src, q.trim()); if (look !== my) return; look.res = res; }
+  catch (e) { if (look !== my) return; look.err = e.message === 'nokey' || e.message === 'badkey' ? e.message : 'fail'; }
+  look.busy = false; drawLookup();
+}
+async function pickLookup(i) {
+  const L = look; const x = L && L.res && L.res[i]; if (!x) return; const c = coll(L.coll); if (!c) return;
+  const byName = (...names) => c.fields.find(f => names.includes(f.name));
+  const ci = { id: uid(), coll: c.id, title: x.title, tone: randTone(), img: x.img, values: {}, ext: { src: L.src, url: x.url || '', isbn: x.isbn || '', tmdbId: x.tmdbId || null, publisher: x.publisher || '', date: x.date || '', overview: x.overview || '' } };
+  c.fields.forEach(f => { if (f.type === 'select' && f.options && f.options.length) ci.values[f.id] = f.options[0]; });
+  if (L.src === 'book') { const fa = byName('저자', '작가', '지은이'); if (fa) ci.values[fa.id] = x.authors; const fp = byName('출판사'); if (fp) ci.values[fp.id] = x.publisher; }
+  else { const d = await x.fetchDirector(); const fd = byName('감독'); if (fd && d) ci.values[fd.id] = d; const fy = byName('개봉', '개봉일', '개봉 연도'); if (fy) ci.values[fy.id] = fy.type === 'date' ? x.date : (x.date || '').slice(0, 4); }
+  const fl = byName('링크', '정보 링크'); if (fl && x.url) ci.values[fl.id] = x.url;
+  snapshot(); S.citems.push(ci); save(); look = null; render();
+  ui.modal = { kind: 'citem', id: ci.id }; renderModal(); toast(`‘${x.title}’을 추가했어요`);
+}
 function vColl() {
   const c = coll(ui.collId) || S.collections[0];
   if (!c) return `${topbar('<h1 class="h1">컬렉션</h1>')}<div class="page"><div class="empty">컬렉션이 없어요. 사이드바 ‘컬렉션’ 옆 + 로 만들어 보세요.</div></div>`;
@@ -2394,7 +2469,7 @@ function vColl() {
     ? `<div class="cgrid">${list.map(x => `<button class="ccard" data-act="openci" data-id="${x.id}"><span class="cv" style="${coverStyle(x)}"></span><b>${esc(x.title || '이름 없음')}</b>${textF && x.values[textF.id] ? `<span class="s">${esc(x.values[textF.id])}</span>` : ''}<span class="chips" style="gap:6px;align-items:center">${sf && x.values[sf.id] ? `<span class="badge ${optCls(sf, x.values[sf.id])}">${esc(x.values[sf.id])}</span>` : ''}${starsFor(x, c)}</span></button>`).join('')}</div>`
     : `<div class="tbl-wrap"><table class="tbl"><thead><tr><th style="width:44px"></th><th>이름</th>${c.fields.map(f => `<th>${esc(f.name)}</th>`).join('')}</tr></thead><tbody>${list.map(x => `<tr class="row" data-act="openci" data-id="${x.id}"><td><div class="mini-cv" style="${coverStyle(x)}"></div></td><td><b>${esc(x.title || '이름 없음')}</b></td>${c.fields.map(f => `<td>${fieldValueText(f, x.values[f.id])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   return `${topbar(`<h1 class="h1">${esc(c.name)}</h1><span class="muted">${total}개</span>`,
-    `<div class="seg inline" role="group" aria-label="보기 방식"><button class="${c.view === 'cards' ? 'on' : ''}" data-act="cview" data-v="cards">카드</button><button class="${c.view === 'list' ? 'on' : ''}" data-act="cview" data-v="list">목록</button></div><button class="btn" data-act="editcoll" data-id="${c.id}">칸 설정</button><button class="btn primary" data-act="addci">${I.plus}추가</button>`)}
+    `<div class="seg inline" role="group" aria-label="보기 방식"><button class="${c.view === 'cards' ? 'on' : ''}" data-act="cview" data-v="cards">카드</button><button class="${c.view === 'list' ? 'on' : ''}" data-act="cview" data-v="list">목록</button></div><button class="btn" data-act="editcoll" data-id="${c.id}">칸 설정</button>${collSource(c) ? `<button class="btn" data-act="addci">${I.plus}직접 추가</button><button class="btn primary" data-act="lookup">${I.search}${collSource(c) === 'book' ? '책' : '영화'} 검색해서 추가</button>` : `<button class="btn primary" data-act="addci">${I.plus}추가</button>`}`)}
   <div class="page" style="max-width:1200px">
     ${sf ? `<div class="chips">${['', ...(sf.options || [])].map(o => `<button class="chipf ${filt === o ? 'on' : ''}" data-act="cfilt" data-v="${esc(o)}">${o ? esc(o) : '전체'}</button>`).join('')}</div>` : ''}
     ${list.length ? body : `<div class="empty">${total ? '이 조건에 맞는 항목이 없어요.' : '아직 비어 있어요. ‘추가’로 첫 항목을 넣어보세요.'}</div>`}
@@ -2437,14 +2512,15 @@ function ncPreview() {
 /* ---------- dialogs ---------- */
 function modalTarget() {
   const m = ui.modal; if (!m) return null;
-  if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'routine') return routine(m.id); if (m.kind === 'retro') return retro(m.id); if (m.kind === 'quick') return true; return null;
+  if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'routine') return routine(m.id); if (m.kind === 'retro') return retro(m.id); if (m.kind === 'lookup') return look ? true : null; if (m.kind === 'quick') return true; return null;
 }
 function renderModal() {
   const m = ui.modal; const t = modalTarget();
+  setTimeout(() => { if (ui.modal && ui.modal.kind === 'lookup') { drawLookup(); const q = document.getElementById('lk-q'); if (q && document.activeElement !== q) q.focus(); } }, 0);
   if (!m || !t) { layer.innerHTML = ''; return; }
   const st = $('.scrim') ? $('.scrim').scrollTop : 0;
   let h = '';
-  if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings(); else if (m.kind === 'routine') h = dlgRoutine(t); else if (m.kind === 'retro') h = dlgRetro(t);
+  if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings(); else if (m.kind === 'routine') h = dlgRoutine(t); else if (m.kind === 'retro') h = dlgRetro(t); else if (m.kind === 'lookup') h = dlgLookup();
   layer.innerHTML = `<div class="scrim" data-act="scrim">${h}</div>`;
   $('.scrim').scrollTop = st;
   if (m.focus) { const el = document.getElementById(m.focus); m.focus = null; if (el) { el.focus(); if (el.select) el.select(); } }
@@ -2452,6 +2528,7 @@ function renderModal() {
 function openModal(kind, id, focus) { ui.modal = { kind, id, focus }; ui.confirm = null; closeSearch(); renderModal(); }
 function closeModal() {
   const m = ui.modal;
+  if (m && m.kind === 'lookup') look = null;
   if (m && m.kind === 'retro') { const r = retro(m.id); if (r && !(r.what || '').trim() && !(r.next || '').trim()) { S.retros = S.retros.filter(x => x !== r); save(); } else if (r) { save(); if (m.isNew) retroSaveHint(r); } setTimeout(render, 0); }
   if (m && m.kind === 'citem') { const ci = citem(m.id); if (ci && m.isNew && !ci.title.trim() && !ci.img) { S.citems = S.citems.filter(x => x !== ci); save(); render(); } }
   ui.modal = null; ui.modalBack = null; ui.confirm = null; renderModal(); closeSlash();
@@ -2539,6 +2616,9 @@ function dlgSettings() {
     <p class="hint" style="margin:10px 0 0">기본값이에요. 일정·할일 팝업의 ‘알림’에서 항목마다 따로 바꿀 수 있어요.<br>‘앱을 닫아도 알림 받기’를 켜지 않은 기기는 Arecmik이 열려 있을 때만 알려드려요.</p>
     <div class="set-row" style="margin-top:12px"><div><b>알림 소리</b><span class="hint">알림 카드가 뜰 때 짧은 소리를 내요 (이 기기)</span></div><button class="btn" data-act="soundtoggle" aria-pressed="${soundOn()}">${soundOn() ? '켜짐' : '꺼짐'}</button></div>
     ${on ? '<div style="margin-top:12px"><button class="btn" data-act="notifytest">테스트 알림 보내기</button></div>' : ''}
+    <div class="set-sec" style="margin-top:22px">책·영화 검색</div>
+    <div class="set-row"><div><b>카카오 책 검색 키</b><span class="hint">카카오 개발자 앱의 ‘REST API 키’ · 내 계정에만 저장돼요</span></div><input class="inp skey" type="password" data-skey="kakaoKey" value="${esc((S.settings || {}).kakaoKey || '')}" placeholder="붙여 넣기" autocomplete="off" aria-label="카카오 REST API 키"></div>
+    <div class="set-row"><div><b>TMDB 영화 검색 키</b><span class="hint">TMDB ‘API 키’ 또는 ‘읽기 액세스 토큰’ · 내 계정에만 저장돼요</span></div><input class="inp skey" type="password" data-skey="tmdbKey" value="${esc((S.settings || {}).tmdbKey || '')}" placeholder="붙여 넣기" autocomplete="off" aria-label="TMDB 키"></div>
     <div class="set-sec" style="margin-top:22px">디자인</div>
     <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button></div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
@@ -2574,7 +2654,8 @@ function dlgCitem(ci) {
       <input class="title-input" id="ci-title" data-cf="title" value="${esc(ci.title)}" placeholder="이름" aria-label="이름">
       <div class="frow"><label class="btn sm" for="ci-file">${I.img}사진 올리기</label><input type="file" id="ci-file" accept="image/*" hidden>${ci.img ? '<button class="btn sm ghost" data-act="ciclear">사진 지우기</button>' : '<button class="btn sm ghost" data-act="citone">색 바꾸기</button>'}</div></div></div>
   </div>
-  <div class="dlg-body"><div class="fgrid">${c.fields.map(f => `<label for="cv-${f.id}">${esc(f.name)}</label><div>${fld(f)}</div>`).join('')}</div></div></div>`;
+  <div class="dlg-body"><div class="fgrid">${c.fields.map(f => `<label for="cv-${f.id}">${esc(f.name)}</label><div>${fld(f)}</div>`).join('')}</div>
+    ${ci.ext && (ci.ext.publisher || ci.ext.date || ci.ext.overview || ci.ext.url || ci.ext.tmdbId) ? `<div class="ci-ext">${ci.ext.publisher || ci.ext.date ? `<span>${esc([ci.ext.publisher, ci.ext.date].filter(Boolean).join(' · '))}</span>` : ''}${ci.ext.overview ? `<p>${esc(ci.ext.overview)}</p>` : ''}${ci.ext.url ? `<a href="${esc(ci.ext.url)}" target="_blank" rel="noopener">다음 책 정보 보기</a>` : ci.ext.tmdbId ? `<a href="https://www.themoviedb.org/movie/${ci.ext.tmdbId}?language=ko-KR" target="_blank" rel="noopener">TMDB에서 보기</a>` : ''}</div>` : ''}</div></div>`;
 }
 
 /* ---------- block editor ---------- */
@@ -2910,6 +2991,9 @@ const ACT = {
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
   xshowcat: () => { ui.xshowcat = true; renderModal(); const i = document.getElementById('xcat-new'); if (i) i.focus(); },
+  lookup: () => { const c = coll(ui.collId); if (!c) return; look = { coll: c.id, src: collSource(c), q: '', res: null }; ui.modal = { kind: 'lookup' }; renderModal(); },
+  lkpick: t => pickLookup(+t.dataset.i),
+  lkmanual: () => { const q = look ? look.q : ''; look = null; ui.modal = null; renderModal(); ACT.addci(); setTimeout(() => { const ci = S.citems[S.citems.length - 1]; const ti = document.getElementById('ci-title'); if (ci && q && ti && !ci.title) { ci.title = q; ti.value = q; save(); } }, 30); },
   xby: t => { ui.xby = t.dataset.v; ui.xcat = null; render(); },
   xmanage: () => { ui.xmanage = !ui.xmanage; render(); },
   xrm: t => { const k = t.dataset.k, v = t.dataset.v; const [sk, get] = XLIST[k]; mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().filter(x => x !== v) }; }, `‘${v}’을 목록에서 뺐어요`); },
@@ -3079,6 +3163,7 @@ document.addEventListener('compositionstart', () => { composing = true; });
 document.addEventListener('compositionend', e => { composing = false; const t = e.target; if (t && t.classList && t.classList.contains('bk-text') && serText(t).includes('`')) setTimeout(() => { if (document.contains(t)) onBlockInput(t); }, 0); });
 document.addEventListener('input', e => {
   const t = e.target;
+  if (t.id === 'lk-q' && look) { clearTimeout(look.t); const v = t.value; look.t = setTimeout(() => { if (look && v.trim().length >= 2) runLookup(v); }, 450); return; }
   if (t.dataset && t.dataset.xf && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r) { r[t.dataset.xf] = t.value; save(); } return; }
   if (t.id === 'q') { ui.search = t.value; drawSearch(); return; }
   if (t.id === 'mp-q' && mention) { mention.q = t.value; mention.idx = 0; drawMention(); return; }
@@ -3097,6 +3182,7 @@ document.addEventListener('focusin', e => { const t = e.target; if (t.matches &&
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set) { const k = t.dataset.set; mutate(() => { S.settings = { ...(S.settings || {}), [k]: k === 'remindMin' ? +t.value : t.value }; }, '알림 기본값을 바꿨어요'); return; }
+  if (t.dataset && t.dataset.skey) { S.settings = { ...(S.settings || {}), [t.dataset.skey]: t.value.trim() }; save(); toast(t.value.trim() ? '검색 키를 저장했어요' : '검색 키를 지웠어요'); return; }
   if (t.dataset && t.dataset.xren) { const k = t.dataset.xren, old = t.dataset.old, v = t.value.trim(); const [sk, get] = XLIST[k]; if (!v || v === old) { t.value = old; return; } if (get().includes(v)) { toast('같은 이름이 이미 있어요'); t.value = old; return; } mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().map(x => x === old ? v : x) }; (S.retros || []).forEach(r => { if (r[k] === old) r[k] = v; }); }, `‘${old}’ → ‘${v}’로 바꿨어요`); return; }
   if (t.dataset && t.dataset.xf === 'date' && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r && t.value) { r.date = t.value; save(); } return; }
   if (t.dataset && t.dataset.rf && ui.modal && ui.modal.kind === 'routine') { const r = routine(ui.modal.id); if (!r) return; const k = t.dataset.rf; mutate(() => { r[k] = k === 'noteId' ? (t.value || null) : t.value; }); return; }
@@ -3321,6 +3407,7 @@ document.addEventListener('keydown', e => {
   if (t.dataset && t.dataset.xadd) { e.preventDefault(); const k = t.dataset.xadd; const v = t.value.trim(); if (!v) return; const [sk, get] = XLIST[k]; if (!get().includes(v)) mutate(() => { S.settings = { ...(S.settings || {}), [sk]: [...get(), v] }; }); ui.focusId = null; render(); const n = document.querySelector(`[data-xadd="${k}"]`); if (n) n.focus(); return; }
   if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
   if (t.id === 'xcat-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const cats = retroCats(); S.settings = { ...(S.settings || {}), retroCats: cats.includes(v) ? cats : [...cats, v] }; const r = retro(ui.modal.id); if (r) r.cat = v; save(); renderModal(); return; }
+  if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
   if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
   if (t.id === 'subq') { e.preventDefault(); const v = t.value.trim(); const pid = ui.subFor; if (!v) { ui.subFor = null; render(); return; } addSub(pid, v); ui.subFor = pid; ui.focusId = 'subq'; render(); return; }
