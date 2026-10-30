@@ -2401,6 +2401,11 @@ function fieldValueText(f, v) {
 /* ---------- 책·영화 검색 (Kakao book search, TMDB) ---------- */
 function collSource(c) { if (!c) return null; if (c.source) return c.source; const n = c.name || ''; return /책|도서|독서/.test(n) ? 'book' : /영화|드라마|무비/.test(n) ? 'movie' : null; }
 let look = null;
+function bigCover(u) {
+  if (!u) return null;
+  try { const f = new URL(u).searchParams.get('fname'); if (f) return decodeURIComponent(f).replace(/^http:\/\//, 'https://'); } catch (e) { /* not a Kakao thumbnail URL */ }
+  return u;
+}
 async function lookupSearch(src, q) {
   const st = S.settings || {};
   if (src === 'book') {
@@ -2408,7 +2413,7 @@ async function lookupSearch(src, q) {
     const r = await fetch(`https://dapi.kakao.com/v3/search/book?size=12&query=${encodeURIComponent(q)}`, { headers: { Authorization: 'KakaoAK ' + st.kakaoKey } });
     if (r.status === 401 || r.status === 403) throw new Error('badkey'); if (!r.ok) throw new Error('fail');
     const j = await r.json();
-    return (j.documents || []).map(d => ({ title: d.title, sub: [(d.authors || []).join(', '), d.publisher, (d.datetime || '').slice(0, 4)].filter(Boolean).join(' · '), img: d.thumbnail || null, authors: (d.authors || []).join(', '), publisher: d.publisher || '', date: (d.datetime || '').slice(0, 10), url: d.url || '', isbn: d.isbn || '' }));
+    return (j.documents || []).map(d => ({ title: d.title, sub: [(d.authors || []).join(', '), d.publisher, (d.datetime || '').slice(0, 4)].filter(Boolean).join(' · '), img: bigCover(d.thumbnail) || null, thumb: d.thumbnail || null, authors: (d.authors || []).join(', '), publisher: d.publisher || '', date: (d.datetime || '').slice(0, 10), url: d.url || '', isbn: d.isbn || '' }));
   }
   if (!st.tmdbKey) throw new Error('nokey');
   const k = st.tmdbKey; const bearer = k.length > 60; const auth = bearer ? { headers: { Authorization: 'Bearer ' + k } } : {};
@@ -2425,7 +2430,7 @@ function drawLookup() {
     : L.err === 'badkey' ? `<div class="lk-msg"><b>키가 맞지 않아요.</b><span>설정에서 ${kname}를 다시 확인해 주세요.</span><button class="btn sm" data-act="settings">설정 열기</button></div>`
     : L.err ? `<div class="lk-msg"><b>검색하지 못했어요.</b><span>인터넷 연결을 확인하고 다시 시도해 주세요.</span></div>`
     : L.busy ? '<div class="lk-msg"><span>찾는 중…</span></div>'
-    : L.res ? (L.res.length ? L.res.map((x, i) => `<button class="lk-row" data-act="lkpick" data-i="${i}"><span class="lk-img" style="${x.img ? `background-image:url('${x.img}')` : ''}"></span><span class="lk-t"><b>${esc(x.title)}</b><span>${esc(x.sub)}</span></span></button>`).join('') : '<div class="lk-msg"><span>찾는 결과가 없어요. 제목을 조금 다르게 적어 보세요.</span></div>')
+    : L.res ? (L.res.length ? L.res.map((x, i) => `<button class="lk-row" data-act="lkpick" data-i="${i}"><span class="lk-img" style="${x.thumb || x.img ? `background-image:url('${x.thumb || x.img}')` : ''}"></span><span class="lk-t"><b>${esc(x.title)}</b><span>${esc(x.sub)}</span></span></button>`).join('') : '<div class="lk-msg"><span>찾는 결과가 없어요. 제목을 조금 다르게 적어 보세요.</span></div>')
     : `<div class="lk-msg"><span>${src === 'book' ? '책 제목이나 저자를' : '영화 제목을'} 적고 Enter</span></div>`;
   const res = document.getElementById('lk-res'); if (res) { res.innerHTML = body; return; }
 }
