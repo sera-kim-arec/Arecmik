@@ -961,6 +961,7 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .ci-ext{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--muted)}
 .ci-ext p{margin:0;color:var(--fg2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .ci-ext a{color:var(--blue-ink);font-weight:600;font-size:13px}
+.ci-src{font-size:12px;color:var(--faint)}
 @media (max-width:640px){ .skey{width:100%} }
 /* ---- routines ---- */
 .set-title{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
@@ -2440,7 +2441,7 @@ function dlgLookup() {
   <div class="dlg-head"><div class="dlg-top"><span class="kind">${esc(c ? c.name : '')}</span><span class="grow"></span><button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
     <label class="search lk-q">${I.search}<input id="lk-q" type="search" placeholder="${L.src === 'book' ? '예: 소년이 온다, 한강' : '예: 헤어질 결심'}" autocomplete="off" value="${esc(L.q || '')}" aria-label="검색어"></label></div>
   <div class="dlg-body"><div id="lk-res" class="lk-res"></div>
-    <p class="hint" style="margin:8px 2px 0">${L.src === 'book' ? '카카오(다음) 책 검색' : 'TMDB'} 결과예요. 고르면 표지와 정보가 채워진 칸이 만들어져요. <button class="linkbtn" data-act="lkmanual">직접 적기</button></p></div></div>`;
+    <p class="hint" style="margin:8px 2px 0">${L.src === 'book' ? '카카오(다음) 책 검색' : 'TMDB(The Movie Database)'} 결과예요. 고르면 표지와 정보가 채워진 칸이 만들어져요. <button class="linkbtn" data-act="lkmanual">직접 적기</button></p></div></div>`;
 }
 async function runLookup(q) {
   if (!look) return; look.q = q; look.err = null; look.res = null; if (!q.trim()) { drawLookup(); return; }
@@ -2660,7 +2661,7 @@ function dlgCitem(ci) {
       <div class="frow"><label class="btn sm" for="ci-file">${I.img}사진 올리기</label><input type="file" id="ci-file" accept="image/*" hidden>${ci.img ? '<button class="btn sm ghost" data-act="ciclear">사진 지우기</button>' : '<button class="btn sm ghost" data-act="citone">색 바꾸기</button>'}</div></div></div>
   </div>
   <div class="dlg-body"><div class="fgrid">${c.fields.map(f => `<label for="cv-${f.id}">${esc(f.name)}</label><div>${fld(f)}</div>`).join('')}</div>
-    ${ci.ext && (ci.ext.publisher || ci.ext.date || ci.ext.overview || ci.ext.url || ci.ext.tmdbId) ? `<div class="ci-ext">${ci.ext.publisher || ci.ext.date ? `<span>${esc([ci.ext.publisher, ci.ext.date].filter(Boolean).join(' · '))}</span>` : ''}${ci.ext.overview ? `<p>${esc(ci.ext.overview)}</p>` : ''}${ci.ext.url ? `<a href="${esc(ci.ext.url)}" target="_blank" rel="noopener">다음 책 정보 보기</a>` : ci.ext.tmdbId ? `<a href="https://www.themoviedb.org/movie/${ci.ext.tmdbId}?language=ko-KR" target="_blank" rel="noopener">TMDB에서 보기</a>` : ''}</div>` : ''}</div></div>`;
+    ${ci.ext && (ci.ext.publisher || ci.ext.date || ci.ext.overview || ci.ext.url || ci.ext.tmdbId) ? `<div class="ci-ext">${ci.ext.publisher || ci.ext.date ? `<span>${esc([ci.ext.publisher, ci.ext.date].filter(Boolean).join(' · '))}</span>` : ''}${ci.ext.overview ? `<p>${esc(ci.ext.overview)}</p>` : ''}${ci.ext.url ? `<a href="${esc(ci.ext.url)}" target="_blank" rel="noopener">다음 책 정보 보기</a>` : ci.ext.tmdbId ? `<a href="https://www.themoviedb.org/movie/${ci.ext.tmdbId}?language=ko-KR" target="_blank" rel="noopener">TMDB에서 보기</a>` : ''}${ci.ext.src === 'movie' ? '<span class="ci-src">영화 정보·포스터 출처: TMDB. 이 앱은 TMDB의 승인·보증을 받지 않았어요.</span>' : ci.ext.src === 'book' ? '<span class="ci-src">책 정보·표지 출처: 카카오(다음) 책 검색</span>' : ''}</div>` : ''}</div></div>`;
 }
 
 /* ---------- block editor ---------- */
