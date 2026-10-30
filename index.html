@@ -963,6 +963,85 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .ci-ext a{color:var(--blue-ink);font-weight:600;font-size:13px}
 .ci-src{font-size:12px;color:var(--faint)}
 @media (max-width:640px){ .skey{width:100%} }
+/* ---- 책 페이지 ---- */
+.bk-page{max-width:1180px}
+.bk-head{display:flex;gap:20px;align-items:flex-end;margin:4px 0 18px}
+.bk-cover{width:96px;height:138px;border-radius:10px;background-size:cover;background-position:center;flex:none;box-shadow:var(--nm-out-sm, var(--shadow))}
+.bk-meta{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.bk-title{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.bk-sub{font-size:14px;color:var(--muted)}.bk-sub i{font-style:normal;margin:0 6px;color:var(--faint)}
+.bk-tags{display:flex;gap:8px;align-items:center}
+.bk-st{font-size:12.5px;font-weight:700;background:var(--lemon-soft);color:var(--lemon-ink);border-radius:20px;padding:2px 10px}
+.bk-star{color:#E9B600;letter-spacing:1px}
+.bk-prog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.bk-bar{width:200px;max-width:40vw;height:8px;border-radius:4px;background:var(--sunken);overflow:hidden;box-shadow:var(--nm-in-sm, none)}
+.bk-bar i{display:block;height:100%;background:var(--lemon);border-radius:4px}
+.bk-pn{font-weight:700;color:var(--fg2)}
+.bk-tot{width:58px;height:26px;border:0;border-radius:8px;background:var(--bg);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line));font:inherit;font-size:13px;color:var(--fg);padding:0 6px;margin:0 3px}
+.bk-tabs{margin-bottom:16px}
+.bn-comp{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
+.bn-comp textarea{flex:1 1 320px;min-height:44px;resize:vertical;border:0;border-radius:14px;background:var(--bg);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line));padding:11px 14px;font:inherit;font-size:15px;color:var(--fg);line-height:1.5;outline:none}
+.bn-comp textarea:focus{box-shadow:var(--nm-in-sm, none),0 0 0 2px var(--lemon)}
+.bn-p{display:inline-flex;align-items:center;gap:2px;font-size:13px;font-weight:700;color:var(--muted)}
+.bn-p input{width:60px;height:32px;border:0;border-radius:10px;background:var(--bg);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line));font:inherit;font-size:14px;color:var(--fg);padding:0 8px}
+.bn-list{display:flex;flex-direction:column;gap:8px;max-width:760px}
+.bn-day{font-size:12.5px;font-weight:700;color:var(--muted);margin:10px 2px 0}
+.bn{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border-radius:14px;padding:12px 14px;box-shadow:var(--nm-out-xs, var(--shadow))}
+.bn-pg{width:46px;flex:none;font-size:12.5px;font-weight:700;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.bn-t{flex:1;font-size:15px;line-height:1.6;min-width:0;word-break:break-word}
+.bn.quote .bn-t{color:var(--fg2);font-style:italic;border-left:3px solid var(--lemon);padding-left:10px}
+.bn-x{flex:none;width:24px;height:24px;border:0;background:transparent;color:var(--faint);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0}
+.bn:hover .bn-x,.bth:hover .bn-x,.bn-x:focus-visible{opacity:1}
+.bn-x:hover{color:var(--fg);background:var(--hover)}
+.bk-rtools{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.bk-review{padding:14px 18px;min-height:240px}
+.bm-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:stretch}
+.board{position:relative;height:min(66vh,620px);border-radius:20px;background:var(--bg);box-shadow:var(--nm-in, inset 0 0 0 1px var(--line));overflow:hidden;touch-action:none;cursor:grab;outline:none;background-image:radial-gradient(circle, var(--line) 1px, transparent 1.2px);background-size:22px 22px}
+.board:active{cursor:grabbing}
+.blayer{position:absolute;left:0;top:0;transform-origin:0 0}
+.bedges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.bedges line{stroke:var(--muted);stroke-width:2;stroke-linecap:round}
+.bedges line.sel{stroke:var(--lemon-ink);stroke-width:3}
+.bedges line.btemp{stroke:var(--lemon-ink);stroke-dasharray:6 5}
+.bnode{position:absolute;width:132px;min-height:58px;box-sizing:border-box;padding:9px 12px;border-radius:16px;background:var(--surface);box-shadow:var(--nm-out-sm, var(--shadow-md));display:flex;flex-direction:column;justify-content:center;gap:2px;cursor:grab;user-select:none;-webkit-user-select:none;border-top:4px solid transparent}
+.bnode b{font-size:14.5px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bnode span{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bnode.sel{outline:2.5px solid var(--lemon);outline-offset:2px}
+.bnode.c-rose{border-top-color:var(--rose)} .bnode.c-blue{border-top-color:var(--blue)} .bnode.c-green{border-top-color:var(--green)} .bnode.c-violet{border-top-color:var(--violet)} .bnode.c-lemon{border-top-color:#E9B600}
+.bhandle{position:absolute;right:-8px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:var(--lemon);box-shadow:0 1px 3px rgba(0,0,0,.25);cursor:crosshair;opacity:.25;transition:opacity .12s}
+.bnode:hover .bhandle,.bnode.sel .bhandle{opacity:1}
+.bedge{position:absolute;transform:translate(-50%,-50%);border:0;font:inherit;font-size:12px;font-weight:700;color:var(--fg2);background:var(--bg);border-radius:20px;padding:3px 9px;box-shadow:var(--nm-out-xs, var(--shadow));cursor:pointer;white-space:nowrap;z-index:1}
+.bedge.nol{color:var(--faint);font-weight:600}
+.bedge.sel{background:var(--lemon);color:var(--on-lemon)}
+.bm-empty{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);text-align:center;color:var(--muted);font-size:14px;line-height:1.7;pointer-events:none}
+.bctl{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}
+.bpanel{background:var(--surface);border-radius:20px;box-shadow:var(--nm-out, var(--shadow-md));padding:14px 16px;display:flex;flex-direction:column;gap:8px;max-height:min(66vh,620px);overflow-y:auto}
+.bpanel .inp{width:100%;box-sizing:border-box;height:36px}
+.bp-hint{color:var(--muted);font-size:13.5px;line-height:1.6;justify-content:center}
+.bp-hint b{color:var(--fg)}
+.bp-h{display:flex;align-items:center;gap:8px}
+.bp-h b{flex:1;font-size:15px}
+.bp-name{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:20px;font-weight:800;color:var(--fg);outline:none;padding:2px 0}
+.bp-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.bp-colors{display:flex;gap:6px}
+.bp-c{width:20px;height:20px;border-radius:50%;border:0;cursor:pointer;background:var(--surface);box-shadow:var(--nm-out-xs, inset 0 0 0 1px var(--line))}
+.bp-c.c-rose{background:var(--rose)} .bp-c.c-blue{background:var(--blue)} .bp-c.c-green{background:var(--green)} .bp-c.c-violet{background:var(--violet)} .bp-c.c-lemon{background:#E9B600}
+.bp-c.on{outline:2.5px solid var(--fg);outline-offset:2px}
+.bp-rels{display:flex;flex-wrap:wrap;gap:6px}
+.bp-rel{border:0;font:inherit;font-size:12.5px;font-weight:600;color:var(--fg2);background:var(--sunken);border-radius:20px;padding:3px 10px;cursor:pointer}
+.bp-chips{display:flex;flex-wrap:wrap;gap:6px}
+.bp-th{display:flex;flex-direction:column;gap:6px}
+.bth{display:flex;gap:10px;align-items:flex-start;padding:6px 2px;border-bottom:1px solid var(--line-soft)}
+.bth-m{width:44px;flex:none;font-size:11.5px;color:var(--muted);font-weight:700;line-height:1.35}
+.bth-t{flex:1;font-size:14px;line-height:1.55}
+.bth-add{display:flex;gap:6px;align-items:center}
+.bth-add .bn-p input{width:50px}
+.bp-seen{display:flex;flex-direction:column;gap:6px}
+.bps{font-size:13px;line-height:1.5;color:var(--fg2)}
+.bps span{font-weight:700;color:var(--muted);margin-right:6px;font-size:12px}
+.bps.quote{font-style:italic}
+@media (max-width:860px){ .bm-wrap{grid-template-columns:minmax(0,1fr)} .board{height:56vh} .bpanel{max-height:none} }
+@media (max-width:640px){ .bk-head{gap:14px} .bk-cover{width:72px;height:104px} .bk-title{font-size:21px} .bk-bar{width:120px} .bn-x{opacity:.6} .bnode{width:118px} }
 /* ---- routines ---- */
 .set-title{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
 .rdue-c{color:var(--lemon-ink)!important;font-weight:700}
@@ -1617,7 +1696,7 @@ const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'l
 const coverStyle = c => c && c.img ? `background-image:url('${c.img}')` : c ? `background-color:${c.tone}` : '';
 
 /* ---------- ui state ---------- */
-const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro'];
+const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book'];
 const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
@@ -1630,7 +1709,7 @@ const ui = {
   collId: 'c1', cfilter: {}, draft: null, pfilter: 'active',
   search: '', modal: null, modalBack: null, confirm: null, newFolder: null, focusId: null, navOpen: false
 };
-const isLife = () => ['life', 'posts', 'collections', 'new-collection'].includes(ui.view);
+const isLife = () => ['life', 'posts', 'collections', 'new-collection', 'book'].includes(ui.view);
 
 /* ---------- render ---------- */
 const app = $('#app'), layer = $('#layer'), pop = $('#pop');
@@ -1786,6 +1865,7 @@ function viewHTML() {
     case 'collections': return vColl();
     case 'new-collection': return vNewColl();
     case 'retro': return vRetro();
+    case 'book': return vBook();
     default: return vWork();
   }
 }
@@ -2459,7 +2539,165 @@ async function pickLookup(i) {
   else { const d = await x.fetchDirector(); const fd = byName('감독'); if (fd && d) ci.values[fd.id] = d; const fy = byName('개봉', '개봉일', '개봉 연도'); if (fy) ci.values[fy.id] = fy.type === 'date' ? x.date : (x.date || '').slice(0, 4); }
   const fl = byName('링크', '정보 링크'); if (fl && x.url) ci.values[fl.id] = x.url;
   snapshot(); S.citems.push(ci); save(); look = null; render();
-  ui.modal = { kind: 'citem', id: ci.id }; renderModal(); toast(`‘${x.title}’을 추가했어요`);
+  if (L.src === 'book') { ui.modal = null; renderModal(); openBook(ci.id); } else { ui.modal = { kind: 'citem', id: ci.id }; renderModal(); } toast(`‘${x.title}’을 추가했어요`);
+}
+/* ---------- 책 페이지: 끄적임 · 인물 관계도 · 독서 기록 ---------- */
+const BCOL = [['', '기본'], ['rose', '빨강'], ['blue', '파랑'], ['green', '초록'], ['violet', '보라'], ['lemon', '노랑']];
+const bview = {};
+function openBook(id) { ui.ciId = id; ui.bsel = null; ui.view = 'book'; ui.navOpen = false; ui.modal = null; renderModal(); render(); const m = $('.main'); if (m) m.scrollTop = 0; if (location.hash.slice(1) !== 'book') location.hash = 'book'; }
+const bmap = ci => { ci.map = ci.map || { nodes: [], edges: [] }; ci.map.nodes = ci.map.nodes || []; ci.map.edges = ci.map.edges || []; return ci.map; };
+const bnode = (ci, id) => bmap(ci).nodes.find(n => n.id === id);
+function bReadPage(ci) { const ps = (ci.notes || []).map(n => n.page || 0); return Math.max(ci.readPage || 0, ...ps, 0); }
+function vBook() {
+  const ci = citem(ui.ciId); if (!ci) { ui.view = 'collections'; return vColl(); }
+  const c = coll(ci.coll); const f = n => c.fields.find(x => x.name === n);
+  const fa = f('저자') || f('작가'), fs = c.fields.find(x => x.type === 'select'), fr = c.fields.find(x => x.type === 'rating');
+  const tab = ui.btab || 'notes'; const nNotes = (ci.notes || []).length; const nPeople = bmap(ci).nodes.length;
+  const rp = bReadPage(ci), tp = +ci.pages || 0;
+  return `${topbar(`<button class="btn ghost" data-act="opencoll" data-id="${c.id}">${I.left}${esc(c.name)}</button>`, `<button class="btn sm" data-act="bkinfo">정보 편집</button>`)}
+  <div class="page bk-page">
+    <div class="bk-head">
+      <span class="bk-cover" style="${coverStyle(ci)}"></span>
+      <div class="bk-meta">
+        <h1 class="bk-title">${esc(ci.title || '제목 없음')}</h1>
+        <div class="bk-sub">${fa && ci.values[fa.id] ? esc(ci.values[fa.id]) : ''}${ci.ext && ci.ext.publisher ? `<i>·</i>${esc(ci.ext.publisher)}` : ''}</div>
+        <div class="bk-tags">${fs && ci.values[fs.id] ? `<span class="bk-st">${esc(ci.values[fs.id])}</span>` : ''}${fr && ci.values[fr.id] ? `<span class="bk-star">${'★'.repeat(ci.values[fr.id])}</span>` : ''}</div>
+        <div class="bk-prog"><span class="bk-bar"><i style="width:${tp ? Math.min(100, Math.round(rp / tp * 100)) : 0}%"></i></span><span class="bk-pn">${rp ? `p.${rp}` : '아직 기록 없음'}</span><span class="bk-of">/ <input class="bk-tot" data-bkf="pages" type="number" min="0" value="${tp || ''}" placeholder="전체" aria-label="전체 쪽수">쪽</span></div>
+      </div>
+    </div>
+    <div class="seg inline bk-tabs" role="tablist">
+      <button role="tab" class="${tab === 'notes' ? 'on' : ''}" data-act="btab" data-v="notes">끄적임${nNotes ? ` <span class="cnt">${nNotes}</span>` : ''}</button>
+      <button role="tab" class="${tab === 'map' ? 'on' : ''}" data-act="btab" data-v="map">인물 관계도${nPeople ? ` <span class="cnt">${nPeople}</span>` : ''}</button>
+      <button role="tab" class="${tab === 'review' ? 'on' : ''}" data-act="btab" data-v="review">독서 기록</button>
+    </div>
+    ${tab === 'map' ? bMapTab(ci) : tab === 'review' ? bReviewTab(ci) : bNotesTab(ci)}
+  </div>`;
+}
+function bNotesTab(ci) {
+  const k = ui.bnk || 'memo'; const list = (ci.notes || []).slice().sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  let lastDay = '';
+  return `<div class="bn-comp">
+      <div class="seg inline sm" role="radiogroup" aria-label="종류"><button class="${k === 'memo' ? 'on' : ''}" data-act="bnk" data-v="memo">메모</button><button class="${k === 'quote' ? 'on' : ''}" data-act="bnk" data-v="quote">밑줄</button></div>
+      <label class="bn-p">p.<input id="bn-p" type="number" min="0" inputmode="numeric" aria-label="쪽수" placeholder="${bReadPage(ci) || ''}"></label>
+      <textarea id="bn-in" rows="2" placeholder="${k === 'quote' ? '좋았던 문장 · Enter로 저장' : '떠오른 생각, 궁금한 점 · Enter로 저장 (Shift+Enter 줄바꿈)'}" aria-label="끄적임"></textarea>
+    </div>
+    <div class="bn-list">${list.map(n => { const d = n.date || ''; const head = d !== lastDay ? `<div class="bn-day">${fmtMD(d)}</div>` : ''; lastDay = d;
+      return `${head}<div class="bn ${n.kind}"><span class="bn-pg">${n.page ? 'p.' + n.page : ''}</span><div class="bn-t">${n.kind === 'quote' ? '❝ ' : ''}${esc(n.text).replace(/\n/g, '<br>')}${n.kind === 'quote' ? ' ❞' : ''}</div><button class="bn-x" data-act="bndel" data-id="${n.id}" aria-label="지우기" title="지우기">${I.x}</button></div>`; }).join('') || '<div class="empty">읽으면서 떠오른 생각이나 좋은 문장을 짧게 남겨 보세요. 쪽수를 적으면 읽은 만큼 진행 막대가 올라가요.</div>'}</div>`;
+}
+function bReviewTab(ci) {
+  const empty = !(ci.review || []).some(b => (b.text || '').trim() || b.rows || b.src);
+  return `<div class="bk-rtools">${empty ? '<button class="btn sm" data-act="bkskel">뼈대 넣기</button>' : ''}<button class="btn sm" data-act="bkquotes">밑줄 가져오기</button><button class="btn sm" data-act="bkpeople">인물 생각 가져오기</button></div>
+    <div class="card bk-review">${editorHTML('ci:' + ci.id)}</div>`;
+}
+function bMapTab(ci) {
+  const M = bmap(ci); const v = bview[ci.id] || (bview[ci.id] = { x: 40, y: 30, z: 1 });
+  const sel = ui.bsel || {};
+  return `<div class="bm-wrap">
+    <div class="board" data-board="${ci.id}" tabindex="0" aria-label="인물 관계도">
+      <div class="blayer" style="transform:translate(${v.x}px,${v.y}px) scale(${v.z})">
+        <svg class="bedges" width="1" height="1" aria-hidden="true">${bEdgesSVG(ci)}</svg>
+        ${M.edges.map(e => bEdgeLabel(ci, e, sel)).join('')}
+        ${M.nodes.map(n => `<div class="bnode c-${n.color || 'none'} ${sel.node === n.id ? 'sel' : ''}" data-bnode="${n.id}" style="left:${n.x}px;top:${n.y}px"><b>${esc(n.name || '이름 없음')}</b>${n.line ? `<span>${esc(n.line)}</span>` : ''}<i class="bhandle" data-bhandle="${n.id}" title="끌어서 관계 잇기"></i></div>`).join('')}
+      </div>
+      ${M.nodes.length ? '' : '<div class="bm-empty">빈 곳을 두 번 누르거나 ‘＋ 인물’로 인물을 추가해 보세요.<br>인물 카드 오른쪽 점을 끌어 다른 인물에 놓으면 관계선이 생겨요.</div>'}
+      <div class="bctl"><button class="btn sm" data-act="bmadd">${I.plus}인물</button><button class="btn sm icon" data-act="bzoom" data-d="1" aria-label="확대">＋</button><button class="btn sm icon" data-act="bzoom" data-d="-1" aria-label="축소">－</button><button class="btn sm" data-act="bfit">맞춤</button></div>
+    </div>
+    ${bPanel(ci)}
+  </div>`;
+}
+function bEdgesSVG(ci) {
+  const M = bmap(ci); const W = 132, H = 58;
+  return M.edges.map(e => { const a = bnode(ci, e.a), b = bnode(ci, e.b); if (!a || !b) return '';
+    return `<line x1="${a.x + W / 2}" y1="${a.y + H / 2}" x2="${b.x + W / 2}" y2="${b.y + H / 2}" class="${ui.bsel && ui.bsel.edge === e.id ? 'sel' : ''}"/>`; }).join('') + '<line class="btemp" x1="0" y1="0" x2="0" y2="0" style="display:none"/>';
+}
+function bEdgeLabel(ci, e, sel) {
+  const a = bnode(ci, e.a), b = bnode(ci, e.b); if (!a || !b) return ''; const W = 132, H = 58;
+  return `<button class="bedge ${sel.edge === e.id ? 'sel' : ''} ${e.label ? '' : 'nol'}" data-bedge="${e.id}" data-act="bseledge" data-id="${e.id}" style="left:${(a.x + b.x) / 2 + W / 2}px;top:${(a.y + b.y) / 2 + H / 2}px">${esc(e.label || '관계?')}</button>`;
+}
+function bPanel(ci) {
+  const sel = ui.bsel || {};
+  if (sel.edge) {
+    const e = bmap(ci).edges.find(x => x.id === sel.edge); if (!e) return '';
+    const a = bnode(ci, e.a), b = bnode(ci, e.b);
+    return `<aside class="bpanel"><div class="bp-h"><b>${esc(a ? a.name : '')} — ${esc(b ? b.name : '')}</b><button class="btn sm icon ghost" data-act="bclose" aria-label="닫기">${I.x}</button></div>
+      <label class="lbl" for="be-label">관계</label><input id="be-label" class="inp" data-be="${e.id}" value="${esc(e.label || '')}" placeholder="예: 친구, 어머니, 적대" autocomplete="off">
+      <div class="bp-chips">${['친구', '가족', '연인', '동료', '스승', '적대', '라이벌'].map(x => `<button class="xchip" data-act="beset" data-id="${e.id}" data-v="${x}">${x}</button>`).join('')}</div>
+      <button class="btn sm ghost danger" data-act="bedel" data-id="${e.id}">관계선 지우기</button></aside>`;
+  }
+  if (!sel.node) return `<aside class="bpanel bp-hint"><b>인물 노트</b><span>인물 카드를 누르면 한 줄 소개와 그 인물에 대한 내 생각을 적을 수 있어요.</span></aside>`;
+  const n = bnode(ci, sel.node); if (!n) return '';
+  const th = (n.thoughts || []).slice().sort((x, y) => (x.page || 0) - (y.page || 0) || (x.ts || 0) - (y.ts || 0));
+  const nm = (n.name || '').trim();
+  const seen = nm.length >= 1 ? (ci.notes || []).filter(x => (x.text || '').includes(nm)).sort((x, y) => (x.page || 0) - (y.page || 0)) : [];
+  const rel = bmap(ci).edges.filter(e => e.a === n.id || e.b === n.id).map(e => { const o = bnode(ci, e.a === n.id ? e.b : e.a); return o ? `<button class="bp-rel" data-act="bselnode" data-id="${o.id}">${esc(e.label || '관계?')} · ${esc(o.name)}</button>` : ''; }).join('');
+  return `<aside class="bpanel"><div class="bp-h"><input class="bp-name" data-bn="${n.id}" data-k="name" value="${esc(n.name || '')}" placeholder="이름" aria-label="이름"><button class="btn sm icon ghost" data-act="bclose" aria-label="닫기">${I.x}</button></div>
+    <input class="inp" data-bn="${n.id}" data-k="line" value="${esc(n.line || '')}" placeholder="한 줄 소개 · 예: 중학생, 시민군" aria-label="한 줄 소개">
+    <div class="bp-row"><span class="bp-colors">${BCOL.map(([k, l]) => `<button class="bp-c c-${k || 'none'} ${(n.color || '') === k ? 'on' : ''}" data-act="bcolor" data-id="${n.id}" data-v="${k}" aria-label="${l}" title="${l}"></button>`).join('')}</span><label class="bn-p">처음 나온 곳 p.<input type="number" min="0" data-bn="${n.id}" data-k="firstPage" value="${n.firstPage || ''}" aria-label="처음 나온 쪽"></label></div>
+    ${rel ? `<div class="bp-rels">${rel}</div>` : ''}
+    <div class="lbl">내 생각</div>
+    <div class="bp-th">${th.map(t => `<div class="bth"><span class="bth-m">${t.page ? 'p.' + t.page : ''}<br>${fmtShort(t.date)}</span><span class="bth-t">${esc(t.text)}</span><button class="bn-x" data-act="bthdel" data-id="${n.id}" data-t="${t.id}" aria-label="지우기">${I.x}</button></div>`).join('') || '<div class="hint" style="padding:2px">읽으면서 이 인물에 대한 생각이 바뀌면 한 줄씩 남겨 보세요.</div>'}</div>
+    <div class="bth-add"><label class="bn-p">p.<input id="bth-p" type="number" min="0" placeholder="${bReadPage(ci) || ''}" aria-label="쪽수"></label><input id="bth-in" class="inp" data-node="${n.id}" placeholder="생각 적기 · Enter" autocomplete="off"></div>
+    ${seen.length ? `<div class="lbl">끄적임에서 나온 곳 ${seen.length}</div><div class="bp-seen">${seen.map(x => `<div class="bps ${x.kind}"><span>${x.page ? 'p.' + x.page : fmtMD(x.date)}</span>${esc(x.text)}</div>`).join('')}</div>` : ''}
+    <button class="btn sm ghost danger" data-act="bmdel" data-id="${n.id}" style="align-self:flex-start;margin-top:6px">인물 지우기</button></aside>`;
+}
+/* board pointer handling */
+let bdrag = null;
+function bPoint(board, e) { const ci = board.dataset.board; const v = bview[ci]; const r = board.getBoundingClientRect(); return { x: (e.clientX - r.left - v.x) / v.z, y: (e.clientY - r.top - v.y) / v.z }; }
+function bRedraw(board) {
+  const ci = citem(board.dataset.board); if (!ci) return;
+  const svg = board.querySelector('.bedges'); if (svg) svg.innerHTML = bEdgesSVG(ci);
+  board.querySelectorAll('.bedge').forEach(el => el.remove());
+  const layer = board.querySelector('.blayer'); const sel = ui.bsel || {};
+  layer.insertAdjacentHTML('beforeend', bmap(ci).edges.map(e => bEdgeLabel(ci, e, sel)).join(''));
+}
+function bApplyView(board) { const v = bview[board.dataset.board]; const l = board.querySelector('.blayer'); if (l) l.style.transform = `translate(${v.x}px,${v.y}px) scale(${v.z})`; }
+function bAddNode(ci, x, y) { const n = { id: uid(), name: '새 인물', line: '', color: '', x: Math.round(x - 66), y: Math.round(y - 29), thoughts: [] }; bmap(ci).nodes.push(n); ui.bsel = { node: n.id }; save(); render(); setTimeout(() => { const i = document.querySelector('.bp-name'); if (i) { i.focus(); i.select(); } }, 20); }
+document.addEventListener('pointerdown', e => {
+  const board = e.target.closest && e.target.closest('.board'); if (!board || e.button > 0) return;
+  if (e.target.closest('.bctl')) return;
+  const ci = citem(board.dataset.board); if (!ci) return; const pt = bPoint(board, e);
+  const h = e.target.closest('[data-bhandle]'), nd = e.target.closest('[data-bnode]'), ed = e.target.closest('[data-bedge]');
+  if (h) { const n = bnode(ci, h.dataset.bhandle); bdrag = { mode: 'link', from: n.id, board }; }
+  else if (nd) { const n = bnode(ci, nd.dataset.bnode); bdrag = { mode: 'move', id: n.id, dx: pt.x - n.x, dy: pt.y - n.y, moved: false, board, el: nd }; }
+  else if (ed) { return; }
+  else { const v = bview[ci.id]; bdrag = { mode: 'pan', sx: e.clientX, sy: e.clientY, px: v.x, py: v.y, moved: false, board }; }
+  try { board.setPointerCapture(e.pointerId); } catch (err) { /* old browser */ }
+  e.preventDefault();
+});
+document.addEventListener('pointermove', e => {
+  if (!bdrag) return; const { board } = bdrag; const ci = citem(board.dataset.board); if (!ci) return;
+  if (bdrag.mode === 'pan') { const v = bview[ci.id]; const dx = e.clientX - bdrag.sx, dy = e.clientY - bdrag.sy; if (Math.abs(dx) + Math.abs(dy) > 3) bdrag.moved = true; v.x = bdrag.px + dx; v.y = bdrag.py + dy; bApplyView(board); return; }
+  const pt = bPoint(board, e);
+  if (bdrag.mode === 'move') { const n = bnode(ci, bdrag.id); const nx = Math.round(pt.x - bdrag.dx), ny = Math.round(pt.y - bdrag.dy); if (Math.abs(nx - n.x) + Math.abs(ny - n.y) > 2) bdrag.moved = true; n.x = nx; n.y = ny; bdrag.el.style.left = nx + 'px'; bdrag.el.style.top = ny + 'px'; bRedraw(board); return; }
+  if (bdrag.mode === 'link') { const n = bnode(ci, bdrag.from); const t = board.querySelector('.btemp'); if (t) { t.style.display = ''; t.setAttribute('x1', n.x + 66); t.setAttribute('y1', n.y + 29); t.setAttribute('x2', pt.x); t.setAttribute('y2', pt.y); } }
+});
+document.addEventListener('pointerup', e => {
+  if (!bdrag) return; const d = bdrag; bdrag = null; const ci = citem(d.board.dataset.board); if (!ci) return;
+  if (d.mode === 'move') { if (d.moved) { save(); } else { ui.bsel = { node: d.id }; render(); } return; }
+  if (d.mode === 'pan') { if (!d.moved && ui.bsel) { ui.bsel = null; render(); } return; }
+  if (d.mode === 'link') {
+    const under = document.elementFromPoint(e.clientX, e.clientY); const tn = under && under.closest && under.closest('[data-bnode]');
+    const t = d.board.querySelector('.btemp'); if (t) t.style.display = 'none';
+    if (!tn || tn.dataset.bnode === d.from) return;
+    const M = bmap(ci); if (M.edges.some(x => (x.a === d.from && x.b === tn.dataset.bnode) || (x.b === d.from && x.a === tn.dataset.bnode))) { toast('이미 이어져 있어요'); return; }
+    const ed = { id: uid(), a: d.from, b: tn.dataset.bnode, label: '' }; M.edges.push(ed); ui.bsel = { edge: ed.id }; save(); render();
+    setTimeout(() => { const i = document.getElementById('be-label'); if (i) i.focus(); }, 20);
+  }
+});
+document.addEventListener('dblclick', e => {
+  const board = e.target.closest && e.target.closest('.board'); if (!board || e.target.closest('[data-bnode]') || e.target.closest('[data-bedge]') || e.target.closest('.bctl')) return;
+  const ci = citem(board.dataset.board); if (!ci) return; const pt = bPoint(board, e); bAddNode(ci, pt.x, pt.y);
+});
+document.addEventListener('wheel', e => {
+  const board = e.target.closest && e.target.closest('.board'); if (!board) return; e.preventDefault();
+  const v = bview[board.dataset.board]; const r = board.getBoundingClientRect(); const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const z = Math.min(2.2, Math.max(0.35, v.z * (e.deltaY < 0 ? 1.1 : 1 / 1.1))); v.x = mx - (mx - v.x) * (z / v.z); v.y = my - (my - v.y) * (z / v.z); v.z = z; bApplyView(board);
+}, { passive: false });
+function bFit(ci) {
+  const M = bmap(ci); const board = document.querySelector(`.board[data-board="${ci.id}"]`); const v = bview[ci.id]; if (!board || !M.nodes.length) { v.x = 40; v.y = 30; v.z = 1; return; }
+  const xs = M.nodes.map(n => n.x), ys = M.nodes.map(n => n.y); const minX = Math.min(...xs), minY = Math.min(...ys), maxX = Math.max(...xs) + 132, maxY = Math.max(...ys) + 58;
+  const r = board.getBoundingClientRect(); const z = Math.min(1.4, Math.max(0.35, Math.min((r.width - 60) / (maxX - minX), (r.height - 80) / (maxY - minY))));
+  v.z = z; v.x = (r.width - (maxX - minX) * z) / 2 - minX * z; v.y = (r.height - (maxY - minY) * z) / 2 - minY * z;
 }
 function vColl() {
   const c = coll(ui.collId) || S.collections[0];
@@ -2535,6 +2773,7 @@ function openModal(kind, id, focus) { ui.modal = { kind, id, focus }; ui.confirm
 function closeModal() {
   const m = ui.modal;
   if (m && m.kind === 'lookup') look = null;
+  if (m && m.kind === 'citem' && ui.view === 'book') setTimeout(render, 0);
   if (m && m.kind === 'retro') { const r = retro(m.id); if (r && !(r.what || '').trim() && !(r.next || '').trim()) { S.retros = S.retros.filter(x => x !== r); save(); } else if (r) { save(); if (m.isNew) retroSaveHint(r); } setTimeout(render, 0); }
   if (m && m.kind === 'citem') { const ci = citem(m.id); if (ci && m.isNew && !ci.title.trim() && !ci.img) { S.citems = S.citems.filter(x => x !== ci); save(); render(); } }
   ui.modal = null; ui.modalBack = null; ui.confirm = null; renderModal(); closeSlash();
@@ -2667,6 +2906,7 @@ function dlgCitem(ci) {
 /* ---------- block editor ---------- */
 function edBlocks(key) {
   const [k, id] = key.split(':');
+  if (k === 'ci') { const ci = citem(id); if (!ci) return null; if (!Array.isArray(ci.review) || !ci.review.length) ci.review = [B('p', '')]; return ci.review; }
   if (k === 'rmonth') { S.rmonths = S.rmonths || []; let o = S.rmonths.find(x => x.id === id); if (!o) { o = { id, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'week') { S.weekNotes = S.weekNotes || {}; if (!Array.isArray(S.weekNotes[id]) || !S.weekNotes[id].length) S.weekNotes[id] = [B('p', '')]; return S.weekNotes[id]; }
   const o = k === 'memo' ? S : k === 'item' ? item(id) : k === 'project' ? proj(id) : k === 'doc' ? doc(id) : k === 'post' ? post(id) : null;
@@ -2997,6 +3237,24 @@ const ACT = {
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
   xshowcat: () => { ui.xshowcat = true; renderModal(); const i = document.getElementById('xcat-new'); if (i) i.focus(); },
+  btab: t => { ui.btab = t.dataset.v; ui.bsel = null; render(); if (t.dataset.v === 'map') { const ci = citem(ui.ciId); if (ci && bmap(ci).nodes.length && !(bview[ci.id] && bview[ci.id].fit)) { bview[ci.id] = bview[ci.id] || { x: 40, y: 30, z: 1 }; bFit(ci); bview[ci.id].fit = 1; render(); } } },
+  bkinfo: () => { ui.modalBack = null; openModal('citem', ui.ciId); },
+  bnk: t => { ui.bnk = t.dataset.v; const v = ($('#bn-in') || {}).value || ''; render(); const i = $('#bn-in'); if (i) { i.value = v; i.focus(); } },
+  bndel: t => { const ci = citem(ui.ciId); if (!ci) return; mutate(() => { ci.notes = (ci.notes || []).filter(n => n.id !== t.dataset.id); }, '끄적임을 지웠어요'); },
+  bmadd: () => { const ci = citem(ui.ciId); const board = document.querySelector('.board'); if (!ci || !board) return; const v = bview[ci.id]; const r = board.getBoundingClientRect(); const k = bmap(ci).nodes.length; bAddNode(ci, (r.width / 2 - v.x) / v.z + (k % 3) * 24, (r.height / 2 - v.y) / v.z + (k % 3) * 18); },
+  bzoom: t => { const ci = citem(ui.ciId); const board = document.querySelector('.board'); if (!ci || !board) return; const v = bview[ci.id]; const r = board.getBoundingClientRect(); const mx = r.width / 2, my = r.height / 2; const z = Math.min(2.2, Math.max(0.35, v.z * (+t.dataset.d > 0 ? 1.2 : 1 / 1.2))); v.x = mx - (mx - v.x) * (z / v.z); v.y = my - (my - v.y) * (z / v.z); v.z = z; bApplyView(board); },
+  bfit: () => { const ci = citem(ui.ciId); if (!ci) return; bFit(ci); const board = document.querySelector('.board'); if (board) bApplyView(board); },
+  bclose: () => { ui.bsel = null; render(); },
+  bseledge: t => { ui.bsel = { edge: t.dataset.id }; render(); setTimeout(() => { const i = document.getElementById('be-label'); if (i) i.focus(); }, 20); },
+  bselnode: t => { ui.bsel = { node: t.dataset.id }; render(); },
+  bcolor: t => { const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.id); if (!n) return; n.color = t.dataset.v; save(); render(); },
+  beset: t => { const ci = citem(ui.ciId); const e = ci && bmap(ci).edges.find(x => x.id === t.dataset.id); if (!e) return; e.label = t.dataset.v; save(); render(); },
+  bedel: t => { const ci = citem(ui.ciId); if (!ci) return; mutate(() => { bmap(ci).edges = bmap(ci).edges.filter(x => x.id !== t.dataset.id); ui.bsel = null; }, '관계선을 지웠어요'); },
+  bmdel: t => { const ci = citem(ui.ciId); if (!ci) return; const id = t.dataset.id; const n = bnode(ci, id); mutate(() => { const M = bmap(ci); M.nodes = M.nodes.filter(x => x.id !== id); M.edges = M.edges.filter(x => x.a !== id && x.b !== id); ui.bsel = null; }, `‘${n ? n.name : '인물'}’을 지웠어요`); },
+  bthdel: t => { const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.id); if (!n) return; mutate(() => { n.thoughts = (n.thoughts || []).filter(x => x.id !== t.dataset.t); }); },
+  bkskel: () => { const ci = citem(ui.ciId); if (!ci) return; mutate(() => { ci.review = [B('h', '한 줄 요약'), B('p', ''), B('h', '기억에 남는 문장'), B('quote', ''), B('h', '내 생각'), B('p', ''), B('h', '이 책을 추천한다면'), B('p', '')]; }); },
+  bkquotes: () => { const ci = citem(ui.ciId); if (!ci) return; const qs = (ci.notes || []).filter(n => n.kind === 'quote').sort((a, b) => (a.page || 0) - (b.page || 0)); if (!qs.length) { toast('끄적임에 밑줄이 아직 없어요'); return; } mutate(() => { const bl = edBlocks('ci:' + ci.id); if (bl.length === 1 && !bl[0].text) bl.pop(); bl.push(B('h', '밑줄')); qs.forEach(q => bl.push(B('quote', q.text + (q.page ? ` (p.${q.page})` : '')))); }, `밑줄 ${qs.length}개를 가져왔어요`); },
+  bkpeople: () => { const ci = citem(ui.ciId); if (!ci) return; const ns = bmap(ci).nodes.filter(n => (n.thoughts || []).length || n.line); if (!ns.length) { toast('인물 관계도에 적은 생각이 아직 없어요'); return; } mutate(() => { const bl = edBlocks('ci:' + ci.id); if (bl.length === 1 && !bl[0].text) bl.pop(); bl.push(B('h', '인물')); ns.forEach(n => { bl.push(B('bullet', n.name + (n.line ? ` — ${n.line}` : ''))); (n.thoughts || []).slice().sort((a, b) => (a.page || 0) - (b.page || 0)).forEach(t => bl.push(B('bullet', (t.page ? `p.${t.page} ` : '') + t.text, { indent: 1 }))); }); }, '인물 생각을 가져왔어요'); },
   lookup: () => { const c = coll(ui.collId); if (!c) return; look = { coll: c.id, src: collSource(c), q: '', res: null }; ui.modal = { kind: 'lookup' }; renderModal(); },
   lkpick: t => pickLookup(+t.dataset.i),
   lkmanual: () => { const q = look ? look.q : ''; look = null; ui.modal = null; renderModal(); ACT.addci(); setTimeout(() => { const ci = S.citems[S.citems.length - 1]; const ti = document.getElementById('ci-title'); if (ci && q && ti && !ci.title) { ci.title = q; ti.value = q; save(); } }, 30); },
@@ -3087,7 +3345,7 @@ const ACT = {
   cview: t => { const c = coll(ui.collId); mutate(() => { c.view = t.dataset.v; }); },
   cfilt: t => { ui.cfilter[ui.collId] = t.dataset.v; render(); },
   addci: () => { const c = coll(ui.collId); const ci = { id: uid(), coll: c.id, title: '', tone: randTone(), img: null, values: {} }; c.fields.forEach(f => { if (f.type === 'select' && f.options && f.options.length) ci.values[f.id] = (ui.cfilter[c.id] && f.options.includes(ui.cfilter[c.id])) ? ui.cfilter[c.id] : f.options[0]; }); snapshot(); S.citems.push(ci); save(); render(); ui.modal = { kind: 'citem', id: ci.id, focus: 'ci-title', isNew: true }; renderModal(); },
-  openci: t => { ui.modalBack = null; openModal('citem', t.dataset.id); },
+  openci: t => { const ci = citem(t.dataset.id); if (ci && collSource(coll(ci.coll)) === 'book') { openBook(ci.id); return; } ui.modalBack = null; openModal('citem', t.dataset.id); },
   crate: t => { const ci = citem(ui.modal.id); const v = +t.dataset.v; mutate(() => { ci.values[t.dataset.fid] = ci.values[t.dataset.fid] === v ? 0 : v; }); },
   citone: () => { const ci = citem(ui.modal.id); mutate(() => { const i = TONES.indexOf(ci.tone); ci.tone = TONES[(i + 1) % TONES.length]; }); },
   ciclear: () => { const ci = citem(ui.modal.id); mutate(() => { ci.img = null; }); },
@@ -3169,6 +3427,9 @@ document.addEventListener('compositionstart', () => { composing = true; });
 document.addEventListener('compositionend', e => { composing = false; const t = e.target; if (t && t.classList && t.classList.contains('bk-text') && serText(t).includes('`')) setTimeout(() => { if (document.contains(t)) onBlockInput(t); }, 0); });
 document.addEventListener('input', e => {
   const t = e.target;
+  if (t.dataset && t.dataset.bn) { const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.bn); if (!n) return; const k = t.dataset.k; n[k] = k === 'firstPage' ? (+t.value || null) : t.value; save(); const el = document.querySelector(`[data-bnode="${n.id}"]`); if (el && (k === 'name' || k === 'line')) { el.querySelector('b').textContent = n.name || '이름 없음'; let sp = el.querySelector('span'); if (n.line) { if (!sp) { sp = document.createElement('span'); el.querySelector('b').after(sp); } sp.textContent = n.line; } else if (sp) sp.remove(); } return; }
+  if (t.dataset && t.dataset.be) { const ci = citem(ui.ciId); const e2 = ci && bmap(ci).edges.find(x => x.id === t.dataset.be); if (!e2) return; e2.label = t.value; save(); const el = document.querySelector(`[data-bedge="${e2.id}"]`); if (el) { el.textContent = e2.label || '관계?'; el.classList.toggle('nol', !e2.label); } return; }
+  if (t.dataset && t.dataset.bkf === 'pages') { const ci = citem(ui.ciId); if (ci) { ci.pages = +t.value || null; save(); } return; }
   if (t.id === 'lk-q' && look) { clearTimeout(look.t); const v = t.value; look.t = setTimeout(() => { if (look && v.trim().length >= 2) runLookup(v); }, 450); return; }
   if (t.dataset && t.dataset.xf && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r) { r[t.dataset.xf] = t.value; save(); } return; }
   if (t.id === 'q') { ui.search = t.value; drawSearch(); return; }
@@ -3406,6 +3667,12 @@ document.addEventListener('keydown', e => {
     if (ui.modal) { closeModal(); return; }
     if (ui.navOpen) { ui.navOpen = false; render(); return; }
   }
+  if (t.id === 'bn-in' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    e.preventDefault(); const ci = citem(ui.ciId); let v = t.value.trim(); if (!ci || !v) return;
+    let pg = +($('#bn-p') || {}).value || null; const m = v.match(/^p\.?\s*(\d{1,4})\s+/i); if (m) { pg = +m[1]; v = v.slice(m[0].length); }
+    mutate(() => { ci.notes = ci.notes || []; ci.notes.push({ id: uid(), kind: ui.bnk || 'memo', text: v, page: pg, date: TODAY, ts: Date.now() }); if (pg && (+ci.readPage || 0) < pg) ci.readPage = pg; });
+    ui.focusId = 'bn-in'; render(); return;
+  }
   if (e.key !== 'Enter' || e.isComposing) return;
   if (t.id === 'sub-add') { const v = t.value.trim(); if (!v) return; const par = item(ui.modal.id); mutate(() => { const it = createItem('todo', v, null); it.parentId = par.id; it.projectId = par.projectId; }); ui.modal.focus = 'sub-add'; renderModal(); return; }
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
@@ -3414,6 +3681,8 @@ document.addEventListener('keydown', e => {
   if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
   if (t.id === 'xcat-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const cats = retroCats(); S.settings = { ...(S.settings || {}), retroCats: cats.includes(v) ? cats : [...cats, v] }; const r = retro(ui.modal.id); if (r) r.cat = v; save(); renderModal(); return; }
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
+  if (t.id === 'bth-in') { e.preventDefault(); const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.node); const v = t.value.trim(); if (!n || !v) return; const pg = +($('#bth-p') || {}).value || null; mutate(() => { n.thoughts = n.thoughts || []; n.thoughts.push({ id: uid(), text: v, page: pg, date: TODAY, ts: Date.now() }); }); ui.focusId = 'bth-in'; render(); return; }
+  if (t.id === 'be-label') { e.preventDefault(); ui.bsel = null; render(); return; }
   if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
   if (t.id === 'subq') { e.preventDefault(); const v = t.value.trim(); const pid = ui.subFor; if (!v) { ui.subFor = null; render(); return; } addSub(pid, v); ui.subFor = pid; ui.focusId = 'subq'; render(); return; }
