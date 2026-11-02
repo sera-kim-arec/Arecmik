@@ -1077,6 +1077,28 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .sw.late{color:var(--rose-ink);font-weight:700}
 .sdot{width:8px;height:8px;border-radius:4px;background:var(--blue);margin:0 4px;flex:none}
 .tree-doc.loose{margin-top:2px}
+/* ---- routines: changes, calendar, holidays ---- */
+.rch{font-size:12px;color:var(--rose-ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.rchg{display:flex;flex-direction:column;gap:6px}
+.rchg-i,.rap{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.5}
+.rchg-i .xdot{margin-top:7px}
+.rchg-i>span:nth-child(2),.rap>span{flex:1}
+.rchg em,.rap em{font-style:normal;font-size:12px;color:var(--muted);margin-left:6px}
+.rchg .inp{width:100%;box-sizing:border-box;height:36px;margin-top:2px}
+.rap input{margin-top:4px;width:16px;height:16px;accent-color:#E9B600}
+.rapplied{font-size:13px;color:var(--muted);margin-top:8px}
+.rapplied summary{cursor:pointer;font-weight:600}
+.rapplied div{padding:3px 0 0 14px}
+.chip.rt{background:var(--lemon-soft);color:var(--lemon-ink)}
+.chip.rt .rti{display:flex;flex:none}.chip.rt .rti svg{width:11px;height:11px}
+.chip.rt .tt{font-weight:600}
+.num.hol{color:var(--rose-ink)!important}
+.holi{font-size:11px;color:var(--rose-ink);font-weight:600;margin-left:4px}
+.offlist{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 6px}
+.offlist span{display:inline-flex;align-items:center;gap:2px;font-size:12.5px;font-weight:600;background:var(--sunken);border-radius:20px;padding:2px 4px 2px 10px}
+.offlist .bn-x{opacity:1;width:20px;height:20px}
+.rtrow.done .dr-t{color:var(--muted);text-decoration:line-through}
+.rtrow .chk{border-radius:50%}
 /* ---- routines ---- */
 .set-title{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
 .rdue-c{color:var(--lemon-ink)!important;font-weight:700}
@@ -1990,7 +2012,7 @@ function weekRow(ws, isSel, month) {
     const dd = parse(d); const other = month ? dd.getMonth() + 1 !== month : false;
     const cls = ['cell']; if (other) cls.push('other'); if (isWeekend(d)) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === N - 1) cls.push('last');
     const label = dd.getDate() === 1 && d !== TODAY ? `${dd.getMonth() + 1}월 1일` : dd.getDate();
-    h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}<button class="cell-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가 (날짜를 두 번 눌러도 돼요)">${I.plus}</button></div>`;
+    h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''} ${holiName(d) ? 'hol' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}<button class="cell-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가 (날짜를 두 번 눌러도 돼요)">${I.plus}</button></div>`;
   });
   spans.forEach(sp => {
     const a = colOf(sp.s < ws ? ws : sp.s, 1), b = colOf(sp.e > we ? we : sp.e, -1);
@@ -2006,7 +2028,7 @@ function weekRow(ws, isSel, month) {
   });
   days.forEach((d, i) => {
     const list = dayItems(d); const max = isSel ? 99 : 3; const shown = list.slice(0, max);
-    h += `<div class="items" style="grid-column:${i + 1};grid-row:${nl + 2}" data-act="selday" data-date="${d}" data-drop="day:${d}">${shown.map(chipHTML).join('')}${list.length > max ? `<button class="more" data-act="selday" data-date="${d}">+${list.length - max}개 더</button>` : ''}</div>`;
+    h += `<div class="items" style="grid-column:${i + 1};grid-row:${nl + 2}" data-act="selday" data-date="${d}" data-drop="day:${d}">${routinesOn(d).map(r => rtChip(r, d)).join('')}${shown.map(chipHTML).join('')}${list.length > max ? `<button class="more" data-act="selday" data-date="${d}">+${list.length - max}개 더</button>` : ''}</div>`;
   });
   return h + '</div>';
 }
@@ -2072,6 +2094,34 @@ function panelWork() {
 /* ---------- WORK routines: repeat work with no fixed date ---------- */
 const RFREQ = [['daily', '매일'], ['weekly', '매주'], ['monthly', '매달'], ['any', '수시']];
 const routine = id => (S.routines || []).find(r => r.id === id);
+const HOLI = {
+  '2026-01-01': '신정', '2026-02-16': '설날 연휴', '2026-02-17': '설날', '2026-02-18': '설날 연휴', '2026-03-01': '삼일절', '2026-03-02': '대체공휴일',
+  '2026-05-01': '노동절', '2026-05-05': '어린이날', '2026-05-24': '부처님오신날', '2026-05-25': '대체공휴일', '2026-06-03': '지방선거', '2026-06-06': '현충일',
+  '2026-07-17': '제헌절', '2026-08-15': '광복절', '2026-08-17': '대체공휴일', '2026-09-24': '추석 연휴', '2026-09-25': '추석', '2026-09-26': '추석 연휴',
+  '2026-10-03': '개천절', '2026-10-05': '대체공휴일', '2026-10-09': '한글날', '2026-12-25': '크리스마스',
+  '2027-01-01': '신정', '2027-02-06': '설날 연휴', '2027-02-07': '설날', '2027-02-08': '설날 연휴', '2027-02-09': '대체공휴일', '2027-03-01': '삼일절',
+  '2027-05-01': '노동절', '2027-05-03': '대체공휴일', '2027-05-05': '어린이날', '2027-05-13': '부처님오신날', '2027-06-06': '현충일', '2027-07-17': '제헌절',
+  '2027-07-19': '대체공휴일', '2027-08-15': '광복절', '2027-08-16': '대체공휴일', '2027-09-14': '추석 연휴', '2027-09-15': '추석', '2027-09-16': '추석 연휴',
+  '2027-10-03': '개천절', '2027-10-04': '대체공휴일', '2027-10-09': '한글날', '2027-10-11': '대체공휴일', '2027-12-25': '크리스마스', '2027-12-27': '대체공휴일'
+};
+const myOff = () => ((S.settings || {}).offDays || []);
+const holiName = d => HOLI[d] || (myOff().includes(d) ? '쉬는 날' : '');
+const isOffDay = d => isWeekend(d) || !!holiName(d);
+function nextWorkday(d) { let x = d, n = 0; while (isOffDay(x) && n < 20) { x = addDays(x, 1); n++; } return x; }
+/* the day a routine is due inside the period that contains `ref` (null when it has no fixed day) */
+function rDueOn(r, ref) {
+  ref = ref || TODAY; let base = null;
+  if (r.freq === 'monthly' && r.dom) { const [y, m] = ref.split('-').map(Number); const last = new Date(y, m, 0).getDate(); base = `${ref.slice(0, 8)}${String(Math.min(+r.dom, last)).padStart(2, '0')}`; }
+  else if (r.freq === 'weekly' && r.dow !== '' && r.dow != null) { const ws = weekStart(ref); for (let i = 0; i < 7; i++) { const x = addDays(ws, i); if (parse(x).getDay() === +r.dow) base = x; } }
+  else if (r.freq === 'daily' && r.skipOff) base = ref;
+  if (!base) return null;
+  return r.skipOff ? nextWorkday(base) : base;
+}
+function rPeriodStartOf(r, ref) {
+  if (r.freq === 'weekly') return weekStart(ref);
+  if (r.freq === 'monthly') return ref.slice(0, 8) + '01';
+  return ref;
+}
 function rPeriodStart(r) {
   if (r.freq === 'weekly') return weekStart(TODAY);
   if (r.freq === 'monthly') return TODAY.slice(0, 8) + '01';
@@ -2079,28 +2129,30 @@ function rPeriodStart(r) {
 }
 const rLast = r => (r.log || []).slice().sort().pop() || null;
 const rDone = r => (r.log || []).some(d => d >= rPeriodStart(r) && d <= TODAY);
+const rDoneFor = (r, ref) => { const a = rPeriodStartOf(r, ref); let z = r.freq === 'weekly' ? addDays(a, 6) : r.freq === 'monthly' ? iso(new Date(+ref.slice(0, 4), +ref.slice(5, 7), 0)) : ref; const due = rDueOn(r, ref); if (due && due > z) z = due; return (r.log || []).some(d => d >= a && d <= z); };
 function rDue(r) {
   if (rDone(r) || r.freq === 'any') return false;
-  if (r.freq === 'weekly' && r.dow != null && r.dow !== '') return parse(TODAY).getDay() === +r.dow || (() => { const ws = weekStart(TODAY); for (let d = ws; d <= TODAY; d = addDays(d, 1)) if (parse(d).getDay() === +r.dow) return true; return false; })();
-  if (r.freq === 'monthly' && r.dom) return +TODAY.slice(8, 10) >= +r.dom;
+  const due = rDueOn(r, TODAY);
+  if (due) return TODAY >= due;
+  if (r.freq === 'daily' && r.skipOff && isOffDay(TODAY)) return false;
   return true;
 }
 function rWhen(r) {
   const f = (RFREQ.find(x => x[0] === r.freq) || RFREQ[3])[1];
-  if (r.freq === 'weekly' && r.dow !== '' && r.dow != null) return `${f} ${WD[+r.dow]}요일`;
-  if (r.freq === 'monthly' && r.dom) return `${f} ${r.dom}일`;
-  return f;
+  if (r.freq === 'weekly' && r.dow !== '' && r.dow != null) return `${f} ${WD[+r.dow]}요일${r.skipOff ? '(쉬는 날이면 다음 평일)' : ''}`;
+  if (r.freq === 'monthly' && r.dom) return `${f} ${r.dom}일${r.skipOff ? '(쉬는 날이면 다음 평일)' : ''}`;
+  return f + (r.skipOff && r.freq !== 'any' ? '(쉬는 날 제외)' : '');
 }
 function rAgo(r) {
   const l = rLast(r); if (!l) return '아직 안 함';
   const n = diff(l, TODAY); return n === 0 ? '오늘 함' : n === 1 ? '어제 함' : `${n}일 전`;
 }
 function routineRows() {
-  const list = (S.routines || []).slice().sort((a, b) => (rDue(b) - rDue(a)) || (rDone(a) - rDone(b)) || (a.ord || 0) - (b.ord || 0));
+  const list = (S.routines || []).slice().sort((a, b) => (rDue(b) - rDue(a)) || (((b.changes || []).length ? 1 : 0) - ((a.changes || []).length ? 1 : 0)) || (rDone(a) - rDone(b)) || (a.ord || 0) - (b.ord || 0));
   return list.map(r => { const done = rDone(r), due = rDue(r); const doc0 = r.noteId && doc(r.noteId);
     return `<div class="rrow ${done ? 'done' : ''} ${due ? 'due' : ''}">
       <button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button>
-      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${esc(r.title || '이름 없는 루틴')}</b><span>${rWhen(r)}<i>·</i>${rAgo(r)}</span></button>
+      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${(r.changes || []).length ? '<span class="imp">❗</span>' : ''}${esc(r.title || '이름 없는 루틴')}</b><span>${rWhen(r)}<i>·</i>${!done && rDueOn(r) ? (rDueOn(r) === TODAY ? '오늘 할 차례' : rDueOn(r) < TODAY ? `${fmtShort(rDueOn(r))}부터 할 차례` : `${fmtShort(rDueOn(r))} 예정`) : rAgo(r)}</span>${(r.changes || []).length ? `<span class="rch">바뀐 점 ${r.changes.length} · ${esc(r.changes[0].text)}${r.changes.length > 1 ? ' 외' : ''}</span>` : ''}</button>
       ${doc0 ? `<button class="rnote" data-act="opendoc" data-id="${doc0.id}" title="매뉴얼 노트 열기: ${esc(doc0.title || '제목 없음')}" aria-label="매뉴얼 노트 열기">${I.note}</button>` : ''}
     </div>`; }).join('');
 }
@@ -2109,6 +2161,9 @@ function retroNudge() {
   if (!retrosIn(pm).length) return false; const o = (S.rmonths || []).find(x => x.id === pm);
   return !(o && (o.blocks || []).some(b => (b.text || '').trim()));
 }
+function routinesOn(d) { return (S.routines || []).filter(r => r.freq !== 'daily' && r.freq !== 'any' && rDueOn(r, d) === d); }
+function rtChip(r, d) { const done = rDoneFor(r, d); return `<div class="chip rt ${done ? 'done' : ''}" data-act="ropen" data-id="${r.id}" title="루틴 · ${esc(rWhen(r))}"><span class="rti">${I.repeat}</span><span class="tt">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}</span></div>`; }
+function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">바뀐 점: ${esc(r.changes.map(c => c.text).join(' / '))}</span>` : ''}</button></div>`; }).join('')}</div>`; }
 function routineCard() {
   const n = (S.routines || []).length; const due = (S.routines || []).filter(rDue).length;
   return `<div class="card rcard2">
@@ -2116,6 +2171,16 @@ function routineCard() {
     <label class="addline">${I.plus}<input id="routine-add" placeholder="반복하는 업무 적고 Enter" autocomplete="off" aria-label="루틴 추가"></label>
     <div class="rlist">${routineRows() || '<div class="empty">날짜 없이 반복하는 업무를 적어 두세요. 체크하면 이번 주기에 한 것으로 남고, 다음 주기에 다시 비워져요.</div>'}</div>
   </div>`;
+}
+function dlgRApply(r) {
+  const n = r.noteId && doc(r.noteId);
+  return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="바뀐 점 확인">
+  <div class="dlg-head"><div class="dlg-top"><span class="kind">루틴</span><span class="grow"></span><button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
+    <h2 class="set-title" style="font-size:19px">‘${esc(r.title)}’ 바뀐 점 ${r.changes.length}개, 반영했나요?</h2></div>
+  <div class="dlg-body"><div class="rchg">${r.changes.map(c => `<label class="rap"><input type="checkbox" data-rap="${c.id}" checked><span>${esc(c.text)}<em>${fmtShort(c.date)} 적음</em></span></label>`).join('')}</div>
+    <p class="hint" style="margin:8px 2px 0">${n ? `체크한 항목은 매뉴얼 ‘${esc(n.title || '제목 없음')}’에 오늘 날짜로 기록되고 목록에서 빠져요.` : '체크한 항목은 ‘반영한 변경’ 기록으로 옮겨져요. 매뉴얼 노트를 연결해 두면 거기에도 남아요.'}</p>
+    <div class="frow" style="justify-content:flex-end;margin-top:14px;gap:8px"><button class="btn" data-act="rapply" data-id="${r.id}" data-v="0">아직 · 완료만</button><button class="btn primary" data-act="rapply" data-id="${r.id}" data-v="1">반영하고 완료</button></div>
+  </div></div>`;
 }
 function dlgRoutine(r) {
   const docs = S.docs.slice().sort((a, b) => (a.title || '').localeCompare(b.title || ''));
@@ -2129,9 +2194,15 @@ function dlgRoutine(r) {
       <label>주기</label><div class="frow"><div class="seg inline" role="radiogroup" aria-label="주기">${RFREQ.map(([v, l]) => `<button role="radio" aria-checked="${r.freq === v}" class="${r.freq === v ? 'on' : ''}" data-act="rfreq" data-v="${v}">${l}</button>`).join('')}</div></div>
       ${r.freq === 'weekly' ? `<label for="rt-dow">요일</label><div class="frow"><select id="rt-dow" class="inp" data-rf="dow"><option value="">아무 요일</option>${WD.map((w, i) => `<option value="${i}" ${String(r.dow) === String(i) ? 'selected' : ''}>${w}요일</option>`).join('')}</select></div>` : ''}
       ${r.freq === 'monthly' ? `<label for="rt-dom">날짜</label><div class="frow"><select id="rt-dom" class="inp" data-rf="dom"><option value="">아무 날</option>${[...Array(28)].map((_, i) => `<option value="${i + 1}" ${String(r.dom) === String(i + 1) ? 'selected' : ''}>${i + 1}일</option>`).join('')}</select><span class="hint">이 날부터 ‘할 차례’로 보여요</span></div>` : ''}
+      ${r.freq !== 'any' ? `<label>쉬는 날</label><div class="frow"><label class="chk-lbl"><input type="checkbox" data-rf="skipOff" ${r.skipOff ? 'checked' : ''}> 주말·공휴일이면 다음 평일로</label>${rDueOn(r) ? `<span class="hint">이번 ${r.freq === 'monthly' ? '달' : r.freq === 'weekly' ? '주' : ''} 할 날: ${fmtShort(rDueOn(r))}${holiName(rDueOn(r)) ? '' : ''}</span>` : ''}</div>` : ''}
       <label for="rt-note">매뉴얼</label><div class="frow"><select id="rt-note" class="inp" data-rf="noteId"><option value="">연결 안 함</option>${docs.map(d => `<option value="${d.id}" ${d.id === r.noteId ? 'selected' : ''}>${esc(d.title || '제목 없음')}</option>`).join('')}</select>${r.noteId && doc(r.noteId) ? `<button class="btn sm" data-act="opendoc" data-id="${r.noteId}">열기</button>` : `<button class="btn sm" data-act="rmanual" data-id="${r.id}">${I.plus}새 매뉴얼 노트</button>`}</div>
     </div></div>
-  <div class="dlg-body"><div class="lbl" style="padding-top:2px">한 날 ${log.length ? log.length + '번' : ''}</div>
+  <div class="dlg-body">
+    <div class="lbl" style="padding-top:2px">❗ 바뀐 점 <span class="hint" style="font-weight:500">다음에 할 때 꼭 반영할 것</span></div>
+    <div class="rchg">${(r.changes || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><span>${esc(c.text)}<em>${fmtShort(c.date)} 적음</em></span><button class="bn-x" data-act="rchdel" data-id="${r.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
+      <input id="rc-in" class="inp" data-rid="${r.id}" placeholder="예: 11월부터 양식 v3 사용 · Enter" autocomplete="off"></div>
+    ${(r.applied || []).length ? `<details class="rapplied"><summary>반영한 변경 ${r.applied.length}</summary>${r.applied.slice().reverse().map(c => `<div>${fmtShort(c.on)} · ${esc(c.text)}</div>`).join('')}</details>` : ''}
+    <div class="lbl" style="padding-top:12px">한 날 ${log.length ? log.length + '번' : ''}</div>
     ${log.length ? `<div class="rlog">${log.slice(0, 24).map(d => `<span>${fmtShort(d)}</span>`).join('')}${log.length > 24 ? `<span class="muted">외 ${log.length - 24}번</span>` : ''}</div>` : '<p class="hint" style="margin:2px">아직 기록이 없어요. 목록에서 체크하면 오늘 날짜로 남아요.</p>'}
   </div></div>`;
 }
@@ -2281,6 +2352,7 @@ function mDayList(d) {
   ${evs.length || tds.length ? '' : '<div class="mempty">비어 있는 날이에요</div>'}
   ${evs.length ? `<div class="mgroup"><div class="mg-h">일정</div><div class="mg-b">${evs.map(evRow).join('')}</div></div>` : ''}
   ${tds.length ? `<div class="mgroup"><div class="mg-h">할일</div><div class="mg-b">${tds.map(tdRow).join('')}</div></div>` : ''}
+  ${routinesOn(d).length ? `<div class="mgroup"><div class="mg-h">루틴</div><div class="mg-b mretro">${rtRows(d).replace('<div class="lbl">루틴</div>', '')}</div></div>` : ''}
   ${(S.retros || []).some(x => x.date === d && (x.what || x.next)) ? `<div class="mgroup"><div class="mg-h">복기</div><div class="mg-b mretro">${dayRetros(d).replace('<div class="lbl">복기</div>', '')}</div></div>` : ''}`;
 }
 /* phone calendar: compact grid with dots + the chosen day's list */
@@ -2297,11 +2369,12 @@ function vWorkM() {
     const tds = S.items.filter(it => it.kind === 'todo' && it.date === d);
     const out = evs.slice(0, 3).map(it => `<i style="background:${it.cancel ? 'var(--faint)' : itemColor(it)};${it.done ? 'opacity:.4' : ''}"></i>`);
     if (tds.length && out.length < 4) out.push(`<i class="${tds.every(t => t.done) ? 'dn' : 'td'}"></i>`);
+    if (routinesOn(d).length && out.length < 4) out.push('<i style="background:#E9B600"></i>');
     return out.join('');
   };
   const grid = rows.map(w => visDays(w).map(d => {
     const dd = parse(d); const g = dd.getDay();
-    const cls = ['mday']; if (!wk && dd.getMonth() + 1 !== m) cls.push('other'); if (d === TODAY) cls.push('today'); if (d === ui.sel) cls.push('sel'); if (g === 0) cls.push('sun'); if (g === 6) cls.push('sat');
+    const cls = ['mday']; if (holiName(d)) cls.push('sun'); if (!wk && dd.getMonth() + 1 !== m) cls.push('other'); if (d === TODAY) cls.push('today'); if (d === ui.sel) cls.push('sel'); if (g === 0) cls.push('sun'); if (g === 6) cls.push('sat');
     return `<button class="${cls.join(' ')}" data-act="selday" data-date="${d}" aria-label="${fmtFull(d)}" aria-pressed="${d === ui.sel}"><span class="n">${dd.getDate()}</span><span class="dots">${dots(d)}</span></button>`;
   }).join('')).join('');
   const cols = `grid-template-columns:repeat(${vd0.length},minmax(0,1fr))`;
@@ -2329,6 +2402,7 @@ function daySection() {
     ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${esc(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
     <div class="lbl">할일</div>
     <div class="tlist" style="padding-top:0">${tds.map(it => trow(it, !isMob())).join('') || '<div class="empty">할일이 없어요</div>'}</div>
+    ${rtRows(d)}
     ${dayRetros(d)}
   </div></section>`;
 }
@@ -2825,7 +2899,7 @@ function ncPreview() {
 /* ---------- dialogs ---------- */
 function modalTarget() {
   const m = ui.modal; if (!m) return null;
-  if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'routine') return routine(m.id); if (m.kind === 'retro') return retro(m.id); if (m.kind === 'lookup') return look ? true : null; if (m.kind === 'quick') return true; return null;
+  if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'routine') return routine(m.id); if (m.kind === 'retro') return retro(m.id); if (m.kind === 'rapply') return routine(m.id); if (m.kind === 'lookup') return look ? true : null; if (m.kind === 'quick') return true; return null;
 }
 function renderModal() {
   const m = ui.modal; const t = modalTarget();
@@ -2833,7 +2907,7 @@ function renderModal() {
   if (!m || !t) { layer.innerHTML = ''; return; }
   const st = $('.scrim') ? $('.scrim').scrollTop : 0;
   let h = '';
-  if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings(); else if (m.kind === 'routine') h = dlgRoutine(t); else if (m.kind === 'retro') h = dlgRetro(t); else if (m.kind === 'lookup') h = dlgLookup();
+  if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings(); else if (m.kind === 'routine') h = dlgRoutine(t); else if (m.kind === 'retro') h = dlgRetro(t); else if (m.kind === 'rapply') h = dlgRApply(t); else if (m.kind === 'lookup') h = dlgLookup();
   layer.innerHTML = `<div class="scrim" data-act="scrim">${h}</div>`;
   $('.scrim').scrollTop = st;
   if (m.focus) { const el = document.getElementById(m.focus); m.focus = null; if (el) { el.focus(); if (el.select) el.select(); } }
@@ -2934,6 +3008,9 @@ function dlgSettings() {
     <div class="set-sec" style="margin-top:22px">책·영화 검색</div>
     <div class="set-row"><div><b>카카오 책 검색 키</b><span class="hint">카카오 개발자 앱의 ‘REST API 키’ · 내 계정에만 저장돼요</span></div><input class="inp skey" type="password" data-skey="kakaoKey" value="${esc((S.settings || {}).kakaoKey || '')}" placeholder="붙여 넣기" autocomplete="off" aria-label="카카오 REST API 키"></div>
     <div class="set-row"><div><b>TMDB 영화 검색 키</b><span class="hint">TMDB ‘API 키’ 또는 ‘읽기 액세스 토큰’ · 내 계정에만 저장돼요</span></div><input class="inp skey" type="password" data-skey="tmdbKey" value="${esc((S.settings || {}).tmdbKey || '')}" placeholder="붙여 넣기" autocomplete="off" aria-label="TMDB 키"></div>
+    <div class="set-sec" style="margin-top:22px">쉬는 날</div>
+    <div class="set-row"><div><b>공휴일 외에 쉬는 날</b><span class="hint">회사 창립기념일처럼 루틴이 피해야 할 날 · 공휴일은 2026–2027년이 이미 들어 있어요</span></div><div class="frow"><input type="date" id="off-add" class="inp" aria-label="쉬는 날 추가"><button class="btn sm" data-act="offadd">추가</button></div></div>
+    ${myOff().length ? `<div class="offlist">${myOff().slice().sort().map(d => `<span>${fmtDot(d)}<button class="bn-x" data-act="offrm" data-d="${d}" aria-label="빼기">${I.x}</button></span>`).join('')}</div>` : ''}
     <div class="set-sec" style="margin-top:22px">디자인</div>
     <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button></div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
@@ -3344,7 +3421,23 @@ const ACT = {
   xcat: t => { ui.xcat = ui.xcat === t.dataset.c ? null : t.dataset.c; render(); },
   rmonth: t => { const d = +t.dataset.d; ui.rmonth = d === 0 ? monthOf(TODAY) : (() => { const [y, m] = (ui.rmonth || monthOf(TODAY)).split('-').map(Number); return iso(new Date(y, m - 1 + d, 1)).slice(0, 7); })(); render(); },
   xroutine: t => { const r = retro(t.dataset.id); if (!r || !r.next) return; if ((S.routines || []).some(x => x.title === r.next)) { toast('이미 루틴에 있어요'); return; } mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: r.next, freq: 'any', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴에 추가했어요 · 주기는 루틴에서 바꿀 수 있어요'); },
-  rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
+  rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); if (!done && (r.changes || []).length) { ui.modalBack = null; openModal('rapply', r.id); return; } mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
+  rapply: t => {
+    const r = routine(t.dataset.id); if (!r) return; const apply = t.dataset.v === '1';
+    const picked = apply ? [...document.querySelectorAll('[data-rap]')].filter(x => x.checked).map(x => x.dataset.rap) : [];
+    ui.modal = null; renderModal();
+    mutate(() => {
+      r.log = r.log || []; r.log.push(TODAY);
+      if (picked.length) {
+        const done = r.changes.filter(c => picked.includes(c.id));
+        r.changes = r.changes.filter(c => !picked.includes(c.id));
+        r.applied = [...(r.applied || []), ...done.map(c => ({ text: c.text, date: c.date, on: TODAY }))].slice(-200);
+        const n = r.noteId && doc(r.noteId);
+        if (n) { n.blocks = n.blocks || []; if (n.blocks.length === 1 && !n.blocks[0].text) n.blocks.pop(); n.blocks.push(B('h', `${TODAY} 바뀐 점 반영`)); done.forEach(c => n.blocks.push(B('bullet', c.text))); n.updated = Date.now(); }
+      }
+    }, picked.length ? `‘${r.title}’ 했어요 · 바뀐 점 ${picked.length}개 반영` : `‘${r.title}’ 했어요`);
+  },
+  rchdel: t => { const r = routine(t.dataset.id); if (!r) return; mutate(() => { r.changes = (r.changes || []).filter(c => c.id !== t.dataset.c); }); renderModal(); },
   ropen: t => openModal('routine', t.dataset.id),
   rfreq: t => { const r = routine(ui.modal.id); if (!r) return; mutate(() => { r.freq = t.dataset.v; }); },
   rdel: t => { const id = t.dataset.id; if (ui.confirm !== 'routine:' + id) { ui.confirm = 'routine:' + id; renderModal(); return; } ui.confirm = null; const r = routine(id); ui.modal = null; mutate(() => { S.routines = S.routines.filter(x => x.id !== id); }, `‘${r ? r.title : '루틴'}’을 지웠어요`); },
@@ -3375,6 +3468,8 @@ const ACT = {
   weekend: () => { const h = !settingsOf().hideWeekend; S.settings = { ...(S.settings || {}), hideWeekend: h }; save(); render(); toast(h ? '주말을 숨겼어요' : '주말을 보여줘요'); },
   setwe: t => { S.settings = { ...(S.settings || {}), hideWeekend: t.dataset.v === 'hide' }; save(); render(); renderModal(); },
   gortn: () => { ui.panelTab = 'routine'; if (isMob()) { go('mtodo'); return; } if (ui.view !== 'work') go('work'); else { ui.navOpen = false; render(); } },
+  offadd: () => { const v = ($('#off-add') || {}).value; if (!v) return; S.settings = { ...(S.settings || {}), offDays: [...new Set([...myOff(), v])] }; save(); render(); renderModal(); },
+  offrm: t => { S.settings = { ...(S.settings || {}), offDays: myOff().filter(x => x !== t.dataset.d) }; save(); render(); renderModal(); },
   setdepth: t => { S.settings = { ...(S.settings || {}), depth: t.dataset.v }; save(); render(); renderModal(); },
   setweek: t => { S.settings = { ...(S.settings || {}), weekStart: t.dataset.v }; save(); render(); renderModal(); },
   mnotes: () => { if (ui.view === 'notes' || !ui.noteDoc) { ui.noteDoc = null; ui.noteFolder = null; } go('notes'); },
@@ -3540,7 +3635,7 @@ document.addEventListener('change', e => {
   if (t.dataset && t.dataset.skey) { S.settings = { ...(S.settings || {}), [t.dataset.skey]: t.value.trim() }; save(); toast(t.value.trim() ? '검색 키를 저장했어요' : '검색 키를 지웠어요'); return; }
   if (t.dataset && t.dataset.xren) { const k = t.dataset.xren, old = t.dataset.old, v = t.value.trim(); const [sk, get] = XLIST[k]; if (!v || v === old) { t.value = old; return; } if (get().includes(v)) { toast('같은 이름이 이미 있어요'); t.value = old; return; } mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().map(x => x === old ? v : x) }; (S.retros || []).forEach(r => { if (r[k] === old) r[k] = v; }); }, `‘${old}’ → ‘${v}’로 바꿨어요`); return; }
   if (t.dataset && t.dataset.xf === 'date' && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r && t.value) { r.date = t.value; save(); } return; }
-  if (t.dataset && t.dataset.rf && ui.modal && ui.modal.kind === 'routine') { const r = routine(ui.modal.id); if (!r) return; const k = t.dataset.rf; mutate(() => { r[k] = k === 'noteId' ? (t.value || null) : t.value; }); return; }
+  if (t.dataset && t.dataset.rf && ui.modal && ui.modal.kind === 'routine') { const r = routine(ui.modal.id); if (!r) return; const k = t.dataset.rf; mutate(() => { r[k] = k === 'skipOff' ? t.checked : k === 'noteId' ? (t.value || null) : t.value; }); return; }
   if (t.id === 'f-move' && t.value) { const it = item(ui.modal.id); const to = t.value; if (it && to !== it.date) mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); return; }
   if (t.dataset.f !== undefined && t.dataset.f !== 'title') {
     const m = ui.modal; const o = modalTarget(); if (!o) return; const f = t.dataset.f; const v = t.value;
@@ -3771,6 +3866,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
   if (t.id === 'bth-in') { e.preventDefault(); const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.node); const v = t.value.trim(); if (!n || !v) return; const pg = +($('#bth-p') || {}).value || null; mutate(() => { n.thoughts = n.thoughts || []; n.thoughts.push({ id: uid(), text: v, page: pg, date: TODAY, ts: Date.now() }); }); ui.focusId = 'bth-in'; render(); return; }
   if (t.id === 'be-label') { e.preventDefault(); ui.bsel = null; render(); return; }
+  if (t.id === 'rc-in') { e.preventDefault(); const r = routine(t.dataset.rid); const v = t.value.trim(); if (!r || !v) return; mutate(() => { r.changes = r.changes || []; r.changes.push({ id: uid(), text: v, date: TODAY }); }); renderModal(); setTimeout(() => { const i = document.getElementById('rc-in'); if (i) i.focus(); }, 10); return; }
   if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
   if (t.id === 'subq') { e.preventDefault(); const v = t.value.trim(); const pid = ui.subFor; if (!v) { ui.subFor = null; render(); return; } addSub(pid, v); ui.subFor = pid; ui.focusId = 'subq'; render(); return; }
