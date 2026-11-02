@@ -85,6 +85,7 @@ svg{flex:none}
 .nav-item .cnt{margin-left:auto;font-size:13px;color:var(--muted);font-weight:400}
 .sec{display:flex;flex-direction:column;gap:1px}
 .sec-head{display:flex;align-items:center;justify-content:space-between;padding:0 2px 4px 10px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em}
+.addm button{height:38px}
 .mini{width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .mini:hover{background:var(--hover);color:var(--fg)}
 .tree-row{display:flex;align-items:center;gap:2px;min-height:30px;border-radius:8px;padding-right:2px}
@@ -1851,7 +1852,7 @@ function tree(space, parent, depth) {
       <button class="tw" data-act="fold" data-id="${f.id}" aria-label="${open ? '접기' : '펼치기'}" ${has ? '' : 'tabindex="-1" style="visibility:hidden"'}>${open ? I.chevD : I.chevR}</button>
       <button class="nm" data-act="${space === 'work' ? 'nfolder' : 'lfolder'}" data-id="${f.id}">${I.folder}<span>${esc(f.name)}</span></button>
       <span class="cnt">${folderCount(f)}</span>
-      <button class="mini add" data-act="newfolder" data-space="${space}" data-parent="${f.id}" aria-label="${esc(f.name)} 안에 하위 폴더 추가" title="하위 폴더 추가">${I.plus}</button></div>`;
+      <button class="mini add" data-act="addmenu" data-space="${space}" data-id="${f.id}" aria-label="${esc(f.name)}에 추가" title="${space === 'work' ? '새 노트 · 하위 폴더' : '새 글 · 하위 폴더'}">${I.plus}</button></div>`;
     if (open || (ui.newFolder && ui.newFolder.parent === f.id)) {
       h += tree(space, f.id, depth + 1);
       h += newFolderRow(space, f.id, depth + 1);
@@ -3376,6 +3377,12 @@ const ACT = {
   lfolder: t => { ui.lifeFolder = t.dataset.id || null; ui.postId = null; go('posts'); },
   opendoc: t => { const d = doc(t.dataset.id); if (!d) return; ui.noteDoc = d.id; ui.noteFolder = d.folder; folderPath(d.folder).forEach(f => { ui.open[f.id] = true; }); if (ui.modal) closeModal(); go('notes'); },
   newfolder: t => { const parent = t.dataset.parent || null; ui.newFolder = { space: t.dataset.space, parent }; if (parent) ui.open[parent] = true; render(); },
+  addmenu: (t, e) => {
+    e.stopPropagation(); const r = t.getBoundingClientRect(); const w = t.dataset.space === 'work'; const id = t.dataset.id;
+    pop.innerHTML = `<div class="slash addm" role="menu" style="top:${Math.min(r.bottom + 4, window.innerHeight - 120)}px;left:${Math.min(r.left - 8, window.innerWidth - 200)}px;width:180px">
+      <button role="menuitem" class="on" data-act="${w ? 'newdoc' : 'newpost'}" data-folder="${id}"><span class="si">${w ? I.note : I.pen}</span>${w ? '새 노트' : '새 글'}</button>
+      <button role="menuitem" data-act="newfolder" data-space="${t.dataset.space}" data-parent="${id}"><span class="si">${I.folder}</span>하위 폴더</button></div>`;
+  },
   newdoc: t => { const fid = t.dataset.folder; const d = { id: uid(), folder: fid, title: '', projectId: null, updated: Date.now(), blocks: [B('p', '')] }; mutate(() => { S.docs.push(d); }); ui.noteDoc = d.id; ui.noteFolder = fid; ui.open[fid] = true; ui.focusId = 'doc-title'; go('notes'); },
   deldoc: t => { const id = t.dataset.id; if (ui.confirm !== 'doc:' + id) { ui.confirm = 'doc:' + id; render(); return; } const d = doc(id); ui.confirm = null; ui.noteDoc = null; mutate(() => { S.docs = S.docs.filter(x => x.id !== id); }, `‘${d.title || '제목 없음'}’ 노트를 지웠어요`); },
   delfolder: t => { const id = t.dataset.id; if (ui.confirm !== 'folder:' + id) { ui.confirm = 'folder:' + id; render(); return; } deleteFolder(id); },
@@ -3466,6 +3473,7 @@ document.addEventListener('click', e => {
   }
   if (!e.target.closest('.sres') && !e.target.closest('.search')) closeSearch(true);
   if (slash && !e.target.closest('.slash') && !e.target.closest('.bk-text')) closeSlash();
+  if (pop.querySelector('.addm') && !e.target.closest('[data-act="addmenu"]')) setTimeout(() => { const m = pop.querySelector('.addm'); if (m) pop.innerHTML = ''; }, 0);
   if (qc && !e.target.closest('.qc') && !e.target.closest('[data-act="qcopen"]') && !e.target.closest('[data-act="selday"]')) closeQC();
   if (mention && !e.target.closest('.mpick') && !e.target.closest('.bk-text') && !e.target.closest('[data-act="linkpick"]')) closeMention();
   const t = e.target.closest('[data-act]'); if (!t) return;
