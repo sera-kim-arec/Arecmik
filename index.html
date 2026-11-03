@@ -1167,6 +1167,16 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .awarn-r{display:flex;gap:8px;width:100%;border:0;background:none;font:inherit;font-size:14px;color:var(--fg);text-align:left;padding:4px 2px;cursor:pointer;line-height:1.45}
 .awarn-r b{color:var(--rose-ink);font-weight:700;flex:none}
 .awarn-r em{margin-left:auto;font-style:normal;font-size:12px;color:var(--muted);flex:none}
+.area-item .hash,.h1 .hash{color:var(--faint);font-weight:700;margin-right:2px}
+.area-item .aw{margin-left:auto;font-size:11px;font-weight:800;color:var(--rose-ink)}
+.area-item .aw+.cnt{margin-left:6px}
+.area-new{padding:2px 10px 6px}
+.area-new .inp{width:100%}
+.area-page{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;padding:0 24px 30px 4px;align-items:start}
+.arow{display:flex;align-items:center;gap:8px;padding:6px 4px;border-radius:10px}
+.arow.done{opacity:.55}
+.area-page .ichk{margin-left:30px}
+@media (max-width:900px){ .area-page{grid-template-columns:minmax(0,1fr)} }
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -1836,7 +1846,7 @@ const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'l
 const coverStyle = c => c && c.img ? `background-image:url('${c.img}')` : c ? `background-color:${c.tone}` : '';
 
 /* ---------- ui state ---------- */
-const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book'];
+const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area'];
 const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
@@ -1944,6 +1954,9 @@ function workNav() {
   const active = S.projects.filter(p => !p.done).length;
   const rd = (S.routines || []).filter(rDue).length;
   return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
+  <div class="sec"><div class="sec-head"><span>업무</span><button class="mini" data-act="areaadd" aria-label="업무 추가" title="업무 추가">${I.plus}</button></div>
+  ${ui.areaAdd ? `<div class="area-new"><input id="area-new" class="inp" placeholder="업무 이름 · Enter" autocomplete="off"></div>` : ''}
+  ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="hash">#</span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 업무가 생겨요.</p>'}</div>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="addmenu" data-space="work" data-id="" aria-label="새 노트 또는 새 폴더" title="새 노트 · 새 폴더">${I.plus}</button></div>
   ${tree('work', null, 0)}</div>`;
 }
@@ -2006,6 +2019,7 @@ function viewHTML() {
     case 'collections': return vColl();
     case 'new-collection': return vNewColl();
     case 'retro': return vRetro();
+    case 'area': return vArea();
     case 'book': return vBook();
     default: return vWork();
   }
@@ -2398,6 +2412,26 @@ function dlgRetro(r) {
     <p class="hint" style="margin:8px 2px 0">‘다음엔’에 적은 내용은 복기 화면의 확인 목록에 모여요.</p>
   </div></div>`;
 }
+function vArea() {
+  const a = ui.area; if (!a || !retroAreas().includes(a)) { ui.view = 'work'; return vWork(); }
+  const its = S.items.filter(it => it.area === a && !it.cancel);
+  const open = its.filter(it => !it.done).sort((x, y) => (x.date || '9999').localeCompare(y.date || '9999') || priCmp(x, y));
+  const done = its.filter(it => it.done).sort((x, y) => (y.date || '').localeCompare(x.date || '')).slice(0, 8);
+  const rs = areaRetros(a); const seen = new Set(); const nexts = rs.filter(r => r.next && !seen.has(r.next.trim()) && seen.add(r.next.trim()));
+  const when = it => it.date ? `<span class="muted" style="font-size:12.5px;flex:none">${it.date === TODAY ? '오늘' : fmtShort(it.date)}${it.start ? ' ' + it.start : ''}</span>` : '';
+  const row = it => `<div class="arow ${it.done ? 'done' : ''}">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="stl" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.star ? '<span class="imp">❗</span>' : ''}${priT(it)}${tT(it.title || '제목 없음')}</span>${when(it)}</button></div>${chkLine(it)}`;
+  return `${topbar(`<h1 class="h1"><span class="hash">#</span>${esc(a)}</h1>`, '')}
+  <div class="area-page">
+    <section><div class="lbl">할일 · 일정 <span class="muted">${open.length}</span></div>
+      <div class="card"><label class="addline">${I.plus}<input id="area-todo" placeholder="이 업무 할일 적고 Enter (날짜 없이)" autocomplete="off"></label>
+      ${open.map(row).join('') || '<div class="empty">진행 중인 할일이 없어요.</div>'}
+      ${done.length ? `<div class="lbl" style="margin-top:12px">최근 완료</div>${done.map(row).join('')}` : ''}</div></section>
+    <section><div class="lbl">⚠ 이 업무에서 했던 실수 <span class="muted">${rs.length}</span></div>
+      <div class="card"><label class="addline">${I.plus}<input id="area-retro" placeholder="실수 적고 Enter" autocomplete="off"></label>
+      ${nexts.length ? `<div class="awarn" style="margin-top:8px"><div class="awarn-h">다음엔 이렇게</div>${nexts.slice(0, 10).map(r => `<button class="awarn-r" data-act="xopen" data-id="${r.id}">${esc(r.next)}<em>${fmtShort(r.date)}</em></button>`).join('')}</div>` : ''}
+      ${rs.slice(0, 20).map(retroRow).join('') || '<div class="empty">아직 기록이 없어요.</div>'}</div></section>
+  </div>`;
+}
 function retroPanel() {
   const m = monthOf(TODAY); const list = retrosIn(m).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const by = {}; list.forEach(r => { const k = r.area || '업무 미지정'; (by[k] = by[k] || []).push(r); });
@@ -2414,7 +2448,8 @@ function areaWarn(it) {
 const areaTag = it => it.area && !it.done ? `<span class="atag" title="업무 · ${esc(it.area)}">${esc(it.area)}${areaRetros(it.area).length ? `<b>⚠${areaRetros(it.area).length}</b>` : ''}</span>` : '';
 function newRetro(itemId, opts = {}) {
   const it = itemId && item(itemId);
-  const r = { id: uid(), date: opts.date || (it && it.date && it.date <= TODAY ? it.date : TODAY), kind: 'mistake', cat: '', impact: 'me', what: opts.what || '', next: '', itemId: itemId || null, created: Date.now() }; if (it && it.area) r.area = it.area;
+  const r = { id: uid(), date: opts.date || (it && it.date && it.date <= TODAY ? it.date : TODAY), kind: 'mistake', cat: '', impact: 'me', what: opts.what || '', next: '', itemId: itemId || null, created: Date.now() }; if (it && it.area) r.area = it.area; if (opts.area) r.area = opts.area;
+  { const m = /(^|\s)#([가-힣A-Za-z][^\s#]*)/.exec(r.what); if (m && r.what.replace(m[0], '').trim()) { r.area = m[2]; r.what = (r.what.slice(0, m.index) + r.what.slice(m.index + m[0].length)).replace(/\s{2,}/g, ' ').trim(); const a = retroAreas(); if (!a.includes(r.area)) S.settings = { ...(S.settings || {}), retroAreas: [...a, r.area] }; } }
   S.retros = S.retros || []; S.retros.push(r); ui.modalBack = null; ui.modal = { kind: 'retro', id: r.id, isNew: true, focus: 'x-what' }; ui.confirm = null; renderModal();
   setTimeout(() => { const t = document.getElementById(opts.what ? 'x-next' : 'x-what'); if (t) t.focus(); }, 30);
 }
@@ -3452,12 +3487,14 @@ function parseQuick(v) {
   return { title: m[5].trim(), start: `${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}` };
 }
 function createItem(kind, title, date) {
-  let start = ''; let star = false;
+  let start = ''; let star = false; let area = '';
+  { const m = /(^|\s)#([가-힣A-Za-z][^\s#]*)/.exec(title || ''); if (m && title.replace(m[0], '').trim()) { area = m[2]; title = (title.slice(0, m.index) + title.slice(m.index + m[0].length)).replace(/\s{2,}/g, ' ').trim(); } }
   { const m = /^\s*(?:!|❗)\s*/.exec(title || ''); if (m && title.trim().length > m[0].trim().length) { star = true; title = title.slice(m[0].length); } }
   if (date) { const q = parseQuick(title); title = q.title; start = q.start; }
   const base = { id: uid(), title, projectId: null, memo: [B('p', '')] };
   const it = kind === 'event' ? { ...base, kind, date: date || ui.sel, end: null, start, finish: '' } : { ...base, kind, date: date || null, done: false, start };
   if (star) it.star = true;
+  if (area) { it.area = area; const a = retroAreas(); if (!a.includes(area)) S.settings = { ...(S.settings || {}), retroAreas: [...a, area] }; }
   S.items.push(it); return it;
 }
 function newPost(opts = {}) {
@@ -3522,6 +3559,8 @@ const ACT = {
   ddiscard: () => { const d = ui.draft; ui.draft = null; ui.askDiscard = false; if (d) { S = JSON.parse(d); save(); render(); } closeModal(true); },
   scrim: (t, e) => { if (e.target === t) closeModal(); },
   iarea: t => { const it = item(t.dataset.id); if (!it) return; const v = t.dataset.v; mutate(() => { if (it.area === v) delete it.area; else it.area = v; }); },
+  area: t => { ui.area = t.dataset.v; go('area'); },
+  areaadd: () => { ui.areaAdd = !ui.areaAdd; ui.focusId = ui.areaAdd ? 'area-new' : null; render(); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
   igdone: t => { const it = item(t.dataset.id); if (!it) return; const back = ui.igBack; ui.igBack = null; mutate(() => { it.done = true; if (it.kind === 'event') it.cancel = false; }, `‘${it.title || '할일'}’ 확인하고 완료`); if (back) { ui.modal = back; } else ui.modal = null; renderModal(); },
   igclose: () => { const back = ui.igBack; ui.igBack = null; ui.modal = back || null; renderModal(); },
@@ -3825,7 +3864,7 @@ document.addEventListener('change', e => {
 const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.savebtn'); if (!b) return; const d = isDirty(); b.classList.toggle('primary', d); b.textContent = d ? '저장' : '저장됨'; }, 30);
 ['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
 /* Enter saves and closes the open dialog (Ctrl+Enter works anywhere in it) */
-const OWN_ENTER = new Set(['iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
+const OWN_ENTER = new Set(['area-new', 'area-todo', 'area-retro', 'iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || !ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return;
   const t = e.target; const mod = e.ctrlKey || e.metaKey;
@@ -4041,6 +4080,9 @@ document.addEventListener('keydown', e => {
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
   if (t.id === 'mp-q' && mention) { e.preventDefault(); pickMention(mention.idx); return; }
   if (t.dataset && t.dataset.xadd) { e.preventDefault(); const k = t.dataset.xadd; const v = t.value.trim(); if (!v) return; const [sk, get] = XLIST[k]; if (!get().includes(v)) mutate(() => { S.settings = { ...(S.settings || {}), [sk]: [...get(), v] }; }); ui.focusId = null; render(); const n = document.querySelector(`[data-xadd="${k}"]`); if (n) n.focus(); return; }
+  if (t.id === 'area-new') { e.preventDefault(); const v = t.value.trim().replace(/^#/, ''); if (!v) return; const a = retroAreas(); ui.areaAdd = false; mutate(() => { if (!a.includes(v)) S.settings = { ...(S.settings || {}), retroAreas: [...a, v] }; }); ui.area = v; go('area'); return; }
+  if (t.id === 'area-todo') { e.preventDefault(); const v = t.value.trim(); if (!v) return; mutate(() => { const it = createItem('todo', v, null); it.area = it.area || ui.area; }); ui.focusId = 'area-todo'; render(); return; }
+  if (t.id === 'area-retro') { e.preventDefault(); const v = t.value.trim(); if (!v) return; t.value = ''; newRetro(null, { date: TODAY, what: v, area: ui.area }); return; }
   if (t.id === 'rp-add') { e.preventDefault(); const v = t.value.trim(); if (!v) return; t.value = ''; newRetro(null, { date: TODAY, what: v }); return; }
   if (t.id === 'iarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); const it = item(ui.modal.id); mutate(() => { S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; if (it) it.area = v; }); return; }
   if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
