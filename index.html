@@ -1146,6 +1146,18 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .pri.p3{background:rgba(135,131,120,.16);color:var(--muted)}
 .chip .pri{font-size:10px;padding:2px 4px;margin-right:3px}
 #ig-ok:disabled{opacity:.45;cursor:not-allowed}
+.ck-ed{flex:1;min-width:0;border:0;background:transparent;font:inherit;color:var(--fg);padding:3px 6px;border-radius:7px;outline:none}
+.ck-ed:hover{background:var(--hover, rgba(0,0,0,.04))}
+.ck-ed:focus{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--lemon)}
+.ck-date{font-style:normal;font-size:12px;color:var(--faint);flex:none}
+.rchg-i{align-items:center}
+.dlg-ask{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--lemon-soft);color:var(--lemon-ink);font-size:14px}
+.savebtn{margin-right:6px}
+/* rows grow with their items instead of spilling into the next week */
+.wk{flex:1 0 auto}
+.wk.sel{flex:1.7 0 auto}
+.cal-main{min-height:0}
+.cal-main>.cal-scroll{overflow-y:auto}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2264,7 +2276,7 @@ function dlgRoutine(r) {
   const docs = S.docs.slice().sort((a, b) => (a.title || '').localeCompare(b.title || ''));
   const log = (r.log || []).slice().sort().reverse();
   return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="${esc(r.title || '루틴')}">
-  <div class="dlg-head"><div class="dlg-top"><span class="kind">루틴</span><span class="autosave">${I.check}자동 저장</span><span class="grow"></span>
+  <div class="dlg-head"><div class="dlg-top"><span class="kind">루틴</span><span class="grow"></span>${saveBtn()}
     <button class="btn sm ${ui.confirm === 'routine:' + r.id ? 'warn' : 'ghost danger'}" data-act="rdel" data-id="${r.id}">${ui.confirm === 'routine:' + r.id ? '한 번 더 누르면 삭제' : '삭제'}</button>
     <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
     <input class="title-input" id="rt-title" data-rf="title" value="${esc(r.title)}" placeholder="루틴 이름" aria-label="루틴 이름">
@@ -2277,7 +2289,7 @@ function dlgRoutine(r) {
     </div></div>
   <div class="dlg-body">
     <div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">다음에 할 때 꼭 챙길 것</span></div>
-    <div class="rchg">${(r.changes || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><span>${esc(c.text)}<em>${fmtShort(c.date)} 적음</em></span><button class="bn-x" data-act="rchdel" data-id="${r.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
+    <div class="rchg">${(r.changes || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><input class="ck-ed" data-rch="${r.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="꼭 챙길 것 고치기"><em class="ck-date">${fmtShort(c.date)}</em><button class="bn-x" data-act="rchdel" data-id="${r.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
       <input id="rc-in" class="inp" data-rid="${r.id}" placeholder="예: 11월부터 양식 v3 사용 · Enter" autocomplete="off"></div>
     ${(r.applied || []).length ? `<details class="rapplied"><summary>확인한 것 ${r.applied.length}</summary>${r.applied.slice().reverse().map(c => `<div>${fmtShort(c.on)} · ${esc(c.text)}</div>`).join('')}</details>` : ''}
     <div class="lbl" style="padding-top:12px">한 날 ${log.length ? log.length + '번' : ''}</div>
@@ -2359,7 +2371,7 @@ function xManager() {
 function dlgRetro(r) {
   const cats = retroCats(); const it = r.itemId && item(r.itemId);
   return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="복기">
-  <div class="dlg-head"><div class="dlg-top"><span class="kind">복기</span><span class="autosave">${I.check}자동 저장</span><span class="grow"></span>
+  <div class="dlg-head"><div class="dlg-top"><span class="kind">복기</span><span class="grow"></span>${saveBtn()}
     <button class="btn sm ${ui.confirm === 'retro:' + r.id ? 'warn' : 'ghost danger'}" data-act="xdel" data-id="${r.id}">${ui.confirm === 'retro:' + r.id ? '한 번 더 누르면 삭제' : '삭제'}</button>
     <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
     <div class="fgrid">
@@ -2992,19 +3004,26 @@ function modalTarget() {
   const m = ui.modal; if (!m) return null;
   if (m.kind === 'settings') return true; if (m.kind === 'item') return item(m.id); if (m.kind === 'project') return proj(m.id); if (m.kind === 'citem') return citem(m.id); if (m.kind === 'routine') return routine(m.id); if (m.kind === 'retro') return retro(m.id); if (m.kind === 'rapply') return routine(m.id); if (m.kind === 'igate') return item(m.id); if (m.kind === 'lookup') return look ? true : null; if (m.kind === 'quick') return true; return null;
 }
+const DRAFT_KINDS = new Set(['item', 'project', 'routine', 'retro']);
+const isDirty = () => ui.draft != null && JSON.stringify(S) !== ui.draft;
+function saveBtn() { const d = isDirty(); return `<button class="btn sm ${d ? 'primary' : ''} savebtn" data-act="dsave">${d ? '저장' : '저장됨'}</button>`; }
 function renderModal() {
   const m = ui.modal; const t = modalTarget();
+  if (!m) { ui.draft = null; ui.askDiscard = false; }
+  else if (t && DRAFT_KINDS.has(m.kind) && ui.draft == null) ui.draft = JSON.stringify(S);
   setTimeout(() => { if (ui.modal && ui.modal.kind === 'lookup') { drawLookup(); const q = document.getElementById('lk-q'); if (q && document.activeElement !== q) q.focus(); } }, 0);
   if (!m || !t) { layer.innerHTML = ''; return; }
   const st = $('.scrim') ? $('.scrim').scrollTop : 0;
   let h = '';
   if (m.kind === 'item') h = dlgItem(t); else if (m.kind === 'project') h = dlgProject(t); else if (m.kind === 'citem') h = dlgCitem(t); else if (m.kind === 'quick') h = dlgQuick(); else if (m.kind === 'settings') h = dlgSettings(); else if (m.kind === 'routine') h = dlgRoutine(t); else if (m.kind === 'retro') h = dlgRetro(t); else if (m.kind === 'rapply') h = dlgRApply(t); else if (m.kind === 'igate') h = dlgIGate(t); else if (m.kind === 'lookup') h = dlgLookup();
+  if (ui.askDiscard && DRAFT_KINDS.has(m.kind)) h = h.replace('<div class="dlg-head">', `<div class="dlg-ask"><b>저장하지 않은 내용이 있어요</b><span class="grow"></span><button class="btn sm" data-act="ddiscard">저장 안 함</button><button class="btn sm primary" data-act="dsave">저장</button></div><div class="dlg-head">`);
   layer.innerHTML = `<div class="scrim" data-act="scrim">${h}</div>`;
   $('.scrim').scrollTop = st;
   if (m.focus) { const el = document.getElementById(m.focus); m.focus = null; if (el) { el.focus(); if (el.select) el.select(); } }
 }
 function openModal(kind, id, focus) { ui.modal = { kind, id, focus }; ui.confirm = null; closeSearch(); renderModal(); }
-function closeModal() {
+function closeModal(force) {
+  if (!force && isDirty()) { ui.askDiscard = true; renderModal(); return; }
   const m = ui.modal;
   if (m && m.kind === 'lookup') look = null;
   if (m && m.kind === 'citem' && ui.view === 'book') setTimeout(render, 0);
@@ -3014,7 +3033,7 @@ function closeModal() {
 }
 const projOptions = sel => `<option value="">없음</option>${S.projects.map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${esc(p.title)}${p.done ? ' (완료)' : ''}</option>`).join('')}`;
 function dlgHeadTop(kindLabel, kindCls, delAct, id) {
-  return `<div class="dlg-top"><span class="kind ${kindCls}">${kindLabel}</span><span class="autosave" title="바꾸는 즉시 저장돼요">${I.check}자동 저장</span>${ui.modalBack ? `<button class="btn sm ghost" data-act="mback">${I.left}${esc(ui.modalBack.label)}</button>` : ''}<span class="grow"></span>
+  return `<div class="dlg-top"><span class="kind ${kindCls}">${kindLabel}</span>${ui.modalBack ? `<button class="btn sm ghost" data-act="mback">${I.left}${esc(ui.modalBack.label)}</button>` : ''}<span class="grow"></span>${saveBtn()}
   <button class="btn sm ${ui.confirm === delAct + id ? 'warn' : 'ghost danger'}" data-act="del" data-what="${delAct}" data-id="${id}">${ui.confirm === delAct + id ? (delAct === 'item:' && descOf(id).length ? `하위 ${descOf(id).length}개도 함께 삭제` : '한 번 더 누르면 삭제') : '삭제'}</button>
   <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>`;
 }
@@ -3040,7 +3059,7 @@ function dlgItem(it) {
       <label>복기</label><div class="frow"><button class="btn sm" data-act="xnew" data-item="${it.id}">${I.plus}복기 남기기</button>${(S.retros || []).filter(x => x.itemId === it.id && (x.what || x.next)).map(x => `<button class="btn sm ghost" data-act="xopen" data-id="${x.id}">${RKIND[x.kind] || '실수'} · ${fmtShort(x.date)}</button>`).join('')}</div>
     </div></div>
   <div class="dlg-body"><div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">할 때 꼭 챙길 것</span></div>
-    <div class="rchg">${(it.checks || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><span>${tT(c.text)}</span><button class="bn-x" data-act="ichdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
+    <div class="rchg">${(it.checks || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><input class="ck-ed" data-ich="${it.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="꼭 챙길 것 고치기"><button class="bn-x" data-act="ichdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
       <input id="ic-in" class="inp" data-iid="${it.id}" placeholder="예: 공고문 날짜 원문과 대조 · Enter" autocomplete="off"></div>
     ${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
 }
@@ -3475,6 +3494,8 @@ const ACT = {
   mback: () => { const b = ui.modalBack; ui.modalBack = null; if (b) { ui.modal = { kind: b.kind, id: b.id }; renderModal(); } },
   toproj: t => { const it = ui.modal && item(ui.modal.id); ui.modalBack = it ? { kind: 'item', id: it.id, label: it.title || '뒤로' } : null; ui.modal = { kind: 'project', id: t.dataset.id }; renderModal(); },
   close: () => closeModal(),
+  dsave: () => { ui.draft = null; ui.askDiscard = false; save(); closeModal(true); toast('저장했어요'); },
+  ddiscard: () => { const d = ui.draft; ui.draft = null; ui.askDiscard = false; if (d) { S = JSON.parse(d); save(); render(); } closeModal(true); },
   scrim: (t, e) => { if (e.target === t) closeModal(); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
   igdone: t => { const it = item(t.dataset.id); if (!it) return; const back = ui.igBack; ui.igBack = null; mutate(() => { it.done = true; if (it.kind === 'event') it.cancel = false; }, `‘${it.title || '할일'}’ 확인하고 완료`); if (back) { ui.modal = back; } else ui.modal = null; renderModal(); },
@@ -3771,6 +3792,14 @@ document.addEventListener('change', e => {
   if (t.id === 'blk-file') { const pi = pendingImg; pendingImg = null; const file = t.files[0]; t.value = ''; if (!pi || !file) return; readImage(file, src => { const { b } = findBlock(pi.key, pi.bid); if (!b || !src) return; b.type = 'image'; b.src = src; const { bl, i } = findBlock(pi.key, pi.bid); const nb = B('p', ''); bl.splice(i + 1, 0, nb); touch(pi.key); rerenderEditor(pi.key, nb.id, 0); }); }
 });
 
+document.addEventListener('change', e => {
+  const t = e.target; if (!t.dataset || (t.dataset.ich === undefined && t.dataset.rch === undefined)) return;
+  const o = t.dataset.ich !== undefined ? item(t.dataset.ich) : routine(t.dataset.rch); if (!o) return; const key = t.dataset.ich !== undefined ? 'checks' : 'changes';
+  const v = t.value.trim(); mutate(() => { o[key] = (o[key] || []).map(c => c.id === t.dataset.c ? (v ? { ...c, text: v } : null) : c).filter(Boolean); });
+});
+const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.savebtn'); if (!b) return; const d = isDirty(); b.classList.toggle('primary', d); b.textContent = d ? '저장' : '저장됨'; }, 30);
+['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
+document.addEventListener('keydown', e => { const t = e.target; if (t && t.classList && t.classList.contains('ck-ed') && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); t.blur(); } });
 document.addEventListener('change', e => { const t = e.target; if (!t.dataset || t.dataset.ig === undefined) return; const all = [...document.querySelectorAll('[data-ig]')]; const ok = document.getElementById('ig-ok'); if (ok) ok.disabled = !all.every(x => x.checked); });
 /* the same arrows in plain text boxes (titles, 복기, 바뀐 점 …) */
 document.addEventListener('input', e => {
