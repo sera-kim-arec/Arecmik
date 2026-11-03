@@ -1139,6 +1139,7 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .chip.has-ck>*{flex-shrink:0}
 .chip.has-ck .tt{flex:1 1 0;min-width:0}
 .chip-ck{flex:1 0 100%;order:9;font-size:11.5px;font-weight:600;color:var(--rose-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px 1px 4px;line-height:1.35}
+.bar-ck{font-size:11.5px;font-weight:700;color:var(--rose-ink);background:var(--rose-soft);border-radius:6px;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto;margin-left:6px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;border:0;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:9px;padding:5px 8px;cursor:pointer;font:inherit}
 .codebub code.ic{font-size:12.5px}
@@ -2067,7 +2068,7 @@ function weekRow(ws, isSel, month) {
       h += `<div class="bar proj ${pcls(p)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" data-act="open" data-kind="project" data-id="${p.id}" data-drop="project:${p.id}" title="${esc(p.title)} — 할일을 여기로 끌어오면 이 프로젝트에 들어가요"><span class="bt">${tT(p.title)}</span><span class="meta">${meta}</span>${!cr && !p.done ? `<span class="handle" data-resize="project:${p.id}" title="끌어서 끝 날짜 조정"></span>` : ''}</div>`;
     } else {
       const it = sp.o;
-      h += `<div class="bar ev ${evState(it)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}"><span class="dot" style="background:${itemColor(it)}"></span><span class="bt">${rnT(it)}</span><span class="meta">${cr || b === a ? '' : `${fmtShort(it.date)}–${fmtShort(it.end)}`}</span><span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>${!cr ? `<span class="handle" data-resize="event:${it.id}" title="끌어서 기간 조정"></span>` : ''}</div>`;
+      h += `<div class="bar ev ${evState(it)} ${cl ? 'cl' : ''} ${cr ? 'cr' : ''}" style="grid-column:${a + 1}/${b + 2};grid-row:${sp.lane + 2}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}"><span class="dot" style="background:${itemColor(it)}"></span><span class="bt">${rnT(it)}</span>${ckOn(it) ? `<span class="bar-ck" title="확인: ${esc(it.checks.map(c => c.text).join(' / '))}">❗ ${esc(it.checks.map(c => c.text).join(' · '))}</span>` : ''}<span class="meta">${cr || b === a ? '' : `${fmtShort(it.date)}–${fmtShort(it.end)}`}</span><span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>${!cr ? `<span class="handle" data-resize="event:${it.id}" title="끌어서 기간 조정"></span>` : ''}</div>`;
     }
   });
   days.forEach((d, i) => {
