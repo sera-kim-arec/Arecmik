@@ -3799,6 +3799,20 @@ document.addEventListener('change', e => {
 });
 const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.savebtn'); if (!b) return; const d = isDirty(); b.classList.toggle('primary', d); b.textContent = d ? '저장' : '저장됨'; }, 30);
 ['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
+/* Enter saves and closes the open dialog (Ctrl+Enter works anywhere in it) */
+const OWN_ENTER = new Set(['ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || !ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return;
+  const t = e.target; const mod = e.ctrlKey || e.metaKey;
+  if (!mod && !ui.askDiscard) {
+    if (t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'BUTTON' || OWN_ENTER.has(t.id) || (t.classList && t.classList.contains('ck-ed'))) return;
+    if (t.tagName !== 'INPUT' && t.tagName !== 'SELECT' && t !== document.body && !(t.closest && t.closest('#layer'))) return;
+    if (document.querySelector('.slash, .mpick')) return;
+  }
+  e.preventDefault(); e.stopPropagation();
+  if (t.blur && t !== document.body) t.blur();
+  setTimeout(() => ACT.dsave(), 0);
+}, true);
 document.addEventListener('keydown', e => { const t = e.target; if (t && t.classList && t.classList.contains('ck-ed') && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); t.blur(); } });
 document.addEventListener('change', e => { const t = e.target; if (!t.dataset || t.dataset.ig === undefined) return; const all = [...document.querySelectorAll('[data-ig]')]; const ok = document.getElementById('ig-ok'); if (ok) ok.disabled = !all.every(x => x.checked); });
 /* the same arrows in plain text boxes (titles, 복기, 바뀐 점 …) */
