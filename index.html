@@ -1115,6 +1115,21 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .starbtn:hover{opacity:1!important;filter:none}
 .starbtn.on{opacity:1;filter:none}
 @media (hover:none){.starbtn{opacity:.35}.starbtn.on{opacity:1}}
+/* ---- 잊지 말 것 띠 ---- */
+.sstrip{display:flex;align-items:center;gap:12px;margin:2px 0 12px;padding:8px 10px 8px 14px;border-radius:14px;background:var(--rose-soft);min-width:0}
+.ss-l{flex:none;font-weight:800;font-size:13.5px;color:var(--rose-ink)}
+.ss-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;min-width:0;padding:2px}
+.ss-list::-webkit-scrollbar{display:none}
+.spill{display:flex;align-items:center;gap:6px;flex:none;background:var(--surface);border-radius:999px;padding:4px 12px 4px 6px;box-shadow:0 1px 3px rgba(60,70,90,.08)}
+.spill .chk{width:18px;height:18px}
+.spill .sdot{margin:0 3px}
+.sp-t{display:flex;align-items:center;gap:7px;border:0;background:none;font:inherit;color:var(--fg);cursor:pointer;padding:0;max-width:260px}
+.sp-n{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ssw{font-size:12px;color:var(--muted);white-space:nowrap}
+.ssw.today{color:var(--lemon-ink);font-weight:700}
+.ssw.late{color:var(--rose-ink);font-weight:700}
+.chip.star:not(.done){background:var(--rose-soft)!important}
+@media (max-width:860px){ .sstrip{margin:4px 12px 8px;padding:7px 8px 7px 12px;gap:8px} .ss-l{font-size:12.5px} .sp-n{font-size:13.5px} }
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;border:0;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:9px;padding:5px 8px;cursor:pointer;font:inherit}
 .codebub code.ic{font-size:12.5px}
@@ -1978,7 +1993,7 @@ function vWork() {
   if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
-  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
+  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
 const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image' && b.type !== 'table').map(b => plainText(b.text)).filter(Boolean).join(' · ');
 function weekLogHTML(ws) {
@@ -2331,6 +2346,12 @@ function retroSaveHint(r) {
   const n = retrosIn(monthOf(r.date)).filter(x => x.kind === 'mistake' && x.area === r.area).length;
   if (n >= 2) toast(`‘${r.area}’ 업무에서 이번 달 ${n}번째 실수예요. 확인 목록을 한 번 훑어보세요`);
 }
+function starStrip() {
+  const list = S.items.filter(it => it.star && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
+  if (!list.length) return '';
+  const when = it => { if (!it.date) return ''; const late = it.date < TODAY; const t = it.date === TODAY ? '오늘' : late ? `${fmtShort(it.date)} 지남` : fmtShort(it.date); return `<span class="ssw ${late ? 'late' : it.date === TODAY ? 'today' : ''}">${t}${it.start ? ' ' + it.start : ''}</span>`; };
+  return `<div class="sstrip" role="region" aria-label="꼭 잊지 말 것"><span class="ss-l">❗ 잊지 말 것</span><div class="ss-list">${list.map(it => `<div class="spill ${it.date && it.date < TODAY ? 'late' : ''}">${it.kind === 'todo' ? `<button class="chk" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="sp-t" data-act="open" data-kind="item" data-id="${it.id}"><span class="sp-n">${tT(it.title || '제목 없음')}</span>${when(it)}</button></div>`).join('')}</div></div>`;
+}
 function starCard() {
   const list = S.items.filter(it => it.star && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
   if (!list.length) return `<div class="card starcard"><div class="card-title">❗ 꼭 잊지 말 것</div><p class="hint" style="margin:6px 4px 2px">할일 옆 ❗를 누르거나, 적을 때 앞에 <b>!</b>를 붙이면 여기 모여요.</p></div>`;
@@ -2410,7 +2431,7 @@ function vWorkM() {
     <div class="mtitle"><b>${wk ? title : `${m}월`}</b>${wk ? '' : `<span>${y}</span>`}</div>
     <button class="mchev" data-act="${nav}" data-d="-1" aria-label="${wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="mchev" data-act="${nav}" data-d="1" aria-label="${wk ? '다음 주' : '다음 달'}">${I.right}</button>
     <span class="grow"></span>${ui.sel !== TODAY || ui.month !== TODAY.slice(0, 7) ? '<button class="mpill" data-act="today">오늘</button>' : ''}<div class="seg inline sm" role="group" aria-label="달력 보기"><button class="${!wk ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div></div>
-  <div class="mcal" data-swipe="${nav}">
+  ${starStrip()}<div class="mcal" data-swipe="${nav}">
     <div class="mdow" style="${cols}">${vd0.map(d => { const g = parse(d).getDay(); return `<span class="${g === 0 ? 'sun' : g === 6 ? 'sat' : ''}">${'일월화수목금토'[g]}</span>`; }).join('')}</div>
     <div class="mgrid" style="${cols}">${grid}</div>
     <div class="mgrip" aria-hidden="true"></div>
