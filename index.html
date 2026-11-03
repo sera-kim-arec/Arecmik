@@ -1130,6 +1130,11 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .ssw.late{color:var(--rose-ink);font-weight:700}
 .chip.star:not(.done){background:var(--rose-soft)!important}
 @media (max-width:860px){ .sstrip{margin:4px 12px 8px;padding:7px 8px 7px 12px;gap:8px} .ss-l{font-size:12.5px} .sp-n{font-size:13.5px} }
+.ichk{display:flex;gap:6px;align-items:flex-start;margin:-2px 0 4px 34px;padding:3px 10px;border-radius:8px;background:var(--rose-soft);color:var(--rose-ink);font-size:13px;font-weight:600;line-height:1.45;cursor:pointer}
+.ichk i{font-style:normal;opacity:.5;margin:0 5px}
+.ichk-m{flex:none;font-size:11px;margin-top:2px}
+#ic-in{margin-bottom:12px}
+.mlist .ichk{margin:-4px 14px 6px 50px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;border:0;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:9px;padding:5px 8px;cursor:pointer;font:inherit}
 .codebub code.ic{font-size:12.5px}
@@ -2086,6 +2091,7 @@ function addSub(parentId, v, date) {
   return it;
 }
 const tT = t => inlCode(t || '');
+const chkLine = it => (it.checks || []).length && !it.done && !it.cancel ? `<div class="ichk" data-act="open" data-kind="item" data-id="${it.id}"><span class="ichk-m">❗</span><span>${it.checks.map(c => tT(c.text)).join('<i>·</i>')}</span></div>` : '';
 const rnT = it => `<span class="rn" data-rn="${it.id}">${tT(it.title || '제목 없음')}</span>`;
 let rnPending = null, rnEditing = null;
 function startRename(el) {
@@ -2115,7 +2121,7 @@ function chipHTML(it) {
 }
 function trow(it, drag = true) {
   const p = it.projectId && proj(it.projectId);
-  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${tT(p.title)}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`;
+  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${tT(p.title)}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`;
 }
 function panelWork() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
@@ -2389,10 +2395,10 @@ function mDayList(d) {
   const evRow = it => { const st = evState(it); const s2 = sub(it); return `<button class="mrow ev ${st}" data-act="open" data-kind="item" data-id="${it.id}">
       <span class="mtime">${it.start ? `<b>${it.start}</b>${it.finish ? `<small>${it.finish}</small>` : ''}` : '<b class="allday">종일</b>'}</span>
       <span class="mbar" style="background:${it.cancel ? 'var(--faint)' : itemColor(it)}"></span>
-      <span class="mtx"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; };
+      <span class="mtx"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${chkLine(it)}${subInline(it)}`; };
   const tdRow = it => { const s2 = sub(it); const ml = !it.done && moveLabel(it); return `<div class="mrow td ${it.done ? 'done' : ''}" style="${depthOf(it) ? `padding-left:${14 + Math.min(depthOf(it), 3) * 18}px` : ''}">
       <button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>
-      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`; };
+      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`; };
   const nOpen = tds.filter(x => !x.done).length;
   return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
   <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
@@ -2448,7 +2454,7 @@ function daySection() {
     <div class="day-add"><label class="addline"><input id="day-add" placeholder="제목 입력" autocomplete="off" aria-label="이 날에 추가할 제목"></label><button class="btn sm" data-act="dayadd" data-kind="event">일정</button><button class="btn sm" data-act="dayadd" data-kind="todo">할일</button><button class="btn sm" data-act="dayadd" data-kind="retro" title="실수나 받은 피드백을 이 날짜로 기록">복기</button></div>
     ${ps.length ? `<div class="projline">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${tT(p.title)}</button>`).join('')}</div>` : ''}
     <div class="lbl">일정</div>
-    ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${tT(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
+    ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${tT(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${chkLine(it)}${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
     <div class="lbl">할일</div>
     <div class="tlist" style="padding-top:0">${tds.map(it => trow(it, !isMob())).join('') || '<div class="empty">할일이 없어요</div>'}</div>
     ${rtRows(d)}
@@ -2996,7 +3002,10 @@ function dlgItem(it) {
       <label for="f-proj">프로젝트</label><div class="frow"><select id="f-proj" class="inp" data-f="projectId">${projOptions(it.projectId)}</select>${it.projectId && proj(it.projectId) ? `<button class="btn sm ghost" data-act="toproj" data-id="${it.projectId}">프로젝트 보기</button>` : ''}</div>
       <label>복기</label><div class="frow"><button class="btn sm" data-act="xnew" data-item="${it.id}">${I.plus}복기 남기기</button>${(S.retros || []).filter(x => x.itemId === it.id && (x.what || x.next)).map(x => `<button class="btn sm ghost" data-act="xopen" data-id="${x.id}">${RKIND[x.kind] || '실수'} · ${fmtShort(x.date)}</button>`).join('')}</div>
     </div></div>
-  <div class="dlg-body">${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
+  <div class="dlg-body"><div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">할 때 꼭 챙길 것</span></div>
+    <div class="rchg">${(it.checks || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><span>${tT(c.text)}</span><button class="bn-x" data-act="ichdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
+      <input id="ic-in" class="inp" data-iid="${it.id}" placeholder="예: 공고문 날짜 원문과 대조 · Enter" autocomplete="off"></div>
+    ${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
 }
 function remindOptions(it) {
   const st = settingsOf(); const r = it.remind || '';
@@ -3474,6 +3483,7 @@ const ACT = {
   chkall: () => { ui.chkAll = !ui.chkAll; render(); },
   xroutine: t => { const r = retro(t.dataset.id); if (!r || !r.next) return; if ((S.routines || []).some(x => x.title === r.next)) { toast('이미 루틴에 있어요'); return; } mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: r.next, freq: 'any', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴에 추가했어요 · 주기는 루틴에서 바꿀 수 있어요'); },
   rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); if (!done && (r.changes || []).length) { ui.modalBack = null; openModal('rapply', r.id); return; } mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
+  ichdel: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.checks = (it.checks || []).filter(c => c.id !== t.dataset.c); }); renderModal(); },
   rapply: t => {
     const r = routine(t.dataset.id); if (!r) return; const apply = t.dataset.v === '1';
     const picked = apply ? [...document.querySelectorAll('[data-rap]')].filter(x => x.checked).map(x => x.dataset.rap) : [];
@@ -3926,6 +3936,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
   if (t.id === 'bth-in') { e.preventDefault(); const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.node); const v = t.value.trim(); if (!n || !v) return; const pg = +($('#bth-p') || {}).value || null; mutate(() => { n.thoughts = n.thoughts || []; n.thoughts.push({ id: uid(), text: v, page: pg, date: TODAY, ts: Date.now() }); }); ui.focusId = 'bth-in'; render(); return; }
   if (t.id === 'be-label') { e.preventDefault(); ui.bsel = null; render(); return; }
+  if (t.id === 'ic-in') { e.preventDefault(); const it = item(t.dataset.iid); const v = t.value.trim(); if (!it || !v) return; mutate(() => { it.checks = it.checks || []; it.checks.push({ id: uid(), text: v }); }); renderModal(); setTimeout(() => { const i = document.getElementById('ic-in'); if (i) i.focus(); }, 10); return; }
   if (t.id === 'rc-in') { e.preventDefault(); const r = routine(t.dataset.rid); const v = t.value.trim(); if (!r || !v) return; mutate(() => { r.changes = r.changes || []; r.changes.push({ id: uid(), text: v, date: TODAY }); }); renderModal(); setTimeout(() => { const i = document.getElementById('rc-in'); if (i) i.focus(); }, 10); return; }
   if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
