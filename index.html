@@ -1062,8 +1062,8 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 
 /* ---- 꼭 잊지 말기 ---- */
 .imp{color:var(--rose);font-size:.85em;margin-right:3px;font-weight:800}
-.chip.star{box-shadow:inset 3px 0 0 var(--rose)}
-.chip.ev.star{box-shadow:inset 3px 0 0 var(--rose), var(--nm-out-xs, none)}
+.chip.star{box-shadow:none}
+.chip.ev.star{box-shadow:var(--nm-out-xs, none)}
 .impbtn.on{color:var(--rose-ink)!important;background:var(--rose-soft)!important}
 .starcard{border-left:0}
 .starcard .card-title{color:var(--rose-ink)}
@@ -2115,7 +2115,7 @@ function chipHTML(it) {
 }
 function trow(it, drag = true) {
   const p = it.projectId && proj(it.projectId);
-  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${tT(p.title)}</span>` : ''}</button>${it.done ? '' : `<span class="starbtn ${it.star ? 'on' : ''}" role="button" tabindex="0" data-act="star" data-id="${it.id}" title="${it.star ? '꼭 잊지 말기 끄기' : '꼭 잊지 말기'}" aria-label="꼭 잊지 말기" aria-pressed="${!!it.star}">❗</span>`}${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`;
+  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${tT(p.title)}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`;
 }
 function panelWork() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
@@ -2123,7 +2123,7 @@ function panelWork() {
   const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
   <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button></div>
-  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : starCard() + inboxCard() + checkCard()}
+  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : inboxCard()}
   ${daySection()}
   </aside>`;
 }
@@ -2377,7 +2377,7 @@ function inboxCard() {
   </div>`;
 }
 function vTodoM() {
-  return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${starCard()}${inboxCard()}${checkCard()}${routineCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
+  return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${inboxCard()}${routineCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
 }
 function mDayList(d) {
   const dd = parse(d);
@@ -2392,7 +2392,7 @@ function mDayList(d) {
       <span class="mtx"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${subInline(it)}`; };
   const tdRow = it => { const s2 = sub(it); const ml = !it.done && moveLabel(it); return `<div class="mrow td ${it.done ? 'done' : ''}" style="${depthOf(it) ? `padding-left:${14 + Math.min(depthOf(it), 3) * 18}px` : ''}">
       <button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>
-      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${it.done ? '' : `<span class="starbtn ${it.star ? 'on' : ''}" role="button" tabindex="0" data-act="star" data-id="${it.id}" title="${it.star ? '꼭 잊지 말기 끄기' : '꼭 잊지 말기'}" aria-label="꼭 잊지 말기" aria-pressed="${!!it.star}">❗</span>`}${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`; };
+      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${subInline(it)}`; };
   const nOpen = tds.filter(x => !x.done).length;
   return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
   <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
