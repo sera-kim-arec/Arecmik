@@ -2188,7 +2188,7 @@ function routineRows() {
   return list.map(r => { const done = rDone(r), due = rDue(r); const doc0 = r.noteId && doc(r.noteId);
     return `<div class="rrow ${done ? 'done' : ''} ${due ? 'due' : ''}">
       <button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button>
-      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${(r.changes || []).length ? '<span class="imp">❗</span>' : ''}${esc(r.title || '이름 없는 루틴')}</b><span>${rWhen(r)}<i>·</i>${!done && rDueOn(r) ? (rDueOn(r) === TODAY ? '오늘 할 차례' : rDueOn(r) < TODAY ? `${fmtShort(rDueOn(r))}부터 할 차례` : `${fmtShort(rDueOn(r))} 예정`) : rAgo(r)}</span>${(r.changes || []).length ? `<span class="rch">바뀐 점 ${r.changes.length} · ${esc(r.changes[0].text)}${r.changes.length > 1 ? ' 외' : ''}</span>` : ''}</button>
+      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${(r.changes || []).length ? '<span class="imp">❗</span>' : ''}${esc(r.title || '이름 없는 루틴')}</b><span>${rWhen(r)}<i>·</i>${!done && rDueOn(r) ? (rDueOn(r) === TODAY ? '오늘 할 차례' : rDueOn(r) < TODAY ? `${fmtShort(rDueOn(r))}부터 할 차례` : `${fmtShort(rDueOn(r))} 예정`) : rAgo(r)}</span>${(r.changes || []).length ? `<span class="rch">확인 ${r.changes.length} · ${esc(r.changes[0].text)}${r.changes.length > 1 ? ' 외' : ''}</span>` : ''}</button>
       ${doc0 ? `<button class="rnote" data-act="opendoc" data-id="${doc0.id}" title="매뉴얼 노트 열기: ${esc(doc0.title || '제목 없음')}" aria-label="매뉴얼 노트 열기">${I.note}</button>` : ''}
     </div>`; }).join('');
 }
@@ -2199,7 +2199,7 @@ function retroNudge() {
 }
 function routinesOn(d) { return (S.routines || []).filter(r => r.freq !== 'daily' && r.freq !== 'any' && rDueOn(r, d) === d); }
 function rtChip(r, d) { const done = rDoneFor(r, d); return `<div class="chip rt ${done ? 'done' : ''}" data-act="ropen" data-id="${r.id}" title="루틴 · ${esc(rWhen(r))}"><span class="rti">${I.repeat}</span><span class="tt">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}</span></div>`; }
-function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">바뀐 점: ${esc(r.changes.map(c => c.text).join(' / '))}</span>` : ''}</button></div>`; }).join('')}</div>`; }
+function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">확인: ${esc(r.changes.map(c => c.text).join(' / '))}</span>` : ''}</button></div>`; }).join('')}</div>`; }
 function routineCard() {
   const n = (S.routines || []).length; const due = (S.routines || []).filter(rDue).length;
   return `<div class="card rcard2">
@@ -2210,12 +2210,12 @@ function routineCard() {
 }
 function dlgRApply(r) {
   const n = r.noteId && doc(r.noteId);
-  return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="바뀐 점 확인">
+  return `<div class="dialog sm" role="dialog" aria-modal="true" aria-label="확인할 것">
   <div class="dlg-head"><div class="dlg-top"><span class="kind">루틴</span><span class="grow"></span><button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
-    <h2 class="set-title" style="font-size:19px">‘${esc(r.title)}’ 바뀐 점 ${r.changes.length}개, 반영했나요?</h2></div>
+    <h2 class="set-title" style="font-size:19px">‘${esc(r.title)}’ 확인 ${r.changes.length}개, 다 챙겼나요?</h2></div>
   <div class="dlg-body"><div class="rchg">${r.changes.map(c => `<label class="rap"><input type="checkbox" data-rap="${c.id}" checked><span>${esc(c.text)}<em>${fmtShort(c.date)} 적음</em></span></label>`).join('')}</div>
-    <p class="hint" style="margin:8px 2px 0">${n ? `체크한 항목은 매뉴얼 ‘${esc(n.title || '제목 없음')}’에 오늘 날짜로 기록되고 목록에서 빠져요.` : '체크한 항목은 ‘반영한 변경’ 기록으로 옮겨져요. 매뉴얼 노트를 연결해 두면 거기에도 남아요.'}</p>
-    <div class="frow" style="justify-content:flex-end;margin-top:14px;gap:8px"><button class="btn" data-act="rapply" data-id="${r.id}" data-v="0">아직 · 완료만</button><button class="btn primary" data-act="rapply" data-id="${r.id}" data-v="1">반영하고 완료</button></div>
+    <p class="hint" style="margin:8px 2px 0">${n ? `체크한 항목은 매뉴얼 ‘${esc(n.title || '제목 없음')}’에 오늘 날짜로 남고 목록에서 빠져요.` : '체크한 항목은 ‘확인한 것’ 기록으로 옮겨져요. 매뉴얼 노트를 연결해 두면 거기에도 남아요.'}</p>
+    <div class="frow" style="justify-content:flex-end;margin-top:14px;gap:8px"><button class="btn" data-act="rapply" data-id="${r.id}" data-v="0">아직 · 완료만</button><button class="btn primary" data-act="rapply" data-id="${r.id}" data-v="1">확인하고 완료</button></div>
   </div></div>`;
 }
 function dlgRoutine(r) {
@@ -2234,10 +2234,10 @@ function dlgRoutine(r) {
       <label for="rt-note">매뉴얼</label><div class="frow"><select id="rt-note" class="inp" data-rf="noteId"><option value="">연결 안 함</option>${docs.map(d => `<option value="${d.id}" ${d.id === r.noteId ? 'selected' : ''}>${esc(d.title || '제목 없음')}</option>`).join('')}</select>${r.noteId && doc(r.noteId) ? `<button class="btn sm" data-act="opendoc" data-id="${r.noteId}">열기</button>` : `<button class="btn sm" data-act="rmanual" data-id="${r.id}">${I.plus}새 매뉴얼 노트</button>`}</div>
     </div></div>
   <div class="dlg-body">
-    <div class="lbl" style="padding-top:2px">❗ 바뀐 점 <span class="hint" style="font-weight:500">다음에 할 때 꼭 반영할 것</span></div>
+    <div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">다음에 할 때 꼭 챙길 것</span></div>
     <div class="rchg">${(r.changes || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><span>${esc(c.text)}<em>${fmtShort(c.date)} 적음</em></span><button class="bn-x" data-act="rchdel" data-id="${r.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
       <input id="rc-in" class="inp" data-rid="${r.id}" placeholder="예: 11월부터 양식 v3 사용 · Enter" autocomplete="off"></div>
-    ${(r.applied || []).length ? `<details class="rapplied"><summary>반영한 변경 ${r.applied.length}</summary>${r.applied.slice().reverse().map(c => `<div>${fmtShort(c.on)} · ${esc(c.text)}</div>`).join('')}</details>` : ''}
+    ${(r.applied || []).length ? `<details class="rapplied"><summary>확인한 것 ${r.applied.length}</summary>${r.applied.slice().reverse().map(c => `<div>${fmtShort(c.on)} · ${esc(c.text)}</div>`).join('')}</details>` : ''}
     <div class="lbl" style="padding-top:12px">한 날 ${log.length ? log.length + '번' : ''}</div>
     ${log.length ? `<div class="rlog">${log.slice(0, 24).map(d => `<span>${fmtShort(d)}</span>`).join('')}${log.length > 24 ? `<span class="muted">외 ${log.length - 24}번</span>` : ''}</div>` : '<p class="hint" style="margin:2px">아직 기록이 없어요. 목록에서 체크하면 오늘 날짜로 남아요.</p>'}
   </div></div>`;
@@ -3485,9 +3485,9 @@ const ACT = {
         r.changes = r.changes.filter(c => !picked.includes(c.id));
         r.applied = [...(r.applied || []), ...done.map(c => ({ text: c.text, date: c.date, on: TODAY }))].slice(-200);
         const n = r.noteId && doc(r.noteId);
-        if (n) { n.blocks = n.blocks || []; if (n.blocks.length === 1 && !n.blocks[0].text) n.blocks.pop(); n.blocks.push(B('h', `${TODAY} 바뀐 점 반영`)); done.forEach(c => n.blocks.push(B('bullet', c.text))); n.updated = Date.now(); }
+        if (n) { n.blocks = n.blocks || []; if (n.blocks.length === 1 && !n.blocks[0].text) n.blocks.pop(); n.blocks.push(B('h', `${TODAY} 확인`)); done.forEach(c => n.blocks.push(B('bullet', c.text))); n.updated = Date.now(); }
       }
-    }, picked.length ? `‘${r.title}’ 했어요 · 바뀐 점 ${picked.length}개 반영` : `‘${r.title}’ 했어요`);
+    }, picked.length ? `‘${r.title}’ 했어요 · 확인 ${picked.length}개` : `‘${r.title}’ 했어요`);
   },
   rchdel: t => { const r = routine(t.dataset.id); if (!r) return; mutate(() => { r.changes = (r.changes || []).filter(c => c.id !== t.dataset.c); }); renderModal(); },
   ropen: t => openModal('routine', t.dataset.id),
