@@ -1158,6 +1158,15 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .wk.sel{flex:1.7 0 auto}
 .cal-main{min-height:0}
 .cal-main>.cal-scroll{overflow-y:auto}
+.atag{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;line-height:1;padding:3px 5px;border-radius:5px;margin-right:4px;vertical-align:1px;background:rgba(135,131,120,.14);color:var(--fg2)}
+.atag b{color:var(--rose-ink);font-weight:800}
+.chip .atag{font-size:10px;padding:2px 4px;margin-right:3px}
+.awarn{margin:6px 0 12px;padding:10px 12px;border-radius:12px;background:var(--rose-soft)}
+.awarn-h{font-size:13px;font-weight:800;color:var(--rose-ink);margin-bottom:4px}
+.awarn-h span{font-weight:600;opacity:.7}
+.awarn-r{display:flex;gap:8px;width:100%;border:0;background:none;font:inherit;font-size:14px;color:var(--fg);text-align:left;padding:4px 2px;cursor:pointer;line-height:1.45}
+.awarn-r b{color:var(--rose-ink);font-weight:700;flex:none}
+.awarn-r em{margin-left:auto;font-style:normal;font-size:12px;color:var(--muted);flex:none}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2155,20 +2164,20 @@ function leafStats(id, forced0) {
 function progHTML(it) { const { d, t } = leafStats(it.id, it.done); if (!t) return ''; return `<span class="prog ${d === t ? 'all' : ''}" title="끝 단계 할일 ${t}개 중 ${d}개 완료">${d}/${t}</span>`; }
 function parentLabel(it) { const pa = it.parentId && item(it.parentId); return pa ? `<span class="ptl">↳ ${esc(pa.title || '제목 없음')}</span>` : ''; }
 function chipHTML(it) {
-  if (it.kind === 'event') return `<div class="chip ev ${evState(it)} ${it.star ? 'star' : ''} ${ckOn(it) ? 'has-ck' : ''}" style="--chip:${itemColor(it)}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${it.cancel ? ' (취소됨)' : it.done ? ' (완료)' : ''}"><button class="evck" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}" title="${it.done ? '완료 취소' : '완료로 표시'}"><span class="dot" style="background:${itemColor(it)}"></span>${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${rnT(it)}</span>${it.moves && it.moves.length ? '<span class="mvi" title="미룬 일정">↷</span>' : ''}${progHTML(it)}<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>${chipCk(it)}<span class="handle" data-resize="event:${it.id}" title="오른쪽으로 끌면 기간 일정이 돼요"></span></div>`;
-  return `<div class="chip ${it.done ? 'done' : ''} ${it.star && !it.done ? 'star' : ''} ${ckOn(it) ? 'has-ck' : ''}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${moveLabel(it) ? ' · ' + moveLabel(it) : ''}"><button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${rnT(it)}${parentLabel(it)}</span>${it.moves && it.moves.length && !it.done ? '<span class="mvi">↷</span>' : ''}${progHTML(it)}${`<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}${chipCk(it)}</div>`;
+  if (it.kind === 'event') return `<div class="chip ev ${evState(it)} ${it.star ? 'star' : ''} ${ckOn(it) ? 'has-ck' : ''}" style="--chip:${itemColor(it)}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${it.cancel ? ' (취소됨)' : it.done ? ' (완료)' : ''}"><button class="evck" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}" title="${it.done ? '완료 취소' : '완료로 표시'}"><span class="dot" style="background:${itemColor(it)}"></span>${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)}</span>${it.moves && it.moves.length ? '<span class="mvi" title="미룬 일정">↷</span>' : ''}${progHTML(it)}<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>${chipCk(it)}<span class="handle" data-resize="event:${it.id}" title="오른쪽으로 끌면 기간 일정이 돼요"></span></div>`;
+  return `<div class="chip ${it.done ? 'done' : ''} ${it.star && !it.done ? 'star' : ''} ${ckOn(it) ? 'has-ck' : ''}" draggable="true" data-drag="item:${it.id}" data-act="open" data-kind="item" data-id="${it.id}" title="${esc(it.title)}${moveLabel(it) ? ' · ' + moveLabel(it) : ''}"><button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>${it.start ? `<span class="tm">${it.start}</span>` : ''}<span class="tt">${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)}${parentLabel(it)}</span>${it.moves && it.moves.length && !it.done ? '<span class="mvi">↷</span>' : ''}${progHTML(it)}${`<span class="chip-sub" data-act="chipsub" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}${chipCk(it)}</div>`;
 }
 function trow(it, drag = true) {
   const p = it.projectId && proj(it.projectId);
-  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${tT(p.title)}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`;
+  return `<div class="trow ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 16}px` : ''}" ${drag ? `draggable="true" data-drag="item:${it.id}"` : ''}>${drag ? `<span class="grip" title="끌어서 날짜로 옮기기">${I.grip}</span>` : ''}<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button><button class="tlink" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.start && it.date ? `<span class="muted" style="font-variant-numeric:tabular-nums">${it.start}</span> ` : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)} ${progHTML(it)}${it.done ? '' : moveBadge(it)}</span>${it.parentId ? parentLabel(it).replace('class="ptl"', 'class="ptl show"') : ''}${p && !it.parentId ? `<span class="tag ${pcls(p)}">${tT(p.title)}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`;
 }
 function panelWork() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
   const open = inbox.filter(i => !i.done), done = inbox.filter(i => i.done);
   const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
-  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button></div>
-  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : inboxCard()}
+  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
+  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}
   ${daySection()}
   </aside>`;
 }
@@ -2389,9 +2398,23 @@ function dlgRetro(r) {
     <p class="hint" style="margin:8px 2px 0">‘다음엔’에 적은 내용은 복기 화면의 확인 목록에 모여요.</p>
   </div></div>`;
 }
+function retroPanel() {
+  const m = monthOf(TODAY); const list = retrosIn(m).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const by = {}; list.forEach(r => { const k = r.area || '업무 미지정'; (by[k] = by[k] || []).push(r); });
+  return `<div class="card"><div class="card-title">실수 · 피드백 <span class="hint" style="font-weight:500">이번 달 ${list.length}건</span><span class="grow"></span><button class="btn sm ghost" data-act="go" data-view="retro">대시보드</button></div>
+    <label class="addline">${I.plus}<input id="rp-add" placeholder="무슨 일이 있었나 적고 Enter" autocomplete="off" aria-label="실수 적기"></label>
+    ${Object.keys(by).length ? Object.keys(by).map(k => `<div class="cg"><div class="cg-h">${esc(k)} <span class="muted">${by[k].length}</span></div>${by[k].map(retroRow).join('')}</div>`).join('') : '<div class="empty">이번 달 기록이 없어요.</div>'}</div>`;
+}
+const areaRetros = a => a ? (S.retros || []).filter(r => r.area === a && (r.next || r.what)).sort((x, y) => (y.date || '').localeCompare(x.date || '')) : [];
+function areaWarn(it) {
+  const rs = areaRetros(it.area); if (!rs.length) return '';
+  const seen = new Set(); const rows = rs.filter(r => { const k = (r.next || r.what).trim(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 6);
+  return `<div class="awarn"><div class="awarn-h">⚠ ‘${esc(it.area)}’ 업무에서 했던 실수 <span>${rs.length}</span></div>${rows.map(r => `<button class="awarn-r" data-act="xopen" data-id="${r.id}">${r.next ? `<b>다음엔</b> ${esc(r.next)}` : esc(r.what)}<em>${fmtShort(r.date)}</em></button>`).join('')}</div>`;
+}
+const areaTag = it => it.area && !it.done ? `<span class="atag" title="업무 · ${esc(it.area)}">${esc(it.area)}${areaRetros(it.area).length ? `<b>⚠${areaRetros(it.area).length}</b>` : ''}</span>` : '';
 function newRetro(itemId, opts = {}) {
   const it = itemId && item(itemId);
-  const r = { id: uid(), date: opts.date || (it && it.date && it.date <= TODAY ? it.date : TODAY), kind: 'mistake', cat: '', impact: 'me', what: opts.what || '', next: '', itemId: itemId || null, created: Date.now() };
+  const r = { id: uid(), date: opts.date || (it && it.date && it.date <= TODAY ? it.date : TODAY), kind: 'mistake', cat: '', impact: 'me', what: opts.what || '', next: '', itemId: itemId || null, created: Date.now() }; if (it && it.area) r.area = it.area;
   S.retros = S.retros || []; S.retros.push(r); ui.modalBack = null; ui.modal = { kind: 'retro', id: r.id, isNew: true, focus: 'x-what' }; ui.confirm = null; renderModal();
   setTimeout(() => { const t = document.getElementById(opts.what ? 'x-next' : 'x-what'); if (t) t.focus(); }, 30);
 }
@@ -2443,10 +2466,10 @@ function mDayList(d) {
   const evRow = it => { const st = evState(it); const s2 = sub(it); return `<button class="mrow ev ${st}" data-act="open" data-kind="item" data-id="${it.id}">
       <span class="mtime">${it.start ? `<b>${it.start}</b>${it.finish ? `<small>${it.finish}</small>` : ''}` : '<b class="allday">종일</b>'}</span>
       <span class="mbar" style="background:${it.cancel ? 'var(--faint)' : itemColor(it)}"></span>
-      <span class="mtx"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${chkLine(it)}${subInline(it)}`; };
+      <span class="mtx"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)}</b>${s2 || st || moveLabel(it) ? `<span>${st === 'cancel' ? '<em class="st">취소</em>' : st === 'done' ? '<em class="st ok">완료</em>' : ''}${moveLabel(it) ? `<em class="mv">↷ ${moveLabel(it)}</em>` : ''}${s2}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${chkLine(it)}${subInline(it)}`; };
   const tdRow = it => { const s2 = sub(it); const ml = !it.done && moveLabel(it); return `<div class="mrow td ${it.done ? 'done' : ''}" style="${depthOf(it) ? `padding-left:${14 + Math.min(depthOf(it), 3) * 18}px` : ''}">
       <button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>
-      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`; };
+      <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`; };
   const nOpen = tds.filter(x => !x.done).length;
   return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
   <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
@@ -2502,7 +2525,7 @@ function daySection() {
     <div class="day-add"><label class="addline"><input id="day-add" placeholder="제목 입력" autocomplete="off" aria-label="이 날에 추가할 제목"></label><button class="btn sm" data-act="dayadd" data-kind="event">일정</button><button class="btn sm" data-act="dayadd" data-kind="todo">할일</button><button class="btn sm" data-act="dayadd" data-kind="retro" title="실수나 받은 피드백을 이 날짜로 기록">복기</button></div>
     ${ps.length ? `<div class="projline">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${tT(p.title)}</button>`).join('')}</div>` : ''}
     <div class="lbl">일정</div>
-    ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${tT(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${chkLine(it)}${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
+    ${evs.map(it => { const p = it.projectId && proj(it.projectId); return `<button class="evrow ${evState(it)}" data-act="open" data-kind="item" data-id="${it.id}"><span class="eb" style="background:${itemColor(it)}"></span><span class="et"><b>${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)} ${progHTML(it)}${it.cancel ? '<span class="stb">취소</span>' : it.done ? '<span class="stb ok">완료</span>' : ''}${moveBadge(it)}</b><span>${it.end ? `${fmtShort(it.date)} – ${fmtShort(it.end)}` : it.start ? `${it.start}${it.finish ? ` – ${it.finish}` : ''}` : '하루 종일'}</span>${p ? `<span class="pt ${pcls(p)}">${tT(p.title)}</span>` : ''}</span>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</button>${chkLine(it)}${subInline(it)}`; }).join('') || '<div class="empty">일정이 없어요</div>'}
     <div class="lbl">할일</div>
     <div class="tlist" style="padding-top:0">${tds.map(it => trow(it, !isMob())).join('') || '<div class="empty">할일이 없어요</div>'}</div>
     ${rtRows(d)}
@@ -3042,8 +3065,9 @@ function dlgItem(it) {
   return `<div class="dialog" role="dialog" aria-modal="true" aria-label="${esc(it.title || '항목')}">
   <div class="dlg-head">${dlgHeadTop(ev ? '일정' : it.parentId ? '하위 할일' : '할일', ev ? 'ev' : '', 'item:', it.id)}
     ${it.parentId && item(it.parentId) ? `<button class="parent-link" data-act="openparent" data-id="${it.parentId}">↳ ${esc(item(it.parentId).title || '제목 없음')}<span>상위 항목 열기</span></button>` : ''}
-    <input class="title-input" id="dlg-title" data-f="title" value="${esc(it.title)}" placeholder="제목" aria-label="제목">
+    <input class="title-input" id="dlg-title" data-f="title" value="${esc(it.title)}" placeholder="제목" aria-label="제목">${areaWarn(it)}
     <div class="fgrid">
+    <label>업무</label><div class="frow xcats">${retroAreas().map(c => `<button class="xchip ${it.area === c ? 'on' : ''}" data-act="iarea" data-id="${it.id}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="iarea-new" class="inp xcat-in" placeholder="${retroAreas().length ? '+ 업무' : '+ 업무 이름 (예: 채용)'}" autocomplete="off"></div>
     <label>우선순위</label><div class="frow"><div class="seg inline sm" role="radiogroup" aria-label="우선순위">${[[0, '없음'], [1, '높음'], [2, '보통'], [3, '낮음']].map(([v, l]) => `<button role="radio" aria-checked="${(it.pri || 0) === v}" class="${(it.pri || 0) === v ? 'on' : ''}" data-act="setpri" data-id="${it.id}" data-v="${v}">${l}</button>`).join('')}</div></div>
     <label>표시</label><div class="frow"><button class="btn sm impbtn ${it.star ? 'on' : ''}" data-act="star" data-id="${it.id}" aria-pressed="${!!it.star}">❗ ${it.star ? '꼭 잊지 말기 켜짐' : '꼭 잊지 말기'}</button></div>
     <label>종류</label><div class="frow"><div class="seg inline" role="radiogroup" aria-label="종류"><button role="radio" aria-checked="${!ev}" class="${ev ? '' : 'on'}" data-act="setkind" data-k="todo">할일</button><button role="radio" aria-checked="${ev}" class="${ev ? 'on' : ''}" data-act="setkind" data-k="event">일정</button></div></div>
@@ -3497,6 +3521,7 @@ const ACT = {
   dsave: () => { ui.draft = null; ui.askDiscard = false; save(); closeModal(true); toast('저장했어요'); },
   ddiscard: () => { const d = ui.draft; ui.draft = null; ui.askDiscard = false; if (d) { S = JSON.parse(d); save(); render(); } closeModal(true); },
   scrim: (t, e) => { if (e.target === t) closeModal(); },
+  iarea: t => { const it = item(t.dataset.id); if (!it) return; const v = t.dataset.v; mutate(() => { if (it.area === v) delete it.area; else it.area = v; }); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
   igdone: t => { const it = item(t.dataset.id); if (!it) return; const back = ui.igBack; ui.igBack = null; mutate(() => { it.done = true; if (it.kind === 'event') it.cancel = false; }, `‘${it.title || '할일'}’ 확인하고 완료`); if (back) { ui.modal = back; } else ui.modal = null; renderModal(); },
   igclose: () => { const back = ui.igBack; ui.igBack = null; ui.modal = back || null; renderModal(); },
@@ -3800,7 +3825,7 @@ document.addEventListener('change', e => {
 const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.savebtn'); if (!b) return; const d = isDirty(); b.classList.toggle('primary', d); b.textContent = d ? '저장' : '저장됨'; }, 30);
 ['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
 /* Enter saves and closes the open dialog (Ctrl+Enter works anywhere in it) */
-const OWN_ENTER = new Set(['ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
+const OWN_ENTER = new Set(['iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || !ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return;
   const t = e.target; const mod = e.ctrlKey || e.metaKey;
@@ -4016,6 +4041,8 @@ document.addEventListener('keydown', e => {
   if (t.id === 'q') { const first = pop.querySelector('.sres button'); if (first) first.click(); return; }
   if (t.id === 'mp-q' && mention) { e.preventDefault(); pickMention(mention.idx); return; }
   if (t.dataset && t.dataset.xadd) { e.preventDefault(); const k = t.dataset.xadd; const v = t.value.trim(); if (!v) return; const [sk, get] = XLIST[k]; if (!get().includes(v)) mutate(() => { S.settings = { ...(S.settings || {}), [sk]: [...get(), v] }; }); ui.focusId = null; render(); const n = document.querySelector(`[data-xadd="${k}"]`); if (n) n.focus(); return; }
+  if (t.id === 'rp-add') { e.preventDefault(); const v = t.value.trim(); if (!v) return; t.value = ''; newRetro(null, { date: TODAY, what: v }); return; }
+  if (t.id === 'iarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); const it = item(ui.modal.id); mutate(() => { S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; if (it) it.area = v; }); return; }
   if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
   if (t.id === 'xcat-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const cats = retroCats(); S.settings = { ...(S.settings || {}), retroCats: cats.includes(v) ? cats : [...cats, v] }; const r = retro(ui.modal.id); if (r) r.cat = v; save(); renderModal(); return; }
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
