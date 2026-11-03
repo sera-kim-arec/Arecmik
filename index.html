@@ -1099,6 +1099,15 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .offlist .bn-x{opacity:1;width:20px;height:20px}
 .rtrow.done .dr-t{color:var(--muted);text-decoration:line-through}
 .rtrow .chk{border-radius:50%}
+/* ---- 확인할 것 ---- */
+.chkcard .card-title{display:flex;align-items:center;gap:6px;color:var(--lemon-ink)}
+.chkcard .card-title .grow{flex:1}
+.cg{margin-top:6px}
+.cg-h{font-size:12.5px;font-weight:700;color:var(--muted);padding:4px 4px 2px}
+.crow{display:flex;align-items:flex-start;gap:9px;width:100%;border:0;background:transparent;font:inherit;color:var(--fg);text-align:left;cursor:pointer;padding:6px 4px;border-radius:10px;line-height:1.45}
+.crow:hover{background:var(--lemon-soft, rgba(255,214,10,.14))}
+.cdot{width:7px;height:7px;border-radius:4px;background:#E9B600;margin-top:7px;flex:none}
+.ct{font-weight:600}
 /* ---- routines ---- */
 .set-title{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
 .rdue-c{color:var(--lemon-ink)!important;font-weight:700}
@@ -2087,7 +2096,7 @@ function panelWork() {
   const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
   <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button></div>
-  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : starCard() + inboxCard()}
+  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : starCard() + checkCard() + inboxCard()}
   ${daySection()}
   </aside>`;
 }
@@ -2316,6 +2325,13 @@ function starCard() {
   return `<div class="card starcard"><div class="card-title">❗ 꼭 잊지 말 것 <span class="cnt">${list.length}</span></div>
     <div class="slist">${list.map(it => { const late = it.date && it.date < TODAY; return `<div class="srow">${it.kind === 'todo' ? `<button class="chk" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="stl" data-act="open" data-kind="item" data-id="${it.id}"><span class="stt">${rnT(it)}</span><span class="sw ${late ? 'late' : it.date === TODAY ? 'today' : ''}">${it.date ? (it.date === TODAY ? '오늘' : late ? `${fmtShort(it.date)} 지남` : fmtShort(it.date)) + (it.start ? ' ' + it.start : '') : '날짜 없음'}</span></button></div>`; }).join('')}</div></div>`;
 }
+function checkCard() {
+  const groups = retroCheckList(); const gk = Object.keys(groups); if (!gk.length) return '';
+  const total = gk.reduce((n, k) => n + groups[k].length, 0); const all = ui.chkAll; let shown = 0;
+  const body = gk.map(c => { const rows = groups[c].filter(() => all || shown++ < 6); if (!rows.length) return ''; return `<div class="cg"><div class="cg-h">${esc(c)}</div>${rows.map(r => `<button class="crow" data-act="xopen" data-id="${r.id}"><span class="cdot"></span><span class="ct">${esc(r.next)}</span></button>`).join('')}</div>`; }).join('');
+  return `<div class="card chkcard"><div class="card-title">✓ 확인할 것 <span class="cnt">${total}</span><span class="grow"></span><button class="btn sm ghost" data-act="go" data-view="retro">복기</button></div>
+    ${body}${total > 6 ? `<button class="fold-btn" data-act="chkall">${all ? I.chevD + ' 접기' : I.chevR + ` ${total - 6}개 더 보기`}</button>` : ''}</div>`;
+}
 function inboxCard() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
   const open = inbox.filter(i => !i.done), done = inbox.filter(i => i.done);
@@ -2328,7 +2344,7 @@ function inboxCard() {
   </div>`;
 }
 function vTodoM() {
-  return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${starCard()}${inboxCard()}${routineCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
+  return `${topbar('<h1 class="h1">할일</h1>')}<div class="mpage">${starCard()}${checkCard()}${inboxCard()}${routineCard()}<div class="card"><div class="card-title">상시 메모</div>${editorHTML('memo', true)}</div></div>`;
 }
 function mDayList(d) {
   const dd = parse(d);
@@ -3420,6 +3436,7 @@ const ACT = {
   xrm: t => { const k = t.dataset.k, v = t.dataset.v; const [sk, get] = XLIST[k]; mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().filter(x => x !== v) }; }, `‘${v}’을 목록에서 뺐어요`); },
   xcat: t => { ui.xcat = ui.xcat === t.dataset.c ? null : t.dataset.c; render(); },
   rmonth: t => { const d = +t.dataset.d; ui.rmonth = d === 0 ? monthOf(TODAY) : (() => { const [y, m] = (ui.rmonth || monthOf(TODAY)).split('-').map(Number); return iso(new Date(y, m - 1 + d, 1)).slice(0, 7); })(); render(); },
+  chkall: () => { ui.chkAll = !ui.chkAll; render(); },
   xroutine: t => { const r = retro(t.dataset.id); if (!r || !r.next) return; if ((S.routines || []).some(x => x.title === r.next)) { toast('이미 루틴에 있어요'); return; } mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: r.next, freq: 'any', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴에 추가했어요 · 주기는 루틴에서 바꿀 수 있어요'); },
   rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); if (!done && (r.changes || []).length) { ui.modalBack = null; openModal('rapply', r.id); return; } mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
   rapply: t => {
@@ -3668,6 +3685,14 @@ document.addEventListener('change', e => {
   if (t.id === 'blk-file') { const pi = pendingImg; pendingImg = null; const file = t.files[0]; t.value = ''; if (!pi || !file) return; readImage(file, src => { const { b } = findBlock(pi.key, pi.bid); if (!b || !src) return; b.type = 'image'; b.src = src; const { bl, i } = findBlock(pi.key, pi.bid); const nb = B('p', ''); bl.splice(i + 1, 0, nb); touch(pi.key); rerenderEditor(pi.key, nb.id, 0); }); }
 });
 
+/* the same arrows in plain text boxes (titles, 복기, 바뀐 점 …) */
+document.addEventListener('input', e => {
+  const t = e.target; if (!t || (e.data !== '>' && e.data !== '-')) return;
+  const ok = t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && /^(text|search)$/.test(t.type || 'text')); if (!ok || t.selectionStart !== t.selectionEnd) return;
+  const pos = t.selectionStart, before = t.value.slice(0, pos);
+  const out = before.endsWith('->') ? '→' : before.endsWith('←>') ? '↔' : before.endsWith('<-') ? '←' : ''; if (!out) return;
+  t.setRangeText(out, pos - 2, pos, 'end');
+}, true);
 /* -> becomes →, <- becomes ←, <-> becomes ↔ (not inside `code`) */
 function autoArrow(el) {
   const sel = getSelection(); if (!sel.rangeCount || !sel.getRangeAt(0).collapsed) return;
