@@ -1463,6 +1463,9 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .bp-reladd input{flex:1;min-width:0}
 .bk-nlbl{margin-top:6px}
 .rch i{font-style:normal;opacity:.5;margin:0 5px}
+.pcover-sm{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pcover-sm .pcv{width:64px;height:44px;border-radius:8px;background-size:cover;background-position:center;flex:none}
+.pcard.noimg .pc-t{padding-top:14px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2148,7 +2151,7 @@ const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
 const ui = {
-  pview: (() => { try { return localStorage.getItem('arecmik-pview') || 'card'; } catch (e) { return 'card'; } })(),
+  pview: (() => { try { return localStorage.getItem('arecmik-pview') || 'list'; } catch (e) { return 'list'; } })(),
   view: VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'work',
   month: TODAY.slice(0, 7), sel: TODAY, panelTab: 'todo', showInboxDone: false,
   open: { f1: true, f2: true, lf2: true }, noteFolder: 'f2', noteDoc: 'n1',
@@ -3084,7 +3087,7 @@ const dayLabel = d => { const x = parse(d); return `${x.getMonth() + 1}월 ${x.g
 const postTitle = p => p.title || dayLabel(p.date);
 function isDiaryFolder(fid) { let f = folder(fid); while (f) { if ((f.name || '').trim() === '일기') return true; f = f.parent ? folder(f.parent) : null; } return false; }
 function postCard(x) {
-  return `<button class="pcard" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}"><span class="pc-c" style="${coverStyle(x.cover)}"></span><span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(postTitle(x))}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`;
+  return `<button class="pcard ${x.cover && x.cover.img ? '' : 'noimg'}" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}">${x.cover && x.cover.img ? `<span class="pc-c" style="${coverStyle(x.cover)}"></span>` : ''}<span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(postTitle(x))}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`;
 }
 function postLine(x) {
   const d = parse(x.date); const ft = firstText(x.blocks);
@@ -3098,7 +3101,7 @@ function postGroups(posts) {
   const years = [...new Set(posts.map(x => x.date.slice(0, 4)))];
   const cy = TODAY.slice(0, 4); const firstOpen = years.includes(cy) ? cy : years[0];
   const open = y => (ui.pyears && y in ui.pyears) ? ui.pyears[y] : y === firstOpen;
-  const view = ui.pview || 'card';
+  const view = ui.pview || 'list';
   const chips = years.length > 1 ? `<div class="ychips">${years.map(y => `<button class="${open(y) ? 'on' : ''}" data-act="pyear" data-y="${y}">${y}</button>`).join('')}</div>` : '';
   return chips + years.map(y => {
     const yp = posts.filter(x => x.date.startsWith(y)); const isOpen = open(y);
@@ -3158,7 +3161,7 @@ function vPosts() {
   <div class="page">
     <input class="h1-input" data-fname="${f.id}" value="${esc(f.name)}" aria-label="폴더 이름">
     ${subs.length ? `<div class="fcards">${subs.map(x => `<button class="fcard" data-act="lfolder" data-id="${x.id}">${I.folder}${esc(x.name)}<span class="c">${folderCount(x)}</span></button>`).join('')}</div>` : ''}
-    <div class="ptools"><span class="lbl" style="padding:0">글 ${posts.length}개${isDiaryFolder(fid) ? ' · 하루에 한 편' : ''}</span><span class="grow"></span><div class="seg inline sm" role="group" aria-label="보기"><button class="${(ui.pview || 'card') === 'card' ? 'on' : ''}" data-act="pview" data-v="card">카드</button><button class="${ui.pview === 'list' ? 'on' : ''}" data-act="pview" data-v="list">목록</button></div></div>
+    <div class="ptools"><span class="lbl" style="padding:0">글 ${posts.length}개${isDiaryFolder(fid) ? ' · 하루에 한 편' : ''}</span><span class="grow"></span><div class="seg inline sm" role="group" aria-label="보기"><button class="${(ui.pview || 'list') === 'card' ? 'on' : ''}" data-act="pview" data-v="card">카드</button><button class="${ui.pview === 'list' ? 'on' : ''}" data-act="pview" data-v="list">목록</button></div></div>
     ${postGroups(posts)}
     <div class="foot-actions"><button class="btn sm ${ui.confirm === 'folder:' + f.id ? 'warn' : 'ghost danger'}" data-act="delfolder" data-id="${f.id}">${ui.confirm === 'folder:' + f.id ? '한 번 더 누르면 폴더 삭제 (안의 글은 위 폴더로 옮겨져요)' : '폴더 삭제'}</button></div>
   </div>`;
@@ -3167,13 +3170,8 @@ function vPost(p) {
   const f = folder(p.folder);
   return `${topbar(`<button class="btn ghost" data-act="lfolder" data-id="${p.folder}">${I.left}${esc(f ? f.name : '폴더')}</button>`, `<span class="hint">자동 저장</span><button class="btn sm ${ui.confirm === 'post:' + p.id ? 'warn' : 'ghost danger'}" data-act="delpost" data-id="${p.id}">${ui.confirm === 'post:' + p.id ? '한 번 더 누르면 삭제' : '삭제'}</button>`)}
   <article class="doc">
-    <div class="cover" style="${coverStyle(p.cover)}"><div class="cover-ctl">
-      <label class="btn sm glass" for="cover-file">${I.img}사진 올리기</label><input type="file" id="cover-file" accept="image/*" hidden>
-      ${p.cover.img ? '<button class="btn sm glass" data-act="coverclear">사진 지우기</button>' : '<button class="btn sm glass" data-act="covertone">색 바꾸기</button>'}
-      <span class="grow"></span>
-      <label class="chk-lbl glass"><input type="checkbox" id="cover-cal" data-pf="coverOnCal" ${p.coverOnCal ? 'checked' : ''}>달력 대표 이미지</label>
-    </div></div>
-    <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}</div>
+    ${p.cover && p.cover.img ? `<div class="pcover-sm"><span class="pcv" style="${coverStyle(p.cover)}"></span><label class="chk-lbl"><input type="checkbox" id="cover-cal" data-pf="coverOnCal" ${p.coverOnCal ? 'checked' : ''}>달력 대표 이미지</label><button class="btn sm ghost" data-act="coverclear">사진 빼기</button></div>` : ''}
+    <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}${p.cover && p.cover.img ? '' : `<label class="pill" for="cover-file" title="대표 사진 (기록 달력에 보여요)">${I.img}사진</label>`}<input type="file" id="cover-file" accept="image/*" hidden></div>
     <input class="doc-title" id="post-title" data-pf="title" value="${esc(p.title)}" placeholder="${isDiaryFolder(p.folder) ? esc(dayLabel(p.date)) : '제목'}" aria-label="글 제목">
     ${ui.linksOpen === 'post:' + p.id ? linksHTML('post:' + p.id, 'post:' + p.id, true) : ''}
     ${editorHTML('post:' + p.id)}
