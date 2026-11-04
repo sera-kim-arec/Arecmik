@@ -1260,10 +1260,11 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .plog-i{display:flex;gap:7px;border:0;background:none;font:inherit;font-size:13px;color:var(--fg2);text-align:left;padding:2px 4px;border-radius:6px;cursor:pointer;line-height:1.45}
 .plog-i:hover{background:var(--hover, rgba(0,0,0,.04))}
 .plog .ccomp{margin-top:4px}
-.jadd-row{display:flex;align-items:center;gap:8px;margin:4px 0 12px;padding:4px 6px;border-radius:12px}
-.jadd-row .seg{flex:none}
-.jadd-row .addline{flex:1;background:transparent;box-shadow:none}
-.jadd-row:focus-within{background:var(--surface);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line))}
+.jadd-row{margin:0 0 12px}
+.jadd-row .addline{display:flex;align-items:center;gap:6px;padding:4px 4px 4px 12px}
+.jadd-row .addline input{flex:1;min-width:0}
+.jadd-seg{flex:none;margin-left:auto}
+
 .jw{max-width:1100px;padding:0 8px 60px}
 .jw-cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(240px,2fr);gap:16px;font-size:12.5px;font-weight:700;color:var(--muted);padding:0 6px 6px}
 .jw-day{border-top:1px solid var(--line);padding:10px 0 6px}
@@ -2628,8 +2629,8 @@ function vJournal(inCal, dArg) {
   const page = `<div class="jpage ${inCal ? 'incal' : ''}">
     <section>
       <div class="lbl">한 일 · 코멘트 <span class="muted">${list.length ? `${list.length}건 · 완료 ${nDone}` : ''}</span></div>
+      ${inCal && (!wkMode || d === ui.sel) ? (() => { const k = ui.jaddKind || 'todo'; const ph = { todo: '할일 추가 · Enter', event: '일정 추가 · Enter (예: 3시 회의)', retro: '무슨 일이 있었나 · Enter' }[k]; return `<div class="jadd-row"><label class="addline">${I.plus}<input id="jday-add" placeholder="${ph}" autocomplete="off" aria-label="이 날에 추가"><span class="seg inline sm jadd-seg" role="radiogroup" aria-label="추가할 종류" title="Tab으로 바꾸기">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button type="button" role="radio" aria-checked="${k === v}" class="${k === v ? 'on' : ''}" data-act="jkind" data-v="${v}">${l}</button>`).join('')}</span></label></div>`; })() : ''}
       ${wkMode && !keys.length ? '' : keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${groups[k].map(row).join('')}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
-      ${inCal && (!wkMode || d === ui.sel) ? (() => { const k = ui.jaddKind || 'todo'; const ph = { todo: '할일 추가 · Enter', event: '일정 추가 · Enter (예: 3시 회의)', retro: '무슨 일이 있었나 · Enter' }[k]; return `<div class="jadd-row"><div class="seg inline sm" role="radiogroup" aria-label="추가할 종류">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button role="radio" aria-checked="${k === v}" class="${k === v ? 'on' : ''}" data-act="jkind" data-v="${v}">${l}</button>`).join('')}</div><label class="addline">${I.plus}<input id="jday-add" placeholder="${ph}" autocomplete="off" aria-label="이 날에 추가"></label></div>`; })() : ''}
       ${dayRetros(d) ? `<div class="card" style="margin-top:14px">${dayRetros(d)}</div>` : ''}
     </section>
     <aside>
