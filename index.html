@@ -2659,7 +2659,7 @@ function vJournal(inCal, dArg) {
     <div class="jadd">${cComposer('cnew:' + it.id + '~' + d)}</div>${subInline(it)}</div>`;
   const nDone = list.filter(it => it.done).length;
   const head = `${topbar(`<h1 class="h1">${dd.getMonth() + 1}월 ${dd.getDate()}일 <span class="muted" style="font-weight:600">${WD[dd.getDay()]}요일</span> 업무일지</h1><div class="pager"><button class="btn icon" data-act="jday" data-d="-1" aria-label="전날">${I.left}</button><button class="btn icon" data-act="jday" data-d="1" aria-label="다음 날">${I.right}</button></div>${d !== TODAY ? '<button class="btn" data-act="jday" data-d="today">오늘</button>' : ''}`, isMob() ? '' : `<button class="btn ghost" data-act="go" data-view="work">${I.cal}달력</button>`)}`;
-  const page = `${inCal && !wkMode ? (() => { const k = ui.jaddKind || 'todo'; const ph = { todo: '할일 추가 · Enter', event: '일정 추가 · Enter (예: 3시 회의)', retro: '무슨 일이 있었나 · Enter' }[k]; return `<div class="jadd-row"><label class="addline">${I.plus}<input id="jday-add" placeholder="${ph}" autocomplete="off" aria-label="이 날에 추가"><span class="seg inline sm jadd-seg" role="radiogroup" aria-label="추가할 종류" title="Tab으로 바꾸기">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button type="button" role="radio" aria-checked="${k === v}" class="${k === v ? 'on' : ''}" data-act="jkind" data-v="${v}">${l}</button>`).join('')}</span></label></div>`; })() : ''}<div class="jpage ${inCal ? 'incal' : ''}">
+  const page = `${inCal && !wkMode ? (() => { const k = ui.jaddKind || 'todo'; const ph = { todo: '할일 추가 · Enter', event: '일정 추가 · Enter (예: 3시 회의)', retro: '무슨 일이 있었나 · Enter', diary: '오늘 일기에 한 줄 · Enter (LIFE에만 남아요)' }[k]; return `<div class="jadd-row"><label class="addline">${I.plus}<input id="jday-add" placeholder="${ph}" autocomplete="off" aria-label="이 날에 추가"><span class="seg inline sm jadd-seg" role="radiogroup" aria-label="추가할 종류" title="Tab으로 바꾸기">${[['todo', '할일'], ['event', '일정'], ['retro', '복기'], ['diary', '일기']].map(([v, l]) => `<button type="button" role="radio" aria-checked="${k === v}" class="${k === v ? 'on' : ''}" data-act="jkind" data-v="${v}">${l}</button>`).join('')}</span></label></div>`; })() : ''}<div class="jpage ${inCal ? 'incal' : ''}">
     <section>
       <div class="lbl">한 일 · 코멘트 <span class="muted">${list.length ? `${list.length}건 · 완료 ${nDone}` : ''}</span></div>
       ${wkMode && !keys.length ? '' : keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${nestOrder(groups[k]).map(row).join('')}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
@@ -3801,6 +3801,17 @@ function createItem(kind, title, date) {
   if (area) { it.area = area; const a = retroAreas(); if (!a.includes(area)) S.settings = { ...(S.settings || {}), retroAreas: [...a, area] }; }
   S.items.push(it); return it;
 }
+/* one line into that day's LIFE diary (makes the 일기 folder / entry if needed) */
+function addDiaryLine(d, text) {
+  let f = S.folders.find(x => x.space === 'life' && (x.name || '').trim() === '일기');
+  mutate(() => {
+    if (!f) { f = { id: uid(), space: 'life', name: '일기', parent: null, ord: Date.now() }; S.folders.push(f); }
+    let p = S.posts.find(x => x.folder === f.id && x.date === d);
+    if (!p) { p = { id: uid(), folder: f.id, date: d, title: '', cover: { tone: randTone(), img: null }, coverOnCal: false, blocks: [] }; S.posts.push(p); }
+    p.blocks = (p.blocks || []).filter(b => b.text || b.type !== 'p' || b.src || b.rows);
+    p.blocks.push(B('p', (d === TODAY ? hm(Date.now()) + '  ' : '') + text));
+  }, `${d === TODAY ? '오늘' : fmtMD(d)} 일기에 남겼어요 (LIFE › 일기)`);
+}
 function newPost(opts = {}) {
   const fid = opts.folder || (ui.lifeFolder && folder(ui.lifeFolder) ? ui.lifeFolder : (S.folders.find(f => f.space === 'life') || {}).id);
   if (!fid) { toast('먼저 폴더를 만들어 주세요'); return; }
@@ -4185,7 +4196,7 @@ document.addEventListener('change', e => {
 });
 const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.savebtn'); if (!b) return; const d = isDirty(); b.classList.toggle('primary', d); b.textContent = d ? '저장' : '저장됨'; }, 30);
 ['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
-document.addEventListener('keydown', e => { if (e.key === 'Tab' && !e.shiftKey && e.target && e.target.id === 'jday-add') { e.preventDefault(); const o = ['todo', 'event', 'retro']; ui.jaddKind = o[(o.indexOf(ui.jaddKind || 'todo') + 1) % 3]; const v = e.target.value; ui.focusId = 'jday-add'; render(); const i = document.getElementById('jday-add'); if (i) { i.value = v; i.setSelectionRange(v.length, v.length); } } }, true);
+document.addEventListener('keydown', e => { if (e.key === 'Tab' && !e.shiftKey && e.target && e.target.id === 'jday-add') { e.preventDefault(); const o = ['todo', 'event', 'retro', 'diary']; ui.jaddKind = o[(o.indexOf(ui.jaddKind || 'todo') + 1) % 4]; const v = e.target.value; ui.focusId = 'jday-add'; render(); const i = document.getElementById('jday-add'); if (i) { i.value = v; i.setSelectionRange(v.length, v.length); } } }, true);
 /* Enter saves and closes the open dialog (Ctrl+Enter works anywhere in it) */
 const OWN_ENTER = new Set(['ilog-in', 'area-new', 'area-todo', 'area-retro', 'iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
 document.addEventListener('keydown', e => {
@@ -4422,6 +4433,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'subq') { e.preventDefault(); const v = t.value.trim(); const pid = ui.subFor; if (!v) { ui.subFor = null; render(); return; } addSub(pid, v); ui.subFor = pid; ui.focusId = 'subq'; render(); return; }
   if (t.id === 'm-add') { e.preventDefault(); madd(ui.qkind || 'event', true); return; }
   if (t.dataset && t.dataset.jgadd) { e.preventDefault(); const v = t.value.trim(); const d = t.dataset.jgadd; if (!v) return; mutate(() => { createItem('todo', v, d); }, `${fmtMD(d)}에 할일을 추가했어요`); ui.focusId = 'jg-add-' + d; render(); return; }
+  if (t.id === 'jday-add' && ui.jaddKind === 'diary') { e.preventDefault(); const v = t.value.trim(); if (!v) return; addDiaryLine(ui.sel, v); ui.focusId = 'jday-add'; render(); return; }
   if (t.id === 'jday-add') { e.preventDefault(); const v = t.value.trim(); const k = ui.jaddKind || 'todo'; if (k === 'retro') { t.value = ''; newRetro(null, { date: ui.sel, what: v }); return; } if (!v) return; mutate(() => { createItem(k, v, ui.sel); }, `${fmtMD(ui.sel)}에 ${k === 'event' ? '일정' : '할일'}을 추가했어요`); ui.focusId = 'jday-add'; render(); return; }
   if (t.id === 'day-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, ui.sel); }, `${fmtMD(ui.sel)}에 할일을 추가했어요`); ui.focusId = 'day-add'; render(); return; }
   if (t.id === 'qa-title') { e.preventDefault(); quickAdd('todo'); return; }
