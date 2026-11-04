@@ -1462,6 +1462,7 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .bp-reladd select{flex:0 0 40%;min-width:0}
 .bp-reladd input{flex:1;min-width:0}
 .bk-nlbl{margin-top:6px}
+.rch i{font-style:normal;opacity:.5;margin:0 5px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2590,7 +2591,7 @@ function routineRows() {
   return list.map(r => { const done = rDone(r), due = rDue(r); const doc0 = r.noteId && doc(r.noteId);
     return `<div class="rrow ${done ? 'done' : ''} ${due ? 'due' : ''}">
       <button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button>
-      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${(r.changes || []).length ? '<span class="imp">❗</span>' : ''}${esc(r.title || '이름 없는 루틴')}<span class="rfq" title="${esc(rWhen(r))}">${esc(rWhen(r).replace(/\(.*\)/, '').trim())}</span></b><span>${!done && rDueOn(r) ? (rDueOn(r) === TODAY ? '오늘 할 차례' : rDueOn(r) < TODAY ? `${fmtShort(rDueOn(r))}부터 할 차례` : `${fmtShort(rDueOn(r))} 예정`) : rAgo(r)}</span>${(r.changes || []).length ? `<span class="rch">확인 ${r.changes.length} · ${esc(r.changes[0].text)}${r.changes.length > 1 ? ' 외' : ''}</span>` : ''}</button>
+      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${(r.changes || []).length ? '<span class="imp">❗</span>' : ''}${esc(r.title || '이름 없는 루틴')}<span class="rfq" title="${esc(rWhen(r))}">${esc(rWhen(r).replace(/\(.*\)/, '').trim())}</span></b>${(r.changes || []).length ? `<span class="rch">${r.changes.map(c => esc(c.text)).join('<i>·</i>')}</span>` : ''}</button>
       ${doc0 ? `<button class="rnote" data-act="opendoc" data-id="${doc0.id}" title="매뉴얼 노트 열기: ${esc(doc0.title || '제목 없음')}" aria-label="매뉴얼 노트 열기">${I.note}</button>` : ''}
     </div>`; }).join('');
 }
@@ -2601,7 +2602,7 @@ function retroNudge() {
 }
 function routinesOn(d) { return (S.routines || []).filter(r => r.freq !== 'daily' && r.freq !== 'any' && rDueOn(r, d) === d); }
 function rtChip(r, d) { const done = rDoneFor(r, d); const ck = !done && (r.changes || []).length; return `<div class="chip rt ${done ? 'done' : ''} ${ck ? 'has-ck' : ''}" data-act="ropen" data-id="${r.id}" title="루틴 · ${esc(rWhen(r))}"><span class="rti">${I.repeat}</span><span class="tt">${esc(r.title)}</span>${ck ? `<span class="chip-ck" title="확인: ${esc(r.changes.map(c => c.text).join(' / '))}">❗ ${esc(r.changes.map(c => c.text).join(' · '))}</span>` : ''}</div>`; }
-function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">확인: ${esc(r.changes.map(c => c.text).join(' / '))}</span>` : ''}</button></div>`; }).join('')}</div>`; }
+function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">${esc(r.changes.map(c => c.text).join(' · '))}</span>` : ''}</button></div>`; }).join('')}</div>`; }
 function routineCard() {
   const n = (S.routines || []).length; const due = (S.routines || []).filter(rDue).length;
   return `<div class="card rcard2">
