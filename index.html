@@ -1260,8 +1260,10 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .plog-i{display:flex;gap:7px;border:0;background:none;font:inherit;font-size:13px;color:var(--fg2);text-align:left;padding:2px 4px;border-radius:6px;cursor:pointer;line-height:1.45}
 .plog-i:hover{background:var(--hover, rgba(0,0,0,.04))}
 .plog .ccomp{margin-top:4px}
-.jadd-bar{margin-bottom:12px;padding:10px 12px}
-.jadd-bar .day-add{margin:0}
+.jadd-row{display:flex;align-items:center;gap:4px;margin:4px 0 12px;padding:2px 6px;border-radius:12px}
+.jadd-row .addline{flex:1;background:transparent;box-shadow:none}
+.jadd-row .btn{opacity:.75}
+.jadd-row:focus-within{background:var(--surface);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line))}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2572,9 +2574,10 @@ function vJournal(inCal) {
   const nDone = list.filter(it => it.done).length;
   const head = `${topbar(`<h1 class="h1">${dd.getMonth() + 1}월 ${dd.getDate()}일 <span class="muted" style="font-weight:600">${WD[dd.getDay()]}요일</span> 업무일지</h1><div class="pager"><button class="btn icon" data-act="jday" data-d="-1" aria-label="전날">${I.left}</button><button class="btn icon" data-act="jday" data-d="1" aria-label="다음 날">${I.right}</button></div>${d !== TODAY ? '<button class="btn" data-act="jday" data-d="today">오늘</button>' : ''}`, isMob() ? '' : `<button class="btn ghost" data-act="go" data-view="work">${I.cal}달력</button>`)}`;
   const page = `<div class="jpage ${inCal ? 'incal' : ''}">
-    <section>${inCal ? `<div class="card jadd-bar">${dayAddHTML()}</div>` : ''}
+    <section>
       <div class="lbl">한 일 · 코멘트 <span class="muted">${list.length ? `${list.length}건 · 완료 ${nDone}` : ''}</span></div>
       ${keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${groups[k].map(row).join('')}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
+      ${inCal ? `<div class="jadd-row"><label class="addline">${I.plus}<input id="day-add" placeholder="할일 추가 · Enter" autocomplete="off" aria-label="이 날에 추가"></label><button class="btn sm ghost" data-act="dayadd" data-kind="event">일정으로</button><button class="btn sm ghost" data-act="dayadd" data-kind="retro">복기로</button></div>` : ''}
       ${dayRetros(d) ? `<div class="card" style="margin-top:14px">${dayRetros(d)}</div>` : ''}
     </section>
     <aside>
