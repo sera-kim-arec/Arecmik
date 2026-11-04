@@ -1314,6 +1314,8 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jg-go{font-size:12px;color:var(--muted);opacity:0;transition:opacity .12s}
 .jg-col:hover .jg-go{opacity:1}
 .jd-back{margin:2px 0 10px 4px;align-self:flex-start}
+.ed.all .bk{background:color-mix(in srgb, var(--lemon) 28%, transparent);border-radius:4px}
+.ed.all .bk-text{caret-color:transparent}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -4475,7 +4477,25 @@ function toggleInlineCode(el, color) {
   const r = codeEdit(t, start, end, color); if (!r) { if (!len) toast('글자를 선택하고 Ctrl+E를 누르면 코드로 바뀌어요'); return; }
   b.text = r.text; touch(key); rerenderEditor(key, b.id, r.caret);
 }
+/* Ctrl+A: first press selects the line, the next press selects the whole memo */
+let edAll = null;
+function clearEdAll() { if (!edAll) return; document.querySelectorAll('.ed.all').forEach(x => x.classList.remove('all')); edAll = null; }
+function edAllText(key) { return (edBlocks(key) || []).map(b => { const ind = '  '.repeat(b.indent || 0); const t = b.type === 'table' ? (b.rows || []).map(r => r.join('\t')).join('\n') : plainText(b.text || ''); return ind + (b.type === 'bullet' ? '• ' : b.type === 'todo' ? (b.done ? '☑ ' : '☐ ') : b.type === 'num' ? '- ' : b.type === 'quote' ? '> ' : '') + t; }).join('\n'); }
+document.addEventListener('keydown', e => {
+  if (!edAll) return; const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase();
+  if (mod && (k === 'c' || k === 'x')) { e.preventDefault(); const txt = edAllText(edAll); try { navigator.clipboard.writeText(txt); } catch (err) { /* clipboard blocked */ } if (k === 'c') { toast('메모 전체를 복사했어요'); return; } }
+  if ((mod && k === 'x') || e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); const key = edAll; clearEdAll(); const bl = edBlocks(key); if (!bl) return; snapshot(); bl.splice(0, bl.length, B('p', '')); touch(key); rerenderEditor(key, bl[0].id, 0); toast('메모를 모두 지웠어요', true); return; }
+  if (mod && k === 'a') { e.preventDefault(); return; }
+  if (['Shift', 'Control', 'Meta', 'Alt'].includes(e.key)) return;
+  clearEdAll();
+}, true);
+document.addEventListener('mousedown', () => clearEdAll(), true);
 function onBlockKey(e, el) {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'a') {
+    const sel = getSelection(); const t = serText(el); const len = sel.rangeCount ? sel.toString().length : 0;
+    const ed = el.closest('[data-ed]'); const many = ed && ed.querySelectorAll('.bk-text').length > 1;
+    if (many && (!t.length || len >= el.textContent.length)) { e.preventDefault(); clearEdAll(); edAll = ed.dataset.ed; ed.classList.add('all'); sel.removeAllRanges(); el.blur(); return; }
+  }
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'e') { e.preventDefault(); toggleInlineCode(el); return; }
   if (mention && !mention.anchor && mention.bid === el.dataset.bid && mention.opts) {
     const n = mention.opts.length;
