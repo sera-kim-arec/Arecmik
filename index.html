@@ -1406,6 +1406,16 @@ html[data-accent="peach"][data-theme="dark"],html[data-accent="rose"][data-theme
 .jrow.ghost + .jrow{border-top:0}
 .j-ghost .gh-t{font-size:13.5px}
 .rfq{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:5px;padding:1px 5px;vertical-align:1px;white-space:nowrap}
+.atag{background:color-mix(in srgb, var(--ac) 22%, transparent)!important;color:var(--fg2)!important;gap:4px!important;font-weight:600!important;border-radius:999px!important;padding:2px 7px 2px 5px!important}
+.atag i{width:6px;height:6px;border-radius:50%;background:var(--ac);flex:none}
+.atag b{display:none}
+.chip .atag{padding:1px 4px!important;background:none!important;font-size:0!important;margin-right:2px!important}
+.chip .atag i{width:7px;height:7px}
+.adot{width:9px;height:9px;border-radius:50%;background:var(--ac);flex:none;margin:0 3px 0 2px}
+.adot.big{width:14px;height:14px;margin-right:10px}
+.acols{display:flex;gap:5px;margin-right:10px}
+.acol{width:18px;height:18px;border-radius:50%;border:0;background:var(--ac);cursor:pointer;opacity:.75}
+.acol.on{opacity:1;box-shadow:0 0 0 2px var(--surface), 0 0 0 3.5px var(--ac)}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -1927,7 +1937,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: st.depth === 'raised' ? 'raised' : 'pressed', accent: st.accent || 'lemon' }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: st.depth === 'raised' ? 'raised' : 'pressed', accent: st.accent || 'lemon', areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -2200,7 +2210,7 @@ function workNav() {
   ${tree('work', null, 0)}</div>
   ${retroAreas().length || ui.areaAdd ? `<div class="sec cat-sec"><div class="sec-head"><button class="cat-tg" data-act="cattoggle" aria-expanded="${!!ui.catOpen}">${ui.catOpen ? I.chevD : I.chevR}<span>카테고리</span><span class="cnt">${retroAreas().length}</span></button><button class="mini" data-act="areaadd" aria-label="카테고리 추가" title="카테고리 추가">${I.plus}</button></div>
   ${ui.catOpen || ui.areaAdd || ui.view === 'area' ? `  ${ui.areaAdd ? `<div class="area-new"><input id="area-new" class="inp" placeholder="카테고리 이름 · Enter" autocomplete="off"></div>` : ''}
-  ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="hash">#</span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}` : ''}</div>` : ''}`;
+  ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="adot" style="--ac:${areaColor(a)}"></span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}` : ''}</div>` : ''}`;
 }
 function lifeNav() {
   return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
@@ -2778,7 +2788,7 @@ function vArea() {
   const when = it => it.date ? `<span class="muted" style="font-size:12.5px;flex:none">${it.date === TODAY ? '오늘' : fmtShort(it.date)}${it.start ? ' ' + it.start : ''}</span>` : '';
   const row = it => `<div class="arow ${it.done ? 'done' : ''}">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="stl" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.star ? '<span class="imp">❗</span>' : ''}${priT(it)}${tT(it.title || '제목 없음')}</span>${when(it)}</button></div>${chkLine(it)}`;
   const cdel = ui.confirm === 'area:' + a;
-  return `${topbar(`<h1 class="h1 area-h"><span class="hash">#</span><input class="area-name" data-xren="area" data-old="${esc(a)}" value="${esc(a)}" aria-label="카테고리 이름" title="눌러서 이름 바꾸기"></h1>`, `<button class="btn sm ${cdel ? 'warn' : 'ghost danger'}" data-act="areadel" data-v="${esc(a)}">${cdel ? '한 번 더 누르면 삭제 (기록은 미분류로)' : '카테고리 삭제'}</button>`)}
+  return `${topbar(`<h1 class="h1 area-h"><span class="adot big" style="--ac:${areaColor(a)}"></span><input class="area-name" data-xren="area" data-old="${esc(a)}" value="${esc(a)}" aria-label="카테고리 이름" title="눌러서 이름 바꾸기"></h1>`, `<div class="acols">${ACOL.map(c => `<button class="acol ${areaColor(a) === c ? 'on' : ''}" style="--ac:${c}" data-act="areacol" data-a="${esc(a)}" data-v="${c}" aria-label="색 바꾸기"></button>`).join('')}</div><button class="btn sm ${cdel ? 'warn' : 'ghost danger'}" data-act="areadel" data-v="${esc(a)}">${cdel ? '한 번 더 누르면 삭제 (기록은 미분류로)' : '카테고리 삭제'}</button>`)}
   <div class="area-page">
     <section><div class="lbl">할일 · 일정 <span class="muted">${open.length}</span></div>
       <div class="card"><label class="addline">${I.plus}<input id="area-todo" placeholder="할일 적고 Enter (날짜 없이)" autocomplete="off"></label>
@@ -2803,7 +2813,9 @@ function areaWarn(it) {
   const seen = new Set(); const rows = rs.filter(r => { const k = (r.next || r.what).trim(); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 6);
   return `<div class="awarn"><div class="awarn-h">⚠ ‘${esc(it.area)}’ 에서 했던 실수 <span>${rs.length}</span></div>${rows.map(r => `<button class="awarn-r" data-act="xopen" data-id="${r.id}">${r.next ? `<b>다음엔</b> ${esc(r.next)}` : esc(r.what)}<em>${fmtShort(r.date)}</em></button>`).join('')}</div>`;
 }
-const areaTag = it => it.area && !it.done ? `<span class="atag" title="카테고리 · ${esc(it.area)}">${esc(it.area)}${areaRetros(it.area).length ? `<b>⚠${areaRetros(it.area).length}</b>` : ''}</span>` : '';
+const ACOL = ['#F2A7B8', '#F7C08A', '#E9CF6A', '#9FD3B5', '#8DC3EE', '#B6A6EE', '#C7B299', '#9CC9C9'];
+const areaColor = a => { const m = (settingsOf().areaColors || {})[a]; if (m) return m; let h = 0; for (const ch of a) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return ACOL[h % ACOL.length]; };
+const areaTag = it => it.area && !it.done ? `<span class="atag" style="--ac:${areaColor(it.area)}" title="카테고리 · ${esc(it.area)}${areaRetros(it.area).length ? ` · 지난 실수 ${areaRetros(it.area).length}` : ''}"><i></i>${esc(it.area)}</span>` : '';
 function newRetro(itemId, opts = {}) {
   const it = itemId && item(itemId);
   const r = { id: uid(), date: opts.date || (it && it.date && it.date <= TODAY ? it.date : TODAY), kind: 'mistake', cat: '', impact: 'me', what: opts.what || '', next: '', itemId: itemId || null, created: Date.now() }; if (it && it.area) r.area = it.area; if (opts.area) r.area = opts.area;
@@ -3956,6 +3968,7 @@ const ACT = {
   iarea: t => { const it = item(t.dataset.id); if (!it) return; const v = t.dataset.v; mutate(() => { if (it.area === v) delete it.area; else it.area = v; }); },
   area: t => { ui.area = t.dataset.v; go('area'); },
   areadel: t => { const v = t.dataset.v; if (ui.confirm !== 'area:' + v) { ui.confirm = 'area:' + v; render(); return; } ui.confirm = null; mutate(() => { S.settings = { ...(S.settings || {}), retroAreas: retroAreas().filter(x => x !== v) }; S.items.forEach(it => { if (it.area === v) delete it.area; }); (S.retros || []).forEach(r => { if (r.area === v) r.area = ''; }); }, `‘${v}’ 카테고리를 지웠어요`); go('work'); },
+  areacol: t => { const a = t.dataset.a; S.settings = { ...(S.settings || {}), areaColors: { ...((S.settings || {}).areaColors || {}), [a]: t.dataset.v } }; save(); render(); },
   cattoggle: () => { ui.catOpen = !ui.catOpen; render(); },
   areaadd: () => { ui.areaAdd = !ui.areaAdd; ui.focusId = ui.areaAdd ? 'area-new' : null; render(); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
@@ -4232,7 +4245,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.set) { const k = t.dataset.set; mutate(() => { S.settings = { ...(S.settings || {}), [k]: k === 'remindMin' ? +t.value : t.value }; }, '알림 기본값을 바꿨어요'); return; }
   if (t.dataset && t.dataset.skey) { S.settings = { ...(S.settings || {}), [t.dataset.skey]: t.value.trim() }; save(); toast(t.value.trim() ? '검색 키를 저장했어요' : '검색 키를 지웠어요'); return; }
-  if (t.dataset && t.dataset.xren) { const k = t.dataset.xren, old = t.dataset.old, v = t.value.trim(); const [sk, get] = XLIST[k]; if (!v || v === old) { t.value = old; return; } if (get().includes(v)) { toast('같은 이름이 이미 있어요'); t.value = old; return; } mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().map(x => x === old ? v : x) }; (S.retros || []).forEach(r => { if (r[k] === old) r[k] = v; }); if (k === 'area') { S.items.forEach(it => { if (it.area === old) it.area = v; }); if (ui.area === old) ui.area = v; } }, `‘${old}’ → ‘${v}’로 바꿨어요`); return; }
+  if (t.dataset && t.dataset.xren) { const k = t.dataset.xren, old = t.dataset.old, v = t.value.trim(); const [sk, get] = XLIST[k]; if (!v || v === old) { t.value = old; return; } if (get().includes(v)) { toast('같은 이름이 이미 있어요'); t.value = old; return; } mutate(() => { S.settings = { ...(S.settings || {}), [sk]: get().map(x => x === old ? v : x) }; (S.retros || []).forEach(r => { if (r[k] === old) r[k] = v; }); if (k === 'area') { S.items.forEach(it => { if (it.area === old) it.area = v; }); if (ui.area === old) ui.area = v; const ac = (S.settings.areaColors || {}); if (ac[old]) { S.settings.areaColors = { ...ac, [v]: ac[old] }; delete S.settings.areaColors[old]; } } }, `‘${old}’ → ‘${v}’로 바꿨어요`); return; }
   if (t.dataset && t.dataset.xf === 'date' && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r && t.value) { r.date = t.value; save(); } return; }
   if (t.dataset && t.dataset.rf && ui.modal && ui.modal.kind === 'routine') { const r = routine(ui.modal.id); if (!r) return; const k = t.dataset.rf; mutate(() => { r[k] = k === 'skipOff' ? t.checked : k === 'noteId' ? (t.value || null) : t.value; }); return; }
   if (t.id === 'f-move' && t.value) { const it = item(ui.modal.id); const to = t.value; if (it && to !== it.date) mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); return; }
