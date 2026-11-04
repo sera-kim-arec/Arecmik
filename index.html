@@ -1432,6 +1432,8 @@ html[data-accent="peach"][data-theme="dark"],html[data-accent="rose"][data-theme
 /* 테마(강조) 색을 따라가는 코드 상자 */
 .pchip{background:var(--lemon-soft)!important;color:var(--lemon-ink)!important}
 code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
+.ci-rec{min-height:120px;padding:8px 4px;border-radius:12px;background:var(--surface);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line))}
+.dialog .fgrid .inp{box-sizing:border-box;max-width:100%}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -3465,7 +3467,7 @@ function modalTarget() {
 }
 const DRAFT_KINDS = new Set(['item', 'project', 'routine', 'retro']);
 const isDirty = () => ui.draft != null && JSON.stringify(S) !== ui.draft;
-function saveBtn() { const d = isDirty(); return `<button class="btn sm ${d ? 'primary' : ''} savebtn" data-act="dsave">${d ? '저장' : '저장됨'}</button>`; }
+function saveBtn() { if (!ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return ''; const d = isDirty(); return `<button class="btn sm ${d ? 'primary' : ''} savebtn" data-act="dsave">${d ? '저장' : '저장됨'}</button>`; }
 function renderModal() {
   const m = ui.modal; const t = modalTarget();
   if (!m) { ui.draft = null; ui.askDiscard = false; }
@@ -3625,7 +3627,8 @@ function dlgCitem(ci) {
       <div class="frow"><label class="btn sm" for="ci-file">${I.img}사진 올리기</label><input type="file" id="ci-file" accept="image/*" hidden>${ci.img ? '<button class="btn sm ghost" data-act="ciclear">사진 지우기</button>' : '<button class="btn sm ghost" data-act="citone">색 바꾸기</button>'}</div></div></div>
   </div>
   <div class="dlg-body"><div class="fgrid">${c.fields.map(f => `<label for="cv-${f.id}">${esc(f.name)}</label><div>${fld(f)}</div>`).join('')}</div>
-    ${ci.ext && (ci.ext.publisher || ci.ext.date || ci.ext.overview || ci.ext.url || ci.ext.tmdbId) ? `<div class="ci-ext">${ci.ext.publisher || ci.ext.date ? `<span>${esc([ci.ext.publisher, ci.ext.date].filter(Boolean).join(' · '))}</span>` : ''}${ci.ext.overview ? `<p>${esc(ci.ext.overview)}</p>` : ''}${ci.ext.url ? `<a href="${esc(ci.ext.url)}" target="_blank" rel="noopener">다음 책 정보 보기</a>` : ci.ext.tmdbId ? `<a href="https://www.themoviedb.org/movie/${ci.ext.tmdbId}?language=ko-KR" target="_blank" rel="noopener">TMDB에서 보기</a>` : ''}${ci.ext.src === 'movie' ? '<span class="ci-src">영화 정보·포스터 출처: TMDB. 이 앱은 TMDB의 승인·보증을 받지 않았어요.</span>' : ci.ext.src === 'book' ? '<span class="ci-src">책 정보·표지 출처: 카카오(다음) 책 검색</span>' : ''}</div>` : ''}</div></div>`;
+    ${ci.ext && (ci.ext.publisher || ci.ext.date || ci.ext.overview || ci.ext.url || ci.ext.tmdbId) ? `<div class="ci-ext">${ci.ext.publisher || ci.ext.date ? `<span>${esc([ci.ext.publisher, ci.ext.date].filter(Boolean).join(' · '))}</span>` : ''}${ci.ext.overview ? `<p>${esc(ci.ext.overview)}</p>` : ''}${ci.ext.url ? `<a href="${esc(ci.ext.url)}" target="_blank" rel="noopener">다음 책 정보 보기</a>` : ci.ext.tmdbId ? `<a href="https://www.themoviedb.org/movie/${ci.ext.tmdbId}?language=ko-KR" target="_blank" rel="noopener">TMDB에서 보기</a>` : ''}${ci.ext.src === 'movie' ? '<span class="ci-src">영화 정보·포스터 출처: TMDB. 이 앱은 TMDB의 승인·보증을 받지 않았어요.</span>' : ci.ext.src === 'book' ? '<span class="ci-src">책 정보·표지 출처: 카카오(다음) 책 검색</span>' : ''}</div>` : ''}
+    ${collSource(c) === 'book' ? `<div class="lbl" style="padding-top:14px">독서 기록</div><button class="btn sm" data-act="openci" data-id="${ci.id}">끄적임 · 관계도 · 독서 기록 열기</button>` : `<div class="lbl" style="padding-top:14px">기록</div><div class="ci-rec">${editorHTML('ci:' + ci.id)}</div>`}</div></div>`;
 }
 
 /* ---------- block editor ---------- */
