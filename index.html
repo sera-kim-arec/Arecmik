@@ -1227,6 +1227,8 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jl-q input{flex:1}
 #jl-res mark{background:var(--lemon);color:var(--on-lemon);border-radius:3px;padding:0 1px}
 .jorig{flex:none;font-size:11.5px;color:var(--muted);margin-left:4px}
+.jrow .stl{justify-content:flex-start}
+.jrow .stl .jst{margin-left:auto}
 .ccomp{display:flex;align-items:flex-end;gap:8px;padding:6px 8px;border-radius:12px;background:var(--surface);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line))}
 .ccomp-ed{flex:1;min-width:0}
 .ccomp-ed .ed{min-height:0;padding:2px 0 2px 22px}
@@ -1240,6 +1242,11 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jlog-ed{align-items:flex-start}
 .jlog-ed .ilog-t{padding-top:4px}
 .jadd{padding:4px 6px 2px 34px}
+.cadd{display:inline-flex;align-items:center;gap:4px;border:0;background:none;font:inherit;font-size:13px;color:var(--faint);cursor:pointer;padding:3px 6px;border-radius:7px}
+.cadd svg{width:13px;height:13px}
+.cadd:hover{color:var(--fg2);background:var(--hover, rgba(0,0,0,.04))}
+.jrow:not(:hover) .jadd .cadd{opacity:.6}
+.jadd{padding:0 6px 0 30px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2225,7 +2232,8 @@ const tT = t => inlCode(t || '');
 const PRI = { 1: '높음', 2: '보통', 3: '낮음' };
 const priT = it => it.pri && PRI[it.pri] && !it.done ? `<span class="pri p${it.pri}" title="우선순위 ${PRI[it.pri]}">${PRI[it.pri]}</span>` : '';
 const priCmp = (a, b) => (a.pri || 2.5) - (b.pri || 2.5);
-const cComposer = key => `<div class="ccomp"><div class="ccomp-ed">${editorHTML(key, true)}</div><button class="btn sm primary" data-act="clogadd" data-key="${key}" title="Ctrl+Enter">남기기</button></div>`;
+const cComposer = key => (ui.cOpen === key || (cDrafts[key] && blocksText(cDrafts[key]).trim())) ? cComposerOpen(key) : `<button class="cadd" data-act="copen" data-key="${key}">${I.plus}코멘트</button>`;
+const cComposerOpen = key => `<div class="ccomp"><div class="ccomp-ed">${editorHTML(key, true)}</div><button class="btn sm primary" data-act="clogadd" data-key="${key}" title="Ctrl+Enter">남기기</button></div>`;
 const hm = ts => { const x = new Date(ts); return String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
 const ckOn = it => (it.checks || []).length && !it.done && !it.cancel;
 const chipCk = it => ckOn(it) ? `<span class="chip-ck" title="확인: ${esc(it.checks.map(c => c.text).join(' / '))}">❗ ${esc(it.checks.map(c => c.text).join(' · '))}</span>` : '';
@@ -3763,8 +3771,9 @@ const ACT = {
   chkall: () => { ui.chkAll = !ui.chkAll; render(); },
   xroutine: t => { const r = retro(t.dataset.id); if (!r || !r.next) return; if ((S.routines || []).some(x => x.title === r.next)) { toast('이미 루틴에 있어요'); return; } mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: r.next, freq: 'any', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴에 추가했어요 · 주기는 루틴에서 바꿀 수 있어요'); },
   rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); if (!done && (r.changes || []).length) { ui.modalBack = null; openModal('rapply', r.id); return; } mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
+  copen: t => { ui.cOpen = t.dataset.key; render(); renderModal(); setTimeout(() => { const el = document.querySelector(`[data-ed="${ui.cOpen}"] .bk-text`); if (el) placeCaret(el, 0); }, 20); },
   clogadd: t => { const key = t.dataset.key; const [k, id] = key.split(':'); const [iid, date] = id.split('~'); const it = item(iid); const bl = cDrafts[key]; if (!it || !bl || !blocksText(bl).trim() && !bl.some(b => b.src)) { toast('코멘트를 먼저 적어 주세요'); return; }
-    mutate(() => { it.log = it.log || []; it.log.push({ id: uid(), ts: Date.now(), date: date || TODAY, blocks: JSON.parse(JSON.stringify(bl)), text: blocksText(bl) }); }); delete cDrafts[key]; render(); renderModal(); },
+    ui.cOpen = null; mutate(() => { it.log = it.log || []; it.log.push({ id: uid(), ts: Date.now(), date: date || TODAY, blocks: JSON.parse(JSON.stringify(bl)), text: blocksText(bl) }); }); delete cDrafts[key]; render(); renderModal(); },
   ilogdel: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.log = (it.log || []).filter(c => c.id !== t.dataset.c); }); },
   jmode: t => { ui.jmode = t.dataset.v; render(); },
   jcat: t => { ui.jcat = t.dataset.v; render(); },
