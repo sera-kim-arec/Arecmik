@@ -3807,8 +3807,9 @@ let toastFn = null;
 /* ---------- actions ---------- */
 function deleteFolder(id) {
   const f = folder(id); if (!f) return;
-  const target = f.parent || (S.folders.find(x => x.space === f.space && x.parent === null && x.id !== id) || {}).id;
-  if (!target) { toast('마지막 남은 폴더는 지울 수 없어요'); return; }
+  const isWork = f.space === 'work';
+  const target = isWork ? (f.parent || null) : f.parent || (S.folders.find(x => x.space === f.space && x.parent === null && x.id !== id) || {}).id;
+  if (!isWork && !target && S.posts.some(p => p.folder === id)) { toast('글이 있는 마지막 폴더는 지울 수 없어요'); return; }
   mutate(() => {
     S.folders.forEach(x => { if (x.parent === id) x.parent = f.parent; });
     S.docs.forEach(d => { if (d.folder === id) d.folder = target; });
@@ -3816,7 +3817,7 @@ function deleteFolder(id) {
     S.folders = S.folders.filter(x => x.id !== id);
     if (ui.noteFolder === id) ui.noteFolder = f.parent; if (ui.lifeFolder === id) ui.lifeFolder = f.parent || target;
     ui.confirm = null;
-  }, `‘${f.name}’ 폴더를 지웠어요`);
+  }, isWork && !f.parent && S.docs.some(d => d.folder === id) ? `‘${f.name}’ 폴더를 지웠어요 · 안의 노트는 폴더 밖으로 나왔어요` : `‘${f.name}’ 폴더를 지웠어요`);
 }
 function parseQuick(v) {
   const m = String(v).trim().match(/^(오전|오후|아침|저녁|밤)?\s*(\d{1,2})(?::(\d{2})|\s*시(?:\s*(반|\d{1,2})\s*분?)?)\s+(.+)$/);
