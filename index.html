@@ -1392,6 +1392,10 @@ html[data-accent="peach"][data-theme="dark"],html[data-accent="rose"][data-theme
 .jg .jsub{display:none}
 .jlog{border-left:2px solid color-mix(in srgb, var(--lemon) 70%, transparent);margin-left:30px;padding-left:10px}
 .jlog .ilog-t{font-size:11px;font-weight:700;color:var(--lemon-ink)}
+.plog-i.rich{cursor:default;align-items:flex-start}
+.plog-i.rich .ed{font-size:12.5px;padding-left:14px;line-height:1.5}
+.plog-i.rich .ed-tail{min-height:0}
+.jg .plog-i.rich{flex-direction:column;gap:1px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2388,7 +2392,8 @@ function dayLog(it, d) {
   const key = 'cnew:' + it.id + '~' + d; const logs = (it.log || []).filter(c => c.date === d).sort((a, b) => a.ts - b.ts);
   const open = ui.cOpen === key || (cDrafts[key] && blocksText(cDrafts[key]).trim());
   if (!logs.length && !open) return '';
-  return `<div class="plog">${logs.map(c => `<button class="plog-i" data-act="journal" data-date="${d}" title="업무일지에서 보기"><span class="ilog-t">${hm(c.ts)}</span><span>${tT(c.text)}</span></button>`).join('')}${open ? cComposerOpen(key) : ''}</div>`;
+  const rich = c => (c.blocks || []).some(b => b.type !== 'p' || b.indent) || (c.blocks || []).length > 1;
+  return `<div class="plog">${logs.map(c => rich(c) ? `<div class="plog-i rich"><span class="ilog-t">${hm(c.ts)}</span><div class="ilog-ed">${editorHTML('clogp:' + it.id + '~' + c.id, true)}</div></div>` : `<button class="plog-i" data-act="journal" data-date="${d}" title="업무일지에서 보기"><span class="ilog-t">${hm(c.ts)}</span><span>${tT(c.text)}</span></button>`).join('')}${open ? cComposerOpen(key) : ''}</div>`;
 }
 const cComposer = key => (ui.cOpen === key || (cDrafts[key] && blocksText(cDrafts[key]).trim())) ? cComposerOpen(key) : `<button class="cadd" data-act="copen" data-key="${key}">${I.plus}코멘트</button>`;
 const cComposerOpen = key => `<div class="ccomp"><div class="ccomp-ed">${editorHTML(key, true)}</div><button class="btn sm primary" data-act="clogadd" data-key="${key}" title="Ctrl+Enter">남기기</button></div>`;
@@ -3570,7 +3575,7 @@ function edBlocks(key) {
   const [k, id] = key.split(':');
   if (k === 'ci') { const ci = citem(id); if (!ci) return null; if (!Array.isArray(ci.review) || !ci.review.length) ci.review = [B('p', '')]; return ci.review; }
   if (k === 'cnew' || k === 'cnewd') { const kk = k + ':' + id; if (!cDrafts[kk]) cDrafts[kk] = [B('p', '')]; return cDrafts[kk]; }
-  if (k === 'clog' || k === 'clogj') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (!c) return null; if (!Array.isArray(c.blocks) || !c.blocks.length) c.blocks = (c.text || '').split('\n').map(t => B('p', t)); return c.blocks; }
+  if (k === 'clog' || k === 'clogj' || k === 'clogp') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (!c) return null; if (!Array.isArray(c.blocks) || !c.blocks.length) c.blocks = (c.text || '').split('\n').map(t => B('p', t)); return c.blocks; }
   if (k === 'jdiary') { const p = diaryPost(id); if (p) { if (!Array.isArray(p.blocks) || !p.blocks.length) p.blocks = [B('p', '')]; return p.blocks; } return (jDiaryDraft[id] = jDiaryDraft[id] || [B('p', '')]); }
   if (k === 'jday') { S.rmonths = S.rmonths || []; const jid = 'j-' + id; let o = S.rmonths.find(x => x.id === jid); if (!o) { o = { id: jid, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'rmonth') { S.rmonths = S.rmonths || []; let o = S.rmonths.find(x => x.id === id); if (!o) { o = { id, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
@@ -3586,7 +3591,7 @@ const diaryFolder = () => S.folders.find(x => x.space === 'life' && (x.name || '
 const diaryPost = d => { const f = diaryFolder(); return f ? S.posts.find(x => x.folder === f.id && x.date === d) : null; };
 const blocksText = bl => (bl || []).map(b => b.type === 'table' ? (b.rows || []).flat().join(' ') : plainText(b.text || '')).filter(x => x.trim()).join(' · ');
 function touch(key) { const [k, id] = key.split(':'); if (k === 'doc' && doc(id)) doc(id).updated = Date.now();
-  if (k === 'clog' || k === 'clogj') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (c) c.text = blocksText(c.blocks); }
+  if (k === 'clog' || k === 'clogj' || k === 'clogp') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (c) c.text = blocksText(c.blocks); }
   if (k === 'cnew' || k === 'cnewd') return;
   if (k === 'jdiary' && !diaryPost(id)) { const bl = jDiaryDraft[id]; if (!bl || !blocksText(bl).trim()) return; let f = diaryFolder(); if (!f) { f = { id: uid(), space: 'life', name: '일기', parent: null, ord: Date.now() }; S.folders.push(f); } S.posts.push({ id: uid(), folder: f.id, date: id, title: '', cover: { tone: randTone(), img: null }, coverOnCal: false, blocks: bl }); delete jDiaryDraft[id]; }
   save(); }
@@ -4392,6 +4397,10 @@ function onBlockInput(el) {
   if (b.type !== 'code' && b.type !== 'link' && text.includes('`')) {
     const want = inl(text);
     if (!composing && el.innerHTML !== want && (text.replace(MREG, '').match(/`/g) || []).length % 2 === 0) { const pos = caretOffset(el); el.innerHTML = want; placeCaret(el, pos); }
+  }
+  if (b.type === 'bullet' || b.type === 'num' || b.type === 'todo') {
+    const sw = [[/^\[ ?\] /, 'todo'], [/^[-*] /, 'bullet'], [/^1\. /, 'num']];
+    for (const [re, ty] of sw) if (ty !== b.type && re.test(text)) { b.type = ty; b.text = text.replace(re, ''); if (ty === 'todo') b.done = false; touch(key); closeSlash(); rerenderEditor(key, b.id, 0); return; }
   }
   if (b.type === 'p') {
     const rules = [[/^[-*] /, 'bullet'], [/^\[ ?\] /, 'todo'], [/^# /, 'h'], [/^> /, 'quote'], [/^1\. /, 'num'], [/^>> /, 'toggle']];
