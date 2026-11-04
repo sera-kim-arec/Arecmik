@@ -1466,6 +1466,17 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .pcover-sm{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .pcover-sm .pcv{width:64px;height:44px;border-radius:8px;background-size:cover;background-position:center;flex:none}
 .pcard.noimg .pc-t{padding-top:14px}
+.ses{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+.ses-l{font-size:12.5px;font-weight:700;color:var(--muted);margin-right:2px}
+.ses-c{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;background:var(--lemon-soft);color:var(--lemon-ink);border-radius:999px;padding:2px 4px 2px 9px}
+.ses-c b{font-weight:700}
+.ses-x{border:0;background:none;color:inherit;opacity:.45;cursor:pointer;padding:0 2px;line-height:0}
+.ses-x svg{width:11px;height:11px}
+.ses-x:hover{opacity:1}
+.ses-add{display:inline-flex;align-items:center;gap:4px;border:1.5px dashed var(--line);border-radius:999px;padding:1px 4px 1px 8px}
+.ses-add input{border:0;background:transparent;font:inherit;font-size:12.5px;color:var(--fg);outline:none;padding:3px 0}
+.ses-add input[type=date]{width:118px;color:var(--muted)}
+.ses-add input.ses-in{width:150px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -3075,6 +3086,7 @@ function dayRecords(d) {
   const out = [];
   S.posts.filter(p => p.date === d).forEach(p => out.push({ t: 'post', o: p }));
   S.citems.forEach(ci => { const c = coll(ci.coll); if (!c) return; c.fields.forEach(f => { if (f.type === 'date' && f.onCal && ci.values[f.id] === d) out.push({ t: 'citem', o: ci, c, f }); }); });
+  S.citems.forEach(ci => { const c = coll(ci.coll); if (!c) return; const ss = (ci.sessions || []).filter(x => x.date === d); if (!ss.length || out.some(r => r.o === ci)) return; out.push({ t: 'citem', o: ci, c, f: { name: (collSource(c) === 'book' ? '읽음' : '봄') + (ss[ss.length - 1].upto ? ' · ' + ss[ss.length - 1].upto : '') } }); });
   return out;
 }
 function dayCover(recs) {
@@ -3271,6 +3283,7 @@ function vBook() {
         <div class="bk-sub">${fa && ci.values[fa.id] ? esc(ci.values[fa.id]) : ''}${ci.ext && ci.ext.publisher ? `<i>·</i>${esc(ci.ext.publisher)}` : ''}</div>
         <div class="bk-tags">${fs && ci.values[fs.id] ? `<span class="bk-st">${esc(ci.values[fs.id])}</span>` : ''}${fr && ci.values[fr.id] ? `<span class="bk-star">${'★'.repeat(ci.values[fr.id])}</span>` : ''}</div>
         <div class="bk-prog"><span class="bk-bar"><i style="width:${tp ? Math.min(100, Math.round(rp / tp * 100)) : 0}%"></i></span><span class="bk-pn">${rp ? `p.${rp}` : '아직 기록 없음'}</span><span class="bk-of">/ <input class="bk-tot" data-bkf="pages" type="number" min="0" value="${tp || ''}" placeholder="전체" aria-label="전체 쪽수">쪽</span></div>
+        ${ciSessions(ci, true)}
       </div>
     </div>
     <div class="bk-tabrow"><div class="seg inline bk-tabs" role="tablist">
@@ -3310,6 +3323,12 @@ function bNotesTab(ci) {
     </div>
     ${all.length ? `<div class="bn-filter"><button class="xchip ${fl === 'all' ? 'on' : ''}" data-act="bnf" data-v="all">전체 ${all.length}</button><button class="xchip ${fl === 'quote' ? 'on' : ''}" data-act="bnf" data-v="quote">❝ 밑줄</button><button class="xchip ${fl === 'memo' ? 'on' : ''}" data-act="bnf" data-v="memo">생각</button>${people.map(p => `<button class="xchip at ${fl === '@' + p ? 'on' : ''}" data-act="bnf" data-v="@${esc(p)}">@${esc(p)}</button>`).join('')}</div>` : ''}
     <div class="bn-list">${rows || `<div class="empty">${all.length ? '이 조건의 끄적임이 없어요.' : '읽으면서 떠오른 생각이나 좋았던 문장을 한 줄씩 적어 보세요. 앞에 "p.45 "처럼 쓰면 쪽수로 들어가요.'}</div>`}</div>`;
+}
+/* 읽은 날 / 본 날: 나눠서 읽고 본 기록 */
+function ciSessions(ci, isBook) {
+  const ss = (ci.sessions || []).slice().sort((a, b) => a.date.localeCompare(b.date) || (a.ts || 0) - (b.ts || 0));
+  return `<div class="ses"><span class="ses-l">${isBook ? '읽은 날' : '본 날'}</span>${ss.map(x => `<span class="ses-c">${fmtShort(x.date)}${x.upto ? ` <b>${esc(x.upto)}</b>` : ''}<button class="ses-x" data-act="sesdel" data-ci="${ci.id}" data-id="${x.id}" aria-label="지우기">${I.x}</button></span>`).join('')}
+    <span class="ses-add"><input type="date" id="ses-d-${ci.id}" value="${TODAY}" aria-label="날짜"><input id="ses-in-${ci.id}" class="ses-in" data-ses="${ci.id}" data-ci="${ci.id}" data-book="${isBook ? 1 : ''}" placeholder="${isBook ? '어디까지 · p.60' : '어디까지 · 3화, 1시간'} · Enter" autocomplete="off"></span></div>`;
 }
 function dlgBkPick(ci) {
   const qs = (ci.notes || []).filter(n => n.kind === 'quote').sort((a, b) => (a.page || 0) - (b.page || 0));
@@ -3684,7 +3703,7 @@ function dlgCitem(ci) {
   </div>
   <div class="dlg-body"><div class="fgrid">${c.fields.map(f => `<label for="cv-${f.id}">${esc(f.name)}</label><div>${fld(f)}</div>`).join('')}</div>
     ${ci.ext && (ci.ext.publisher || ci.ext.date || ci.ext.overview || ci.ext.url || ci.ext.tmdbId) ? `<div class="ci-ext">${ci.ext.publisher || ci.ext.date ? `<span>${esc([ci.ext.publisher, ci.ext.date].filter(Boolean).join(' · '))}</span>` : ''}${ci.ext.overview ? `<p>${esc(ci.ext.overview)}</p>` : ''}${ci.ext.url ? `<a href="${esc(ci.ext.url)}" target="_blank" rel="noopener">다음 책 정보 보기</a>` : ci.ext.tmdbId ? `<a href="https://www.themoviedb.org/movie/${ci.ext.tmdbId}?language=ko-KR" target="_blank" rel="noopener">TMDB에서 보기</a>` : ''}${ci.ext.src === 'movie' ? '<span class="ci-src">영화 정보·포스터 출처: TMDB. 이 앱은 TMDB의 승인·보증을 받지 않았어요.</span>' : ci.ext.src === 'book' ? '<span class="ci-src">책 정보·표지 출처: 카카오(다음) 책 검색</span>' : ''}</div>` : ''}
-    ${collSource(c) === 'book' ? `<div class="lbl" style="padding-top:14px">독서 기록</div><button class="btn sm" data-act="openci" data-id="${ci.id}">끄적임 · 관계도 · 독서 기록 열기</button>` : `<div class="lbl" style="padding-top:14px">기록</div><div class="ci-rec">${editorHTML('ci:' + ci.id)}</div>`}</div></div>`;
+    ${collSource(c) === 'book' ? `<div class="lbl" style="padding-top:14px">독서 기록</div><button class="btn sm" data-act="openci" data-id="${ci.id}">끄적임 · 관계도 · 독서 기록 열기</button>` : `<div class="lbl" style="padding-top:14px">나눠 본 날</div>${ciSessions(ci, false)}<div class="lbl" style="padding-top:14px">기록</div><div class="ci-rec">${editorHTML('ci:' + ci.id)}</div>`}</div></div>`;
 }
 
 /* ---------- block editor ---------- */
@@ -4085,6 +4104,7 @@ const ACT = {
   bmdel: t => { const ci = citem(ui.ciId); if (!ci) return; const id = t.dataset.id; const n = bnode(ci, id); mutate(() => { const M = bmap(ci); M.nodes = M.nodes.filter(x => x.id !== id); M.edges = M.edges.filter(x => x.a !== id && x.b !== id); ui.bsel = null; }, `‘${n ? n.name : '인물'}’을 지웠어요`); },
   bthdel: t => { const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.id); if (!n) return; mutate(() => { n.thoughts = (n.thoughts || []).filter(x => x.id !== t.dataset.t); }); },
   postmeta: () => { ui.postMeta = !ui.postMeta; render(); },
+  sesdel: t => { const ci = citem(t.dataset.ci); if (!ci) return; mutate(() => { ci.sessions = (ci.sessions || []).filter(x => x.id !== t.dataset.id); }); },
   bnf: t => { ui.bnf = t.dataset.v; render(); },
   bmaptg: () => { ui.bmapOn = !ui.bmapOn; ui.bsel = null; render(); if (ui.bmapOn) { const ci = citem(ui.ciId); if (ci && bmap(ci).nodes.length) { bview[ci.id] = bview[ci.id] || { x: 40, y: 30, z: 1 }; bFit(ci); const bd = document.querySelector('.board'); if (bd) bApplyView(bd); } } },
   bkpick: () => { ui.modalBack = null; openModal('bkpick', ui.ciId); },
@@ -4618,6 +4638,9 @@ document.addEventListener('keydown', e => {
   if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
   if (t.id === 'xcat-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const cats = retroCats(); S.settings = { ...(S.settings || {}), retroCats: cats.includes(v) ? cats : [...cats, v] }; const r = retro(ui.modal.id); if (r) r.cat = v; save(); renderModal(); return; }
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
+  if (t.dataset && t.dataset.ses) { e.preventDefault(); const ci = citem(t.dataset.ci); if (!ci) return; let v = t.value.trim(); const d = (document.getElementById('ses-d-' + ci.id) || {}).value || TODAY; const book = !!t.dataset.book; const num = book ? +((v.match(/\d+/) || [])[0] || 0) : 0;
+    if (book && num && !/^p/i.test(v)) v = 'p.' + num;
+    mutate(() => { ci.sessions = ci.sessions || []; ci.sessions.push({ id: uid(), date: d, upto: v, ts: Date.now() }); if (book && num && (+ci.readPage || 0) < num) ci.readPage = num; }, `${fmtMD(d)} 기록을 남겼어요`); ui.focusId = 'ses-in-' + ci.id; render(); renderModal(); setTimeout(() => { const i = document.getElementById('ses-in-' + ci.id); if (i) i.focus(); }, 10); return; }
   if (t.id === 'br-lab') { e.preventDefault(); const ci = citem(ui.ciId); const to = ($('#br-to') || {}).value; const v = t.value.trim(); if (!ci || !to) { toast('관계 맺을 인물을 먼저 골라 주세요'); return; } mutate(() => { bmap(ci).edges.push({ id: uid(), a: t.dataset.node, b: to, label: v }); }); ui.focusId = 'br-lab'; render(); return; }
   if (t.id === 'bp-new') { e.preventDefault(); const ci = citem(ui.ciId); const v = t.value.trim(); if (!ci || !v) return; const M = bmap(ci); const k = M.nodes.length; mutate(() => { M.nodes.push({ id: uid(), name: v, line: '', color: '', x: 40 + (k % 4) * 170, y: 40 + Math.floor(k / 4) * 110, thoughts: [] }); }); ui.focusId = 'bp-new'; render(); return; }
   if (t.id === 'bth-in') { e.preventDefault(); const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.node); const v = t.value.trim(); if (!n || !v) return; const pg = +($('#bth-p') || {}).value || null; mutate(() => { n.thoughts = n.thoughts || []; n.thoughts.push({ id: uid(), text: v, page: pg, date: TODAY, ts: Date.now() }); }); ui.focusId = 'bth-in'; render(); return; }
