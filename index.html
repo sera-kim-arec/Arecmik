@@ -1317,6 +1317,9 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jd-back{margin:2px 0 10px 4px;align-self:flex-start}
 .ed.all .bk{background:color-mix(in srgb, var(--lemon) 28%, transparent);border-radius:4px}
 .ed.all .bk-text{caret-color:transparent}
+.jsearch{display:flex;width:170px;margin-right:6px}
+.jsearch input{flex:1;min-width:0}
+.jday-scroll .jls{padding-top:6px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2107,7 +2110,6 @@ function workNav() {
   ${ui.areaAdd ? `<div class="area-new"><input id="area-new" class="inp" placeholder="카테고리 이름 · Enter" autocomplete="off"></div>` : ''}
   ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="hash">#</span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}</div>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="addmenu" data-space="work" data-id="" aria-label="새 노트 또는 새 폴더" title="새 노트 · 새 폴더">${I.plus}</button></div>
-  <button class="tree-doc jtree ${ui.view === 'journals' || ui.view === 'journal' ? 'on' : ''}" style="padding-left:10px" data-act="go" data-view="journals">${I.note}<span>업무일지</span><span class="cnt">${journalDays().length || ''}</span></button>
   ${tree('work', null, 0)}</div>`;
 }
 function lifeNav() {
@@ -2170,8 +2172,8 @@ function viewHTML() {
     case 'new-collection': return vNewColl();
     case 'retro': return vRetro();
     case 'area': return vArea();
-    case 'journal': return vJournal(false);
-    case 'journals': return vJournals();
+    case 'journal': ui.calView = 'day'; ui.jdetail = true; ui.sel = ui.jday || ui.sel; ui.view = 'work'; return vWork();
+    case 'journals': ui.calView = 'day'; ui.jdetail = false; ui.view = 'work'; return vWork();
     case 'book': return vBook();
     default: return vWork();
   }
@@ -2203,9 +2205,9 @@ function vWork() {
   const title = dayv && ui.jdetail ? `${sd.getMonth() + 1}월 ${sd.getDate()}일 <span class="muted" style="font-weight:600">${WD[sd.getDay()]}요일</span>` : dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
   const nav = dayv && ui.jdetail ? 'dayn' : dayv || wk ? 'week' : 'month';
   const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk && !dayv ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button><button class="${dayv ? 'on' : ''}" data-act="calview" data-v="day" title="그날 할일과 코멘트 · 업무일지">일지</button></div>`;
-  const right = dayv ? `<button class="btn ghost" data-act="go" data-view="journals">${I.note}지난 일지</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>` : `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
+  const right = dayv ? `<label class="search jsearch">${I.search}<input id="jq" type="search" placeholder="일지 검색" autocomplete="off" value="${esc(ui.jq || '')}" aria-label="일지 검색"></label><button class="btn primary" data-act="quick">${I.plus}새 항목</button>` : `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
   let body;
-  if (dayv) body = ui.jdetail ? `<div class="cal-scroll jday-scroll"><button class="btn sm ghost jd-back" data-act="jdback">${I.left}이번 주 일지로</button>${vJournal(true)}</div>` : `<div class="cal-scroll jday-scroll">${vJournalGrid()}</div>`;
+  if (dayv) body = `<div class="cal-scroll jday-scroll"><div id="jl-res">${jBody()}</div></div>`;
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
@@ -2646,6 +2648,8 @@ function vJournal(inCal, dArg) {
     </div>`; }
   return inCal ? page : head + page;
 }
+function jBody() { return (ui.jq || '').trim() ? `<div class="jls">${jlResults()}</div>` : ui.jdetail ? `<button class="btn sm ghost jd-back" data-act="jdback">${I.left}이번 주 일지로</button>${vJournal(true)}` : vJournalGrid(); }
+function openJDay(d) { ui.sel = d; ui.month = d.slice(0, 7); ui.calView = 'day'; ui.jdetail = true; ui.jq = ''; ui.modal = null; renderModal(); go('work'); }
 function vJournalGrid() {
   const days = visDays(weekStart(ui.sel));
   const col = d => {
@@ -3889,7 +3893,7 @@ const ACT = {
   ilogdel: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.log = (it.log || []).filter(c => c.id !== t.dataset.c); }); },
   jmode: t => { ui.jmode = t.dataset.v; render(); },
   jcat: t => { ui.jcat = t.dataset.v; render(); },
-  journal: t => { ui.jday = t.dataset.date || ui.sel || TODAY; go('journal'); },
+  journal: t => openJDay(t.dataset.date || ui.sel || TODAY),
   jday: t => { const d = t.dataset.d; ui.jday = d === 'today' ? TODAY : addDays(ui.jday || TODAY, +d); render(); },
   ichdel: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.checks = (it.checks || []).filter(c => c.id !== t.dataset.c); }); renderModal(); },
   rapply: t => {
@@ -4023,7 +4027,7 @@ const ACT = {
     else if (k === 'doc') ACT.opendoc(t);
     else if (k === 'post') ACT.openpost(t);
     else if (k === 'citem') { ui.collId = citem(id).coll; go('collections'); openModal('citem', id); }
-    else if (k === 'jday') { ui.jday = id; go('journal'); }
+    else if (k === 'jday') openJDay(id);
     else if (k === 'retro') { ui.modalBack = null; openModal('retro', id); }
   },
   bcheck: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.done = !b.done; touch(key); rerenderEditor(key); },
@@ -4089,7 +4093,7 @@ document.addEventListener('input', e => {
   if (t.id === 'lk-q' && look) { clearTimeout(look.t); const v = t.value; look.t = setTimeout(() => { if (look && v.trim().length >= 2) runLookup(v); }, 450); return; }
   if (t.dataset && t.dataset.xf && ui.modal && ui.modal.kind === 'retro') { const r = retro(ui.modal.id); if (r) { r[t.dataset.xf] = t.value; save(); } return; }
   if (t.id === 'q') { ui.search = t.value; drawSearch(); return; }
-  if (t.id === 'jq') { ui.jq = t.value; const r = document.getElementById('jl-res'); if (r) r.innerHTML = jlResults(); return; }
+  if (t.id === 'jq') { ui.jq = t.value; const r = document.getElementById('jl-res'); if (r) r.innerHTML = jBody(); return; }
   if (t.id === 'mp-q' && mention) { mention.q = t.value; mention.idx = 0; drawMention(); return; }
   if (t.classList.contains('tcell')) { autoArrow(t); const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (b && b.rows) { b.rows[+t.dataset.r][+t.dataset.c] = t.innerText.replace(/\n$/, ''); touch(key); } return; }
   if (t.classList.contains('bk-text')) { if (!t.classList.contains('code-text')) autoArrow(t); return onBlockInput(t); }
