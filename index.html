@@ -1424,10 +1424,14 @@ html[data-accent="peach"][data-theme="dark"],html[data-accent="rose"][data-theme
 .jg-ghost:hover,.j-ghost:hover{background:rgba(135,131,120,.22)}
 .pchip{display:inline-block;max-width:100%;background:rgba(135,131,120,.14);color:var(--fg2);border-radius:5px;padding:1px 6px;font-size:11.5px;font-weight:600;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
 .pc-line{display:block;margin-top:2px;font-weight:400}
-.chip-pc{flex:1 0 100%;order:8;padding:0 2px 1px 4px;min-width:0;overflow:hidden}
+.chip-pc{flex:1 0 100%;order:8;padding:0 2px 1px 20px;min-width:0;overflow:hidden}
+.chip.has-ck .chip-ck{padding-left:20px}
 .chip-pc .pchip{font-size:10.5px;padding:0 5px}
 .ptl.show{margin-top:2px}
 .ptl .pchip{font-size:11.5px}
+/* 테마(강조) 색을 따라가는 코드 상자 */
+.pchip{background:var(--lemon-soft)!important;color:var(--lemon-ink)!important}
+code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
