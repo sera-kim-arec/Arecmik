@@ -1309,6 +1309,11 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jg-memo .ed .bk-text:empty::before,.jg-memo .ed.ed-empty .bk-text:empty::before{content:'적기'}
 .jg .plog-i{flex-direction:column;gap:0}
 .jg .plog-i .ilog-t{font-size:11px}
+.jg-open{display:flex;align-items:center;gap:6px;border:0;background:none;font:inherit;color:var(--fg);padding:2px 6px;margin:-2px -6px;border-radius:9px;cursor:pointer}
+.jg-open:hover{background:var(--hover, rgba(0,0,0,.05))}
+.jg-go{font-size:12px;color:var(--muted);opacity:0;transition:opacity .12s}
+.jg-col:hover .jg-go{opacity:1}
+.jd-back{margin:2px 0 10px 4px;align-self:flex-start}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2192,12 +2197,12 @@ function vWork() {
   const selWeek = weeks.find(w => ui.sel >= w && ui.sel <= addDays(w, 6));
   const ws = weekStart(ui.sel), we = addDays(ws, 6); const vd = visDays(ws); const a = parse(vd[0]), b = parse(vd[vd.length - 1]);
   const sd = parse(ui.sel);
-  const title = dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
-  const nav = dayv || wk ? 'week' : 'month';
+  const title = dayv && ui.jdetail ? `${sd.getMonth() + 1}월 ${sd.getDate()}일 <span class="muted" style="font-weight:600">${WD[sd.getDay()]}요일</span>` : dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
+  const nav = dayv && ui.jdetail ? 'dayn' : dayv || wk ? 'week' : 'month';
   const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk && !dayv ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button><button class="${dayv ? 'on' : ''}" data-act="calview" data-v="day" title="그날 할일과 코멘트 · 업무일지">일지</button></div>`;
   const right = dayv ? `<button class="btn ghost" data-act="go" data-view="journals">${I.note}지난 일지</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>` : `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
   let body;
-  if (dayv) body = `<div class="cal-scroll jday-scroll">${vJournalGrid()}</div>`;
+  if (dayv) body = ui.jdetail ? `<div class="cal-scroll jday-scroll"><button class="btn sm ghost jd-back" data-act="jdback">${I.left}이번 주 일지로</button>${vJournal(true)}</div>` : `<div class="cal-scroll jday-scroll">${vJournalGrid()}</div>`;
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
@@ -2647,7 +2652,7 @@ function vJournalGrid() {
       .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'event' ? -1 : 1) || (a.start || '99').localeCompare(b.start || '99') || a.done - b.done);
     const row = it => `<div class="jg-it ${it.done ? 'done' : ''}"><div class="jg-r">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : `<span class="jg-dot" style="background:${itemColor(it)}"></span>`}<button class="jg-t" data-act="open" data-kind="item" data-id="${it.id}">${it.start ? `<span class="tm">${it.start}</span> ` : ''}${tT(it.title || '제목 없음')}${doneOn(it) && it.date !== d ? `<span class="jorig">${fmtShort(it.date)} 할일</span>` : ''}</button>${cBtn(it, d)}</div>${dayLog(it, d)}</div>`;
     return `<div class="jg-col ${d === TODAY ? 'today' : ''} ${d === ui.sel ? 'sel' : ''}">
-      <div class="jg-h"><b class="${d === TODAY ? 'today' : ''}">${dd.getDate()}</b><span>${WD[dd.getDay()]}</span>${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}<span class="grow"></span><button class="cell-add jg-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가">${I.plus}</button></div>
+      <div class="jg-h"><button class="jg-open" data-act="jdopen" data-date="${d}" title="이 날 일지 크게 보기"><b class="${d === TODAY ? 'today' : ''}">${dd.getDate()}</b><span>${WD[dd.getDay()]}</span><span class="jg-go">열기 ›</span></button>${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}<span class="grow"></span><button class="cell-add jg-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가">${I.plus}</button></div>
       <div class="jg-items">${its.map(row).join('') || '<div class="jg-empty">—</div>'}</div>
       <div class="jg-memo"><div class="jg-ml">메모</div>${editorHTML('jday:' + d, true)}</div>
     </div>`;
@@ -3794,7 +3799,9 @@ const ACT = {
   soundtoggle: () => { try { localStorage.setItem('arecmik-sound', soundOn() ? 'off' : 'on'); } catch (e) { /* storage blocked */ } if (soundOn()) chime(); renderModal(); },
   toastgo: () => { $('#toast').hidden = true; const f = toastFn; toastFn = null; if (f) f(); },
   openparent: t => { ui.modalBack = null; ui.modal = { kind: 'item', id: t.dataset.id }; renderModal(); },
-  calview: t => { ui.calView = t.dataset.v; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); if (ui.calView === 'day') setTimeout(() => { const el = document.getElementById('jw-' + ui.sel); if (el && el.previousElementSibling && el.previousElementSibling.classList.contains('jw-day')) el.scrollIntoView({ block: 'start' }); }, 0); },
+  calview: t => { ui.calView = t.dataset.v; ui.jdetail = false; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); if (ui.calView === 'day') setTimeout(() => { const el = document.getElementById('jw-' + ui.sel); if (el && el.previousElementSibling && el.previousElementSibling.classList.contains('jw-day')) el.scrollIntoView({ block: 'start' }); }, 0); },
+  jdopen: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.jdetail = true; render(); },
+  jdback: () => { ui.jdetail = false; render(); },
   jwsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.focusId = 'jday-add'; render(); },
   dayn: t => { ui.sel = addDays(ui.sel, +t.dataset.d); ui.month = ui.sel.slice(0, 7); render(); },
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
