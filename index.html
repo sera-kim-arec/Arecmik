@@ -1885,7 +1885,7 @@ function moveBadge(it) {
   return `<span class="mvb" title="${esc(hist)}">↷ ${l}</span>`;
 }
 const evState = it => it.kind !== 'event' ? '' : it.cancel ? 'cancel' : it.done ? 'done' : '';
-function afterLoad() { hist.length = 0; resetUi(); renderGate(null); rollTodos(); render(); renderModal(); setTimeout(checkReminders, 1500); }
+function afterLoad() { hist.length = 0; resetUi(); restoreUI(); renderGate(null); rollTodos(); render(); renderModal(); setTimeout(checkReminders, 1500); }
 function renderGate(state, msg) {
   const g = document.getElementById('gate');
   if (!state) { g.hidden = true; g.innerHTML = ''; return; }
@@ -2125,11 +2125,23 @@ const ui = {
   collId: 'c1', cfilter: {}, draft: null, pfilter: 'active',
   search: '', modal: null, modalBack: null, confirm: null, newFolder: null, focusId: null, navOpen: false
 };
+/* 새로고침해도 보던 화면 그대로 (이 기기 브라우저에만 저장) */
+const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'catOpen', 'open', 'weekLog'];
+function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-ui') || 'null'); if (!o) return; const hv = location.hash.slice(1);
+  const ok = { noteFolder: v => !v || !!folder(v), noteDoc: v => !v || !!doc(v), lifeFolder: v => !v || !!folder(v), postId: v => !v || !!post(v), collId: v => !v || !!(S.collections || []).find(c => c.id === v), ciId: v => !v || !!citem(v) };
+  UI_KEEP.forEach(k => { if (!(k in o)) return; if (ok[k] && !ok[k](o[k])) return; ui[k] = o[k]; });
+  if (VIEWS.includes(hv)) ui.view = hv;
+  if (ui.view === 'book' && !citem(ui.ciId)) ui.view = 'work';
+  if (o.day !== TODAY) { ui.sel = TODAY; ui.month = TODAY.slice(0, 7); }
+} catch (e) { /* storage blocked */ } }
+let uiSaveT = null;
+function keepUI() { clearTimeout(uiSaveT); uiSaveT = setTimeout(() => { try { const o = { day: TODAY }; UI_KEEP.forEach(k => { o[k] = ui[k]; }); localStorage.setItem('arecmik-ui', JSON.stringify(o)); } catch (e) { /* storage blocked */ } }, 300); }
 const isLife = () => ['life', 'posts', 'collections', 'new-collection', 'book'].includes(ui.view);
 
 /* ---------- render ---------- */
 const app = $('#app'), layer = $('#layer'), pop = $('#pop');
 function render() {
+  keepUI();
   if (!doneSeen && S && S.items) stampDone();
   document.documentElement.classList.toggle('raised', settingsOf().depth === 'raised');
   { const ac = settingsOf().accent || 'lemon'; if (ac === 'lemon') delete document.documentElement.dataset.accent; else document.documentElement.dataset.accent = ac; }
