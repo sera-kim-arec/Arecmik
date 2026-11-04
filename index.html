@@ -1254,10 +1254,12 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jpage.incal aside{position:sticky;top:0}
 .jpage.incal .jnote{min-height:260px}
 @media (max-width:1180px){ .jpage.incal{grid-template-columns:minmax(0,1fr)} .jpage.incal aside{position:static} }
-.cbtn{opacity:0;cursor:pointer;color:var(--muted);padding:2px 3px;border-radius:6px;line-height:0;flex:none}
-.trow:hover .cbtn,.evrow:hover .cbtn,.cbtn:focus-visible{opacity:.75}
+.cbtn{opacity:0;cursor:pointer;color:var(--muted);flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;border-radius:6px;line-height:0;margin-left:auto}
+.cbtn svg{width:13px;height:13px}
+.cbtn + .subplus{margin-left:2px}
+.trow:hover .cbtn,.evrow:hover .cbtn,.cbtn:focus-visible{opacity:1}
 .cbtn:hover{opacity:1!important;color:var(--fg);background:var(--hover, rgba(0,0,0,.05))}
-@media (hover:none){.cbtn{opacity:.45}}
+@media (hover:none){.cbtn{opacity:.55}}
 .plog{margin:-2px 0 6px 34px;display:flex;flex-direction:column;gap:1px}
 .plog-i{display:flex;gap:7px;border:0;background:none;font:inherit;font-size:13px;color:var(--fg2);text-align:left;padding:2px 4px;border-radius:6px;cursor:pointer;line-height:1.45}
 .plog-i:hover{background:var(--hover, rgba(0,0,0,.04))}
@@ -1348,9 +1350,9 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jsub{color:var(--faint);margin-right:4px;font-weight:600}
 .jrow .jpar{display:inline;margin-right:6px;font-size:12px}
 .jg-r{position:relative}
-.jg-r .cbtn,.jg-r .subplus{position:absolute;top:0;display:none;background:var(--surface);box-shadow:0 1px 4px rgba(40,50,70,.12);border-radius:7px;padding:3px;opacity:1!important}
+.jg-r .cbtn,.jg-r .subplus{position:absolute;top:0;display:none;width:22px;height:22px;padding:0;margin:0;background:var(--surface);box-shadow:0 1px 4px rgba(40,50,70,.12);border-radius:7px;opacity:1!important}
 .jg-r .cbtn{right:26px}.jg-r .subplus{right:0}
-.jg-it:hover > .jg-r .cbtn,.jg-it:hover > .jg-r .subplus{display:block}
+.jg-it:hover > .jg-r .cbtn,.jg-it:hover > .jg-r .subplus{display:inline-flex}
 @media (hover:none){ .jg-r .cbtn,.jg-r .subplus{display:none!important} }
 .jnote-tabs{display:flex;gap:4px}
 .jnote-tabs button{border:0;background:none;font:inherit;font-size:inherit;font-weight:700;color:var(--muted);padding:2px 8px;border-radius:8px;cursor:pointer}
