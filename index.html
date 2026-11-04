@@ -1181,6 +1181,27 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .area-name{border:0;background:transparent;font:inherit;color:inherit;padding:2px 6px;border-radius:8px;width:auto;min-width:3ch;field-sizing:content;outline:none}
 .area-name:hover{background:var(--hover, rgba(0,0,0,.04))}
 .area-name:focus{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--lemon)}
+.jbtn{margin-left:auto}
+.day-h{display:flex;align-items:center;gap:8px}
+.ilog{display:flex;flex-direction:column;gap:2px}
+.ilog-i{display:flex;align-items:center;gap:8px;padding:2px 0}
+.ilog-t{flex:none;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:38px}
+.jpage{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px;padding:0 24px 40px 4px;align-items:start}
+.jgroup{margin-bottom:12px}
+.jrow{padding:4px 0 6px;border-bottom:1px solid var(--line-soft)}
+.jrow:last-child{border-bottom:0}
+.jrow-h{display:flex;align-items:center;gap:8px;padding:4px 4px}
+.jst{flex:none;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:6px;background:rgba(135,131,120,.14);color:var(--fg2)}
+.jst.ok{background:var(--lemon-soft);color:var(--lemon-ink)}
+.jst.ev{background:rgba(11,107,203,.1);color:#0B6BCB}
+.jlog{display:flex;gap:8px;padding:3px 6px 3px 34px;font-size:14px;line-height:1.5}
+.jadd{display:block;padding:2px 6px 2px 34px}
+.jadd input{width:100%;border:0;background:transparent;font:inherit;font-size:13.5px;color:var(--fg);padding:4px 6px;border-radius:7px;outline:none}
+.jadd input::placeholder{color:var(--faint)}
+.jadd input:focus{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--lemon)}
+.jnote{min-height:220px}
+@media (max-width:640px){ .h1 .muted{display:none} }
+@media (max-width:900px){ .jpage{grid-template-columns:minmax(0,1fr);padding:0 12px 40px} }
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -1850,7 +1871,7 @@ const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'l
 const coverStyle = c => c && c.img ? `background-image:url('${c.img}')` : c ? `background-color:${c.tone}` : '';
 
 /* ---------- ui state ---------- */
-const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area'];
+const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area', 'journal'];
 const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
@@ -2024,6 +2045,7 @@ function viewHTML() {
     case 'new-collection': return vNewColl();
     case 'retro': return vRetro();
     case 'area': return vArea();
+    case 'journal': return vJournal();
     case 'book': return vBook();
     default: return vWork();
   }
@@ -2155,6 +2177,7 @@ const tT = t => inlCode(t || '');
 const PRI = { 1: '높음', 2: '보통', 3: '낮음' };
 const priT = it => it.pri && PRI[it.pri] && !it.done ? `<span class="pri p${it.pri}" title="우선순위 ${PRI[it.pri]}">${PRI[it.pri]}</span>` : '';
 const priCmp = (a, b) => (a.pri || 2.5) - (b.pri || 2.5);
+const hm = ts => { const x = new Date(ts); return String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
 const ckOn = it => (it.checks || []).length && !it.done && !it.cancel;
 const chipCk = it => ckOn(it) ? `<span class="chip-ck" title="확인: ${esc(it.checks.map(c => c.text).join(' / '))}">❗ ${esc(it.checks.map(c => c.text).join(' · '))}</span>` : '';
 const chkLine = it => (it.checks || []).length && !it.done && !it.cancel ? `<div class="ichk" data-act="open" data-kind="item" data-id="${it.id}"><span class="ichk-m">❗</span><span>${it.checks.map(c => tT(c.text)).join('<i>·</i>')}</span></div>` : '';
@@ -2416,6 +2439,32 @@ function dlgRetro(r) {
     <p class="hint" style="margin:8px 2px 0">‘다음엔’에 적은 내용은 복기 화면의 확인 목록에 모여요.</p>
   </div></div>`;
 }
+function vJournal() {
+  const d = ui.jday || TODAY; ui.jday = d; const dd = parse(d);
+  const onDay = it => (it.kind === 'todo' && it.date === d) || (it.kind === 'event' && it.date && it.date <= d && (it.end || it.date) >= d && !it.cancel);
+  const logsOn = it => (it.log || []).filter(c => c.date === d).sort((a, b) => a.ts - b.ts);
+  const list = S.items.filter(it => onDay(it) || logsOn(it).length);
+  const groups = {}; list.forEach(it => { const k = it.area || '미분류'; (groups[k] = groups[k] || []).push(it); });
+  const keys = Object.keys(groups).sort((a, b) => (a === '미분류') - (b === '미분류') || a.localeCompare(b));
+  const st = it => it.kind === 'event' ? (it.done ? '<span class="jst ok">완료</span>' : '<span class="jst ev">일정</span>') : it.done ? '<span class="jst ok">완료</span>' : it.date === d ? '<span class="jst">진행 중</span>' : '<span class="jst">진행 중</span>';
+  const row = it => `<div class="jrow"><div class="jrow-h">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="stl" data-act="open" data-kind="item" data-id="${it.id}"><span>${tT(it.title || '제목 없음')}</span>${st(it)}</button></div>
+    ${logsOn(it).map(c => `<div class="jlog"><span class="ilog-t">${hm(c.ts)}</span><span>${tT(c.text)}</span></div>`).join('')}
+    <label class="jadd"><input id="jl-${it.id}" data-jlog="${it.id}" data-date="${d}" placeholder="코멘트 · 이슈 적고 Enter" autocomplete="off"></label></div>`;
+  const nDone = list.filter(it => it.done).length;
+  return `${topbar(`<h1 class="h1">${dd.getMonth() + 1}월 ${dd.getDate()}일 <span class="muted" style="font-weight:600">${WD[dd.getDay()]}요일</span> 업무일지</h1><div class="pager"><button class="btn icon" data-act="jday" data-d="-1" aria-label="전날">${I.left}</button><button class="btn icon" data-act="jday" data-d="1" aria-label="다음 날">${I.right}</button></div>${d !== TODAY ? '<button class="btn" data-act="jday" data-d="today">오늘</button>' : ''}`, isMob() ? '' : `<button class="btn ghost" data-act="go" data-view="work">${I.cal}달력</button>`)}
+  <div class="jpage">
+    <section>
+      <div class="lbl">한 일 · 코멘트 <span class="muted">${list.length ? `${list.length}건 · 완료 ${nDone}` : ''}</span></div>
+      ${keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${groups[k].map(row).join('')}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
+      ${dayRetros(d) ? `<div class="card" style="margin-top:14px">${dayRetros(d)}</div>` : ''}
+    </section>
+    <aside>
+      <div class="lbl">이 날 메모</div>
+      <div class="card jnote">${editorHTML('jday:' + d)}</div>
+      <p class="hint" style="margin:8px 4px 0">회의 내용, 받은 요청, 전체적인 느낌처럼 할일에 딱 붙지 않는 것들을 적어요.</p>
+    </aside>
+  </div>`;
+}
 function vArea() {
   const a = ui.area; if (!a || !retroAreas().includes(a)) { ui.view = 'work'; return vWork(); }
   const its = S.items.filter(it => it.area === a && !it.cancel);
@@ -2511,7 +2560,7 @@ function mDayList(d) {
       <button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>
       <button class="mtx" data-act="open" data-kind="item" data-id="${it.id}"><b>${it.parentId ? '<span class="subic">↳</span>' : ''}${it.star ? '<span class="imp" title="꼭 잊지 말기">❗</span>' : ''}${priT(it)}${areaTag(it)}${rnT(it)}</b>${it.start || s2 || ml ? `<span>${it.start ? `${it.start}` : ''}${ml ? `<em class="mv">↷ ${ml}</em>` : ''}${s2 ? (it.start ? '<i>·</i>' : '') + s2 : ''}</span>` : ''}</button>${`<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span>`}</div>${chkLine(it)}${subInline(it)}`; };
   const nOpen = tds.filter(x => !x.done).length;
-  return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
+  return `<div class="mdl-h"><h2>${dd.getMonth() + 1}월 ${dd.getDate()}일 <span>${WD[dd.getDay()]}요일</span></h2>${d === TODAY ? '<span class="mtoday">오늘</span>' : ''}<span class="grow"></span><button class="btn sm jbtn" data-act="journal" data-date="${d}">업무일지</button><span class="mcount">${evs.length ? `일정 ${evs.length}` : ''}${evs.length && tds.length ? ' · ' : ''}${tds.length ? `할일 ${tds.length}${tds.length - nOpen ? ` · 완료 ${tds.length - nOpen}` : ''}` : ''}</span></div>
   <div class="mcomp"><span class="mc-ic">${I.plus}</span><input id="m-add" placeholder="${k === 'event' ? '일정' : '할일'} 적기 · 예: 3시 회의" autocomplete="off" enterkeyhint="done" aria-label="이 날에 추가할 제목">
     <div class="mc-kinds" role="group" aria-label="추가할 종류"><button class="${k === 'event' ? 'on' : ''}" data-act="mkind" data-k="event">일정</button><button class="${k === 'todo' ? 'on' : ''}" data-act="mkind" data-k="todo">할일</button><button data-act="mkind" data-k="retro">복기</button></div></div>
   ${ps.length ? `<div class="mprojs">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${tT(p.title)}</button>`).join('')}</div>` : ''}
@@ -2560,7 +2609,7 @@ function daySection() {
   const evs = S.items.filter(it => it.kind === 'event' && it.date && it.date <= d && (it.end || it.date) >= d).sort((a, b) => (a.start || '99').localeCompare(b.start || '99'));
   const tds = nestOrder(S.items.filter(it => it.kind === 'todo' && it.date === d).sort((a, b) => a.done - b.done || ((b.star ? 1 : 0) - (a.star ? 1 : 0)) || priCmp(a, b) || (a.start || '99').localeCompare(b.start || '99')));
   const ps = S.projects.filter(p => p.start <= d && projEnd(p) >= d);
-  return `<section aria-label="선택한 날"><div class="day-h"><h2>${fmtFull(d)}</h2>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}</div>
+  return `<section aria-label="선택한 날"><div class="day-h"><h2>${fmtFull(d)}</h2>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}<span class="grow"></span><button class="btn sm jbtn" data-act="journal" data-date="${d}">${I.note}업무일지</button></div>
   <div class="card">
     <div class="day-add"><label class="addline"><input id="day-add" placeholder="제목 입력" autocomplete="off" aria-label="이 날에 추가할 제목"></label><button class="btn sm" data-act="dayadd" data-kind="event">일정</button><button class="btn sm" data-act="dayadd" data-kind="todo">할일</button><button class="btn sm" data-act="dayadd" data-kind="retro" title="실수나 받은 피드백을 이 날짜로 기록">복기</button></div>
     ${ps.length ? `<div class="projline">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${tT(p.title)}</button>`).join('')}</div>` : ''}
@@ -3125,6 +3174,9 @@ function dlgItem(it) {
   <div class="dlg-body"><div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">할 때 꼭 챙길 것</span></div>
     <div class="rchg">${(it.checks || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><input class="ck-ed" data-ich="${it.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="꼭 챙길 것 고치기"><button class="bn-x" data-act="ichdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
       <input id="ic-in" class="inp" data-iid="${it.id}" placeholder="예: 공고문 날짜 원문과 대조 · Enter" autocomplete="off"></div>
+    <div class="lbl" style="padding-top:12px">코멘트 · 이슈 <span class="hint" style="font-weight:500">한 일, 진행 상황, 그때 있었던 일 · 업무일지에 모여요</span></div>
+    <div class="ilog"><input id="ilog-in" class="inp" data-iid="${it.id}" placeholder="예: 담당자 회신 대기 · 장소 변경 요청 받음 · Enter" autocomplete="off">
+      ${(it.log || []).slice().sort((a, b) => b.ts - a.ts).map(c => `<div class="ilog-i"><span class="ilog-t">${fmtShort(c.date)} ${hm(c.ts)}</span><input class="ck-ed" data-ilog="${it.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="코멘트 고치기"><button class="bn-x" data-act="ilogdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}</div>
     ${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
 }
 function remindOptions(it) {
@@ -3232,6 +3284,7 @@ function dlgCitem(ci) {
 function edBlocks(key) {
   const [k, id] = key.split(':');
   if (k === 'ci') { const ci = citem(id); if (!ci) return null; if (!Array.isArray(ci.review) || !ci.review.length) ci.review = [B('p', '')]; return ci.review; }
+  if (k === 'jday') { S.rmonths = S.rmonths || []; const jid = 'j-' + id; let o = S.rmonths.find(x => x.id === jid); if (!o) { o = { id: jid, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'rmonth') { S.rmonths = S.rmonths || []; let o = S.rmonths.find(x => x.id === id); if (!o) { o = { id, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'week') { S.weekNotes = S.weekNotes || {}; if (!Array.isArray(S.weekNotes[id]) || !S.weekNotes[id].length) S.weekNotes[id] = [B('p', '')]; return S.weekNotes[id]; }
   const o = k === 'memo' ? S : k === 'item' ? item(id) : k === 'project' ? proj(id) : k === 'doc' ? doc(id) : k === 'post' ? post(id) : null;
@@ -3615,6 +3668,9 @@ const ACT = {
   chkall: () => { ui.chkAll = !ui.chkAll; render(); },
   xroutine: t => { const r = retro(t.dataset.id); if (!r || !r.next) return; if ((S.routines || []).some(x => x.title === r.next)) { toast('이미 루틴에 있어요'); return; } mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: r.next, freq: 'any', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴에 추가했어요 · 주기는 루틴에서 바꿀 수 있어요'); },
   rcheck: t => { const r = routine(t.dataset.id); if (!r) return; const done = rDone(r); if (!done && (r.changes || []).length) { ui.modalBack = null; openModal('rapply', r.id); return; } mutate(() => { r.log = r.log || []; if (done) r.log = r.log.filter(d => !(d >= rPeriodStart(r) && d <= TODAY)); else r.log.push(TODAY); if (r.log.length > 400) r.log = r.log.slice(-400); }, done ? '이번 기록을 지웠어요' : `‘${r.title}’ 했어요`); },
+  ilogdel: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.log = (it.log || []).filter(c => c.id !== t.dataset.c); }); },
+  journal: t => { ui.jday = t.dataset.date || ui.sel || TODAY; go('journal'); },
+  jday: t => { const d = t.dataset.d; ui.jday = d === 'today' ? TODAY : addDays(ui.jday || TODAY, +d); render(); },
   ichdel: t => { const it = item(t.dataset.id); if (!it) return; mutate(() => { it.checks = (it.checks || []).filter(c => c.id !== t.dataset.c); }); renderModal(); },
   rapply: t => {
     const r = routine(t.dataset.id); if (!r) return; const apply = t.dataset.v === '1';
@@ -3863,14 +3919,14 @@ document.addEventListener('change', e => {
 });
 
 document.addEventListener('change', e => {
-  const t = e.target; if (!t.dataset || (t.dataset.ich === undefined && t.dataset.rch === undefined)) return;
-  const o = t.dataset.ich !== undefined ? item(t.dataset.ich) : routine(t.dataset.rch); if (!o) return; const key = t.dataset.ich !== undefined ? 'checks' : 'changes';
+  const t = e.target; if (!t.dataset || (t.dataset.ich === undefined && t.dataset.rch === undefined && t.dataset.ilog === undefined)) return;
+  const o = t.dataset.rch !== undefined ? routine(t.dataset.rch) : item(t.dataset.ich || t.dataset.ilog); if (!o) return; const key = t.dataset.ich !== undefined ? 'checks' : t.dataset.ilog !== undefined ? 'log' : 'changes';
   const v = t.value.trim(); mutate(() => { o[key] = (o[key] || []).map(c => c.id === t.dataset.c ? (v ? { ...c, text: v } : null) : c).filter(Boolean); });
 });
 const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.savebtn'); if (!b) return; const d = isDirty(); b.classList.toggle('primary', d); b.textContent = d ? '저장' : '저장됨'; }, 30);
 ['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
 /* Enter saves and closes the open dialog (Ctrl+Enter works anywhere in it) */
-const OWN_ENTER = new Set(['area-new', 'area-todo', 'area-retro', 'iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
+const OWN_ENTER = new Set(['ilog-in', 'area-new', 'area-todo', 'area-retro', 'iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || !ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return;
   const t = e.target; const mod = e.ctrlKey || e.metaKey;
@@ -4096,6 +4152,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
   if (t.id === 'bth-in') { e.preventDefault(); const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.node); const v = t.value.trim(); if (!n || !v) return; const pg = +($('#bth-p') || {}).value || null; mutate(() => { n.thoughts = n.thoughts || []; n.thoughts.push({ id: uid(), text: v, page: pg, date: TODAY, ts: Date.now() }); }); ui.focusId = 'bth-in'; render(); return; }
   if (t.id === 'be-label') { e.preventDefault(); ui.bsel = null; render(); return; }
+  if (t.id === 'ilog-in' || (t.dataset && t.dataset.jlog)) { e.preventDefault(); const it = item(t.dataset.iid || t.dataset.jlog); const v = t.value.trim(); if (!it || !v) return; const date = t.dataset.date || TODAY; const keepId = t.id || null; mutate(() => { it.log = it.log || []; it.log.push({ id: uid(), ts: Date.now(), date, text: v }); }); if (keepId) { renderModal(); setTimeout(() => { const i = document.getElementById(keepId); if (i) i.focus(); }, 10); } else { ui.focusId = 'jl-' + it.id; render(); } return; }
   if (t.id === 'ic-in') { e.preventDefault(); const it = item(t.dataset.iid); const v = t.value.trim(); if (!it || !v) return; mutate(() => { it.checks = it.checks || []; it.checks.push({ id: uid(), text: v }); }); renderModal(); setTimeout(() => { const i = document.getElementById('ic-in'); if (i) i.focus(); }, 10); return; }
   if (t.id === 'rc-in') { e.preventDefault(); const r = routine(t.dataset.rid); const v = t.value.trim(); if (!r || !v) return; mutate(() => { r.changes = r.changes || []; r.changes.push({ id: uid(), text: v, date: TODAY }); }); renderModal(); setTimeout(() => { const i = document.getElementById('rc-in'); if (i) i.focus(); }, 10); return; }
   if (t.id === 'routine-add') { const v = t.value.trim(); if (!v) return; mutate(() => { S.routines = S.routines || []; S.routines.push({ id: uid(), title: v, freq: 'daily', dow: '', dom: '', noteId: null, log: [], ord: Date.now() }); }, '루틴을 추가했어요'); ui.focusId = 'routine-add'; render(); return; }
