@@ -3168,10 +3168,10 @@ function vPosts() {
 }
 function vPost(p) {
   const f = folder(p.folder);
-  return `${topbar(`<button class="btn ghost" data-act="lfolder" data-id="${p.folder}">${I.left}${esc(f ? f.name : '폴더')}</button>`, `<span class="hint">자동 저장</span><button class="btn sm ${ui.confirm === 'post:' + p.id ? 'warn' : 'ghost danger'}" data-act="delpost" data-id="${p.id}">${ui.confirm === 'post:' + p.id ? '한 번 더 누르면 삭제' : '삭제'}</button>`)}
+  return `${topbar(`<button class="btn ghost" data-act="lfolder" data-id="${p.folder}">${I.left}${esc(f ? f.name : '폴더')}</button>`, `<button class="btn sm ghost ${ui.postMeta ? 'on-soft' : ''}" data-act="postmeta" title="폴더 · 날짜 · 연결 · 사진" aria-expanded="${!!ui.postMeta}">⋯ 정보</button><button class="btn sm ${ui.confirm === 'post:' + p.id ? 'warn' : 'ghost danger'}" data-act="delpost" data-id="${p.id}">${ui.confirm === 'post:' + p.id ? '한 번 더 누르면 삭제' : '삭제'}</button>`)}
   <article class="doc">
     ${p.cover && p.cover.img ? `<div class="pcover-sm"><span class="pcv" style="${coverStyle(p.cover)}"></span><label class="chk-lbl"><input type="checkbox" id="cover-cal" data-pf="coverOnCal" ${p.coverOnCal ? 'checked' : ''}>달력 대표 이미지</label><button class="btn sm ghost" data-act="coverclear">사진 빼기</button></div>` : ''}
-    <div class="meta-row"><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}${p.cover && p.cover.img ? '' : `<label class="pill" for="cover-file" title="대표 사진 (기록 달력에 보여요)">${I.img}사진</label>`}<input type="file" id="cover-file" accept="image/*" hidden></div>
+    <div class="meta-row" ${ui.postMeta ? '' : 'hidden'}><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}${p.cover && p.cover.img ? '' : `<label class="pill" for="cover-file" title="대표 사진 (기록 달력에 보여요)">${I.img}사진</label>`}<input type="file" id="cover-file" accept="image/*" hidden></div>
     <input class="doc-title" id="post-title" data-pf="title" value="${esc(p.title)}" placeholder="${isDiaryFolder(p.folder) ? esc(dayLabel(p.date)) : '제목'}" aria-label="글 제목">
     ${ui.linksOpen === 'post:' + p.id ? linksHTML('post:' + p.id, 'post:' + p.id, true) : ''}
     ${editorHTML('post:' + p.id)}
@@ -4084,6 +4084,7 @@ const ACT = {
   bedel: t => { const ci = citem(ui.ciId); if (!ci) return; mutate(() => { bmap(ci).edges = bmap(ci).edges.filter(x => x.id !== t.dataset.id); ui.bsel = null; }, '관계선을 지웠어요'); },
   bmdel: t => { const ci = citem(ui.ciId); if (!ci) return; const id = t.dataset.id; const n = bnode(ci, id); mutate(() => { const M = bmap(ci); M.nodes = M.nodes.filter(x => x.id !== id); M.edges = M.edges.filter(x => x.a !== id && x.b !== id); ui.bsel = null; }, `‘${n ? n.name : '인물'}’을 지웠어요`); },
   bthdel: t => { const ci = citem(ui.ciId); const n = ci && bnode(ci, t.dataset.id); if (!n) return; mutate(() => { n.thoughts = (n.thoughts || []).filter(x => x.id !== t.dataset.t); }); },
+  postmeta: () => { ui.postMeta = !ui.postMeta; render(); },
   bnf: t => { ui.bnf = t.dataset.v; render(); },
   bmaptg: () => { ui.bmapOn = !ui.bmapOn; ui.bsel = null; render(); if (ui.bmapOn) { const ci = citem(ui.ciId); if (ci && bmap(ci).nodes.length) { bview[ci.id] = bview[ci.id] || { x: 40, y: 30, z: 1 }; bFit(ci); const bd = document.querySelector('.board'); if (bd) bApplyView(bd); } } },
   bkpick: () => { ui.modalBack = null; openModal('bkpick', ui.ciId); },
