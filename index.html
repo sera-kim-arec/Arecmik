@@ -1264,6 +1264,20 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jadd-row .seg{flex:none}
 .jadd-row .addline{flex:1;background:transparent;box-shadow:none}
 .jadd-row:focus-within{background:var(--surface);box-shadow:var(--nm-in-sm, inset 0 0 0 1px var(--line))}
+.jw{max-width:1100px;padding:0 8px 60px}
+.jw-cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(240px,2fr);gap:16px;font-size:12.5px;font-weight:700;color:var(--muted);padding:0 6px 6px}
+.jw-day{border-top:1px solid var(--line);padding:10px 0 6px}
+.jw-day.empty{padding:4px 0}
+.jw-h{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;font:inherit;color:var(--fg);padding:6px 6px;border-radius:10px;cursor:pointer;text-align:left}
+.jw-h b{font-size:16px}
+.jw-h:hover{background:var(--hover, rgba(0,0,0,.035))}
+.jw-day.sel .jw-h b{color:var(--lemon-ink)}
+.jw-day.empty .jw-h b{color:var(--muted);font-weight:700}
+.jw .jpage.incal{padding:4px 0 6px;max-width:none}
+.jw .jpage.incal aside{position:static}
+.jw .jpage.incal .jnote{min-height:64px}
+.jw .jgroup{margin-bottom:8px}
+@media (max-width:1180px){ .jw-cols{display:none} }
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2147,12 +2161,12 @@ function vWork() {
   const selWeek = weeks.find(w => ui.sel >= w && ui.sel <= addDays(w, 6));
   const ws = weekStart(ui.sel), we = addDays(ws, 6); const vd = visDays(ws); const a = parse(vd[0]), b = parse(vd[vd.length - 1]);
   const sd = parse(ui.sel);
-  const title = dayv ? `${sd.getMonth() + 1}월 ${sd.getDate()}일 <span class="muted" style="font-weight:600">${WD[sd.getDay()]}</span>` : wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
-  const nav = dayv ? 'dayn' : wk ? 'week' : 'month';
+  const title = dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
+  const nav = dayv || wk ? 'week' : 'month';
   const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button><button class="${dayv ? 'on' : ''}" data-act="calview" data-v="day" title="그날 할일과 코멘트 · 업무일지">일지</button></div>`;
   const right = dayv ? `<button class="btn ghost" data-act="go" data-view="journals">${I.note}지난 일지</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>` : `${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : '<span class="hint">끌어서 옮기기 · 일정 끝을 늘려 기간 만들기</span>'}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
   let body;
-  if (dayv) body = `<div class="cal-scroll jday-scroll">${vJournal(true)}</div>`;
+  if (dayv) body = `<div class="cal-scroll jday-scroll">${vJournalWeek()}</div>`;
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
@@ -2559,8 +2573,8 @@ function jlResults() {
     ${days.length ? Object.keys(byMonth).map(m => `<div class="lbl" style="margin-top:14px">${+m.slice(0, 4) !== +TODAY.slice(0, 4) ? m.slice(0, 4) + '년 ' : ''}${+m.slice(5)}월 <span class="muted">· ${byMonth[m].length}개</span></div>${mode === 'list' ? `<div class="card jl-list">${byMonth[m].map(listRow).join('')}</div>` : byMonth[m].map(feedDay).join('')}`).join('')
       : `<div class="card"><div class="empty">${q ? `‘${esc(ui.jq.trim())}’이 들어간 기록이 없어요.` : f ? '이 카테고리로 남긴 기록이 없어요.' : '아직 쌓인 업무일지가 없어요. 할일 창의 ‘코멘트 · 이슈’나 [오늘 일지]에 적으면 날짜별로 쌓여요.'}</div></div>`}`;
 }
-function vJournal(inCal) {
-  const d = inCal ? ui.sel : (ui.jday || TODAY); if (!inCal) ui.jday = d; const dd = parse(d);
+function vJournal(inCal, dArg) {
+  const d = dArg || (inCal ? ui.sel : (ui.jday || TODAY)); if (!inCal) ui.jday = d; const dd = parse(d); const wkMode = !!dArg;
   const doneOn = it => it.done && it.doneAt && iso(new Date(it.doneAt)) === d;
   const onDay = it => (it.kind === 'todo' && it.date === d) || (it.kind === 'event' && it.date && it.date <= d && (it.end || it.date) >= d && !it.cancel) || doneOn(it);
   const logsOn = it => (it.log || []).filter(c => c.date === d).sort((a, b) => a.ts - b.ts);
@@ -2576,8 +2590,8 @@ function vJournal(inCal) {
   const page = `<div class="jpage ${inCal ? 'incal' : ''}">
     <section>
       <div class="lbl">한 일 · 코멘트 <span class="muted">${list.length ? `${list.length}건 · 완료 ${nDone}` : ''}</span></div>
-      ${keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${groups[k].map(row).join('')}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
-      ${inCal ? (() => { const k = ui.jaddKind || 'todo'; const ph = { todo: '할일 추가 · Enter', event: '일정 추가 · Enter (예: 3시 회의)', retro: '무슨 일이 있었나 · Enter' }[k]; return `<div class="jadd-row"><div class="seg inline sm" role="radiogroup" aria-label="추가할 종류">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button role="radio" aria-checked="${k === v}" class="${k === v ? 'on' : ''}" data-act="jkind" data-v="${v}">${l}</button>`).join('')}</div><label class="addline">${I.plus}<input id="jday-add" placeholder="${ph}" autocomplete="off" aria-label="이 날에 추가"></label></div>`; })() : ''}
+      ${wkMode && !keys.length ? '' : keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${groups[k].map(row).join('')}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
+      ${inCal && (!wkMode || d === ui.sel) ? (() => { const k = ui.jaddKind || 'todo'; const ph = { todo: '할일 추가 · Enter', event: '일정 추가 · Enter (예: 3시 회의)', retro: '무슨 일이 있었나 · Enter' }[k]; return `<div class="jadd-row"><div class="seg inline sm" role="radiogroup" aria-label="추가할 종류">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button role="radio" aria-checked="${k === v}" class="${k === v ? 'on' : ''}" data-act="jkind" data-v="${v}">${l}</button>`).join('')}</div><label class="addline">${I.plus}<input id="jday-add" placeholder="${ph}" autocomplete="off" aria-label="이 날에 추가"></label></div>`; })() : ''}
       ${dayRetros(d) ? `<div class="card" style="margin-top:14px">${dayRetros(d)}</div>` : ''}
     </section>
     <aside>
@@ -2586,7 +2600,16 @@ function vJournal(inCal) {
       <p class="hint" style="margin:8px 4px 0">회의 내용, 받은 요청, 전체적인 느낌처럼 할일에 딱 붙지 않는 것들을 적어요.</p>
     </aside>
   </div>`;
+  if (wkMode) { const memoHas = blocksText(edBlocks('jday:' + d)).trim(); const empty = !list.length && !memoHas && !dayRetros(d);
+    return `<div class="jw-day ${d === ui.sel ? 'sel' : ''} ${d === TODAY ? 'today' : ''} ${empty ? 'empty' : ''}" id="jw-${d}">
+      <button class="jw-h" data-act="jwsel" data-date="${d}"><b>${dd.getMonth() + 1}월 ${dd.getDate()}일</b><span>${WD[dd.getDay()]}요일</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}<span class="grow"></span>${empty && d !== ui.sel ? '<span class="muted">기록 없음 · 눌러서 쓰기</span>' : list.length ? `<span class="muted">할일 ${list.length} · 완료 ${nDone}</span>` : ''}</button>
+      ${empty && d !== ui.sel ? '' : page.replace('<div class="lbl">한 일 · 코멘트 <span class="muted">' + (list.length ? `${list.length}건 · 완료 ${nDone}` : '') + '</span></div>', '').replace('<div class="lbl">이 날 메모</div>', '').replace('<p class="hint" style="margin:8px 4px 0">회의 내용, 받은 요청, 전체적인 느낌처럼 할일에 딱 붙지 않는 것들을 적어요.</p>', '')}
+    </div>`; }
   return inCal ? page : head + page;
+}
+function vJournalWeek() {
+  const days = visDays(weekStart(ui.sel));
+  return `<div class="jw"><div class="jw-cols"><span>한 일 · 코멘트</span><span>메모</span></div>${days.map(d => vJournal(true, d)).join('')}</div>`;
 }
 function vArea() {
   const a = ui.area; if (!a || !retroAreas().includes(a)) { ui.view = 'work'; return vWork(); }
@@ -3724,7 +3747,8 @@ const ACT = {
   soundtoggle: () => { try { localStorage.setItem('arecmik-sound', soundOn() ? 'off' : 'on'); } catch (e) { /* storage blocked */ } if (soundOn()) chime(); renderModal(); },
   toastgo: () => { $('#toast').hidden = true; const f = toastFn; toastFn = null; if (f) f(); },
   openparent: t => { ui.modalBack = null; ui.modal = { kind: 'item', id: t.dataset.id }; renderModal(); },
-  calview: t => { ui.calView = t.dataset.v; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); },
+  calview: t => { ui.calView = t.dataset.v; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); if (ui.calView === 'day') setTimeout(() => { const el = document.getElementById('jw-' + ui.sel); if (el && el.previousElementSibling && el.previousElementSibling.classList.contains('jw-day')) el.scrollIntoView({ block: 'start' }); }, 0); },
+  jwsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.focusId = 'jday-add'; render(); },
   dayn: t => { ui.sel = addDays(ui.sel, +t.dataset.d); ui.month = ui.sel.slice(0, 7); render(); },
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
