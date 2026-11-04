@@ -3180,7 +3180,7 @@ function vPosts() {
 }
 function vPost(p) {
   const f = folder(p.folder);
-  return `${topbar(`<button class="btn ghost" data-act="lfolder" data-id="${p.folder}">${I.left}${esc(f ? f.name : '폴더')}</button>`, `<button class="btn sm ghost ${ui.postMeta ? 'on-soft' : ''}" data-act="postmeta" title="폴더 · 날짜 · 연결 · 사진" aria-expanded="${!!ui.postMeta}">⋯ 정보</button><button class="btn sm ${ui.confirm === 'post:' + p.id ? 'warn' : 'ghost danger'}" data-act="delpost" data-id="${p.id}">${ui.confirm === 'post:' + p.id ? '한 번 더 누르면 삭제' : '삭제'}</button>`)}
+  return `${topbar(`<button class="btn ghost" data-act="lfolder" data-id="${p.folder}">${I.left}${esc(f ? f.name : '폴더')}</button>`, `${linksPill('post:' + p.id)}<button class="btn sm ghost ${ui.postMeta ? 'on-soft' : ''}" data-act="postmeta" title="폴더 · 날짜 · 연결 · 사진" aria-expanded="${!!ui.postMeta}">⋯ 정보</button><button class="btn sm ${ui.confirm === 'post:' + p.id ? 'warn' : 'ghost danger'}" data-act="delpost" data-id="${p.id}">${ui.confirm === 'post:' + p.id ? '한 번 더 누르면 삭제' : '삭제'}</button>`)}
   <article class="doc">
     ${p.cover && p.cover.img ? `<div class="pcover-sm"><span class="pcv" style="${coverStyle(p.cover)}"></span><label class="chk-lbl"><input type="checkbox" id="cover-cal" data-pf="coverOnCal" ${p.coverOnCal ? 'checked' : ''}>달력 대표 이미지</label><button class="btn sm ghost" data-act="coverclear">사진 빼기</button></div>` : ''}
     <div class="meta-row" ${ui.postMeta ? '' : 'hidden'}><label class="pill">${I.folder}<select data-pf="folder" aria-label="폴더">${lifeFolderOptions(p.folder)}</select></label><label class="pill">${I.cal}<input type="date" data-pf="date" value="${p.date}" aria-label="날짜"></label>${linksPill('post:' + p.id)}${p.cover && p.cover.img ? '' : `<label class="pill" for="cover-file" title="대표 사진 (기록 달력에 보여요)">${I.img}사진</label>`}<input type="file" id="cover-file" accept="image/*" hidden></div>
@@ -3772,7 +3772,7 @@ function blockHTML(b, i, bl, kids) {
   }
   if (b.type === 'code') return `<div class="bk bk-code" ${ind} data-bid="${b.id}"><div class="code-h"><span>코드</span><button class="code-copy" data-act="bcopy" data-bid="${b.id}">복사</button></div><div class="bk-text code-text" contenteditable="true" spellcheck="false" data-bid="${b.id}" data-ph="코드를 입력하세요 · Ctrl+Enter로 빠져나가기">${esc(b.text)}</div></div>`;
   if (b.type === 'divider') return `<div class="bk bk-divider" data-bid="${b.id}"><hr></div>`;
-  if (b.type === 'image') return b.src ? `<div class="bk bk-img" data-bid="${b.id}"><img src="${b.src}" alt=""><button class="btn sm glass" data-act="bdel" data-bid="${b.id}">사진 삭제</button></div>` : `<div class="bk" data-bid="${b.id}"><button class="btn sm" data-act="pickimg" data-bid="${b.id}">${I.img}사진 고르기</button><button class="btn sm ghost" data-act="bdel" data-bid="${b.id}">취소</button></div>`;
+  if (b.type === 'image') return b.src ? `<div class="bk bk-img" data-bid="${b.id}"><img src="${esc(b.src)}" alt="" loading="lazy" referrerpolicy="no-referrer"><button class="btn sm glass" data-act="bdel" data-bid="${b.id}">사진 삭제</button></div>` : `<div class="bk" data-bid="${b.id}"><button class="btn sm" data-act="pickimg" data-bid="${b.id}">${I.img}사진 고르기</button><button class="btn sm ghost" data-act="bdel" data-bid="${b.id}">취소</button></div>`;
   if (b.type === 'link') return `<div class="bk bk-link" ${ind} data-bid="${b.id}">${txt(PH.link)}${isURL(b.text) ? `<a class="link-card" href="${esc(b.text)}" target="_blank" rel="noopener"><span class="lc-i">${I.link}</span><span class="lc-t"><b>${esc(host(b.text))}</b><span>링크 스크랩 · 눌러서 열기</span></span></a>` : ''}</div>`;
   let pre = '';
   if (b.type === 'toggle') pre = `<button class="bk-tg ${b.collapsed ? 'closed' : ''}" data-act="bfold" data-bid="${b.id}" aria-label="${b.collapsed ? '펼치기' : '접기'}" aria-expanded="${!b.collapsed}">${I.chevD}</button>`;
@@ -4297,6 +4297,7 @@ const ACT = {
   mopen: (t, e) => { e.preventDefault(); openRef(t.dataset.ref); },
   unlink: (t, e) => { e.stopPropagation(); const [k, id] = t.dataset.key.split(':'); const ent = refTarget(k, id); if (!ent) return; mutate(() => { ent.links = (ent.links || []).filter(r => r !== t.dataset.ref); }, '연결을 끊었어요'); },
   linkstog: t => { ui.linksOpen = ui.linksOpen === t.dataset.ref ? null : t.dataset.ref; render(); },
+  urladd: t => { ui.urlAdd = ui.urlAdd === t.dataset.key ? null : t.dataset.key; ui.focusId = ui.urlAdd ? 'url-add' : null; render(); renderModal(); },
   linkpick: t => { mention = { key: t.dataset.key, bid: '', q: '', idx: 0, anchor: t }; drawMention(); },
   bcopy: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; const done = () => toast('코드를 복사했어요'); if (navigator.clipboard) navigator.clipboard.writeText(b.text).then(done).catch(() => toast('복사하지 못했어요. 직접 선택해서 복사해 주세요')); },
   bdel: t => { const key = t.closest('[data-ed]').dataset.ed; const bl = edBlocks(key); const i = bl.findIndex(b => b.id === t.dataset.bid); if (i >= 0) bl.splice(i, 1); touch(key); rerenderEditor(key); },
@@ -4409,7 +4410,7 @@ const syncSaveBtn = () => setTimeout(() => { const b = document.querySelector('.
 ['input', 'change', 'click'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#layer')) syncSaveBtn(); }));
 document.addEventListener('keydown', e => { if (e.key === 'Tab' && !e.shiftKey && e.target && (e.target.id === 'jday-add' || (e.target.dataset && e.target.dataset.jgadd))) { e.preventDefault(); const fid = e.target.id; const o = ['todo', 'event', 'retro']; ui.jaddKind = o[(o.indexOf(ui.jaddKind || 'todo') + 1) % 3]; const v = e.target.value; ui.focusId = null; render(); const i = document.getElementById(fid); if (i) i.focus(); if (i) { i.value = v; i.setSelectionRange(v.length, v.length); } } }, true);
 /* Enter saves and closes the open dialog (Ctrl+Enter works anywhere in it) */
-const OWN_ENTER = new Set(['br-lab', 'bp-new', 'ilog-in', 'area-new', 'area-todo', 'area-retro', 'iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
+const OWN_ENTER = new Set(['url-add', 'br-lab', 'bp-new', 'ilog-in', 'area-new', 'area-todo', 'area-retro', 'iarea-new', 'ic-in', 'rc-in', 'sub-add', 'subq', 'xarea-new', 'xcat-new', 'ptodo-add', 'f-move']);
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !e.isComposing && e.target.closest && e.target.closest('.ccomp')) { e.preventDefault(); e.stopImmediatePropagation(); const b = e.target.closest('.ccomp').querySelector('[data-act="clogadd"]'); if (b) ACT.clogadd(b); return; }
   if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || !ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return;
@@ -4531,9 +4532,12 @@ function linksPill(ref) {
 function linkCls(x) { const k = x.ref.split(':')[0]; if (k === 'item') { const o = item(x.ref.split(':')[1]); return o ? (o.kind === 'event' ? 'ev' : 'td') : 'item'; } return k; }
 function linksHTML(ref, key, panel) {
   const bl = allLinks(ref);
-  const add = key ? `<button class="btn sm ghost" data-act="linkpick" data-key="${key}">${I.plus}노트·항목 연결</button>` : '';
+  const webs = key ? (edBlocks(key) || []).filter(b => b.type === 'link' && isURL((b.text || '').trim())).map(b => b.text.trim()) : [];
+  const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+  const webChips = webs.map(u => `<a class="mention m-web" href="${esc(u)}" target="_blank" rel="noopener" title="${esc(u)}">↗ ${esc(host(u))}</a>`).join('');
+  const add = key ? `<button class="btn sm ghost" data-act="linkpick" data-key="${key}">${I.plus}노트·항목 연결</button><button class="btn sm ghost" data-act="urladd" data-key="${key}">${I.link}링크 추가</button>${ui.urlAdd === key ? `<input id="url-add" class="inp" data-key="${key}" placeholder="https:// 주소 붙여넣고 Enter" autocomplete="off" style="margin-top:6px;width:100%">` : ''}` : '';
   const chips = bl.map(x => `<button class="mention m-${linkCls(x)} ${x.gone ? 'gone' : ''}" ${x.ref ? `data-act="mopen" data-ref="${x.ref}"` : 'data-act="go" data-view="work"'} title="${x.out ? '이 글에서 연결함' : esc(x.sub) + '에서 이 글을 언급함'}">${KIND_ICON[x.ref.split(':')[0]] || '◎'} ${esc(x.title)}${x.out ? '' : ` <span class="muted" style="font-weight:400">· ${esc(x.sub)}에서 언급</span>`}${x.manual ? `<span class="unlink" data-act="unlink" data-key="${ref}" data-ref="${x.ref}" title="연결 끊기" aria-label="연결 끊기">✕</span>` : ''}</button>`).join('');
-  if (panel) return `<div class="links panel">${bl.length ? `<div class="links-list">${chips}</div>` : '<p class="hint" style="margin:0">아직 연결된 게 없어요. 본문에서 @를 입력해도 연결돼요.</p>'}<div>${add}</div></div>`;
+  if (panel) return `<div class="links panel">${bl.length || webs.length ? `<div class="links-list">${chips}${webChips}</div>` : '<p class="hint" style="margin:0">아직 연결된 게 없어요. 본문에서 @를 입력해도 연결돼요.</p>'}<div>${add}</div></div>`;
   return `<div class="links"><div class="links-h"><span class="lbl" style="padding:0">연결 ${bl.length || ''}</span>${add}</div>
   ${bl.length ? `<div class="links-list">${chips}</div>` : `<p class="hint" style="margin:2px 2px 0">메모에서 @를 입력해도 일정·할일·노트를 연결할 수 있어요.</p>`}</div>`;
 }
@@ -4564,6 +4568,43 @@ function onBlockInput(el) {
   else if (slash) closeSlash();
   touch(key); ensureCaretVisible();
 }
+/* 기사 붙여넣기: 문단·제목·목록·인용·이미지를 블록으로 */
+function htmlToBlocks(html, baseUrl) {
+  const doc0 = new DOMParser().parseFromString(html, 'text/html'); const out = [];
+  const txt = n => (n.textContent || '').replace(/\s+/g, ' ').trim();
+  const abs = u => { try { return new URL(u, baseUrl || location.href).href; } catch (e) { return u; } };
+  const img = n => { const src = n.getAttribute('data-src') || n.getAttribute('data-original') || n.getAttribute('src') || ''; if (!src || /^data:image\/gif/.test(src) || (n.width && n.width < 40)) return; out.push({ ...B('image', ''), src: /^data:/.test(src) ? src : abs(src) }); };
+  const walk = n => {
+    if (n.nodeType === 3) { const t = (n.textContent || '').replace(/\s+/g, ' ').trim(); if (t) out.push(B('p', t)); return; }
+    if (n.nodeType !== 1) return;
+    const tg = n.tagName;
+    if (/^(SCRIPT|STYLE|NOSCRIPT|BUTTON|NAV|FOOTER|HEADER|FORM|IFRAME|SVG)$/.test(tg)) return;
+    if (tg === 'IMG') { img(n); return; }
+    if (/^H[1-6]$/.test(tg)) { const t = txt(n); if (t) out.push(B('h', t)); return; }
+    if (tg === 'BLOCKQUOTE') { const t = txt(n); if (t) out.push(B('quote', t)); n.querySelectorAll('img').forEach(img); return; }
+    if (tg === 'PRE') { out.push(B('code', n.textContent || '')); return; }
+    if (tg === 'UL' || tg === 'OL') { [...n.children].filter(c => c.tagName === 'LI').forEach(li => { const t = txt(li); if (t) out.push(B(tg === 'OL' ? 'num' : 'bullet', t)); li.querySelectorAll('img').forEach(img); }); return; }
+    if (tg === 'BR') return;
+    const blockKids = [...n.childNodes].some(c => c.nodeType === 1 && /^(P|DIV|H[1-6]|UL|OL|BLOCKQUOTE|PRE|FIGURE|IMG|TABLE|SECTION|ARTICLE|PICTURE)$/.test(c.tagName));
+    if (!blockKids) { const t = txt(n); if (t) out.push(B('p', t)); n.querySelectorAll('img').forEach(img); return; }
+    [...n.childNodes].forEach(walk);
+  };
+  [...doc0.body.childNodes].forEach(walk);
+  return out.filter((b, i) => !(b.type === 'p' && !b.text) && !(b.type === 'image' && out.slice(0, i).some(x => x.type === 'image' && x.src === b.src)));
+}
+function richPaste(el, cd) {
+  const key = el.closest('[data-ed]').dataset.ed; const { bl, b } = findBlock(key, el.dataset.bid); if (!b || b.type === 'code' || el.classList.contains('tcell')) return false;
+  const files = [...(cd.files || [])].filter(f => /^image\//.test(f.type));
+  if (files.length && !cd.getData('text/html')) { files.forEach(f => readImage(f, src => { if (!src) return; const i = bl.indexOf(b); bl.splice(i + 1, 0, { ...B('image', ''), src }); touch(key); rerenderEditor(key); })); toast('사진을 붙여넣었어요'); return true; }
+  const html = cd.getData('text/html'); if (!html) return false;
+  const src = (html.match(/<!--StartFragment-->/) && (cd.getData('text/x-moz-url') || '')) || ''; 
+  const blocks = htmlToBlocks(html, (html.match(/SourceURL:([^\r\n]+)/) || [])[1] || src || undefined);
+  if (!(blocks.length > 1 || blocks.some(x => x.type === 'image'))) return false;
+  snapshot(); const i = bl.indexOf(b); const replace = !b.text && b.type === 'p';
+  bl.splice(replace ? i : i + 1, replace ? 1 : 0, ...blocks); touch(key); rerenderEditor(key, blocks[blocks.length - 1].id, 'end');
+  const ni = blocks.filter(x => x.type === 'image').length;
+  toast(`원문을 붙여넣었어요 · 문단 ${blocks.length - ni}${ni ? ` · 사진 ${ni}` : ''}`, true); return true;
+}
 document.addEventListener('paste', e => {
   const cell = e.target.closest && e.target.closest('.tcell');
   if (cell) {
@@ -4584,7 +4625,9 @@ document.addEventListener('paste', e => {
   }
   const el = e.target.closest && e.target.closest('.bk-text'); if (!el) return;
   e.preventDefault();
-  const text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
+  const cd = e.clipboardData || window.clipboardData;
+  if (richPaste(el, cd)) return;
+  const text = cd.getData('text/plain') || '';
   const key = el.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, el.dataset.bid);
   if (b && !b.text && isURL(text.trim()) && b.type !== 'link' && b.type !== 'code') { b.type = 'link'; b.text = text.trim(); touch(key); rerenderEditor(key, b.id, 'end'); toast('링크를 스크랩 카드로 바꿨어요'); return; }
   document.execCommand('insertText', false, text);
@@ -4638,6 +4681,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'xarea-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const a = retroAreas(); S.settings = { ...(S.settings || {}), retroAreas: a.includes(v) ? a : [...a, v] }; const r = retro(ui.modal.id); if (r) r.area = v; save(); renderModal(); return; }
   if (t.id === 'xcat-new') { e.preventDefault(); const v = t.value.trim(); if (!v) return; const cats = retroCats(); S.settings = { ...(S.settings || {}), retroCats: cats.includes(v) ? cats : [...cats, v] }; const r = retro(ui.modal.id); if (r) r.cat = v; save(); renderModal(); return; }
   if (t.id === 'lk-q') { e.preventDefault(); runLookup(t.value); return; }
+  if (t.id === 'url-add') { e.preventDefault(); const v = t.value.trim(); const key = t.dataset.key; if (!isURL(v)) { toast('https://로 시작하는 주소를 넣어 주세요'); return; } const bl = edBlocks(key); if (!bl) return; snapshot(); if (bl.length === 1 && !bl[0].text && bl[0].type === 'p') bl.pop(); bl.push(B('link', v)); bl.push(B('p', '')); touch(key); ui.urlAdd = null; render(); renderModal(); toast('링크를 연결하고 본문 맨 아래에 카드로 넣었어요'); return; }
   if (t.dataset && t.dataset.ses) { e.preventDefault(); const ci = citem(t.dataset.ci); if (!ci) return; let v = t.value.trim(); const d = (document.getElementById('ses-d-' + ci.id) || {}).value || TODAY; const book = !!t.dataset.book; const num = book ? +((v.match(/\d+/) || [])[0] || 0) : 0;
     if (book && num && !/^p/i.test(v)) v = 'p.' + num;
     mutate(() => { ci.sessions = ci.sessions || []; ci.sessions.push({ id: uid(), date: d, upto: v, ts: Date.now() }); if (book && num && (+ci.readPage || 0) < num) ci.readPage = num; }, `${fmtMD(d)} 기록을 남겼어요`); ui.focusId = 'ses-in-' + ci.id; render(); renderModal(); setTimeout(() => { const i = document.getElementById('ses-in-' + ci.id); if (i) i.focus(); }, 10); return; }
