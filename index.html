@@ -1248,8 +1248,10 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jrow:not(:hover) .jadd .cadd{opacity:.6}
 .jadd{padding:0 6px 0 30px}
 .jday-scroll{overflow-y:auto;padding-top:4px}
-.jpage.incal{grid-template-columns:minmax(0,1fr);max-width:820px;padding:0 8px 40px}
-.jpage.incal .jnote{min-height:140px}
+.jpage.incal{grid-template-columns:minmax(0,3fr) minmax(240px,2fr);max-width:none;padding:0 8px 40px;gap:16px}
+.jpage.incal aside{position:sticky;top:0}
+.jpage.incal .jnote{min-height:260px}
+@media (max-width:1180px){ .jpage.incal{grid-template-columns:minmax(0,1fr)} .jpage.incal aside{position:static} }
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
