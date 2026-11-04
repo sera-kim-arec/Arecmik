@@ -1377,6 +1377,21 @@ html[data-accent="peach"][data-theme="dark"],html[data-accent="rose"][data-theme
 .accents{display:flex;gap:8px;flex-wrap:wrap}
 .acc{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;background:var(--a);box-shadow:var(--nm-out-xs, 0 1px 3px rgba(0,0,0,.15));position:relative}
 .acc.on::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--a)}
+.cat-tg{display:flex;align-items:center;gap:4px;border:0;background:none;font:inherit;color:inherit;padding:0;cursor:pointer}
+.cat-tg svg{width:12px;height:12px}
+.cat-tg .cnt{margin-left:4px;font-weight:600;opacity:.7}
+.jg-rt{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.jg-rti{display:flex;align-items:flex-start;gap:5px;border:0;background:color-mix(in srgb, var(--rose-soft) 70%, transparent);border-radius:8px;padding:4px 6px;font:inherit;font-size:12.5px;color:var(--fg);text-align:left;cursor:pointer;line-height:1.4}
+.jg-rti .xk{flex:none;font-size:10.5px;padding:1px 5px}
+/* 일지: 코멘트와 하위 할일을 구분해서 보이게 */
+.jg .plog{margin:3px 0 4px 22px;padding:3px 0 3px 8px;border-left:2px solid color-mix(in srgb, var(--lemon) 70%, transparent);gap:3px}
+.jg .plog-i{flex-direction:row;align-items:baseline;gap:5px;font-size:12px;color:var(--fg2);background:none;padding:0 2px;line-height:1.45}
+.jg .plog-i .ilog-t{flex:none;font-size:10.5px;font-weight:700;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:4px;padding:0 4px;min-width:0}
+.jg-it[style*="margin-left"] .jg-t{font-weight:500;font-size:13px;color:var(--fg2)}
+.jg-it[style*="margin-left"]{border-left:1px dashed var(--line);padding-left:6px}
+.jg .jsub{display:none}
+.jlog{border-left:2px solid color-mix(in srgb, var(--lemon) 70%, transparent);margin-left:30px;padding-left:10px}
+.jlog .ilog-t{font-size:11px;font-weight:700;color:var(--lemon-ink)}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2166,12 +2181,12 @@ const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.
 function workNav() {
   const active = S.projects.filter(p => !p.done).length;
   const rd = (S.routines || []).filter(rDue).length;
-  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}</nav>
-  <div class="sec"><div class="sec-head"><span>카테고리</span><button class="mini" data-act="areaadd" aria-label="카테고리 추가" title="카테고리 추가">${I.plus}</button></div>
-  ${ui.areaAdd ? `<div class="area-new"><input id="area-new" class="inp" placeholder="카테고리 이름 · Enter" autocomplete="off"></div>` : ''}
-  ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="hash">#</span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}</div>
+  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}</nav>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="addmenu" data-space="work" data-id="" aria-label="새 노트 또는 새 폴더" title="새 노트 · 새 폴더">${I.plus}</button></div>
-  ${tree('work', null, 0)}</div>`;
+  ${tree('work', null, 0)}</div>
+  ${retroAreas().length || ui.areaAdd ? `<div class="sec cat-sec"><div class="sec-head"><button class="cat-tg" data-act="cattoggle" aria-expanded="${!!ui.catOpen}">${ui.catOpen ? I.chevD : I.chevR}<span>카테고리</span><span class="cnt">${retroAreas().length}</span></button><button class="mini" data-act="areaadd" aria-label="카테고리 추가" title="카테고리 추가">${I.plus}</button></div>
+  ${ui.catOpen || ui.areaAdd || ui.view === 'area' ? `  ${ui.areaAdd ? `<div class="area-new"><input id="area-new" class="inp" placeholder="카테고리 이름 · Enter" autocomplete="off"></div>` : ''}
+  ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="hash">#</span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}` : ''}</div>` : ''}`;
 }
 function lifeNav() {
   return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
@@ -2682,7 +2697,8 @@ function vJournal(inCal, dArg) {
   const onDay = it => (it.kind === 'todo' && it.date === d) || (it.kind === 'event' && it.date && it.date <= d && (it.end || it.date) >= d && !it.cancel) || doneOn(it);
   const logsOn = it => (it.log || []).filter(c => c.date === d).sort((a, b) => a.ts - b.ts);
   const list = S.items.filter(it => onDay(it) || logsOn(it).length);
-  const groups = {}; list.forEach(it => { const k = it.area || '미분류'; (groups[k] = groups[k] || []).push(it); });
+  const areaOf = it => { let x = it, n = 0; while (x && !x.area && x.parentId && n++ < 6) x = item(x.parentId); return (x && x.area) || '미분류'; };
+  const groups = {}; list.forEach(it => { const k = areaOf(it); (groups[k] = groups[k] || []).push(it); });
   const keys = Object.keys(groups).sort((a, b) => (a === '미분류') - (b === '미분류') || a.localeCompare(b));
   const st = it => doneOn(it) && it.date && it.date !== d ? `<span class="jst ok">완료</span><span class="jorig">${fmtShort(it.date)} 할일</span>` : it.kind === 'event' ? (it.done ? '<span class="jst ok">완료</span>' : '<span class="jst ev">일정</span>') : it.done ? '<span class="jst ok">완료</span>' : it.date === d ? '<span class="jst">진행 중</span>' : '<span class="jst">진행 중</span>';
   const row = it => `<div class="jrow" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 18}px` : ''}"><div class="jrow-h">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : `<button class="chk ev ${it.done ? 'on' : ''}" style="--chip:${itemColor(it)}" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>`}<button class="stl" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.parentId ? jParent(it, list.some(x => x.id === it.parentId)) : ''}${tT(it.title || '제목 없음')}</span>${st(it)}</button>${cBtn(it, d)}<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span></div>
@@ -2722,7 +2738,7 @@ function vJournalGrid() {
     const row = it => `<div class="jg-it ${it.done ? 'done' : ''}" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 14}px` : ''}"><div class="jg-r">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : `<button class="chk ev ${it.done ? 'on' : ''}" style="--chip:${itemColor(it)}" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>`}<button class="jg-t" data-act="open" data-kind="item" data-id="${it.id}">${it.parentId ? jParent(it, inList.has(it.parentId)) : ''}${it.start ? `<span class="tm">${it.start}</span> ` : ''}${tT(it.title || '제목 없음')}${doneOn(it) && it.date !== d ? `<span class="jorig">${fmtShort(it.date)} 할일</span>` : ''}</button>${cBtn(it, d)}<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span></div>${dayLog(it, d)}${subInline(it)}</div>`;
     return `<div class="jg-col ${d === TODAY ? 'today' : ''} ${d === ui.sel ? 'sel' : ''}">
       <div class="jg-h"><button class="jg-open" data-act="jgsel" data-date="${d}" title="이 날 넓게 보기"><b class="${d === TODAY ? 'today' : ''}">${dd.getDate()}</b><span>${WD[dd.getDay()]}</span></button>${d === ui.sel ? `<span class="grow"></span><button class="jg-go" data-act="jdopen" data-date="${d}" title="이 날만 크게 보기">크게 ›</button>` : ''}${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}</div>
-      <div class="jg-items">${its.map(row).join('')}<label class="jg-in">${I.plus}<input id="jg-add-${d}" data-jgadd="${d}" placeholder="${{ todo: '할일', event: '일정', retro: '복기' }[ui.jaddKind || 'todo']} 추가" autocomplete="off" aria-label="${fmtMD(d)}에 추가"><span class="jg-kind" title="Tab으로 바꾸기">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button type="button" class="${(ui.jaddKind || 'todo') === v ? 'on' : ''}" data-act="jkind" data-v="${v}" data-focus="jg-add-${d}">${l}</button>`).join('')}</span></label></div>
+      <div class="jg-items">${its.map(row).join('')}${(S.retros || []).some(x => x.date === d && (x.what || x.next)) ? `<div class="jg-rt">${(S.retros || []).filter(x => x.date === d && (x.what || x.next)).map(r => `<button class="jg-rti" data-act="xopen" data-id="${r.id}"><span class="xk ${r.kind}">${RKIND[r.kind] || '실수'}</span><span>${esc(r.what || r.next)}</span></button>`).join('')}</div>` : ''}<label class="jg-in">${I.plus}<input id="jg-add-${d}" data-jgadd="${d}" placeholder="${{ todo: '할일', event: '일정', retro: '복기' }[ui.jaddKind || 'todo']} 추가" autocomplete="off" aria-label="${fmtMD(d)}에 추가"><span class="jg-kind" title="Tab으로 바꾸기">${[['todo', '할일'], ['event', '일정'], ['retro', '복기']].map(([v, l]) => `<button type="button" class="${(ui.jaddKind || 'todo') === v ? 'on' : ''}" data-act="jkind" data-v="${v}" data-focus="jg-add-${d}">${l}</button>`).join('')}</span></label></div>
       <div class="jg-memo"><div class="jg-ml">메모</div>${editorHTML('jday:' + d, true)}</div>
     </div>`;
   };
@@ -3919,6 +3935,7 @@ const ACT = {
   iarea: t => { const it = item(t.dataset.id); if (!it) return; const v = t.dataset.v; mutate(() => { if (it.area === v) delete it.area; else it.area = v; }); },
   area: t => { ui.area = t.dataset.v; go('area'); },
   areadel: t => { const v = t.dataset.v; if (ui.confirm !== 'area:' + v) { ui.confirm = 'area:' + v; render(); return; } ui.confirm = null; mutate(() => { S.settings = { ...(S.settings || {}), retroAreas: retroAreas().filter(x => x !== v) }; S.items.forEach(it => { if (it.area === v) delete it.area; }); (S.retros || []).forEach(r => { if (r.area === v) r.area = ''; }); }, `‘${v}’ 카테고리를 지웠어요`); go('work'); },
+  cattoggle: () => { ui.catOpen = !ui.catOpen; render(); },
   areaadd: () => { ui.areaAdd = !ui.areaAdd; ui.focusId = ui.areaAdd ? 'area-new' : null; render(); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
   igdone: t => { const it = item(t.dataset.id); if (!it) return; const back = ui.igBack; ui.igBack = null; mutate(() => { it.done = true; if (it.kind === 'event') it.cancel = false; }, `‘${it.title || '할일'}’ 확인하고 완료`); if (back) { ui.modal = back; } else ui.modal = null; renderModal(); },
@@ -4472,7 +4489,7 @@ document.addEventListener('keydown', e => {
   if (t.id === 'inbox-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, null); }); ui.focusId = 'inbox-add'; render(); return; }
   if (t.id === 'subq') { e.preventDefault(); const v = t.value.trim(); const pid = ui.subFor; if (!v) { ui.subFor = null; render(); return; } addSub(pid, v); ui.subFor = pid; ui.focusId = 'subq'; render(); return; }
   if (t.id === 'm-add') { e.preventDefault(); madd(ui.qkind || 'event', true); return; }
-  if (t.dataset && t.dataset.jgadd) { e.preventDefault(); const v = t.value.trim(); const d = t.dataset.jgadd; const k = ui.jaddKind || 'todo'; if (k === 'retro') { t.value = ''; newRetro(null, { date: d, what: v }); return; } if (!v) return; mutate(() => { createItem(k, v, d); }, `${fmtMD(d)}에 ${k === 'event' ? '일정' : '할일'}을 추가했어요`); ui.focusId = 'jg-add-' + d; render(); return; }
+  if (t.dataset && t.dataset.jgadd) { e.preventDefault(); const v = t.value.trim(); const d = t.dataset.jgadd; const k = ui.jaddKind || 'todo'; if (k === 'retro') { t.value = ''; ui.jaddKind = 'todo'; newRetro(null, { date: d, what: v }); return; } if (!v) return; mutate(() => { createItem(k, v, d); }, `${fmtMD(d)}에 ${k === 'event' ? '일정' : '할일'}을 추가했어요`); ui.focusId = 'jg-add-' + d; render(); return; }
   if (t.id === 'jday-add') { e.preventDefault(); const v = t.value.trim(); const k = ui.jaddKind || 'todo'; if (k === 'retro') { t.value = ''; newRetro(null, { date: ui.sel, what: v }); return; } if (!v) return; mutate(() => { createItem(k, v, ui.sel); }, `${fmtMD(ui.sel)}에 ${k === 'event' ? '일정' : '할일'}을 추가했어요`); ui.focusId = 'jday-add'; render(); return; }
   if (t.id === 'day-add') { const v = t.value.trim(); if (!v) return; mutate(() => { createItem('todo', v, ui.sel); }, `${fmtMD(ui.sel)}에 할일을 추가했어요`); ui.focusId = 'day-add'; render(); return; }
   if (t.id === 'qa-title') { e.preventDefault(); quickAdd('todo'); return; }
