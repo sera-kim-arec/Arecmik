@@ -4834,6 +4834,9 @@ function codeEdit(t, start, end, color) {
 /* `code` in plain text boxes (titles, rename) */
 function wrapCodeInput(t, color) {
   if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') {
+    if (t.selectionStart === t.selectionEnd && color === undefined) { const v = t.value, c = t.selectionStart; const cr = codeRanges(v).find(([a, z, ie]) => c > a && c <= ie);
+      if (!cr) { t.value = v.slice(0, c) + '``' + v.slice(c); t.setSelectionRange(c + 1, c + 1); t.dispatchEvent(new Event('input', { bubbles: true })); return; }
+      if (c === cr[2]) { t.setSelectionRange(cr[1], cr[1]); return; } }
     const r = codeEdit(t.value, t.selectionStart, t.selectionEnd, color); if (!r) { toast('글자를 선택하고 Ctrl+E를 누르면 코드로 바뀌어요'); return; }
     t.value = r.text; t.setSelectionRange(r.caret, r.caret); t.dispatchEvent(new Event('input', { bubbles: true })); return;
   }
@@ -4871,6 +4874,11 @@ function toggleInlineCode(el, color) {
   const key = el.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, el.dataset.bid); if (!b || b.type === 'code') return;
   const sel = getSelection(); if (!sel.rangeCount) return;
   const t = serText(el); const end = caretOffset(el); const len = sel.toString().length; const start = Math.max(0, end - len);
+  if (!len && color === undefined) {
+    const cr = codeRanges(t).find(([a, z, ie]) => end > a && end <= ie);
+    if (!cr) { b.text = t.slice(0, end) + '`\u200B`' + t.slice(end); touch(key); rerenderEditor(key, b.id, end + 2); return; }
+    if (end === cr[2]) { const z = cr[1]; b.text = t.slice(0, z) + '\u200B' + t.slice(z); touch(key); rerenderEditor(key, b.id, z + 1); return; }
+  }
   const r = codeEdit(t, start, end, color); if (!r) { if (!len) toast('글자를 선택하고 Ctrl+E를 누르면 코드로 바뀌어요'); return; }
   b.text = r.text; touch(key); rerenderEditor(key, b.id, r.caret);
 }
