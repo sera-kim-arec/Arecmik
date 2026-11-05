@@ -1552,6 +1552,9 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .mn-h{display:flex;align-items:center;gap:8px}
 .mn-s{font-size:12px}
 .mn-ed{margin:4px 0 0 -4px}
+.ptab-card{background:var(--bg);border-radius:var(--r-lg, 22px);box-shadow:var(--nm-out-sm, 0 1px 4px rgba(0,0,0,.08));padding:10px;margin-bottom:22px}
+.ptab-card>.seg{margin:0 0 4px}
+.ptab-body>.card{background:transparent!important;box-shadow:none!important;border:0!important;margin:0!important;padding:10px 6px 4px!important}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2627,8 +2630,8 @@ function panelWork() {
   const open = inbox.filter(i => !i.done), done = inbox.filter(i => i.done);
   if (ui.panelTab === 'memo') ui.panelTab = 'todo'; const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
-  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
-  ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}
+  <div class="ptab-card"><div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
+  <div class="ptab-body">${tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}</div></div>
   ${ui.calView === 'day' && ui.view === 'work' ? '' : daySection()}
   </aside>`;
 }
