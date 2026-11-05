@@ -1530,6 +1530,17 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .ib{font-weight:700}
 .ii{font-style:italic}
 .is{text-decoration:line-through;color:var(--muted)}
+.mnote,.mnote-add{display:flex;align-items:center;gap:12px;width:100%;margin:2px 0 12px;padding:8px 14px;border:0;border-radius:14px;background:var(--lemon-soft);text-align:left;cursor:pointer;color:var(--fg);min-width:0;box-sizing:border-box}
+.mnote-add{width:auto;display:inline-flex;background:transparent;color:var(--muted);font-weight:600;font-size:12.5px;padding:2px 6px;margin:0 0 8px}
+.mnote-add:hover{color:var(--fg)}
+.mn-l{flex:none;font-weight:800;font-size:13.5px;color:var(--lemon-ink)}
+.mn-p{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
+.mn-p i{font-style:normal;color:var(--muted);margin:0 7px}
+.mn-p em{font-style:normal;color:var(--muted);font-size:12px;margin-left:8px}
+.mnote.open{display:block;cursor:default;padding:8px 10px 6px 14px}
+.mn-h{display:flex;align-items:center;gap:8px}
+.mn-s{font-size:12px}
+.mn-ed{margin:4px 0 0 -4px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2230,7 +2241,7 @@ const ui = {
   search: '', modal: null, modalBack: null, confirm: null, newFolder: null, focusId: null, navOpen: false
 };
 /* 새로고침해도 보던 화면 그대로 (이 기기 브라우저에만 저장) */
-const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'catOpen', 'open', 'weekLog'];
+const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'catOpen', 'open', 'weekLog'];
 function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-ui') || 'null'); if (!o) return; const hv = location.hash.slice(1);
   const ok = { noteFolder: v => !v || !!folder(v), noteDoc: v => !v || !!doc(v), lifeFolder: v => !v || !!folder(v), postId: v => !v || !!post(v), collId: v => !v || !!(S.collections || []).find(c => c.id === v), ciId: v => !v || !!citem(v) };
   UI_KEEP.forEach(k => { if (!(k in o)) return; if (ok[k] && !ok[k](o[k])) return; ui[k] = o[k]; });
@@ -2445,7 +2456,7 @@ function vWork() {
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
-  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
+  return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : monthNote()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
 const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image' && b.type !== 'table').map(b => plainText(b.text)).filter(Boolean).join(' · ');
 function weekLogHTML(ws) {
@@ -2968,6 +2979,13 @@ function retroSaveHint(r) {
   if (!r || r.kind !== 'mistake' || !r.area) return;
   const n = retrosIn(monthOf(r.date)).filter(x => x.kind === 'mistake' && x.area === r.area).length;
   if (n >= 2) toast(`‘${r.area}’에서 이번 달 ${n}번째 실수예요. 확인 목록을 한 번 훑어보세요`);
+}
+function monthNote() {
+  const ym = (ui.calView === 'week' ? ui.sel : ui.month + '-01').slice(0, 7); const mo = +ym.slice(5, 7);
+  const o = (S.rmonths || []).find(x => x.id === 'mn-' + ym); const bl = o ? o.blocks : []; const lines = (bl || []).filter(b => (b.text || '').trim()).map(b => plainText(b.text));
+  if (ui.mnOpen === ym) return `<div class="mnote open"><div class="mn-h"><span class="mn-l">📌 ${mo}월 메모</span><span class="muted mn-s">이 달에만 기억할 것</span><span class="grow"></span><button class="btn sm ghost" data-act="mnote" data-ym="">접기</button></div><div class="mn-ed">${editorHTML('mnote:' + ym, true)}</div></div>`;
+  if (!lines.length) return `<button class="mnote-add" data-act="mnote" data-ym="${ym}">📌 ${mo}월 메모 추가</button>`;
+  return `<button class="mnote" data-act="mnote" data-ym="${ym}" title="눌러서 펼치기"><span class="mn-l">📌 ${mo}월</span><span class="mn-p">${lines.slice(0, 3).map(t => `<span>${esc(t)}</span>`).join('<i>·</i>')}${lines.length > 3 ? `<em>+${lines.length - 3}</em>` : ''}</span></button>`;
 }
 function starStrip() {
   const list = S.items.filter(it => it.star && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
@@ -3782,6 +3800,7 @@ function edBlocks(key) {
   if (k === 'cnew' || k === 'cnewd') { const kk = k + ':' + id; if (!cDrafts[kk]) cDrafts[kk] = [B('p', '')]; return cDrafts[kk]; }
   if (k === 'clog' || k === 'clogj' || k === 'clogp') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (!c) return null; if (!Array.isArray(c.blocks) || !c.blocks.length) c.blocks = (c.text || '').split('\n').map(t => B('p', t)); return c.blocks; }
   if (k === 'jdiary') { const p = diaryPost(id); if (p) { if (!Array.isArray(p.blocks) || !p.blocks.length) p.blocks = [B('p', '')]; return p.blocks; } return (jDiaryDraft[id] = jDiaryDraft[id] || [B('p', '')]); }
+  if (k === 'mnote') { S.rmonths = S.rmonths || []; const mid = 'mn-' + id; let o = S.rmonths.find(x => x.id === mid); if (!o) { o = { id: mid, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'jday') { S.rmonths = S.rmonths || []; const jid = 'j-' + id; let o = S.rmonths.find(x => x.id === jid); if (!o) { o = { id: jid, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'rmonth') { S.rmonths = S.rmonths || []; let o = S.rmonths.find(x => x.id === id); if (!o) { o = { id, blocks: [B('p', '')] }; S.rmonths.push(o); } if (!Array.isArray(o.blocks) || !o.blocks.length) o.blocks = [B('p', '')]; return o.blocks; }
   if (k === 'week') { S.weekNotes = S.weekNotes || {}; if (!Array.isArray(S.weekNotes[id]) || !S.weekNotes[id].length) S.weekNotes[id] = [B('p', '')]; return S.weekNotes[id]; }
@@ -4003,6 +4022,7 @@ function searchResults(q) {
   S.docs.forEach(d => { if (has(d.title) || has(bt(d.blocks))) out.push({ g: '노트', t: d.title || '제목 없음', s: folderPath(d.folder).map(f => f.name).join(' / '), k: 'doc', id: d.id }); });
   S.posts.forEach(p => { if (has(p.title) || has(bt(p.blocks))) out.push({ g: 'LIFE 글', t: postTitle(p), s: `${fmtDot(p.date)} · ${(folder(p.folder) || {}).name || ''}`, k: 'post', id: p.id }); });
   S.items.forEach(it => (it.log || []).forEach(c => { if (has(c.text)) out.push({ g: '업무일지', t: c.text, s: `${fmtMD(c.date)} · ${it.title || '제목 없음'}`, k: 'jday', id: c.date }); }));
+  (S.rmonths || []).filter(x => /^mn-/.test(x.id)).forEach(x => { const t = bt(x.blocks); if (has(t)) out.push({ g: '이달 메모', t: plainText(t).slice(0, 60), s: `${+x.id.slice(8, 10)}월 메모`, k: 'mnote', id: x.id.slice(3) }); });
   (S.rmonths || []).filter(x => /^j-/.test(x.id)).forEach(x => { const t = bt(x.blocks); if (has(t)) out.push({ g: '업무일지', t: '메모 · ' + plainText(t).slice(0, 60), s: fmtMD(x.id.slice(2)), k: 'jday', id: x.id.slice(2) }); });
   (S.retros || []).forEach(r => { if (has(r.what) || has(r.next)) out.push({ g: '복기', t: r.what || r.next, s: `${fmtMD(r.date)}${r.area ? ' · ' + r.area : ''}${r.next && r.what ? ' · 다음엔 ' + r.next : ''}`, k: 'retro', id: r.id }); });
   S.citems.forEach(ci => { const c = coll(ci.coll); if (c && (has(ci.title) || Object.values(ci.values).some(v => typeof v === 'string' && has(v)))) out.push({ g: '컬렉션', t: ci.title || '이름 없음', s: c.name, k: 'citem', id: ci.id }); });
@@ -4116,6 +4136,7 @@ const ACT = {
   calview: t => { ui.calView = t.dataset.v; ui.jdetail = false; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); if (ui.calView === 'day') setTimeout(() => { const el = document.getElementById('jw-' + ui.sel); if (el && el.previousElementSibling && el.previousElementSibling.classList.contains('jw-day')) el.scrollIntoView({ block: 'start' }); }, 0); },
   jgsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); const r = document.getElementById('jl-res'); if (r) r.innerHTML = jBody(); else render(); },
   jdopen: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.jdetail = true; render(); },
+  mnote: t => { ui.mnOpen = t.dataset.ym || null; render(); if (ui.mnOpen) setTimeout(() => { const el = document.querySelector(`[data-ed="mnote:${ui.mnOpen}"] .bk-text:last-of-type`) || document.querySelector(`[data-ed="mnote:${ui.mnOpen}"] .bk-text`); if (el) placeCaret(el, el.textContent.length); }, 20); },
   jdback: () => { ui.jdetail = false; ui.calView = ui.prevCal || 'month'; ui.month = ui.sel.slice(0, 7); render(); },
   jwsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.focusId = 'jday-add'; render(); },
   dayn: t => { ui.sel = addDays(ui.sel, +t.dataset.d); ui.month = ui.sel.slice(0, 7); render(); },
@@ -4353,6 +4374,7 @@ const ACT = {
     else if (k === 'post') ACT.openpost(t);
     else if (k === 'citem') { ui.collId = citem(id).coll; go('collections'); openModal('citem', id); }
     else if (k === 'jday') openJDay(id);
+    else if (k === 'mnote') { ui.calView = 'month'; ui.jdetail = false; ui.month = id; ui.sel = id + '-01'; ui.mnOpen = id; ui.modal = null; renderModal(); go('work'); }
     else if (k === 'retro') { ui.modalBack = null; openModal('retro', id); }
   },
   bcheck: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.done = !b.done; touch(key); rerenderEditor(key); },
