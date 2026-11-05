@@ -1235,7 +1235,7 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .ccomp-ed{flex:1;min-width:0}
 .ccomp-ed .ed{min-height:0;padding:2px 0 2px 22px}
 .ccomp .ed-tail,.ilog-ed .ed-tail{min-height:4px}
-.ccomp .ed .bk-text:empty::before,.ccomp .ed.ed-empty .bk-text:empty::before{content:'코멘트 · 이슈 적기  ( / 로 목록·코드 등 )'}
+.ccomp .ed .bk-text:empty::before,.ccomp .ed.ed-empty .bk-text:empty::before{content:''}
 .ccomp{align-items:center}
 .jpage,.jls{box-sizing:border-box}
 .ilog-i{align-items:flex-start}
@@ -3659,7 +3659,7 @@ function dlgItem(it) {
   <div class="dlg-body"><div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">할 때 꼭 챙길 것</span></div>
     <div class="rchg">${(it.checks || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><input class="ck-ed" data-ich="${it.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="꼭 챙길 것 고치기"><button class="bn-x" data-act="ichdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
       <input id="ic-in" class="inp" data-iid="${it.id}" placeholder="예: 공고문 날짜 원문과 대조 · Enter" autocomplete="off"></div>
-    <div class="lbl" style="padding-top:12px">코멘트 · 이슈 <span class="hint" style="font-weight:500">한 일, 진행 상황, 그때 있었던 일 · 업무일지에 모여요</span></div>
+    <div class="lbl" style="padding-top:12px">코멘트</div>
     <div class="ilog">${cComposer('cnewd:' + it.id + '~' + TODAY)}
       ${(it.log || []).slice().sort((a, b) => b.ts - a.ts).map(c => `<div class="ilog-i"><span class="ilog-t">${fmtShort(c.date)}<br>${hm(c.ts)}</span><div class="ilog-ed">${editorHTML('clog:' + it.id + '~' + c.id, true)}</div><button class="bn-x" data-act="ilogdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}</div>
     ${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
@@ -4378,6 +4378,12 @@ function quickAdd(kind) {
 
 /* ---------- events ---------- */
 let suppressClick = false;
+document.addEventListener('pointerdown', e => {
+  if (!ui.cOpen) return; const k = ui.cOpen;
+  if (e.target.closest && (e.target.closest(`[data-ed="${k}"]`) || e.target.closest('.ccomp') || e.target.closest(`[data-key="${k}"]`) || e.target.closest('.slash, .codebub, #pop'))) return;
+  if (cDrafts[k] && blocksText(cDrafts[k]).trim()) return;
+  delete cDrafts[k]; ui.cOpen = null; setTimeout(() => { if (!ui.cOpen) { render(); if (ui.modal) renderModal(); } }, 0);
+}, true);
 document.addEventListener('click', e => {
   if (suppressClick) { suppressClick = false; e.preventDefault(); e.stopPropagation(); return; }
   const rnEl = e.target.closest && e.target.closest('[data-rn]');
