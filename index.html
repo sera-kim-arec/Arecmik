@@ -2503,7 +2503,9 @@ const priT = it => it.pri && PRI[it.pri] && !it.done ? `<span class="pri p${it.p
 const priCmp = (a, b) => (a.pri || 2.5) - (b.pri || 2.5);
 const cBtn = (it, d) => `<span class="cbtn" role="button" tabindex="0" data-act="copen" data-key="cnew:${it.id}~${d}" title="코멘트 남기기 (업무일지에 쌓여요)" aria-label="코멘트 남기기">${I.chat}</span>`;
 function dayLog(it, d) {
-  const key = 'cnew:' + it.id + '~' + d; const logs = (it.log || []).filter(c => c.date === d).sort((a, b) => a.ts - b.ts);
+  const key = 'cnew:' + it.id + '~' + d; const mvf = it.date === d ? new Set((it.moves || []).map(m => m.f)) : new Set();
+  const logs = (it.log || []).filter(c => c.date === d || (mvf.has(c.date) && c.date < d)).sort((a, b) => a.ts - b.ts);
+  const hm = ts => { const x = new Date(ts); const di = iso(x); return di !== d ? `${x.getMonth() + 1}/${x.getDate()}` : String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
   const open = ui.cOpen === key || (cDrafts[key] && blocksText(cDrafts[key]).trim());
   if (!logs.length && !open) return '';
   const rich = c => (c.blocks || []).some(b => b.type !== 'p' || b.indent) || (c.blocks || []).length > 1;
