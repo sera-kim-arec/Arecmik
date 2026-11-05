@@ -1537,6 +1537,11 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .mn-chip:hover{background:color-mix(in srgb, var(--lemon) 45%, transparent);color:var(--fg)}
 .mn-chip i,.mn-tabs i{font-style:normal;font-weight:600;opacity:.7;margin-left:2px}
 .mn-tabs{display:flex;gap:2px}
+.mn-fold{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:0;border-radius:50%;background:transparent;color:var(--lemon-ink);cursor:pointer}
+.mn-fold:hover{background:color-mix(in srgb, var(--lemon) 45%, transparent)}
+.mn-fold svg{width:15px;height:15px;transition:transform .15s}
+.mn-fold.up svg{transform:rotate(180deg)}
+.mnote.shut .grow{flex:1}
 .mn-tabs button{border:0;background:transparent;border-radius:999px;padding:3px 11px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
 .mn-tabs button.on{background:var(--bg);color:var(--lemon-ink);box-shadow:var(--nm-out-xs)}
 .mn-l{flex:none;font-weight:800;font-size:13.5px;color:var(--lemon-ink)}
@@ -2992,8 +2997,8 @@ function monthNote() {
   const o = (S.rmonths || []).find(x => x.id === 'mn-' + ym); const nM = cnt(o && o.blocks), nA = cnt(S.memo);
   const tab = ui.mnTab === 'all' ? 'all' : 'month';
   if (ui.mnOpen) { const key = tab === 'all' ? 'memo' : 'mnote:' + ym;
-    return `<div class="mnote open"><div class="mn-h"><span class="mn-l">📌</span><div class="mn-tabs"><button class="${tab === 'month' ? 'on' : ''}" data-act="mntab" data-v="month">${mo}월</button><button class="${tab === 'all' ? 'on' : ''}" data-act="mntab" data-v="all">상시</button></div><span class="muted mn-s">${tab === 'all' ? '달과 상관없이 늘 기억할 것' : '이 달에만 기억할 것'}</span><span class="grow"></span><button class="btn sm ghost" data-act="mnote" data-v="">접기</button></div><div class="mn-ed">${editorHTML(key, true)}</div></div>`; }
-  return `<div class="mnote shut"><span class="mn-l">📌 메모</span><button class="mn-chip ${nM ? 'has' : ''}" data-act="mnote" data-v="month">${nM ? '' : '+ '}${mo}월</button><button class="mn-chip ${nA ? 'has' : ''}" data-act="mnote" data-v="all">${nA ? '' : '+ '}상시</button></div>`;
+    return `<div class="mnote open"><div class="mn-h"><span class="mn-l">📌</span><div class="mn-tabs"><button class="${tab === 'month' ? 'on' : ''}" data-act="mntab" data-v="month">${mo}월</button><button class="${tab === 'all' ? 'on' : ''}" data-act="mntab" data-v="all">상시</button></div><span class="muted mn-s">${tab === 'all' ? '달과 상관없이 늘 기억할 것' : '이 달에만 기억할 것'}</span><span class="grow"></span><button class="mn-fold up" data-act="mnote" data-v="" aria-label="접기" title="접기">${I.chevD}</button></div><div class="mn-ed">${editorHTML(key, true)}</div></div>`; }
+  return `<div class="mnote shut"><span class="mn-l">📌 메모</span><button class="mn-chip ${nM ? 'has' : ''}" data-act="mnote" data-v="month">${nM ? '' : '+ '}${mo}월</button><button class="mn-chip ${nA ? 'has' : ''}" data-act="mnote" data-v="all">${nA ? '' : '+ '}상시</button><span class="grow"></span><button class="mn-fold" data-act="mnote" data-v="${tab}" aria-label="펼치기" title="펼치기">${I.chevD}</button></div>`;
 }
 function starStrip() {
   const list = S.items.filter(it => it.star && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
