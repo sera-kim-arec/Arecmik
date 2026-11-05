@@ -540,7 +540,7 @@ body.resizing,body.resizing *{cursor:col-resize!important;user-select:none}
 .sec-head.drop-hi{background:var(--blue-soft);border-radius:6px;outline:none}
 /* ---- code ---- */
 code.ic{font-family:ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, 'D2Coding', monospace;font-size:.86em;background:var(--ic-bg);color:var(--ic-fg);border-radius:4px;padding:.15em .38em;line-height:1.4}
-.icm{font-size:0;letter-spacing:0}
+.icm{font-size:0!important;letter-spacing:0}
 :root{--ic-bg:rgba(135,131,120,.15);--ic-fg:#EB5757}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ic-bg:rgba(135,131,120,.24);--ic-fg:#FF7369 } }
 .bk-code{flex-direction:column;align-items:stretch;gap:0;margin:6px 0;border-radius:12px;background:var(--sunken);box-shadow:inset 0 0 0 1px var(--line-soft);overflow:hidden}
@@ -1573,6 +1573,9 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .ichk{background:transparent!important;padding:0 4px!important;margin:-4px 0 4px 34px!important;font-size:12.5px!important}
 html[data-fs] #app,html[data-fs] #layer{zoom:var(--fs)}
 html[data-fs] #app{height:calc(100vh / var(--fs));width:calc(100vw / var(--fs))}
+.ck-edit{margin:2px 0 4px -4px;padding:4px 6px;border-radius:12px;background:var(--rose-soft)}
+.ck-edit .bk-bullet .bk-pre,.ck-edit .bk-bullet::marker{color:var(--rose-ink)}
+.ck-edit .ed .bk-text:empty::before{content:'예: 공고문 날짜 원문과 대조'!important}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2599,7 +2602,7 @@ const cComposer = key => (ui.cOpen === key || (cDrafts[key] && blocksText(cDraft
 const cComposerOpen = key => `<div class="ccomp"><div class="ccomp-ed">${editorHTML(key, true)}</div><button class="btn sm primary" data-act="clogadd" data-key="${key}" title="Ctrl+Enter">남기기</button></div>`;
 const hm = ts => { const x = new Date(ts); return String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0'); };
 const ckOn = it => (it.checks || []).length && !it.done && !it.cancel;
-const ckLines = arr => (arr || []).map(c => `<span class="ck-l">${tT(c.text)}</span>`).join('');
+const ckLines = arr => (arr || []).map(c => `<span class="ck-l" style="${c.indent ? `margin-left:${Math.min(c.indent, 3) * 12}px` : ''}">${tT(c.text)}</span>`).join('');
 const chipCk = it => ckOn(it) ? `<span class="chip-ck">${ckLines(it.checks)}</span>` : '';
 const chkLine = it => (it.checks || []).length && !it.done && !it.cancel ? `<div class="ichk" data-act="open" data-kind="item" data-id="${it.id}"><span class="ichk-t">${ckLines(it.checks)}</span></div>` : '';
 const rnT = it => `<span class="rn" data-rn="${it.id}">${tT(it.title || '제목 없음')}</span>`;
@@ -2772,8 +2775,7 @@ function dlgRoutine(r) {
     </div></div>
   <div class="dlg-body">
     <div class="lbl" style="padding-top:2px">❗ 확인 <span class="hint" style="font-weight:500">다음에 할 때 꼭 챙길 것</span></div>
-    <div class="rchg">${(r.changes || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><input class="ck-ed" data-rch="${r.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="꼭 챙길 것 고치기"><em class="ck-date">${fmtShort(c.date)}</em><button class="bn-x" data-act="rchdel" data-id="${r.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
-      <input id="rc-in" class="inp" data-rid="${r.id}" placeholder="예: 11월부터 양식 v3 사용 · Enter" autocomplete="off"></div>
+    <div class="ck-edit">${editorHTML('rck:' + r.id, true)}</div>
     ${(r.applied || []).length ? `<details class="rapplied"><summary>확인한 것 ${r.applied.length}</summary>${r.applied.slice().reverse().map(c => `<div>${fmtShort(c.on)} · ${esc(c.text)}</div>`).join('')}</details>` : ''}
     <div class="lbl" style="padding-top:12px">한 날 ${log.length ? log.length + '번' : ''}</div>
     ${log.length ? `<div class="rlog">${log.slice(0, 24).map(d => `<span>${fmtShort(d)}</span>`).join('')}${log.length > 24 ? `<span class="muted">외 ${log.length - 24}번</span>` : ''}</div>` : '<p class="hint" style="margin:2px">아직 기록이 없어요. 목록에서 체크하면 오늘 날짜로 남아요.</p>'}
@@ -3689,6 +3691,7 @@ function closeModal(force) {
   if (m && m.kind === 'retro') { const r = retro(m.id); if (r && !(r.what || '').trim() && !(r.next || '').trim()) { S.retros = S.retros.filter(x => x !== r); save(); } else if (r) { save(); if (m.isNew) retroSaveHint(r); } setTimeout(render, 0); }
   if (m && m.kind === 'citem') { const ci = citem(m.id); if (ci && m.isNew && !ci.title.trim() && !ci.img) { S.citems = S.citems.filter(x => x !== ci); save(); render(); } }
   ui.modal = null; ui.modalBack = null; ui.confirm = null; renderModal(); closeSlash();
+  if (m && (m.kind === 'item' || m.kind === 'routine')) setTimeout(render, 0);
 }
 const projOptions = sel => `<option value="">없음</option>${S.projects.map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${esc(p.title)}${p.done ? ' (완료)' : ''}</option>`).join('')}`;
 function dlgHeadTop(kindLabel, kindCls, delAct, id) {
@@ -3718,8 +3721,7 @@ function dlgItem(it) {
       <label>복기</label><div class="frow"><button class="btn sm" data-act="xnew" data-item="${it.id}">${I.plus}복기 남기기</button>${(S.retros || []).filter(x => x.itemId === it.id && (x.what || x.next)).map(x => `<button class="btn sm ghost" data-act="xopen" data-id="${x.id}">${RKIND[x.kind] || '실수'} · ${fmtShort(x.date)}</button>`).join('')}</div>
     </div></div>
   <div class="dlg-body"><div class="lbl" style="padding-top:2px;display:flex;align-items:center;gap:6px">❗ 꼭 잊지 말 것 <span class="hint" style="font-weight:500">적으면 달력 위 ❗ 띠에도 떠요</span>${it.star && !(it.checks || []).length ? `<button class="btn sm ghost" data-act="star" data-id="${it.id}" style="margin-left:auto">띠에서 빼기</button>` : ''}</div>
-    <div class="rchg">${(it.checks || []).map(c => `<div class="rchg-i"><span class="xdot" style="background:var(--rose)"></span><input class="ck-ed" data-ich="${it.id}" data-c="${c.id}" value="${esc(c.text)}" aria-label="꼭 챙길 것 고치기"><button class="bn-x" data-act="ichdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}
-      <input id="ic-in" class="inp" data-iid="${it.id}" placeholder="예: 공고문 날짜 원문과 대조 · Enter" autocomplete="off"></div>
+    <div class="ck-edit">${editorHTML('ick:' + it.id, true)}</div>
     <div class="lbl" style="padding-top:12px">코멘트</div>
     <div class="ilog">${cComposer('cnewd:' + it.id + '~' + TODAY)}
       ${(it.log || []).slice().sort((a, b) => b.ts - a.ts).map(c => `<div class="ilog-i"><span class="ilog-t">${fmtShort(c.date)}<br>${hm(c.ts)}</span><div class="ilog-ed">${editorHTML('clog:' + it.id + '~' + c.id, true)}</div><button class="bn-x" data-act="ilogdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}</div>
@@ -3830,8 +3832,18 @@ function dlgCitem(ci) {
 }
 
 /* ---------- block editor ---------- */
+const ckCache = {};
+function ckOwner(k, id) { if (k === 'ick') { const it = item(id); return it ? { o: it, f: 'checks' } : null; } if (k === 'rck') { const r = routine(id); return r ? { o: r, f: 'changes' } : null; } return null; }
+const ckSig = arr => (arr || []).map(c => c.id + '\u0001' + (c.text || '') + '\u0001' + (c.indent || 0)).join('\u0002');
+function ckSync(key) { const [k, id] = key.split(':'); const w = ckOwner(k, id); const bl = ckCache[key]; if (!w || !bl) return;
+  const prev = {}; (w.o[w.f] || []).forEach(c => { prev[c.id] = c; });
+  w.o[w.f] = bl.filter(b => (b.text || '').trim()).map(b => ({ ...(prev[b.id] || {}), id: b.id, text: b.text, indent: b.indent || 0, ...(k === 'rck' ? { date: (prev[b.id] || {}).date || TODAY } : {}) }));
+  bl._sig = ckSig(w.o[w.f]); }
 function edBlocks(key) {
   const [k, id] = key.split(':');
+  if (k === 'ick' || k === 'rck') { const w = ckOwner(k, id); if (!w) return null; const arr = w.o[w.f] || []; let bl = ckCache[key];
+    if (!bl || bl._sig !== ckSig(arr)) { bl = arr.map(c => ({ ...B('bullet', c.text || ''), id: c.id, indent: c.indent || 0 })); if (!bl.length || (bl[bl.length - 1].text || '').trim()) bl.push(B('bullet', '')); bl._sig = ckSig(arr); ckCache[key] = bl; }
+    return bl; }
   if (k === 'ci') { const ci = citem(id); if (!ci) return null; if (!Array.isArray(ci.review) || !ci.review.length) ci.review = [B('p', '')]; return ci.review; }
   if (k === 'cnew' || k === 'cnewd') { const kk = k + ':' + id; if (!cDrafts[kk]) cDrafts[kk] = [B('p', '')]; return cDrafts[kk]; }
   if (k === 'clog' || k === 'clogj' || k === 'clogp') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (!c) return null; if (!Array.isArray(c.blocks) || !c.blocks.length) c.blocks = (c.text || '').split('\n').map(t => B('p', t)); return c.blocks; }
@@ -3850,7 +3862,7 @@ const cDrafts = {}; const jDiaryDraft = {};
 const diaryFolder = () => S.folders.find(x => x.space === 'life' && (x.name || '').trim() === '일기');
 const diaryPost = d => { const f = diaryFolder(); return f ? S.posts.find(x => x.folder === f.id && x.date === d) : null; };
 const blocksText = bl => (bl || []).map(b => b.type === 'table' ? (b.rows || []).flat().join(' ') : plainText(b.text || '')).filter(x => x.trim()).join(' · ');
-function touch(key) { const [k, id] = key.split(':'); if (k === 'doc' && doc(id)) doc(id).updated = Date.now();
+function touch(key) { const [k, id] = key.split(':'); if (k === 'ick' || k === 'rck') ckSync(key); if (k === 'doc' && doc(id)) doc(id).updated = Date.now();
   if (k === 'clog' || k === 'clogj' || k === 'clogp') { const [iid, cid] = id.split('~'); const it = item(iid); const c = it && (it.log || []).find(x => x.id === cid); if (c) c.text = blocksText(c.blocks); }
   if (k === 'cnew' || k === 'cnewd') return;
   if (k === 'jdiary' && !diaryPost(id)) { const bl = jDiaryDraft[id]; if (!bl || !blocksText(bl).trim()) return; let f = diaryFolder(); if (!f) { f = { id: uid(), space: 'life', name: '일기', parent: null, ord: Date.now() }; S.folders.push(f); } S.posts.push({ id: uid(), folder: f.id, date: id, title: '', cover: { tone: randTone(), img: null }, coverOnCal: false, blocks: bl }); delete jDiaryDraft[id]; }
