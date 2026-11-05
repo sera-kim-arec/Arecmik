@@ -1527,6 +1527,9 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .cm-d{flex:none;font-style:normal;font-size:10.5px;font-weight:600;color:var(--muted)}
 .cm-body{display:block;flex:1;min-width:0}
 .cal .chip.has-ck .chip-c,.cal .chip.has-ck .chip-sub{top:2px!important;transform:none!important}
+.ib{font-weight:700}
+.ii{font-style:italic}
+.is{text-decoration:line-through;color:var(--muted)}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -1980,7 +1983,12 @@ function moveBadge(it) {
   return `<span class="mvb" title="${esc(hist)}">↷ ${l}</span>`;
 }
 const evState = it => it.kind !== 'event' ? '' : it.cancel ? 'cancel' : it.done ? 'done' : '';
-function afterLoad() { hist.length = 0; resetUi(); restoreUI(); renderGate(null); rollTodos(); render(); renderModal(); setTimeout(checkReminders, 1500); }
+function fixPastedMD() {
+  let n = 0; const fix = bl => { if (!Array.isArray(bl)) return; for (let i = bl.length - 1; i >= 0; i--) { const b = bl[i]; if (b && b.type === 'p' && typeof b.text === 'string' && looksMD(b.text) && b.text.split('\n').length > 1) { const nb = mdToBlocks(b.text); if (nb.length) { nb.forEach(x => { if (x.indent !== undefined) x.indent += b.indent || 0; }); bl.splice(i, 1, ...nb); n++; } } } };
+  (S.docs || []).forEach(d => fix(d.blocks)); (S.posts || []).forEach(d => fix(d.blocks)); fix(S.memo); (S.projects || []).forEach(d => fix(d.blocks || d.memo)); (S.items || []).forEach(d => fix(d.memo));
+  if (n) { save(); }
+}
+function afterLoad() { hist.length = 0; resetUi(); restoreUI(); try { fixPastedMD(); } catch (e) { console.warn(e); } renderGate(null); rollTodos(); render(); renderModal(); setTimeout(checkReminders, 1500); }
 function renderGate(state, msg) {
   const g = document.getElementById('gate');
   if (!state) { g.hidden = true; g.innerHTML = ''; return; }
@@ -3800,7 +3808,8 @@ function chipHTML2(tok, label, kind, id) {
   return `<span class="mention m-${k} ${o ? '' : 'gone'}" contenteditable="false" data-tok="${esc(tok)}" data-act="mopen" data-ref="${kind}:${id}" title="${o ? '눌러서 열기' : '지워진 항목'}">${KIND_ICON[kind] || '@'} ${esc(name)}</span>`;
 }
 const ICOL = [['', '기본'], ['r', '빨강'], ['o', '주황'], ['y', '노랑'], ['g', '초록'], ['b', '파랑'], ['p', '보라'], ['k', '회색']];
-const inlCode = t => esc(t).replace(/`([^`\n]+)`(\{([roygbpk])\})?/g, (m, x, sfx, c) => `<code class="ic${c ? ' ic-' + c : ''}"><span class="icm">\`</span>${x}<span class="icm">\`${sfx || ''}</span></code>`);
+const INL_RE = /`([^`\n]+)`(\{([roygbpk])\})?|\*\*([^*\n]+)\*\*|~~([^~\n]+)~~|(^|[^*\w])\*([^*\s][^*\n]*?)\*(?![*\w])/g;
+const inlCode = t => esc(t).replace(INL_RE, (m, x, sfx, c, bo, st, pre, it) => x !== undefined ? `<code class="ic${c ? ' ic-' + c : ''}"><span class="icm">\`</span>${x}<span class="icm">\`${sfx || ''}</span></code>` : bo !== undefined ? `<b class="ib"><span class="icm">**</span>${bo}<span class="icm">**</span></b>` : st !== undefined ? `<s class="is"><span class="icm">~~</span>${st}<span class="icm">~~</span></s>` : `${pre}<i class="ii"><span class="icm">*</span>${it}<span class="icm">*</span></i>`);
 function inl(t) {
   t = String(t || ''); let out = '', last = 0; MREG.lastIndex = 0; let m;
   while ((m = MREG.exec(t))) { out += inlCode(t.slice(last, m.index)) + chipHTML2(m[0], m[1], m[2], m[3]); last = m.index + m[0].length; }
@@ -3856,7 +3865,7 @@ function rerenderEditor(key, bid, pos) {
   if (bid) { const t = document.querySelector(`[data-ed="${key}"] .bk-text[data-bid="${bid}"]`); if (t) placeCaret(t, pos); }
 }
 const MREG = /@\[([^\]]*)\]\((item|doc|post|project|citem):([A-Za-z0-9_-]+)\)/g;
-const plainText = t => String(t || '').replace(MREG, '@$1').replace(/`([^`\n]+)`(\{[roygbpk]\})?/g, '$1');
+const plainText = t => String(t || '').replace(MREG, '@$1').replace(/`([^`\n]+)`(\{[roygbpk]\})?/g, '$1').replace(/\*\*([^*\n]+)\*\*/g, '$1').replace(/~~([^~\n]+)~~/g, '$1').replace(/(^|[^*\w])\*([^*\s][^*\n]*?)\*(?![*\w])/g, '$1$2').replace(/\u200B/g, '');
 function serNode(n) {
   if (n.nodeType === 3) return n.nodeValue;
   if (n.nodeType !== 1) return '';
@@ -4638,6 +4647,31 @@ function onBlockInput(el) {
   touch(key); ensureCaretVisible();
 }
 /* 기사 붙여넣기: 문단·제목·목록·인용·이미지를 블록으로 */
+const MD_LINE = /^(\s*)(#{1,6}\s+|[-*+•]\s+\[( |x|X)\]\s+|[-*+•]\s+|\d+[.)]\s+|>\s?)/;
+const looksMD = t => /\n/.test(t) && (t.split('\n').some(l => MD_LINE.test(l) || /^\s*(```|---+\s*$|\*\*\*+\s*$)/.test(l)) || /\*\*[^*\n]+\*\*/.test(t));
+function mdToBlocks(text) {
+  const out = []; const lines = String(text || '').replace(/\r/g, '').split('\n'); let code = null;
+  const ind = sp => { sp = sp.replace(/\t/g, '  '); return Math.min(4, Math.floor(sp.length / 2)); };
+  lines.forEach(l => {
+    if (code) { if (/^\s*```/.test(l)) { out.push(B('code', code.join('\n'))); code = null; } else code.push(l); return; }
+    if (/^\s*```/.test(l)) { code = []; return; }
+    if (!l.trim()) return;
+    if (/^\s*(---+|\*\*\*+|___+)\s*$/.test(l)) { out.push(B('divider', '')); return; }
+    const m = l.match(MD_LINE); const sp = (l.match(/^\s*/) || [''])[0]; const rest = m ? l.slice(m[0].length) : l.trim();
+    let b;
+    if (!m) b = B('p', rest);
+    else if (/^#/.test(m[2])) b = B('h', rest);
+    else if (/\[/.test(m[2])) { b = B('todo', rest); b.done = /x/i.test(m[3]); }
+    else if (/^[-*+•]/.test(m[2])) b = B('bullet', rest);
+    else if (/^\d/.test(m[2])) b = B('num', rest);
+    else b = B('quote', rest);
+    b.text = b.text.replace(/__([^_\n]+)__/g, '**$1**');
+    if (b.type !== 'h') b.indent = ind(sp);
+    out.push(b);
+  });
+  if (code) out.push(B('code', code.join('\n')));
+  return out;
+}
 function htmlToBlocks(html, baseUrl) {
   html = String(html || '').replace(/^[^<]*(?=<)/, '');
   const doc0 = new DOMParser().parseFromString(html, 'text/html'); const out = [];
@@ -4714,6 +4748,11 @@ document.addEventListener('paste', e => {
   const text = cd.getData('text/plain') || '';
   const key = el.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, el.dataset.bid);
   if (b && !b.text && isURL(text.trim()) && b.type !== 'link' && b.type !== 'code') { b.type = 'link'; b.text = text.trim(); touch(key); rerenderEditor(key, b.id, 'end'); toast('링크를 스크랩 카드로 바꿨어요'); return; }
+  if (b && b.type !== 'code' && !el.classList.contains('tcell') && looksMD(text)) {
+    const { bl } = findBlock(key, el.dataset.bid); const blocks = mdToBlocks(text); const base = b.indent || 0;
+    if (blocks.length) { snapshot(); blocks.forEach(x => { if (x.indent !== undefined) x.indent += base; }); const i = bl.indexOf(b); const replace = !b.text && b.type === 'p';
+      bl.splice(replace ? i : i + 1, replace ? 1 : 0, ...blocks); touch(key); rerenderEditor(key, blocks[blocks.length - 1].id, 'end'); toast(`서식을 살려 붙여넣었어요 · ${blocks.length}줄`, true); return; }
+  }
   document.execCommand('insertText', false, text);
 });
 
