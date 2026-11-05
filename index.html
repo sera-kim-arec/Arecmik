@@ -1559,7 +1559,7 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .chip-ck,.rch{position:relative}
 .ck-l{display:block;position:relative;padding-left:11px;white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
 .ck-l::before{content:'❗';position:absolute;left:-1px;top:.15em;font-size:8.5px}
-.ichk .ck-l{padding-left:0}.ichk .ck-l::before{content:none}
+.ichk .ck-l{padding-left:14px}.ichk .ck-l::before{font-size:10px;top:.2em}
 .ichk-t{flex:1;min-width:0}
 .rch{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 .chip.rt .chip-ck,.chip.has-ck .chip-ck{padding-left:20px}
@@ -2594,7 +2594,7 @@ const hm = ts => { const x = new Date(ts); return String(x.getHours()).padStart(
 const ckOn = it => (it.checks || []).length && !it.done && !it.cancel;
 const ckLines = arr => (arr || []).map(c => `<span class="ck-l">${tT(c.text)}</span>`).join('');
 const chipCk = it => ckOn(it) ? `<span class="chip-ck">${ckLines(it.checks)}</span>` : '';
-const chkLine = it => (it.checks || []).length && !it.done && !it.cancel ? `<div class="ichk" data-act="open" data-kind="item" data-id="${it.id}"><span class="ichk-m">❗</span><span class="ichk-t">${ckLines(it.checks)}</span></div>` : '';
+const chkLine = it => (it.checks || []).length && !it.done && !it.cancel ? `<div class="ichk" data-act="open" data-kind="item" data-id="${it.id}"><span class="ichk-t">${ckLines(it.checks)}</span></div>` : '';
 const rnT = it => `<span class="rn" data-rn="${it.id}">${tT(it.title || '제목 없음')}</span>`;
 let rnPending = null, rnEditing = null;
 function startRename(el) {
@@ -2709,7 +2709,7 @@ function routineRows() {
   return list.map(r => { const done = rDone(r), due = rDue(r); const doc0 = r.noteId && doc(r.noteId);
     return `<div class="rrow ${done ? 'done' : ''} ${due ? 'due' : ''}">
       <button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button>
-      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${(r.changes || []).length ? '<span class="imp">❗</span>' : ''}${esc(r.title || '이름 없는 루틴')}<span class="rfq" title="${esc(rWhen(r))}">${esc(rWhen(r).replace(/\(.*\)/, '').trim())}</span></b>${(r.changes || []).length ? `<span class="rch">${ckLines(r.changes)}</span>` : ''}</button>
+      <button class="rtx" data-act="ropen" data-id="${r.id}"><b>${esc(r.title || '이름 없는 루틴')}<span class="rfq" title="${esc(rWhen(r))}">${esc(rWhen(r).replace(/\(.*\)/, '').trim())}</span></b>${(r.changes || []).length ? `<span class="rch">${ckLines(r.changes)}</span>` : ''}</button>
       ${doc0 ? `<button class="rnote" data-act="opendoc" data-id="${doc0.id}" title="매뉴얼 노트 열기: ${esc(doc0.title || '제목 없음')}" aria-label="매뉴얼 노트 열기">${I.note}</button>` : ''}
     </div>`; }).join('');
 }
@@ -2720,7 +2720,7 @@ function retroNudge() {
 }
 function routinesOn(d) { return (S.routines || []).filter(r => r.freq !== 'daily' && r.freq !== 'any' && rDueOn(r, d) === d); }
 function rtChip(r, d) { const done = rDoneFor(r, d); const ck = !done && (r.changes || []).length; return `<div class="chip rt ${done ? 'done' : ''} ${ck ? 'has-ck' : ''}" data-act="ropen" data-id="${r.id}" title="루틴 · ${esc(rWhen(r))}"><span class="rti">${I.repeat}</span><span class="tt">${esc(r.title)}</span>${ck ? `<span class="chip-ck">${ckLines(r.changes)}</span>` : ''}</div>`; }
-function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${(r.changes || []).length && !done ? '<span class="imp">❗</span>' : ''}${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">${ckLines(r.changes)}</span>` : ''}</button></div>`; }).join('')}</div>`; }
+function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">${ckLines(r.changes)}</span>` : ''}</button></div>`; }).join('')}</div>`; }
 function routineCard() {
   const n = (S.routines || []).length; const due = (S.routines || []).filter(rDue).length;
   return `<div class="card rcard2">
