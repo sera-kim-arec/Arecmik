@@ -1520,6 +1520,9 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .chip.away .mvi{flex-shrink:0;font-size:10.5px}
 .cal-main .topbar{flex-wrap:nowrap}
 .cal-main .topbar .btn{white-space:nowrap}
+.cal .num{min-width:23px;padding:0;box-sizing:border-box}
+.cal .cell.selday .num{min-width:27px;margin-left:-2px}
+.cal .num.wide{padding:0 4px}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2484,7 +2487,7 @@ function weekRow(ws, isSel, month) {
     const dd = parse(d); const other = month ? dd.getMonth() + 1 !== month : false;
     const cls = ['cell']; if (other) cls.push('other'); if (isWeekend(d)) cls.push('we'); if (d === ui.sel) cls.push('selday'); if (i === N - 1) cls.push('last');
     const label = dd.getDate() === 1 && d !== TODAY ? `${dd.getMonth() + 1}월 1일` : dd.getDate();
-    h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${d === TODAY ? 'today' : ''} ${holiName(d) ? 'hol' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}${jHas(d) ? `<button class="jmark" data-act="journal" data-date="${d}" title="업무일지 보기" aria-label="업무일지 보기">${I.note}</button>` : ''}<button class="cell-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가 (날짜를 두 번 눌러도 돼요)">${I.plus}</button></div>`;
+    h += `<div class="${cls.join(' ')}" style="grid-column:${i + 1};grid-row:1/-1" data-act="selday" data-date="${d}" data-drop="day:${d}"><span class="num ${label.length > 2 ? 'wide' : ''} ${d === TODAY ? 'today' : ''} ${holiName(d) ? 'hol' : ''}">${label}</span>${d === TODAY ? '<span class="today-tag">오늘</span>' : ''}${holiName(d) ? `<span class="holi">${esc(holiName(d))}</span>` : ''}${jHas(d) ? `<button class="jmark" data-act="journal" data-date="${d}" title="업무일지 보기" aria-label="업무일지 보기">${I.note}</button>` : ''}<button class="cell-add" data-act="qcopen" data-date="${d}" aria-label="${fmtMD(d)}에 추가" title="이 날에 추가 (날짜를 두 번 눌러도 돼요)">${I.plus}</button></div>`;
   });
   spans.forEach(sp => {
     const a = colOf(sp.s < ws ? ws : sp.s, 1), b = colOf(sp.e > we ? we : sp.e, -1);
