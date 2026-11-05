@@ -140,7 +140,7 @@ svg{flex:none}
 .cal-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto}
 .cal-wrap>.panel{overflow-y:auto}
 .cal-scroll{overflow-x:auto;flex:1;display:flex;flex-direction:column}
-.cal{min-width:720px;flex:1;display:flex;flex-direction:column}
+.cal{min-width:540px;flex:1;display:flex;flex-direction:column}
 .dow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted)}
 .dow span{padding:8px 10px}
 .wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-bottom:1px solid var(--line);min-height:112px;flex:1 1 0}
@@ -1518,7 +1518,9 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .cal .items{min-width:0}
 .cal .items>.chip{min-width:0;max-width:100%;box-sizing:border-box;overflow:hidden}
 .chip.away .mvi{flex-shrink:0;font-size:10.5px}
-.cal-main .topbar{flex-wrap:nowrap}
+.cal-main .topbar{flex-wrap:nowrap;min-width:0}
+.cal-main{min-width:0}
+.cal-main .topbar .jsearch{flex:0 1 150px;min-width:36px;width:auto}
 .cal-main .topbar .btn{white-space:nowrap}
 .cal .num{min-width:23px;padding:0;box-sizing:border-box}
 .cal .cell.selday .num{min-width:27px;margin-left:-2px}
@@ -1569,6 +1571,8 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .rrow>.chk:only-child{margin-top:0}
 .rch,.rch .ck-l{color:var(--rose-ink)!important}
 .ichk{background:transparent!important;padding:0 4px!important;margin:-4px 0 4px 34px!important;font-size:12.5px!important}
+html[data-fs] #app,html[data-fs] #layer{zoom:var(--fs)}
+html[data-fs] #app{height:calc(100vh / var(--fs));width:calc(100vw / var(--fs))}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2095,7 +2099,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: st.depth === 'raised' ? 'raised' : 'pressed', accent: st.accent || 'lemon', areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: st.depth === 'raised' ? 'raised' : 'pressed', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -2287,6 +2291,7 @@ function render() {
   keepUI();
   if (!doneSeen && S && S.items) stampDone();
   document.documentElement.classList.toggle('raised', settingsOf().depth === 'raised');
+  { const fs = settingsOf().fontScale; if (fs === 100) { delete document.documentElement.dataset.fs; document.documentElement.style.removeProperty('--fs'); } else { document.documentElement.dataset.fs = fs; document.documentElement.style.setProperty('--fs', fs / 100); } }
   { const ac = settingsOf().accent || 'lemon'; if (ac === 'lemon') delete document.documentElement.dataset.accent; else document.documentElement.dataset.accent = ac; }
   const main = $('.main'); const st = main ? main.scrollTop : 0;
   const cs = $('.cal-scroll'); const sl = cs ? cs.scrollLeft : 0;
@@ -3784,6 +3789,7 @@ function dlgSettings() {
     ${myOff().length ? `<div class="offlist">${myOff().slice().sort().map(d => `<span>${fmtDot(d)}<button class="bn-x" data-act="offrm" data-d="${d}" aria-label="빼기">${I.x}</button></span>`).join('')}</div>` : ''}
     <div class="set-sec" style="margin-top:22px">디자인</div>
     <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button></div></div>
+    <div class="set-row"><div><b>글자 크기</b><span class="hint">글씨와 항목 크기가 함께 바뀌어요</span></div><div class="seg inline" role="radiogroup" aria-label="글자 크기">${[[90, '작게'], [100, '보통'], [110, '크게'], [120, '아주 크게']].map(([v, l]) => `<button role="radio" aria-checked="${settingsOf().fontScale === v}" class="${settingsOf().fontScale === v ? 'on' : ''}" data-act="setfs" data-v="${v}">${l}</button>`).join('')}</div></div>
     <div class="set-row"><div><b>강조 색</b><span class="hint">오늘 표시, 고른 탭, 체크, 주요 버튼 색이 바뀌어요</span></div><div class="accents">${[['lemon', '#F5D547', '레몬'], ['peach', '#FFB38A', '피치'], ['rose', '#F7A1B5', '로즈'], ['sky', '#8CC4F5', '하늘'], ['lavender', '#BBA6F2', '라벤더'], ['mint', '#93D9C3', '민트']].map(([k, c, l]) => `<button class="acc ${(settingsOf().accent || 'lemon') === k ? 'on' : ''}" style="--a:${c}" data-act="setaccent" data-v="${k}" title="${l}" aria-label="${l}" aria-pressed="${(settingsOf().accent || 'lemon') === k}"></button>`).join('')}</div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
     <div class="set-row"><div><b>한 주 시작</b><span class="hint">WORK·LIFE 달력 모두에 적용돼요</span></div><div class="seg inline"><button class="${settingsOf().weekStart === 'sun' ? 'on' : ''}" data-act="setweek" data-v="sun">일요일</button><button class="${settingsOf().weekStart === 'mon' ? 'on' : ''}" data-act="setweek" data-v="mon">월요일</button></div></div>
@@ -4321,6 +4327,7 @@ const ACT = {
   gortn: () => { ui.panelTab = 'routine'; if (isMob()) { go('mtodo'); return; } if (ui.view !== 'work') go('work'); else { ui.navOpen = false; render(); } },
   offadd: () => { const v = ($('#off-add') || {}).value; if (!v) return; S.settings = { ...(S.settings || {}), offDays: [...new Set([...myOff(), v])] }; save(); render(); renderModal(); },
   offrm: t => { S.settings = { ...(S.settings || {}), offDays: myOff().filter(x => x !== t.dataset.d) }; save(); render(); renderModal(); },
+  setfs: t => { S.settings = { ...(S.settings || {}), fontScale: +t.dataset.v }; save(); render(); renderModal(); },
   setaccent: t => { S.settings = { ...(S.settings || {}), accent: t.dataset.v }; save(); render(); renderModal(); },
   setdepth: t => { S.settings = { ...(S.settings || {}), depth: t.dataset.v }; save(); render(); renderModal(); },
   setweek: t => { S.settings = { ...(S.settings || {}), weekStart: t.dataset.v }; save(); render(); renderModal(); },
