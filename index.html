@@ -1531,8 +1531,14 @@ code.ic:not([class*="ic-"]){--ic-bg:var(--lemon-soft);--ic-fg:var(--lemon-ink)}
 .ii{font-style:italic}
 .is{text-decoration:line-through;color:var(--muted)}
 .mnote,.mnote-add{display:flex;align-items:center;gap:12px;width:100%;margin:2px 0 12px;padding:8px 14px;border:0;border-radius:14px;background:var(--lemon-soft);text-align:left;cursor:pointer;color:var(--fg);min-width:0;box-sizing:border-box}
-.mnote-add{width:auto;display:inline-flex;background:transparent;color:var(--muted);font-weight:600;font-size:12.5px;padding:2px 6px;margin:0 0 8px}
-.mnote-add:hover{color:var(--fg)}
+.mnote.shut{cursor:default;padding:6px 10px 6px 14px;gap:8px}
+.mn-chip{border:0;background:transparent;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.mn-chip.has{color:var(--lemon-ink);background:color-mix(in srgb, var(--lemon) 30%, transparent)}
+.mn-chip:hover{background:color-mix(in srgb, var(--lemon) 45%, transparent);color:var(--fg)}
+.mn-chip i,.mn-tabs i{font-style:normal;font-weight:600;opacity:.7;margin-left:2px}
+.mn-tabs{display:flex;gap:2px}
+.mn-tabs button{border:0;background:transparent;border-radius:999px;padding:3px 11px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.mn-tabs button.on{background:var(--bg);color:var(--lemon-ink);box-shadow:var(--nm-out-xs)}
 .mn-l{flex:none;font-weight:800;font-size:13.5px;color:var(--lemon-ink)}
 .mn-p{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}
 .mn-p i{font-style:normal;color:var(--muted);margin:0 7px}
@@ -2241,7 +2247,7 @@ const ui = {
   search: '', modal: null, modalBack: null, confirm: null, newFolder: null, focusId: null, navOpen: false
 };
 /* 새로고침해도 보던 화면 그대로 (이 기기 브라우저에만 저장) */
-const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'catOpen', 'open', 'weekLog'];
+const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'mnTab', 'catOpen', 'open', 'weekLog'];
 function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-ui') || 'null'); if (!o) return; const hv = location.hash.slice(1);
   const ok = { noteFolder: v => !v || !!folder(v), noteDoc: v => !v || !!doc(v), lifeFolder: v => !v || !!folder(v), postId: v => !v || !!post(v), collId: v => !v || !!(S.collections || []).find(c => c.id === v), ciId: v => !v || !!citem(v) };
   UI_KEEP.forEach(k => { if (!(k in o)) return; if (ok[k] && !ok[k](o[k])) return; ui[k] = o[k]; });
@@ -2614,9 +2620,9 @@ function trow(it, drag = true, cd = '') {
 function panelWork() {
   const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
   const open = inbox.filter(i => !i.done), done = inbox.filter(i => i.done);
-  const tab = ui.panelTab;
+  if (ui.panelTab === 'memo') ui.panelTab = 'todo'; const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
-  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'memo'}" class="${tab === 'memo' ? 'on' : ''}" data-act="ptab" data-tab="memo">상시 메모</button><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
+  <div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
   ${tab === 'memo' ? `<div class="card">${editorHTML('memo', true)}</div>` : tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}
   ${ui.calView === 'day' && ui.view === 'work' ? '' : daySection()}
   </aside>`;
@@ -2982,10 +2988,12 @@ function retroSaveHint(r) {
 }
 function monthNote() {
   const ym = (ui.calView === 'week' ? ui.sel : ui.month + '-01').slice(0, 7); const mo = +ym.slice(5, 7);
-  const o = (S.rmonths || []).find(x => x.id === 'mn-' + ym); const bl = o ? o.blocks : []; const lines = (bl || []).filter(b => (b.text || '').trim()).map(b => plainText(b.text));
-  if (ui.mnOpen === ym) return `<div class="mnote open"><div class="mn-h"><span class="mn-l">📌 ${mo}월 메모</span><span class="muted mn-s">이 달에만 기억할 것</span><span class="grow"></span><button class="btn sm ghost" data-act="mnote" data-ym="">접기</button></div><div class="mn-ed">${editorHTML('mnote:' + ym, true)}</div></div>`;
-  if (!lines.length) return `<button class="mnote-add" data-act="mnote" data-ym="${ym}">📌 ${mo}월 메모 추가</button>`;
-  return `<button class="mnote" data-act="mnote" data-ym="${ym}" title="눌러서 펼치기"><span class="mn-l">📌 ${mo}월</span><span class="mn-p">${lines.slice(0, 3).map(t => `<span>${esc(t)}</span>`).join('<i>·</i>')}${lines.length > 3 ? `<em>+${lines.length - 3}</em>` : ''}</span></button>`;
+  const cnt = bl => (bl || []).filter(b => (b.text || '').trim() || b.src).length;
+  const o = (S.rmonths || []).find(x => x.id === 'mn-' + ym); const nM = cnt(o && o.blocks), nA = cnt(S.memo);
+  const tab = ui.mnTab === 'all' ? 'all' : 'month';
+  if (ui.mnOpen) { const key = tab === 'all' ? 'memo' : 'mnote:' + ym;
+    return `<div class="mnote open"><div class="mn-h"><span class="mn-l">📌</span><div class="mn-tabs"><button class="${tab === 'month' ? 'on' : ''}" data-act="mntab" data-v="month">${mo}월${nM ? ` <i>${nM}</i>` : ''}</button><button class="${tab === 'all' ? 'on' : ''}" data-act="mntab" data-v="all">상시${nA ? ` <i>${nA}</i>` : ''}</button></div><span class="muted mn-s">${tab === 'all' ? '달과 상관없이 늘 기억할 것' : '이 달에만 기억할 것'}</span><span class="grow"></span><button class="btn sm ghost" data-act="mnote" data-v="">접기</button></div><div class="mn-ed">${editorHTML(key, true)}</div></div>`; }
+  return `<div class="mnote shut"><span class="mn-l">📌 메모</span><button class="mn-chip ${nM ? 'has' : ''}" data-act="mnote" data-v="month">${mo}월${nM ? ` <i>${nM}</i>` : ' <i>+</i>'}</button><button class="mn-chip ${nA ? 'has' : ''}" data-act="mnote" data-v="all">상시${nA ? ` <i>${nA}</i>` : ' <i>+</i>'}</button></div>`;
 }
 function starStrip() {
   const list = S.items.filter(it => it.star && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
@@ -4136,7 +4144,8 @@ const ACT = {
   calview: t => { ui.calView = t.dataset.v; ui.jdetail = false; if (ui.calView === 'month') { ui.weekLog = false; ui.month = ui.sel.slice(0, 7); } render(); if (ui.calView === 'day') setTimeout(() => { const el = document.getElementById('jw-' + ui.sel); if (el && el.previousElementSibling && el.previousElementSibling.classList.contains('jw-day')) el.scrollIntoView({ block: 'start' }); }, 0); },
   jgsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); const r = document.getElementById('jl-res'); if (r) r.innerHTML = jBody(); else render(); },
   jdopen: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.jdetail = true; render(); },
-  mnote: t => { ui.mnOpen = t.dataset.ym || null; render(); if (ui.mnOpen) setTimeout(() => { const el = document.querySelector(`[data-ed="mnote:${ui.mnOpen}"] .bk-text:last-of-type`) || document.querySelector(`[data-ed="mnote:${ui.mnOpen}"] .bk-text`); if (el) placeCaret(el, el.textContent.length); }, 20); },
+  mnote: t => { const v = t.dataset.v; ui.mnOpen = !!v; if (v) ui.mnTab = v; render(); if (v) setTimeout(() => { const els = document.querySelectorAll('.mnote.open .bk-text'); const el = els[els.length - 1]; if (el) placeCaret(el, el.textContent.length); }, 20); },
+  mntab: t => { ui.mnTab = t.dataset.v; render(); },
   jdback: () => { ui.jdetail = false; ui.calView = ui.prevCal || 'month'; ui.month = ui.sel.slice(0, 7); render(); },
   jwsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.focusId = 'jday-add'; render(); },
   dayn: t => { ui.sel = addDays(ui.sel, +t.dataset.d); ui.month = ui.sel.slice(0, 7); render(); },
@@ -4369,12 +4378,12 @@ const ACT = {
     const k = t.dataset.k, id = t.dataset.id; closeSearch();
     if (k === 'item') { const it = item(id); if (it.date) { ui.sel = it.date; ui.month = it.date.slice(0, 7); } go('work'); openModal('item', id); }
     else if (k === 'project') openModal('project', id);
-    else if (k === 'memo') { ui.panelTab = 'memo'; go('work'); }
+    else if (k === 'memo') { ui.calView = 'month'; ui.jdetail = false; ui.mnOpen = true; ui.mnTab = 'all'; ui.modal = null; renderModal(); go('work'); }
     else if (k === 'doc') ACT.opendoc(t);
     else if (k === 'post') ACT.openpost(t);
     else if (k === 'citem') { ui.collId = citem(id).coll; go('collections'); openModal('citem', id); }
     else if (k === 'jday') openJDay(id);
-    else if (k === 'mnote') { ui.calView = 'month'; ui.jdetail = false; ui.month = id; ui.sel = id + '-01'; ui.mnOpen = id; ui.modal = null; renderModal(); go('work'); }
+    else if (k === 'mnote') { ui.calView = 'month'; ui.jdetail = false; ui.month = id; ui.sel = id + '-01'; ui.mnOpen = true; ui.mnTab = 'month'; ui.modal = null; renderModal(); go('work'); }
     else if (k === 'retro') { ui.modalBack = null; openModal('retro', id); }
   },
   bcheck: t => { const key = t.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, t.dataset.bid); if (!b) return; b.done = !b.done; touch(key); rerenderEditor(key); },
