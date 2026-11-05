@@ -1576,6 +1576,18 @@ html[data-fs] #app{height:calc(100vh / var(--fs));width:calc(100vw / var(--fs))}
 .ck-edit{margin:2px 0 4px -4px;padding:4px 6px;border-radius:12px;background:var(--rose-soft)}
 .ck-edit .bk-bullet .bk-pre,.ck-edit .bk-bullet::marker{color:var(--rose-ink)}
 .ck-edit .ed .bk-text:empty::before{content:'예: 공고문 날짜 원문과 대조'!important}
+.catpick{position:relative;flex-wrap:nowrap}
+.cp-cur{display:inline-flex;align-items:center;gap:4px;padding-right:4px!important}
+.cp-x{border:0;background:transparent;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;color:inherit;opacity:.6;cursor:pointer;padding:0}
+.cp-x:hover{opacity:1;background:color-mix(in srgb, currentColor 14%, transparent)}
+.cp-x svg{width:11px;height:11px}
+.cp-in{flex:1;min-width:120px;max-width:240px}
+.cp-sug{position:absolute;top:calc(100% + 4px);left:0;z-index:30;min-width:220px;max-width:320px;max-height:260px;overflow:auto;background:var(--surface, var(--bg));border-radius:12px;box-shadow:0 6px 24px rgba(30,40,60,.16);padding:5px}
+.cp-o{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;text-align:left;padding:7px 10px;border-radius:8px;font:inherit;font-size:14px;color:var(--fg);cursor:pointer}
+.cp-o:hover{background:var(--hover)}
+.cp-o.new{color:var(--lemon-ink);font-weight:600}
+.cp-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.cp-empty{padding:8px 10px;font-size:13px;color:var(--muted)}
 /* ---- 코드 말풍선 ---- */
 .codebub{position:fixed;z-index:200;display:flex;align-items:center;gap:2px;background:var(--surface);box-shadow:0 4px 14px rgba(40,50,70,.18);border-radius:10px;padding:4px}
 .codebub button{border:0;background:none;cursor:pointer;font:inherit;padding:4px 5px;border-radius:7px}
@@ -2861,7 +2873,7 @@ function dlgRetro(r) {
     <button class="btn sm icon" data-act="close" aria-label="닫기">${I.x}</button></div>
     <div class="fgrid">
       <label>종류</label><div class="frow"><div class="seg inline">${Object.entries(RKIND).map(([k, l]) => `<button class="${r.kind === k ? 'on' : ''}" data-act="xset" data-k="kind" data-v="${k}">${l}</button>`).join('')}</div></div>
-      <label>카테고리</label><div class="frow xcats">${retroAreas().map(c => `<button class="xchip ${r.area === c ? 'on' : ''}" data-act="xset" data-k="area" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xarea-new" class="inp xcat-in" placeholder="${retroAreas().length ? '+ 카테고리' : '+ 카테고리 (예: 채용)'}" autocomplete="off"></div>
+      <label>카테고리</label>${catPick('retro:' + r.id, r.area)}
       ${r.cat ? `<label>유형</label><div class="frow xcats">${cats.map(c => `<button class="xchip ${r.cat === c ? 'on' : ''}" data-act="xset" data-k="cat" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="xcat-new" class="inp xcat-in" placeholder="+ 유형 추가" autocomplete="off"></div>` : ''}
       <label>영향</label><div class="frow"><div class="seg inline">${RIMP.map(([k, l]) => `<button class="${(r.impact || 'me') === k ? 'on' : ''}" data-act="xset" data-k="impact" data-v="${k}">${l}</button>`).join('')}</div></div>
       <label for="x-date">날짜</label><div class="frow"><input type="date" id="x-date" class="inp" data-xf="date" value="${r.date}">${it ? `<button class="btn sm ghost" data-act="open" data-kind="item" data-id="${it.id}">◷ ${esc(it.title || '제목 없음')}</button>` : ''}</div>
@@ -3693,6 +3705,27 @@ function closeModal(force) {
   ui.modal = null; ui.modalBack = null; ui.confirm = null; renderModal(); closeSlash();
   if (m && (m.kind === 'item' || m.kind === 'routine')) setTimeout(render, 0);
 }
+/* 카테고리 고르기: 고른 것 하나만 보이고, 입력하면 찾기·새로 만들기 */
+function catPick(target, cur) {
+  return `<div class="frow catpick" data-cp="${target}">${cur ? `<span class="xchip on cp-cur" style="background:${areaColor(cur)};color:var(--fg);box-shadow:none">${esc(cur)}<button class="cp-x" data-act="cpset" data-cp="${target}" data-v="" aria-label="카테고리 빼기" title="빼기">${I.x}</button></span>` : ''}<input class="inp xcat-in cp-in" data-cp="${target}" placeholder="${cur ? '다른 카테고리…' : retroAreas().length ? '+ 카테고리 찾기·추가' : '+ 카테고리 (예: 채용)'}" autocomplete="off"><div class="cp-sug" hidden></div></div>`;
+}
+function cpUses() { const n = {}; (S.items || []).forEach(x => { if (x.area) n[x.area] = (n[x.area] || 0) + 1; }); (S.retros || []).forEach(x => { if (x.area) n[x.area] = (n[x.area] || 0) + 1; }); return n; }
+function cpMatches(q) { q = (q || '').trim().toLowerCase(); const n = cpUses(); return retroAreas().filter(c => !q || c.toLowerCase().includes(q)).sort((a, b) => (n[b] || 0) - (n[a] || 0)).slice(0, 8); }
+function cpDraw(inp) { const box = inp.parentElement.querySelector('.cp-sug'); if (!box) return; const q = inp.value.trim(); const ms = cpMatches(q); const exact = ms.some(c => c === q);
+  box.innerHTML = ms.map(c => `<button class="cp-o" data-act="cpset" data-cp="${inp.dataset.cp}" data-v="${esc(c)}"><span class="cp-dot" style="background:${areaColor(c) || 'var(--faint)'}"></span>${esc(c)}</button>`).join('') + (q && !exact ? `<button class="cp-o new" data-act="cpset" data-cp="${inp.dataset.cp}" data-v="${esc(q)}">+ ‘${esc(q)}’ 새로 만들기</button>` : '') + (!ms.length && !q ? '<div class="cp-empty">아직 카테고리가 없어요. 이름을 적고 Enter</div>' : '');
+  box.hidden = false; }
+function cpSet(target, v) {
+  const [k, id] = target.split(':'); v = (v || '').trim();
+  if (v) { const a = retroAreas(); if (!a.includes(v)) S.settings = { ...(S.settings || {}), retroAreas: [...a, v] }; }
+  if (k === 'item') { const it = item(id); if (!it) return; mutate(() => { if (v) it.area = v; else delete it.area; }); renderModal(); }
+  else if (k === 'retro') { const r = retro(id); if (!r) return; r.area = v; save(); renderModal(); }
+}
+document.addEventListener('focusin', e => { if (e.target.classList && e.target.classList.contains('cp-in')) cpDraw(e.target); });
+document.addEventListener('input', e => { if (e.target.classList && e.target.classList.contains('cp-in')) cpDraw(e.target); });
+document.addEventListener('focusout', e => { if (e.target.classList && e.target.classList.contains('cp-in')) { const box = e.target.parentElement.querySelector('.cp-sug'); setTimeout(() => { if (box && !box.contains(document.activeElement)) box.hidden = true; }, 150); } });
+document.addEventListener('keydown', e => { const t = e.target; if (!(t.classList && t.classList.contains('cp-in'))) return;
+  if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); e.stopPropagation(); const q = t.value.trim(); if (!q) return; const m = cpMatches(q); cpSet(t.dataset.cp, m.find(c => c === q) || (m.length === 1 ? m[0] : q)); }
+  else if (e.key === 'Escape') { e.stopPropagation(); t.value = ''; t.blur(); } }, true);
 const projOptions = sel => `<option value="">없음</option>${S.projects.map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${esc(p.title)}${p.done ? ' (완료)' : ''}</option>`).join('')}`;
 function dlgHeadTop(kindLabel, kindCls, delAct, id) {
   return `<div class="dlg-top"><span class="kind ${kindCls}">${kindLabel}</span>${ui.modalBack ? `<button class="btn sm ghost" data-act="mback">${I.left}${esc(ui.modalBack.label)}</button>` : ''}<span class="grow"></span>${saveBtn()}
@@ -3706,7 +3739,7 @@ function dlgItem(it) {
     ${it.parentId && item(it.parentId) ? `<button class="parent-link" data-act="openparent" data-id="${it.parentId}">↳ ${esc(item(it.parentId).title || '제목 없음')}<span>상위 항목 열기</span></button>` : ''}
     <input class="title-input" id="dlg-title" data-f="title" value="${esc(it.title)}" placeholder="제목" aria-label="제목">${areaWarn(it)}
     <div class="fgrid">
-    <label>카테고리</label><div class="frow xcats">${retroAreas().map(c => `<button class="xchip ${it.area === c ? 'on' : ''}" data-act="iarea" data-id="${it.id}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}<input id="iarea-new" class="inp xcat-in" placeholder="${retroAreas().length ? '+ 카테고리' : '+ 카테고리 (예: 채용)'}" autocomplete="off"></div>
+    <label>카테고리</label>${catPick('item:' + it.id, it.area)}
     <label>우선순위</label><div class="frow"><div class="seg inline sm" role="radiogroup" aria-label="우선순위">${[[0, '없음'], [1, '높음'], [2, '보통'], [3, '낮음']].map(([v, l]) => `<button role="radio" aria-checked="${(it.pri || 0) === v}" class="${(it.pri || 0) === v ? 'on' : ''}" data-act="setpri" data-id="${it.id}" data-v="${v}">${l}</button>`).join('')}</div></div>
     <label>종류</label><div class="frow"><div class="seg inline" role="radiogroup" aria-label="종류"><button role="radio" aria-checked="${!ev}" class="${ev ? '' : 'on'}" data-act="setkind" data-k="todo">할일</button><button role="radio" aria-checked="${ev}" class="${ev ? 'on' : ''}" data-act="setkind" data-k="event">일정</button></div></div>
     ${ev ? `<label for="f-date">날짜</label><div class="frow"><input type="date" id="f-date" class="inp" data-f="date" value="${it.date || ''}"><span class="muted">~</span><input type="date" id="f-end" class="inp" data-f="end" value="${it.end || ''}" min="${it.date || ''}" aria-label="끝 날짜">${it.end ? '<button class="btn sm ghost" data-act="clearend">하루 일정으로</button>' : '<span class="hint">끝 날짜를 넣으면 기간 일정</span>'}</div>
@@ -4226,6 +4259,7 @@ const ACT = {
   toggle: t => { const it = item(t.dataset.id); if (!it) return; if (!it.done && ckOn(it)) { ui.igBack = ui.modal && ui.modal.kind === 'item' ? { kind: 'item', id: ui.modal.id } : null; ui.modalBack = null; openModal('igate', it.id); return; } mutate(() => { it.done = !it.done; }, it.done ? null : `‘${it.title}’ 완료`); },
   xnew: t => { if (ui.view !== 'retro' && !t.dataset.item) { ui.view = 'retro'; render(); } newRetro(t.dataset.item || null); },
   xopen: t => { ui.modalBack = null; openModal('retro', t.dataset.id); },
+  cpset: (t, e) => { e && e.preventDefault(); cpSet(t.dataset.cp, t.dataset.v); },
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
   xshowcat: () => { ui.xshowcat = true; renderModal(); const i = document.getElementById('xcat-new'); if (i) i.focus(); },
@@ -4566,7 +4600,7 @@ document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || !ui.modal || !DRAFT_KINDS.has(ui.modal.kind)) return;
   const t = e.target; const mod = e.ctrlKey || e.metaKey;
   if (!mod && !ui.askDiscard) {
-    if (t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'BUTTON' || OWN_ENTER.has(t.id) || (t.classList && t.classList.contains('ck-ed'))) return;
+    if (t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'BUTTON' || OWN_ENTER.has(t.id) || (t.classList && (t.classList.contains('ck-ed') || t.classList.contains('cp-in')))) return;
     if (t.tagName !== 'INPUT' && t.tagName !== 'SELECT' && t !== document.body && !(t.closest && t.closest('#layer'))) return;
     if (document.querySelector('.slash, .mpick')) return;
   }
