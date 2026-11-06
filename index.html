@@ -3705,6 +3705,19 @@ function closeModal(force) {
   ui.modal = null; ui.modalBack = null; ui.confirm = null; renderModal(); closeSlash();
   if (m && (m.kind === 'item' || m.kind === 'routine')) setTimeout(render, 0);
 }
+function histText(it) {
+  const bt = bl => (bl || []).filter(b => (b.text || '').trim()).map(b => `${'  '.repeat(b.indent || 0)}${b.type === 'todo' ? (b.done ? '[x] ' : '[ ] ') : b.type === 'h' ? '' : '- '}${plainText(b.text)}`).join('\n');
+  const par = it.parentId && item(it.parentId); const pr = it.projectId && proj(it.projectId);
+  const meta = [it.date ? (it.end ? `${it.date} ~ ${it.end}` : it.date) : '날짜 없음', it.area && `카테고리 ${it.area}`, pr && `프로젝트 ${plainText(pr.title)}`, par && `상위 할일 ${plainText(par.title)}`, it.kind === 'todo' ? (it.done ? '완료' : '진행 중') : '일정'].filter(Boolean).join(' · ');
+  const out = ['[업무 히스토리 남기기] 아래 할일에 대해 말할게요. 업무 히스토리 폴더에 정리해 주세요.', '', `할일: ${plainText(it.title || '제목 없음')}`, meta];
+  if ((it.checks || []).length) out.push('', '꼭 잊지 말 것:', it.checks.map(c => `${'  '.repeat(c.indent || 0)}- ${plainText(c.text)}`).join('\n'));
+  const logs = (it.log || []).slice().sort((a, b) => a.ts - b.ts);
+  if (logs.length) out.push('', '코멘트:', logs.map(c => `[${c.date ? c.date.slice(5).replace('-', '/') : ''}]\n${(bt(c.blocks) || '- ' + plainText(c.text || '')).split('\n').map(l => '  ' + l).join('\n')}`).join('\n'));
+  const m = bt(it.memo); if (m) out.push('', '메모:', m);
+  const rs = (S.retros || []).filter(x => x.itemId === it.id && (x.what || x.next)); if (rs.length) out.push('', '복기:', rs.map(r => `- ${r.what || ''}${r.next ? ` → 다음엔 ${r.next}` : ''}`).join('\n'));
+  out.push('', '---', '있었던 일:', '');
+  return out.join('\n');
+}
 /* 카테고리 고르기: 고른 것 하나만 보이고, 입력하면 찾기·새로 만들기 */
 function catPick(target, cur) {
   return `<div class="frow catpick" data-cp="${target}">${cur ? `<span class="xchip on cp-cur" style="background:${areaColor(cur)};color:var(--fg);box-shadow:none">${esc(cur)}<button class="cp-x" data-act="cpset" data-cp="${target}" data-v="" aria-label="카테고리 빼기" title="빼기">${I.x}</button></span>` : ''}<input class="inp xcat-in cp-in" data-cp="${target}" placeholder="${cur ? '다른 카테고리…' : retroAreas().length ? '+ 카테고리 찾기·추가' : '+ 카테고리 (예: 채용)'}" autocomplete="off"><div class="cp-sug" hidden></div></div>`;
@@ -3751,6 +3764,7 @@ function dlgItem(it) {
       ${ev ? `<label>상태</label><div class="frow"><div class="seg inline" role="radiogroup" aria-label="일정 상태"><button role="radio" aria-checked="${!evState(it)}" class="${!evState(it) ? 'on' : ''}" data-act="evstate" data-v="">예정</button><button role="radio" aria-checked="${evState(it) === 'done'}" class="${evState(it) === 'done' ? 'on' : ''}" data-act="evstate" data-v="done">완료</button><button role="radio" aria-checked="${evState(it) === 'cancel'}" class="${evState(it) === 'cancel' ? 'on st-cancel' : ''}" data-act="evstate" data-v="cancel">취소</button></div></div>` : ''}
       ${it.date ? `<label>미루기</label><div class="frow"><button class="btn sm" data-act="postpone" data-d="1">내일로</button><button class="btn sm" data-act="postpone" data-d="7">다음 주로</button><label class="btn sm ghost mv-pick">다른 날…<input type="date" id="f-move" min="${addDays(it.date, 1)}" aria-label="미룰 날짜"></label>${moveLabel(it) ? `<span class="hint">${esc((it.moves || []).map(m => fmtShort(m.f)).concat(fmtShort(it.date)).join(' → '))}</span>` : ''}</div>` : ''}
       <label for="f-proj">프로젝트</label><div class="frow"><select id="f-proj" class="inp" data-f="projectId">${projOptions(it.projectId)}</select>${it.projectId && proj(it.projectId) ? `<button class="btn sm ghost" data-act="toproj" data-id="${it.projectId}">프로젝트 보기</button>` : ''}</div>
+      <label>히스토리</label><div class="frow"><button class="btn sm" data-act="histsend" data-id="${it.id}" title="이 할일 정보를 정리해 복사하고 Claude를 열어요">✦ Claude에게 히스토리 남기기</button><span class="hint">자세한 경위는 Claude에게 말로 · 드라이브에 정리돼요</span></div>
       <label>복기</label><div class="frow"><button class="btn sm" data-act="xnew" data-item="${it.id}">${I.plus}복기 남기기</button>${(S.retros || []).filter(x => x.itemId === it.id && (x.what || x.next)).map(x => `<button class="btn sm ghost" data-act="xopen" data-id="${x.id}">${RKIND[x.kind] || '실수'} · ${fmtShort(x.date)}</button>`).join('')}</div>
     </div></div>
   <div class="dlg-body"><div class="lbl" style="padding-top:2px;display:flex;align-items:center;gap:6px">❗ 꼭 잊지 말 것 <span class="hint" style="font-weight:500">적으면 달력 위 ❗ 띠에도 떠요</span>${it.star && !(it.checks || []).length ? `<button class="btn sm ghost" data-act="star" data-id="${it.id}" style="margin-left:auto">띠에서 빼기</button>` : ''}</div>
@@ -4259,6 +4273,10 @@ const ACT = {
   toggle: t => { const it = item(t.dataset.id); if (!it) return; if (!it.done && ckOn(it)) { ui.igBack = ui.modal && ui.modal.kind === 'item' ? { kind: 'item', id: ui.modal.id } : null; ui.modalBack = null; openModal('igate', it.id); return; } mutate(() => { it.done = !it.done; }, it.done ? null : `‘${it.title}’ 완료`); },
   xnew: t => { if (ui.view !== 'retro' && !t.dataset.item) { ui.view = 'retro'; render(); } newRetro(t.dataset.item || null); },
   xopen: t => { ui.modalBack = null; openModal('retro', t.dataset.id); },
+  histsend: t => { const it = item(t.dataset.id); if (!it) return; const txt = histText(it);
+    const done = () => { toast('할일 정보를 복사했어요 · Claude 창에 붙여넣고 말해 주세요', true); };
+    try { navigator.clipboard.writeText(txt).then(done, done); } catch (e) { done(); }
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(txt.length > 1800 ? txt.slice(0, 1800) + '…' : txt), '_blank', 'noopener'); },
   cpset: (t, e) => { e && e.preventDefault(); cpSet(t.dataset.cp, t.dataset.v); },
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
