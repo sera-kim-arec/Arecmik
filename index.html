@@ -4274,9 +4274,9 @@ const ACT = {
   xnew: t => { if (ui.view !== 'retro' && !t.dataset.item) { ui.view = 'retro'; render(); } newRetro(t.dataset.item || null); },
   xopen: t => { ui.modalBack = null; openModal('retro', t.dataset.id); },
   histsend: t => { const it = item(t.dataset.id); if (!it) return; const txt = histText(it);
-    const done = () => { toast('할일 정보를 복사했어요 · Claude 창에 붙여넣고 말해 주세요', true); };
+    const done = () => { toast('할일 정보를 복사했어요 · Kurly 업무 프로젝트에서 새 대화에 붙여넣고(Ctrl+V) 말해 주세요', true); };
     try { navigator.clipboard.writeText(txt).then(done, done); } catch (e) { done(); }
-    window.open('https://claude.ai/new?q=' + encodeURIComponent(txt.length > 1800 ? txt.slice(0, 1800) + '…' : txt), '_blank', 'noopener'); },
+    window.open('https://claude.ai/cowork/project/01a1ae48-c860-7297-b57b-d96b3991d925', '_blank', 'noopener'); },
   cpset: (t, e) => { e && e.preventDefault(); cpSet(t.dataset.cp, t.dataset.v); },
   xset: t => { const r = retro(ui.modal.id); if (!r) return; const k = t.dataset.k; const v = t.dataset.v; r[k] = k === 'cat' && r.cat === v ? '' : v; save(); renderModal(); },
   xdel: t => { const id = t.dataset.id; if (ui.confirm !== 'retro:' + id) { ui.confirm = 'retro:' + id; renderModal(); return; } ui.confirm = null; ui.modal = null; renderModal(); mutate(() => { S.retros = S.retros.filter(x => x.id !== id); }, '복기를 지웠어요'); },
