@@ -628,7 +628,7 @@ code.ic{font-family:ui-monospace, 'SFMono-Regular', 'Cascadia Code', Consolas, '
 .tabbar,.fab{display:none}
 @media (max-width:640px){
   .main{padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px))}
-  .tabbar{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;padding:6px max(8px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px));background:color-mix(in srgb, var(--surface) 88%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line-soft)}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;padding:6px max(8px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px));background:color-mix(in srgb, var(--surface) 88%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line-soft)}
   .tabbar button{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:var(--muted);font:inherit;font-size:12px;font-weight:600;padding:4px 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
   .tabbar button svg{width:21px;height:21px}
   .tabbar button.on{color:var(--fg)}
@@ -2451,6 +2451,7 @@ function tabbar() {
     <button class="${on('mtodo')}" data-act="go" data-view="mtodo"><span class="ti">${I.check}${n ? `<b>${n}</b>` : ''}</span><span>할일</span></button>
     <button class="${on('notes')}" data-act="mnotes"><span class="ti">${I.note}</span><span>노트</span></button>
     <button class="${on('life')}" data-act="go" data-view="life"><span class="ti">${I.pen}</span><span>LIFE</span></button>
+    <button data-act="histbook" aria-label="히스토리북 새 창으로 열기"><span class="ti">${I.hbook}</span><span>히스토리</span></button>
   </nav>${v === 'work' || v === 'mtodo' ? `<button class="fab" data-act="fab" aria-label="새 항목">${I.plus}</button>` : ''}`;
 }
 function viewHTML() {
