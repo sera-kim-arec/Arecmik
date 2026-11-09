@@ -1873,6 +1873,7 @@ const COLORS = ['lemon', 'blue', 'green', 'violet', 'rose'];
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); if (m < 1) return '방금 수정'; if (m < 60) return `${m}분 전 수정`; const h = Math.round(m / 60); if (h < 24) return `${h}시간 전 수정`; return `${Math.round(h / 24)}일 전 수정`; };
 
 const I = {
+  hbook: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4.5h10.5a2 2 0 012 2V20H7a2 2 0 01-2-2z"/><path d="M5 18a2 2 0 012-2h10.5M9 8.5h5"/></svg>',
   chat: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5h-2.5z"/></svg>',
   cal: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
   proj: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M7 12h11M5 18h7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
@@ -2396,7 +2397,7 @@ const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.
 function workNav() {
   const active = S.projects.filter(p => !p.done).length;
   const rd = (S.routines || []).filter(rDue).length;
-  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}</nav>
+  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}<button class="nav-item" data-act="histbook" title="업무 기준·처리 기록을 모은 히스토리북을 새 창으로 열어요">${I.hbook}<span>히스토리북</span><span class="cnt">↗</span></button></nav>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="addmenu" data-space="work" data-id="" aria-label="새 노트 또는 새 폴더" title="새 노트 · 새 폴더">${I.plus}</button></div>
   ${tree('work', null, 0)}</div>
   ${retroAreas().length || ui.areaAdd ? `<div class="sec cat-sec"><div class="sec-head"><button class="cat-tg" data-act="cattoggle" aria-expanded="${!!ui.catOpen}">${ui.catOpen ? I.chevD : I.chevR}<span>카테고리</span><span class="cnt">${retroAreas().length}</span></button><button class="mini" data-act="areaadd" aria-label="카테고리 추가" title="카테고리 추가">${I.plus}</button></div>
@@ -4273,6 +4274,7 @@ const ACT = {
   toggle: t => { const it = item(t.dataset.id); if (!it) return; if (!it.done && ckOn(it)) { ui.igBack = ui.modal && ui.modal.kind === 'item' ? { kind: 'item', id: ui.modal.id } : null; ui.modalBack = null; openModal('igate', it.id); return; } mutate(() => { it.done = !it.done; }, it.done ? null : `‘${it.title}’ 완료`); },
   xnew: t => { if (ui.view !== 'retro' && !t.dataset.item) { ui.view = 'retro'; render(); } newRetro(t.dataset.item || null); },
   xopen: t => { ui.modalBack = null; openModal('retro', t.dataset.id); },
+  histbook: () => { window.open('https://claude.ai/artifact/H4nSzz7maWPeaq17a2jPAy', '_blank', 'noopener'); },
   histsend: t => { const it = item(t.dataset.id); if (!it) return; const txt = histText(it);
     const done = () => { toast('할일 정보를 복사했어요 · Kurly 업무 프로젝트에서 새 대화에 붙여넣고(Ctrl+V) 말해 주세요', true); };
     try { navigator.clipboard.writeText(txt).then(done, done); } catch (e) { done(); }
