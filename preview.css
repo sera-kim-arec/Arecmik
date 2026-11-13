@@ -1,8 +1,0 @@
-/* Scoped to the sample page: the real app keeps its layout and palette. */
-.preview-note{display:flex;align-items:center;gap:20px;padding:12px 24px;background:#f4f0df;border-bottom:1px solid #e7e0c8;color:#6c6554;font-size:12px;line-height:1.5}
-.preview-note-copy{display:grid;gap:2px;margin-right:auto}.preview-note-copy b{font-size:13px;color:#443f34}.preview-note-copy span{font-size:11px}
-.preview-note a{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-height:44px;padding:7px 12px;border:1px solid #e1dbc7;border-radius:12px;background:#fffdf7;color:#514b3f;font-weight:650;text-decoration:none}
-.preview-compare{display:flex;gap:3px;padding:3px;background:#eae4d2;border-radius:12px}
-.preview-compare button{min-height:44px;border:0;border-radius:9px;background:none;padding:7px 13px;font-size:12px;font-weight:650;color:#726b59;white-space:nowrap}
-.preview-compare button[aria-pressed="true"]{background:#fffdf8;color:#3d392e;box-shadow:0 1px 3px #443f3412}
-.preview-note :focus-visible{outline:2px solid #6f6041;outline-offset:3px}
