@@ -1862,6 +1862,11 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .dock-on .cal .num{cursor:pointer}
 .dock-on .cal .num:hover{background:var(--lemon-soft);color:var(--lemon-ink)}
 
+/* ---- LIFE 폴더: 바로 담기 줄, 카드의 출처 칩 ---- */
+.page .cap{display:flex;width:100%;box-sizing:border-box;height:42px;font-size:15px;margin:2px 0 14px}
+.page .cap input{flex:1;border:0;background:transparent;outline:none;font:inherit}
+.pc-src{display:inline-flex;align-self:flex-start;font-style:normal;font-size:12px;font-weight:600;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:10px;padding:1px 8px;margin:2px 0}
+
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2547,7 +2552,7 @@ function lifeNav() {
   <div class="sec"><div class="sec-head" data-drop="froot:life"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('life', null, 0)}</div>
   <div class="sec"><div class="sec-head"><span>컬렉션</span><button class="mini" data-act="newcoll" aria-label="새 컬렉션" title="새 컬렉션">${I.plus}</button></div>
-  ${S.collections.map(c => `<button class="nav-item ${ui.view === 'collections' && ui.collId === c.id ? 'on' : ''}" data-act="opencoll" data-id="${c.id}"><span>${esc(c.name)}</span><span class="cnt">${S.citems.filter(x => x.coll === c.id).length}</span></button>`).join('')}
+  ${S.collections.filter(c => !(['책', '영화'].includes(c.name) && !S.citems.some(x => x.coll === c.id))).map(c => `<button class="nav-item ${ui.view === 'collections' && ui.collId === c.id ? 'on' : ''}" data-act="opencoll" data-id="${c.id}"><span>${esc(c.name)}</span><span class="cnt">${S.citems.filter(x => x.coll === c.id).length}</span></button>`).join('')}
   </div>`;
 }
 function descendants(fid) { const out = [fid]; S.folders.filter(f => f.parent === fid).forEach(f => out.push(...descendants(f.id))); return out; }
@@ -3392,7 +3397,7 @@ const dayLabel = d => { const x = parse(d); return `${x.getMonth() + 1}월 ${x.g
 const postTitle = p => p.title || dayLabel(p.date);
 function isDiaryFolder(fid) { let f = folder(fid); while (f) { if ((f.name || '').trim() === '일기') return true; f = f.parent ? folder(f.parent) : null; } return false; }
 function postCard(x) {
-  return `<button class="pcard ${x.cover && x.cover.img ? '' : 'noimg'}" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}">${x.cover && x.cover.img ? `<span class="pc-c" style="${coverStyle(x.cover)}"></span>` : ''}<span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(postTitle(x))}</b><span>${esc(firstText(x.blocks)) || '내용 없음'}</span></span></button>`;
+  return `<button class="pcard ${x.cover && x.cover.img ? '' : 'noimg'}" data-act="openpost" data-id="${x.id}" draggable="true" data-drag="post:${x.id}">${x.cover && x.cover.img ? `<span class="pc-c" style="${coverStyle(x.cover)}"></span>` : ''}<span class="pc-t"><span>${fmtDot(x.date)}</span><b>${esc(postTitle(x))}</b>${x.source ? `<em class="pc-src">↗ ${esc(host(x.source))}</em>` : ''}<span>${(() => { const ft = firstText(x.blocks); return ft && ft !== x.title ? esc(ft) : (x.source || x.title ? '' : '내용 없음'); })()}</span></span></button>`;
 }
 function postLine(x) {
   const d = parse(x.date); const ft = firstText(x.blocks);
@@ -3401,6 +3406,24 @@ function postLine(x) {
     <span class="pl-t">${x.title ? `<b>${tT(x.title)}</b>` : ''}<span class="${x.title ? '' : 'solo'}">${x.source ? `<em class="pl-src">↗ ${esc(hostOf(x.source))}</em>` : ''}${esc(ft) || (x.source ? '' : '내용 없음')}</span></span>
     ${x.cover && x.cover.img ? `<span class="pl-img" style="${coverStyle(x.cover)}"></span>` : ''}</button>`;
 }
+/* ---------- LIFE 폴더: 맨 위 한 줄로 바로 담기 (문장은 바로 저장, 링크는 글로 열기) ---------- */
+function storeCapture(v) {
+  v = (v || '').trim(); if (!v) return;
+  const f = folder(ui.lifeFolder);
+  if (!f) { toast('먼저 폴더를 만들어 주세요'); return; }
+  const url = isURL(v);
+  if (url) {
+    /* 링크는 글로 바로 열어, 기사 본문을 복사해 붙여넣으면 '내 생각' + 접힌 원문으로 정리되게 함 */
+    const p = { id: uid(), folder: f.id, date: TODAY, title: '', source: v, cover: { tone: randTone(), img: null }, coverOnCal: false, blocks: [B('p', '')] };
+    snapshot(); S.posts.push(p); save();
+    ui.postId = p.id; ui.lifeFolder = f.id; ui.focusId = 'post-title'; go('posts');
+    toast('기사 본문을 복사해서 아래에 붙여넣으면 원문이 접혀서 들어가요'); return;
+  }
+  const p = { id: uid(), folder: f.id, date: TODAY, title: v.split('\n')[0].slice(0, 40), cover: { tone: randTone(), img: null }, coverOnCal: false, blocks: [B('p', v)] };
+  snapshot(); S.posts.push(p); save(); render(); toast(`${f.name}에 담았어요`, true);
+  setTimeout(() => { const el = document.getElementById('cap-in'); if (el) el.focus(); }, 20);
+}
+document.addEventListener('keydown', e => { if (e.target && e.target.id === 'cap-in' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); storeCapture(e.target.value); } });
 function postGroups(posts) {
   if (!posts.length) return `<div class="empty">아직 글이 없어요. ‘새 글’로 첫 기록을 남겨보세요.</div>`;
   const years = [...new Set(posts.map(x => x.date.slice(0, 4)))];
@@ -3465,6 +3488,7 @@ function vPosts() {
   return `${topbar(crumbs('폴더', fid, 'lfolder', ''), `<button class="btn" data-act="newfolder" data-space="life" data-parent="${fid}">${I.folder}하위 폴더</button><button class="btn primary" data-act="newpost" data-folder="${fid}">${I.pen}새 글</button>`)}
   <div class="page">
     <input class="h1-input" data-fname="${f.id}" value="${esc(f.name)}" aria-label="폴더 이름">
+    <label class="addline cap">${I.plus}<input id="cap-in" placeholder="바로 담기 · 문장은 Enter로 저장, 링크는 글로 열려요" autocomplete="off" aria-label="이 폴더에 바로 담기"></label>
     ${subs.length ? `<div class="fcards">${subs.map(x => `<button class="fcard" data-act="lfolder" data-id="${x.id}">${I.folder}${esc(x.name)}<span class="c">${folderCount(x)}</span></button>`).join('')}</div>` : ''}
     <div class="ptools"><span class="lbl" style="padding:0">글 ${posts.length}개${isDiaryFolder(fid) ? ' · 하루에 한 편' : ''}</span><span class="grow"></span><div class="seg inline sm" role="group" aria-label="보기"><button class="${(ui.pview || 'list') === 'card' ? 'on' : ''}" data-act="pview" data-v="card">카드</button><button class="${ui.pview === 'list' ? 'on' : ''}" data-act="pview" data-v="list">목록</button></div></div>
     ${postGroups(posts)}
