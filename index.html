@@ -1839,6 +1839,29 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .chip:has(.tm){flex-wrap:wrap;row-gap:0}
 .wk .chip:has(.tm) .tt,.wk.sel .chip:has(.tm) .tt{flex:1 1 4.5em;min-width:4.5em}
 
+/* ---- 위쪽 칸 배치 (설정 → 디자인 → 달력 화면 배치) ---- */
+.dock{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;height:var(--dock-h,112px);padding:0 20px;box-sizing:border-box;flex:none}
+.dock>div{overflow:auto;min-height:0;border-radius:14px;background:var(--sunken);overscroll-behavior:contain}
+.dock .mnote,.dock .mnote.open{background:transparent!important;box-shadow:none!important;border:0!important;margin:0!important;border-radius:0}
+.dock .mn-fold{display:none}
+.dock .ptab-card{background:transparent!important;box-shadow:none!important;border:0!important;margin:0!important;padding:6px 8px}
+.dock .ptab-card>.seg{padding:2px}
+.dock .ptab-card>.seg button{height:24px;font-size:13px}
+.dock .mnote.open{padding:6px 10px 4px 12px!important}
+.dock .ptab-body>.card{padding:6px 4px 2px!important}
+.dock .ptab-card>.seg{position:sticky;top:0;z-index:2}
+.rz-dock{flex:none;height:12px;cursor:row-resize;margin:0 20px}
+.rz-dock::after{top:5px;bottom:auto;left:40%;right:40%;width:auto;height:3px;margin:0;border-radius:2px;background:var(--line)}
+.rz-dock:hover::after,.rz-dock.on::after{background:var(--lemon)}
+.dock-on .cal-main>.cal-scroll{flex:1;min-height:0}
+.dock-on .wk{min-height:84px}
+.oneday #jl-res{padding:0 20px 40px}
+.oneday .jpage.incal{align-items:stretch}
+.oneday .jpage.incal>aside{display:flex;flex-direction:column}
+.oneday .jpage.incal .jnote{min-height:140px;flex:1}
+.dock-on .cal .num{cursor:pointer}
+.dock-on .cal .num:hover{background:var(--lemon-soft);color:var(--lemon-ink)}
+
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2230,7 +2253,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: st.layout === 'panel' ? 'panel' : 'dock', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -2606,21 +2629,26 @@ function weekStart(d) { const dd = parse(d); return addDays(d, -((dd.getDay() - 
 function vWork() {
   if (isMob()) return vWorkM();
   if (ui.calView === 'day' && !ui.jdetail) ui.calView = 'month';
+  const dock = settingsOf().layout === 'dock';
+  if (ui.calView === 'one' && !dock) ui.calView = 'month';
+  const one = ui.calView === 'one';
   const wk = ui.calView === 'week'; const dayv = ui.calView === 'day';
   const { y, m, weeks } = monthRange(ui.month);
   const selWeek = weeks.find(w => ui.sel >= w && ui.sel <= addDays(w, 6));
   const ws = weekStart(ui.sel), we = addDays(ws, 6); const vd = visDays(ws); const a = parse(vd[0]), b = parse(vd[vd.length - 1]);
   const sd = parse(ui.sel);
-  const title = dayv && ui.jdetail ? `${sd.getMonth() + 1}월 ${sd.getDate()}일 <span class="muted" style="font-weight:600">${WD[sd.getDay()]}요일</span>` : dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
-  const nav = dayv && ui.jdetail ? 'dayn' : dayv || wk ? 'week' : 'month';
-  const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk && !dayv ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div>`;
+  const title = one || (dayv && ui.jdetail) ? `${sd.getMonth() + 1}월 ${sd.getDate()}일 <span class="muted" style="font-weight:600">${WD[sd.getDay()]}요일</span>` : dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
+  const nav = one || (dayv && ui.jdetail) ? 'dayn' : dayv || wk ? 'week' : 'month';
+  const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv || one ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv || one ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk && !dayv && !one ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button>${dock ? `<button class="${one ? 'on' : ''}" data-act="calview" data-v="one">하루</button>` : ''}</div>`;
   const jsrch = `<label class="search jsearch">${I.search}<input id="jq" type="search" placeholder="일지 검색" autocomplete="off" value="${esc(ui.jq || '')}" aria-label="일지 검색"></label>`;
   const right = dayv ? `${jsrch}<button class="btn primary" data-act="quick">${I.plus}새 항목</button>` : `${jsrch}${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : ''}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
   let body;
-  if (dayv || (ui.jq || '').trim()) body = `<div class="cal-scroll jday-scroll"><div id="jl-res">${jBody()}</div></div>`;
+  if (one && !(ui.jq || '').trim()) body = `<div class="cal-scroll jday-scroll oneday"><div id="jl-res">${vJournal(true)}</div></div>`;
+  else if (dayv || (ui.jq || '').trim()) body = `<div class="cal-scroll jday-scroll"><div id="jl-res">${jBody()}</div></div>`;
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
+  if (dock) return `<div class="cal-wrap dock-on"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : dockHTML()}${body}</section></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : monthNote()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
 const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image' && b.type !== 'table').map(b => plainText(b.text)).filter(Boolean).join(' · ');
@@ -2782,10 +2810,22 @@ function panelWork() {
   const open = inbox.filter(i => !i.done), done = inbox.filter(i => i.done);
   if (ui.panelTab === 'memo') ui.panelTab = 'todo'; const tab = ui.panelTab;
   return `<aside class="panel" aria-label="오른쪽 패널">
-  <div class="ptab-card"><div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
-  <div class="ptab-body">${tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}</div></div>
+  ${panelTabs()}
   ${ui.calView === 'day' && ui.view === 'work' ? '' : daySection()}
   </aside>`;
+}
+function panelTabs() {
+  const inbox = S.items.filter(i => i.kind === 'todo' && !i.date);
+  const open = inbox.filter(i => !i.done);
+  if (ui.panelTab === 'memo') ui.panelTab = 'todo'; const tab = ui.panelTab;
+  return `<div class="ptab-card"><div class="seg" role="tablist"><button role="tab" aria-selected="${tab === 'todo'}" class="${tab === 'todo' ? 'on' : ''}" data-act="ptab" data-tab="todo">할일 <span class="cnt">${open.length}</span></button><button role="tab" aria-selected="${tab === 'routine'}" class="${tab === 'routine' ? 'on' : ''}" data-act="ptab" data-tab="routine">루틴${(S.routines || []).filter(rDue).length ? ` <span class="cnt">${(S.routines || []).filter(rDue).length}</span>` : ''}</button><button role="tab" aria-selected="${tab === 'retro'}" class="${tab === 'retro' ? 'on' : ''}" data-act="ptab" data-tab="retro">복기</button></div>
+  <div class="ptab-body">${tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}</div></div>`;
+}
+/* 위쪽 칸 배치: 왼쪽 고정 메모, 오른쪽 날짜 없는 할일·루틴·복기. 높이는 아래 막대를 끌어 조절 */
+function dockHTML() {
+  const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month';
+  const memo = monthNote(); ui.mnOpen = keep;
+  return `<div class="dock"><div class="dock-l">${memo}</div><div class="dock-r">${panelTabs()}</div></div><div class="rz rz-dock" data-rz="dock" role="separator" aria-orientation="horizontal" aria-label="위쪽 칸 높이 조절" tabindex="0" title="끌어서 높이 조절 · 두 번 누르면 원래대로"></div>`;
 }
 /* ---------- WORK routines: repeat work with no fixed date ---------- */
 const RFREQ = [['daily', '매일'], ['weekly', '매주'], ['monthly', '매달'], ['any', '수시']];
@@ -3954,6 +3994,7 @@ function dlgSettings() {
     <div class="set-row"><div><b>공휴일 외에 쉬는 날</b><span class="hint">회사 창립기념일처럼 루틴이 피해야 할 날 · 공휴일은 2026–2027년이 이미 들어 있어요</span></div><div class="frow"><input type="date" id="off-add" class="inp" aria-label="쉬는 날 추가"><button class="btn sm" data-act="offadd">추가</button></div></div>
     ${myOff().length ? `<div class="offlist">${myOff().slice().sort().map(d => `<span>${fmtDot(d)}<button class="bn-x" data-act="offrm" data-d="${d}" aria-label="빼기">${I.x}</button></span>`).join('')}</div>` : ''}
     <div class="set-sec" style="margin-top:22px">디자인</div>
+    <div class="set-row"><div><b>달력 화면 배치</b><span class="hint">위쪽 칸: 메모·날짜 없는 할일을 달력 위에, 날짜를 누르면 하루 보기 · 오른쪽 패널: 예전 배치</span></div><div class="seg inline"><button class="${settingsOf().layout === 'dock' ? 'on' : ''}" data-act="setlayout" data-v="dock">위쪽 칸</button><button class="${settingsOf().layout === 'panel' ? 'on' : ''}" data-act="setlayout" data-v="panel">오른쪽 패널</button></div></div>
     
     <div class="set-row"><div><b>글자 크기</b><span class="hint">글씨와 항목 크기가 함께 바뀌어요</span></div><div class="seg inline" role="radiogroup" aria-label="글자 크기">${[[90, '작게'], [100, '보통'], [110, '크게'], [120, '아주 크게']].map(([v, l]) => `<button role="radio" aria-checked="${settingsOf().fontScale === v}" class="${settingsOf().fontScale === v ? 'on' : ''}" data-act="setfs" data-v="${v}">${l}</button>`).join('')}</div></div>
     <div class="set-row"><div><b>강조 색</b><span class="hint">오늘 표시, 고른 탭, 체크, 주요 버튼 색이 바뀌어요</span></div><div class="accents">${[['lemon', '#F5D547', '레몬'], ['peach', '#FFB38A', '피치'], ['rose', '#F7A1B5', '로즈'], ['sky', '#8CC4F5', '하늘'], ['lavender', '#BBA6F2', '라벤더'], ['mint', '#93D9C3', '민트']].map(([k, c, l]) => `<button class="acc ${(settingsOf().accent || 'lemon') === k ? 'on' : ''}" style="--a:${c}" data-act="setaccent" data-v="${k}" title="${l}" aria-label="${l}" aria-pressed="${(settingsOf().accent || 'lemon') === k}"></button>`).join('')}</div></div>
@@ -4356,10 +4397,12 @@ const ACT = {
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
-  selday: t => {
+  selday: (t, e) => {
     const d = t.dataset.date; const now = Date.now();
     if (lastSel && lastSel.d === d && now - lastSel.t < 450) { lastSel = null; if (isMob()) { const m = $('#m-add'); if (m) m.focus(); } else openQC(d); return; }
-    lastSel = { d, t: now }; ui.sel = d; if (isMob()) ui.month = ui.sel.slice(0, 7); render();
+    lastSel = { d, t: now }; ui.sel = d; if (isMob()) ui.month = ui.sel.slice(0, 7);
+    if (!isMob() && settingsOf().layout === 'dock' && e && e.target && e.target.closest && e.target.closest('.num')) { ui.calView = 'one'; ui.jdetail = false; ui.month = d.slice(0, 7); }
+    render();
   },
   subadd: (t, e) => { e.stopPropagation(); e.preventDefault(); ui.subFor = ui.subFor === t.dataset.id ? null : t.dataset.id; ui.focusId = ui.subFor ? 'subq' : null; render(); },
   chipc: (t, e) => { e.stopPropagation(); e.preventDefault(); const it = item(t.dataset.id); if (!it) return; const d = it.date || TODAY; ui.sel = d; ui.month = d.slice(0, 7); ui.cOpen = 'cnew:' + it.id + '~' + d; render(); setTimeout(() => { const el = document.querySelector(`[data-ed="${ui.cOpen}"] .bk-text`); if (el) { el.scrollIntoView({ block: 'nearest' }); placeCaret(el, 0); } }, 30); },
@@ -4509,6 +4552,7 @@ const ACT = {
   gortn: () => { ui.panelTab = 'routine'; if (isMob()) { go('mtodo'); return; } if (ui.view !== 'work') go('work'); else { ui.navOpen = false; render(); } },
   offadd: () => { const v = ($('#off-add') || {}).value; if (!v) return; S.settings = { ...(S.settings || {}), offDays: [...new Set([...myOff(), v])] }; save(); render(); renderModal(); },
   offrm: t => { S.settings = { ...(S.settings || {}), offDays: myOff().filter(x => x !== t.dataset.d) }; save(); render(); renderModal(); },
+  setlayout: t => { S.settings = { ...(S.settings || {}), layout: t.dataset.v }; if (t.dataset.v === 'panel' && ui.calView === 'one') ui.calView = 'month'; save(); render(); renderModal(); },
   setfs: t => { S.settings = { ...(S.settings || {}), fontScale: +t.dataset.v }; save(); render(); renderModal(); },
   setaccent: t => { S.settings = { ...(S.settings || {}), accent: t.dataset.v }; save(); render(); renderModal(); },
   setdepth: t => { S.settings = { ...(S.settings || {}), depth: t.dataset.v }; save(); render(); renderModal(); },
@@ -5334,21 +5378,22 @@ document.addEventListener('drop', e => {
 });
 
 /* pane widths: drag the edges of the sidebar and the right panel */
-const PANE = { side: { v: '--side-w', def: 252, min: 200, max: 420 }, panel: { v: '--panel-w', def: 360, min: 290, max: 640 } };
+const PANE = { side: { v: '--side-w', def: 252, min: 200, max: 420 }, panel: { v: '--panel-w', def: 360, min: 290, max: 640 }, dock: { v: '--dock-h', def: 112, min: 60, max: 520 } };
 function setPane(k, w, keep) {
   const c = PANE[k]; w = Math.round(Math.max(c.min, Math.min(c.max, w)));
   document.documentElement.style.setProperty(c.v, w + 'px');
   if (keep) { try { localStorage.setItem('arecmik-pane-' + k, String(w)); } catch (e) { /* storage blocked */ } }
 }
 Object.keys(PANE).forEach(k => { try { const w = +localStorage.getItem('arecmik-pane-' + k); if (w) setPane(k, w); } catch (e) { /* storage blocked */ } });
-let paneDrag = null;
+let paneDrag = null, dockTop = 0;
 document.addEventListener('pointerdown', e => {
   const h = e.target.closest && e.target.closest('[data-rz]'); if (!h || e.button !== 0) return;
   e.preventDefault(); paneDrag = h.dataset.rz; h.classList.add('on'); document.body.classList.add('resizing');
+  if (paneDrag === 'dock') { const dk = document.querySelector('.dock'); dockTop = dk ? dk.getBoundingClientRect().top : 0; }
 });
 document.addEventListener('pointermove', e => {
   if (!paneDrag) return;
-  setPane(paneDrag, paneDrag === 'side' ? e.clientX : window.innerWidth - e.clientX);
+  setPane(paneDrag, paneDrag === 'side' ? e.clientX : paneDrag === 'dock' ? e.clientY - dockTop : window.innerWidth - e.clientX);
 });
 document.addEventListener('pointerup', () => {
   if (!paneDrag) return; const k = paneDrag; paneDrag = null; document.body.classList.remove('resizing');
@@ -5357,7 +5402,9 @@ document.addEventListener('pointerup', () => {
 });
 document.addEventListener('dblclick', e => { const h = e.target.closest && e.target.closest('[data-rz]'); if (!h) return; const k = h.dataset.rz; setPane(k, PANE[k].def, true); toast('원래 너비로 돌아갔어요'); });
 document.addEventListener('keydown', e => {
-  const h = e.target.closest && e.target.closest('[data-rz]'); if (!h || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  const h = e.target.closest && e.target.closest('[data-rz]'); if (!h) return;
+  if (h.dataset.rz === 'dock') { if (!['ArrowUp', 'ArrowDown'].includes(e.key)) return; e.preventDefault(); const cur = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--dock-h')) || PANE.dock.def; setPane('dock', cur + (e.key === 'ArrowDown' ? 16 : -16), true); return; }
+  if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
   e.preventDefault(); const k = h.dataset.rz; const cur = parseInt(getComputedStyle(document.documentElement).getPropertyValue(PANE[k].v)) || PANE[k].def;
   const d = (e.key === 'ArrowRight' ? 16 : -16) * (k === 'side' ? 1 : -1); setPane(k, cur + d, true);
 });
