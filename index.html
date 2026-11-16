@@ -2223,7 +2223,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: ['raised', 'pressed'].includes(st.depth) ? st.depth : 'flat', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -3947,7 +3947,7 @@ function dlgSettings() {
     <div class="set-row"><div><b>공휴일 외에 쉬는 날</b><span class="hint">회사 창립기념일처럼 루틴이 피해야 할 날 · 공휴일은 2026–2027년이 이미 들어 있어요</span></div><div class="frow"><input type="date" id="off-add" class="inp" aria-label="쉬는 날 추가"><button class="btn sm" data-act="offadd">추가</button></div></div>
     ${myOff().length ? `<div class="offlist">${myOff().slice().sort().map(d => `<span>${fmtDot(d)}<button class="bn-x" data-act="offrm" data-d="${d}" aria-label="빼기">${I.x}</button></span>`).join('')}</div>` : ''}
     <div class="set-sec" style="margin-top:22px">디자인</div>
-    <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요 · 평평: 흰 바탕에 얇은 선</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button><button class="${settingsOf().depth === 'flat' ? 'on' : ''}" data-act="setdepth" data-v="flat">평평</button></div></div>
+    
     <div class="set-row"><div><b>글자 크기</b><span class="hint">글씨와 항목 크기가 함께 바뀌어요</span></div><div class="seg inline" role="radiogroup" aria-label="글자 크기">${[[90, '작게'], [100, '보통'], [110, '크게'], [120, '아주 크게']].map(([v, l]) => `<button role="radio" aria-checked="${settingsOf().fontScale === v}" class="${settingsOf().fontScale === v ? 'on' : ''}" data-act="setfs" data-v="${v}">${l}</button>`).join('')}</div></div>
     <div class="set-row"><div><b>강조 색</b><span class="hint">오늘 표시, 고른 탭, 체크, 주요 버튼 색이 바뀌어요</span></div><div class="accents">${[['lemon', '#F5D547', '레몬'], ['peach', '#FFB38A', '피치'], ['rose', '#F7A1B5', '로즈'], ['sky', '#8CC4F5', '하늘'], ['lavender', '#BBA6F2', '라벤더'], ['mint', '#93D9C3', '민트']].map(([k, c, l]) => `<button class="acc ${(settingsOf().accent || 'lemon') === k ? 'on' : ''}" style="--a:${c}" data-act="setaccent" data-v="${k}" title="${l}" aria-label="${l}" aria-pressed="${(settingsOf().accent || 'lemon') === k}"></button>`).join('')}</div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
