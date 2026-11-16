@@ -1893,6 +1893,13 @@ html.flat .chk.on svg{opacity:1}
 html.flat .num.today,html.flat .mday.today .n,html.flat .mday.today.sel .n{box-shadow:none}
 html.flat .fab,html.flat .fab:active{box-shadow:0 6px 16px rgba(0,0,0,.14)}
 html.flat .dialog,html.flat .dialog.sm{background:var(--surface);border-radius:18px}
+/* 강조색: 노란 면을 줄이고 레몬은 작은 포인트에만. 바탕 톤에 맞춰 꿀빛으로 살짝 낮춤 */
+html.flat:not([data-accent]){--lemon:#4F7CCB;--lemon-strong:#3E6AB8;--lemon-ink:#2F5BA6;--on-lemon:#FFFFFF;--lemon-soft:rgba(79,124,203,.14);--sel:rgba(79,124,203,.07)}
+@media (prefers-color-scheme: dark){ html.flat:not([data-accent]):not([data-theme="light"]){--lemon:#7DA3EA;--lemon-strong:#6C93DD;--lemon-ink:#B9CDF5;--on-lemon:#0E1A2E;--lemon-soft:rgba(125,163,234,.18);--sel:rgba(125,163,234,.08)} }
+html.flat:not([data-accent])[data-theme="dark"]{--lemon:#7DA3EA;--lemon-strong:#6C93DD;--lemon-ink:#B9CDF5;--on-lemon:#0E1A2E;--lemon-soft:rgba(125,163,234,.18);--sel:rgba(125,163,234,.08)}
+html.flat .mnote{background:var(--sunken);box-shadow:none;border:0}
+html.flat .mnote .mn-l{color:var(--fg2)}
+html.flat .btn.on-soft{background:var(--sunken);border-color:transparent;color:var(--fg)}
 /* 평평 v2 (PC): 연회색 바탕 위에 흰 본문 카드가 떠 있는 Things 느낌. 사이드바는 바탕에 녹아들고 아이콘에만 색. */
 @media (min-width:641px){
   html.flat{--backdrop:#EEEFF2}
