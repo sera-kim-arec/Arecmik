@@ -1835,6 +1835,114 @@ html.raised .mc-kinds{background:transparent;box-shadow:none;border-radius:12px;
 html.raised .mc-kinds button.on{background:var(--bg);box-shadow:var(--nm-out-sm)}
 html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-sm);color:var(--fg)}
 }
+/* 좁은 날짜 칸: 시간이 있는 일정은 제목이 한 글자씩 세로로 꺾이지 않게, 자리가 모자라면 제목을 시간 아래 줄로 내림 */
+.chip:has(.tm){flex-wrap:wrap;row-gap:0}
+.wk .chip:has(.tm) .tt,.wk.sel .chip:has(.tm) .tt{flex:1 1 4.5em;min-width:4.5em}
+
+/* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
+   Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
+html.flat{
+  --bg:#FFFFFF; --side:#F7F7F8; --panel:#FAFAFB; --surface:#FFFFFF; --sunken:#F2F2F4; --hover:#F0F0F2; --dim:#FAFAFB; --sel:#FFFBEA;
+  --line:#E7E7EB; --line-soft:#F0F0F2;
+  --fg:#1D1D1F; --fg2:#3F3F44; --muted:#6E6E73; --faint:#A1A1A8;
+  --hi:transparent; --lo:transparent; --lo2:transparent;
+  --nm-out:0 0 0 1px var(--line); --nm-out-sm:0 0 0 1px var(--line); --nm-out-xs:0 0 0 1px var(--line);
+  --nm-in:none; --nm-in-sm:none;
+  --shadow:0 1px 2px rgba(0,0,0,.06); --shadow-md:0 8px 24px rgba(0,0,0,.10); --shadow-lg:0 24px 60px rgba(0,0,0,.18);
+  --scrim:rgba(20,20,22,.28);
+}
+@media (prefers-color-scheme: dark){ html.flat:not([data-theme="light"]){
+  --bg:#161618; --side:#1B1B1E; --panel:#19191C; --surface:#1F1F22; --sunken:#26262A; --hover:#2A2A2E; --dim:#19191C; --sel:#24221A;
+  --line:#2F2F34; --line-soft:#26262A;
+  --fg:#F2F2F5; --fg2:#D1D1D6; --muted:#9A9AA2; --faint:#66666E;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 8px 24px rgba(0,0,0,.45); --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+  --scrim:rgba(0,0,0,.55);
+} }
+html.flat[data-theme="dark"]{
+  --bg:#161618; --side:#1B1B1E; --panel:#19191C; --surface:#1F1F22; --sunken:#26262A; --hover:#2A2A2E; --dim:#19191C; --sel:#24221A;
+  --line:#2F2F34; --line-soft:#26262A;
+  --fg:#F2F2F5; --fg2:#D1D1D6; --muted:#9A9AA2; --faint:#66666E;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-md:0 8px 24px rgba(0,0,0,.45); --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+  --scrim:rgba(0,0,0,.55);
+}
+/* 영역 구분: 그림자 대신 얇은 선 */
+html.flat .side{background:var(--side);border-right:1px solid var(--line-soft)}
+html.flat .panel{background:var(--panel);border-left:1px solid var(--line-soft)}
+html.flat .card,html.flat .links.panel,html.flat .dlg-body .links.panel{background:var(--surface);box-shadow:none;border:1px solid var(--line);border-radius:12px}
+/* 버튼: 테두리만, 강조 버튼은 레몬 면 */
+html.flat .btn{background:var(--surface);box-shadow:none;border:1px solid var(--line);font-weight:600}
+html.flat .btn:hover{background:var(--hover)}
+html.flat .btn.ghost{border-color:transparent;background:transparent}
+html.flat .btn.ghost:hover{background:var(--hover);box-shadow:none}
+html.flat .btn.on,html.flat .btn.on-soft{background:var(--lemon-soft);border-color:transparent;box-shadow:none;color:var(--lemon-ink)}
+html.flat .btn.primary,html.flat .btn.primary:active{background:var(--lemon);border-color:transparent;box-shadow:none;color:var(--on-lemon)}
+html.flat .gear-btn,html.flat .mini:hover{box-shadow:none}
+html.flat .gear-btn:hover{background:var(--hover)}
+/* 탭: 연회색 트랙 + 고른 칸만 흰색 */
+html.flat .seg{background:var(--sunken);box-shadow:none;padding:3px;gap:2px}
+html.flat .seg button.on{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* 입력칸: 연회색 면, 누르면 레몬 테두리 */
+html.flat .inp,html.flat .addline,html.flat .search,html.flat .mcomp,html.flat .sub-inline,html.flat .qc .inp{background:var(--sunken);box-shadow:none;border:1px solid transparent}
+html.flat .inp:focus,html.flat .addline:focus-within,html.flat .search:focus-within,html.flat .mcomp:focus-within,html.flat .sub-inline:focus-within{background:var(--surface);border-color:var(--lemon-strong);box-shadow:0 0 0 3px var(--lemon-soft)}
+html.flat .search kbd{background:var(--surface);box-shadow:none;border:1px solid var(--line)}
+/* 체크: 동그란 얇은 테두리, 완료하면 레몬으로 채움 */
+html.flat .chk{border-radius:50%;background:transparent;box-shadow:none;border:1.5px solid var(--faint)}
+html.flat .chk.on{background:var(--lemon);border-color:var(--lemon-strong);color:var(--on-lemon);box-shadow:none}
+html.flat .chk.on svg{opacity:1}
+/* 달력: 연한 선, 오늘만 레몬 */
+html.flat .num.today,html.flat .mday.today .n,html.flat .mday.today.sel .n{box-shadow:none}
+html.flat .fab,html.flat .fab:active{box-shadow:0 6px 16px rgba(0,0,0,.14)}
+html.flat .dialog,html.flat .dialog.sm{background:var(--surface);border-radius:18px}
+/* 평평 v2 (PC): 연회색 바탕 위에 흰 본문 카드가 떠 있는 Things 느낌. 사이드바는 바탕에 녹아들고 아이콘에만 색. */
+@media (min-width:641px){
+  html.flat{--backdrop:#EEEFF2}
+  html.flat body,html.flat .app{background:var(--backdrop)}
+  html.flat .side{background:transparent;border-right:0}
+  html.flat .main{margin:10px 10px 10px 0;height:calc(100% - 20px);border-radius:16px;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.05)}
+  html.flat .topbar{background:var(--bg);border-bottom:0;padding:18px 24px 12px}
+  html.flat .panel{background:var(--bg);border-left:1px solid var(--line-soft)}
+  html.flat .side .seg{background:rgba(0,0,0,.05)}
+  html.flat .side .search{background:rgba(0,0,0,.05)}
+  html.flat .nav-item{min-height:38px;font-size:15px;border-radius:10px;padding:0 12px}
+  html.flat .nav-item:hover{background:rgba(0,0,0,.04)}
+  html.flat .nav-item.on,html.flat .tree-row.on,html.flat .tree-doc.on{background:rgba(0,0,0,.07);box-shadow:none;font-weight:600}
+  html.flat .nav-item svg{width:18px;height:18px}
+  html.flat .nav-item[data-view="work"] svg,html.flat .nav-item[data-view="life"] svg{color:#E5626A}
+  html.flat .nav-item[data-view="projects"] svg{color:#4A86E8}
+  html.flat .nav-item[data-view="retro"] svg{color:#8B6FE0}
+  html.flat .nav-item[data-act="histbook"] svg,html.flat .nav-item[data-act="newpost"] svg{color:var(--lemon-strong)}
+  html.flat .sec-head{padding-left:12px}
+  /* 사이드바: 푸른 회색 → 따뜻한 베이지로 번지는 유리 느낌, 글씨는 흰색 */
+  html.flat body,html.flat .app{background:linear-gradient(172deg,#566B7D 0%,#76828E 42%,#9C8878 78%,#B39C88 100%)}
+  html.flat .main{box-shadow:0 12px 32px rgba(20,28,38,.22),0 0 0 1px rgba(255,255,255,.35)}
+  html.flat .side{--fg:#FFFFFF;--fg2:rgba(255,255,255,.92);--muted:rgba(255,255,255,.72);--faint:rgba(255,255,255,.5);--line:rgba(255,255,255,.2);--line-soft:rgba(255,255,255,.14);--hover:rgba(255,255,255,.12);color:var(--fg)}
+  html.flat .side .seg{background:rgba(20,28,38,.22)}
+  html.flat .side .seg button{color:rgba(255,255,255,.75)}
+  html.flat .side .seg button.on{background:rgba(255,255,255,.26);color:#FFFFFF;box-shadow:none}
+  html.flat .side .search{background:rgba(20,28,38,.24);color:#FFFFFF}
+  html.flat .side .search input::placeholder{color:rgba(255,255,255,.6)}
+  html.flat .side .search kbd{background:transparent;border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}
+  html.flat .side .nav-item,html.flat .side .tree-row,html.flat .side .tree-doc{color:#FFFFFF}
+  html.flat .side .nav-item:hover,html.flat .side .tree-row:hover{background:rgba(255,255,255,.12)}
+  html.flat .side .nav-item.on,html.flat .side .tree-row.on,html.flat .side .tree-doc.on{background:rgba(255,255,255,.24)}
+  html.flat .side .nav-item[data-view="work"] svg,html.flat .side .nav-item[data-view="life"] svg{color:#FF7A85}
+  html.flat .side .nav-item[data-view="projects"] svg{color:#7FB2FF}
+  html.flat .side .nav-item[data-view="retro"] svg{color:#C3ADFF}
+  html.flat .side .nav-item[data-act="histbook"] svg,html.flat .side .nav-item[data-act="newpost"] svg{color:#FFD84D}
+  html.flat .side .mini,html.flat .side .gear-btn{color:rgba(255,255,255,.85);background:transparent}
+  /* 본문도 반투명: 배경 색이 은은하게 비침 */
+  html.flat .main{--bg:transparent;--panel:rgba(255,255,255,.45);--surface:rgba(255,255,255,.7);--sunken:rgba(120,130,145,.10);--dim:transparent;--we:transparent;background:rgba(255,255,255,.80);-webkit-backdrop-filter:blur(30px) saturate(140%);backdrop-filter:blur(30px) saturate(140%)}
+  html.flat .main .panel{background:rgba(255,255,255,.35)}
+  html.flat .panel .card,html.flat .panel .ptab-card{border:0;box-shadow:none;background:var(--panel)}
+  html.flat .panel .card .inp,html.flat .panel .ptab-card .addline,html.flat .panel .card .addline{background:var(--bg)}
+}
+@media (min-width:641px) and (prefers-color-scheme: dark){ html.flat:not([data-theme="light"]){--backdrop:#0E0E10} html.flat:not([data-theme="light"]) .main{box-shadow:0 0 0 1px rgba(255,255,255,.08);--panel:rgba(255,255,255,.05);--surface:rgba(255,255,255,.07);--sunken:rgba(255,255,255,.07);background:rgba(24,26,30,.58)} html.flat:not([data-theme="light"]) .main .panel{background:rgba(0,0,0,.12)} html.flat:not([data-theme="light"]) body,html.flat:not([data-theme="light"]) .app{background:radial-gradient(120% 60% at 0% 0%,rgba(255,255,255,.10),transparent 60%),linear-gradient(172deg,#3D5060 0%,#4F5864 42%,#66574B 78%,#76624F 100%)} }
+@media (min-width:641px){ html.flat[data-theme="dark"]{--backdrop:#0E0E10} html.flat[data-theme="dark"] .main{box-shadow:0 0 0 1px rgba(255,255,255,.08);--panel:rgba(255,255,255,.05);--surface:rgba(255,255,255,.07);--sunken:rgba(255,255,255,.07);background:rgba(24,26,30,.58)} html.flat[data-theme="dark"] .main .panel{background:rgba(0,0,0,.12)} html.flat[data-theme="dark"] body,html.flat[data-theme="dark"] .app{background:radial-gradient(120% 60% at 0% 0%,rgba(255,255,255,.10),transparent 60%),linear-gradient(172deg,#3D5060 0%,#4F5864 42%,#66574B 78%,#76624F 100%)} }
+@media (max-width:640px){
+  html.flat .app:not(.nav-open) .side{box-shadow:none}
+  html.flat .mcal{box-shadow:none;border-bottom:1px solid var(--line);border-radius:0}
+}
+
 </style>
 
 </head>
@@ -2115,7 +2223,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: st.depth === 'raised' ? 'raised' : 'pressed', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: ['raised', 'pressed'].includes(st.depth) ? st.depth : 'flat', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -2306,7 +2414,7 @@ const app = $('#app'), layer = $('#layer'), pop = $('#pop');
 function render() {
   keepUI();
   if (!doneSeen && S && S.items) stampDone();
-  document.documentElement.classList.toggle('raised', settingsOf().depth === 'raised');
+  document.documentElement.classList.toggle('raised', settingsOf().depth === 'raised'); document.documentElement.classList.toggle('flat', settingsOf().depth === 'flat');
   { const fs = settingsOf().fontScale; if (fs === 100) { delete document.documentElement.dataset.fs; document.documentElement.style.removeProperty('--fs'); } else { document.documentElement.dataset.fs = fs; document.documentElement.style.setProperty('--fs', fs / 100); } }
   { const ac = settingsOf().accent || 'lemon'; if (ac === 'lemon') delete document.documentElement.dataset.accent; else document.documentElement.dataset.accent = ac; }
   const main = $('.main'); const st = main ? main.scrollTop : 0;
@@ -3839,7 +3947,7 @@ function dlgSettings() {
     <div class="set-row"><div><b>공휴일 외에 쉬는 날</b><span class="hint">회사 창립기념일처럼 루틴이 피해야 할 날 · 공휴일은 2026–2027년이 이미 들어 있어요</span></div><div class="frow"><input type="date" id="off-add" class="inp" aria-label="쉬는 날 추가"><button class="btn sm" data-act="offadd">추가</button></div></div>
     ${myOff().length ? `<div class="offlist">${myOff().slice().sort().map(d => `<span>${fmtDot(d)}<button class="bn-x" data-act="offrm" data-d="${d}" aria-label="빼기">${I.x}</button></span>`).join('')}</div>` : ''}
     <div class="set-sec" style="margin-top:22px">디자인</div>
-    <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button></div></div>
+    <div class="set-row"><div><b>버튼과 입력칸 모양</b><span class="hint">오목: 입력칸·고른 탭이 들어가 보여요 · 볼록: 모두 떠 보여요 · 평평: 흰 바탕에 얇은 선</span></div><div class="seg inline"><button class="${settingsOf().depth === 'pressed' ? 'on' : ''}" data-act="setdepth" data-v="pressed">오목</button><button class="${settingsOf().depth === 'raised' ? 'on' : ''}" data-act="setdepth" data-v="raised">볼록</button><button class="${settingsOf().depth === 'flat' ? 'on' : ''}" data-act="setdepth" data-v="flat">평평</button></div></div>
     <div class="set-row"><div><b>글자 크기</b><span class="hint">글씨와 항목 크기가 함께 바뀌어요</span></div><div class="seg inline" role="radiogroup" aria-label="글자 크기">${[[90, '작게'], [100, '보통'], [110, '크게'], [120, '아주 크게']].map(([v, l]) => `<button role="radio" aria-checked="${settingsOf().fontScale === v}" class="${settingsOf().fontScale === v ? 'on' : ''}" data-act="setfs" data-v="${v}">${l}</button>`).join('')}</div></div>
     <div class="set-row"><div><b>강조 색</b><span class="hint">오늘 표시, 고른 탭, 체크, 주요 버튼 색이 바뀌어요</span></div><div class="accents">${[['lemon', '#F5D547', '레몬'], ['peach', '#FFB38A', '피치'], ['rose', '#F7A1B5', '로즈'], ['sky', '#8CC4F5', '하늘'], ['lavender', '#BBA6F2', '라벤더'], ['mint', '#93D9C3', '민트']].map(([k, c, l]) => `<button class="acc ${(settingsOf().accent || 'lemon') === k ? 'on' : ''}" style="--a:${c}" data-act="setaccent" data-v="${k}" title="${l}" aria-label="${l}" aria-pressed="${(settingsOf().accent || 'lemon') === k}"></button>`).join('')}</div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
