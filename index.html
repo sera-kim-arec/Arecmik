@@ -1946,6 +1946,16 @@ html.flat .sstrip .spill{box-shadow:none}
 .tile .thab i{width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
 .tile.has .thab{position:absolute;right:7px;top:9px;margin:0}
 .tile{position:relative}
+/* ---- 기록 달력 위 '오늘 습관' 줄 ---- */
+.hstrip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 20px 10px;padding:6px 10px;border-radius:12px;background:var(--sunken)}
+.hs-l{font-size:12.5px;font-weight:700;color:var(--muted);margin-right:2px}
+.hs-i{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px 0 6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600}
+.hs-c{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--hc);display:grid;place-items:center;color:transparent}
+.hs-c svg{width:11px;height:11px}
+.hs-i.on .hs-c{background:var(--hc);color:#fff}
+.hs-i.on{color:var(--muted)}
+.hs-more{all:unset;cursor:pointer;margin-left:auto;font-size:12.5px;color:var(--muted)}
+.hs-more:hover{color:var(--fg)}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2631,7 +2641,7 @@ function lifeNav() {
   <div class="sec"><div class="sec-head" data-drop="froot:life"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('life', null, 0)}</div>
   <div class="sec"><div class="sec-head"><span>컬렉션</span><button class="mini" data-act="newcoll" aria-label="새 컬렉션" title="새 컬렉션">${I.plus}</button></div>
-  ${S.collections.filter(c => !(['책', '영화'].includes(c.name) && !S.citems.some(x => x.coll === c.id))).map(c => `<button class="nav-item ${ui.view === 'collections' && ui.collId === c.id ? 'on' : ''}" data-act="opencoll" data-id="${c.id}"><span>${esc(c.name)}</span><span class="cnt">${S.citems.filter(x => x.coll === c.id).length}</span></button>`).join('')}
+  ${S.collections.map(c => `<button class="nav-item ${ui.view === 'collections' && ui.collId === c.id ? 'on' : ''}" data-act="opencoll" data-id="${c.id}"><span>${esc(c.name)}</span><span class="cnt">${S.citems.filter(x => x.coll === c.id).length}</span></button>`).join('')}
   </div>`;
 }
 function descendants(fid) { const out = [fid]; S.folders.filter(f => f.parent === fid).forEach(f => out.push(...descendants(f.id))); return out; }
@@ -3575,6 +3585,7 @@ function vLife() {
   return `${topbar(`<h1 class="h1">${y}년 ${m}월</h1><div class="pager"><button class="btn icon" data-act="lmonth" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="lmonth" data-d="1" aria-label="다음 달">${I.right}</button></div><button class="btn" data-act="ltoday">오늘</button>${isMob() ? '' : modeSeg}`,
     `<span class="hint">날짜에 마우스를 올리면 + 로 글을 쓸 수 있어요</span>`)}
   ${isMob() ? `<div class="mlife-sel"><b>${fmtFull(ui.lsel || TODAY)}</b><span class="muted">기록 ${dayRecords(ui.lsel || TODAY).length}개</span><span class="grow"></span><button class="btn sm primary" data-act="newpost" data-date="${ui.lsel || TODAY}">${I.plus}이 날 글쓰기</button></div>` : ''}
+  ${(() => { const hs = habits(); if (!hs.length || isMob()) return ''; return `<div class="hstrip"><span class="hs-l">오늘 습관</span>${hs.map(h => `<button class="hs-i ${hOn(h, TODAY) ? 'on' : ''}" style="--hc:${h.color}" data-act="hcheck" data-id="${h.id}" data-date="${TODAY}"><span class="hs-c">${I.check}</span>${esc(h.name)}</button>`).join('')}<button class="hs-more" data-act="go" data-view="habits">한 달 보기 ›</button></div>`; })()}
   <div class="lpad"><div class="ldow">${dowNames().map(x => `<span class="${x === '일' ? 'sun' : x === '토' ? 'sat' : ''}">${x}</span>`).join('')}</div><div class="lgrid">${tiles}</div></div>`;
 }
 function drawDayPop(d) {
@@ -3943,6 +3954,9 @@ function vColl() {
 }
 const FTYPES = { text: ['T', '텍스트'], select: ['◉', '선택'], rating: ['★', '별점'], date: ['▦', '날짜'], check: ['✓', '체크'], link: ['↗', '링크'], number: ['#', '숫자'] };
 const NCTPL = {
+  book: { name: '책', fields: [['상태', 'select', ['읽고 싶음', '읽는 중', '다 읽음']], ['저자', 'text'], ['다 읽은 날', 'date'], ['별점', 'rating'], ['한 줄 평', 'text']] },
+  movie: { name: '영화', fields: [['상태', 'select', ['보고 싶음', '봤음']], ['감독', 'text'], ['본 날', 'date'], ['별점', 'rating'], ['한 줄 평', 'text']] },
+  ott: { name: 'OTT', fields: [['상태', 'select', ['볼 예정', '보는 중', '다 봄']], ['플랫폼', 'select', ['넷플릭스', '티빙', '왓챠', '디즈니+', '쿠팡플레이', '웨이브']], ['시즌·회차', 'text'], ['다 본 날', 'date'], ['별점', 'rating'], ['한 줄 평', 'text']] },
   show: { name: '공연', fields: [['상태', 'select', ['위시리스트', '봤음']], ['장소', 'text'], ['본 날', 'date'], ['별점', 'rating'], ['함께 본 사람', 'text']] },
   exhibit: { name: '전시', fields: [['상태', 'select', ['위시리스트', '봤음']], ['장소', 'text'], ['간 날', 'date'], ['별점', 'rating']] },
   cafe: { name: '카페', fields: [['위치', 'text'], ['분위기', 'select', ['조용함', '북적임']], ['재방문', 'check'], ['방문한 날', 'date']] },
