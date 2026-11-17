@@ -1867,6 +1867,12 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .page .cap input{flex:1;border:0;background:transparent;outline:none;font:inherit}
 .pc-src{display:inline-flex;align-self:flex-start;font-style:normal;font-size:12px;font-weight:600;color:var(--lemon-ink);background:var(--lemon-soft);border-radius:10px;padding:1px 8px;margin:2px 0}
 
+/* ---- 업무일지 카드 보기: 날짜별 카드를 바둑판으로, 길면 아래가 흐려지고 '열기'로 전체 보기 ---- */
+.jf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;align-items:start}
+.jf-grid .jf-day{margin:0;max-height:260px;overflow:hidden;position:relative}
+.jf-grid .jf-day::after{content:'';position:absolute;left:0;right:0;bottom:0;height:36px;background:linear-gradient(transparent,var(--surface));pointer-events:none}
+.jf-grid .jf-memo{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.jls:has(.jf-grid){max-width:1180px}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2540,7 +2546,7 @@ const navBtn = (view, label, icon, extra = '') => `<button class="nav-item ${ui.
 function workNav() {
   const active = S.projects.filter(p => !p.done).length;
   const rd = (S.routines || []).filter(rDue).length;
-  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}<button class="nav-item" data-act="histbook" title="업무 기준·처리 기록을 모은 히스토리북을 새 창으로 열어요">${I.hbook}<span>히스토리북</span><span class="cnt">↗</span></button></nav>
+  return `<nav class="nav">${navBtn('work', '캘린더', I.cal)}${navBtn('projects', '프로젝트', I.proj, `<span class="cnt">${active}</span>`)}${navBtn('retro', '복기', I.retro, retroNudge() ? '<span class="cnt rdue-c" title="지난달 회고를 아직 안 썼어요">회고</span>' : '')}${navBtn('journals', '업무일지', I.note)}<button class="nav-item" data-act="histbook" title="업무 기준·처리 기록을 모은 히스토리북을 새 창으로 열어요">${I.hbook}<span>히스토리북</span><span class="cnt">↗</span></button></nav>
   <div class="sec"><div class="sec-head" data-drop="froot:work"><span>노트</span><button class="mini" data-act="addmenu" data-space="work" data-id="" aria-label="새 노트 또는 새 폴더" title="새 노트 · 새 폴더">${I.plus}</button></div>
   ${tree('work', null, 0)}</div>
   ${retroAreas().length || ui.areaAdd ? `<div class="sec cat-sec"><div class="sec-head"><button class="cat-tg" data-act="cattoggle" aria-expanded="${!!ui.catOpen}">${ui.catOpen ? I.chevD : I.chevR}<span>카테고리</span><span class="cnt">${retroAreas().length}</span></button><button class="mini" data-act="areaadd" aria-label="카테고리 추가" title="카테고리 추가">${I.plus}</button></div>
@@ -2609,7 +2615,7 @@ function viewHTML() {
     case 'retro': return vRetro();
     case 'area': return vArea();
     case 'journal': ui.calView = 'day'; ui.jdetail = true; ui.sel = ui.jday || ui.sel; ui.view = 'work'; return vWork();
-    case 'journals': ui.calView = 'day'; ui.jdetail = false; ui.view = 'work'; return vWork();
+    case 'journals': return isMob() ? (ui.calView = 'day', ui.jdetail = false, ui.view = 'work', vWork()) : vJournals();
     case 'book': return vBook();
     default: return vWork();
   }
@@ -3059,7 +3065,8 @@ function journalDays() {
   return Object.values(days).sort((a, b) => b.d.localeCompare(a.d));
 }
 function vJournals() {
-  return `${topbar('<h1 class="h1">업무일지</h1>', `<div class="seg inline sm" role="group" aria-label="보기"><button class="${ui.jmode !== 'feed' ? 'on' : ''}" data-act="jmode" data-v="list">목록</button><button class="${ui.jmode === 'feed' ? 'on' : ''}" data-act="jmode" data-v="feed">펼쳐 보기</button></div><button class="btn primary" data-act="journal" data-date="${TODAY}">${I.plus}오늘 일지</button>`)}
+  if (!ui.jmode) ui.jmode = 'feed';
+  return `${topbar('<h1 class="h1">업무일지</h1>', `<div class="seg inline sm" role="group" aria-label="보기"><button class="${ui.jmode !== 'feed' ? 'on' : ''}" data-act="jmode" data-v="list">목록</button><button class="${ui.jmode === 'feed' ? 'on' : ''}" data-act="jmode" data-v="feed">카드</button></div><button class="btn primary" data-act="journal" data-date="${TODAY}">${I.plus}오늘 일지</button>`)}
   <div class="jls"><label class="search jl-q">${I.search}<input id="jq" type="search" placeholder="업무일지에서 찾기 (코멘트 · 할일 · 메모)" autocomplete="off" value="${esc(ui.jq || '')}" aria-label="업무일지 검색"></label>
   <div id="jl-res">${jlResults()}</div></div>`;
 }
@@ -3081,7 +3088,7 @@ function jlResults() {
     ${o.memo && !f ? `<div class="jf-memo"><span class="lbl" style="margin:0 6px 0 0">메모</span>${mk(o.memo)}</div>` : ''}</div>`;
   return `
     ${cats.length ? `<div class="jl-cats"><button class="xchip ${f ? '' : 'on'}" data-act="jcat" data-v="">전체</button>${cats.map(c => `<button class="xchip ${f === c ? 'on' : ''}" data-act="jcat" data-v="${esc(c)}"># ${esc(c)}</button>`).join('')}</div>` : ''}
-    ${days.length ? Object.keys(byMonth).map(m => `<div class="lbl" style="margin-top:14px">${+m.slice(0, 4) !== +TODAY.slice(0, 4) ? m.slice(0, 4) + '년 ' : ''}${+m.slice(5)}월 <span class="muted">· ${byMonth[m].length}개</span></div>${mode === 'list' ? `<div class="card jl-list">${byMonth[m].map(listRow).join('')}</div>` : byMonth[m].map(feedDay).join('')}`).join('')
+    ${days.length ? Object.keys(byMonth).map(m => `<div class="lbl" style="margin-top:14px">${+m.slice(0, 4) !== +TODAY.slice(0, 4) ? m.slice(0, 4) + '년 ' : ''}${+m.slice(5)}월 <span class="muted">· ${byMonth[m].length}개</span></div>${mode === 'list' ? `<div class="card jl-list">${byMonth[m].map(listRow).join('')}</div>` : `<div class="jf-grid">${byMonth[m].map(feedDay).join('')}</div>`}`).join('')
       : `<div class="card"><div class="empty">${q ? `‘${esc(ui.jq.trim())}’이 들어간 기록이 없어요.` : f ? '이 카테고리로 남긴 기록이 없어요.' : '아직 쌓인 업무일지가 없어요. 할일 창의 ‘코멘트 · 이슈’나 [오늘 일지]에 적으면 날짜별로 쌓여요.'}</div></div>`}`;
 }
 function vJournal(inCal, dArg) {
