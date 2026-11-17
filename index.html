@@ -1926,6 +1926,20 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .jlate .away-row{display:flex;align-items:center;gap:8px}.jlate .away-row>:first-child{flex:1;min-width:0}
 .jlate-d{font-size:12px;font-weight:600;color:#D2383E;white-space:nowrap;padding-right:6px}
 .jlate-l{margin-top:0}
+/* ---- 정돈: 하루 보기·잊지 말 것 줄 ---- */
+.jgroups{padding:6px 14px 8px!important}
+.jgroups .jgroup{margin:0;padding:6px 0 4px}
+.jgroups .jgroup+.jgroup{border-top:1px solid var(--line-soft)}
+.jgroups .cg-h{padding:6px 2px 2px;font-size:12px;letter-spacing:.02em}
+.oneday .jrow{border:0}
+.oneday .jrow-h{min-height:40px}
+.oneday .lbl{margin:18px 2px 8px}
+.oneday .jprojs+.lbl,.oneday .jprojs+.jlate-l{margin-top:4px}
+.jlate{border-left:0!important;background:rgba(229,72,77,.05)!important}
+.dock-on .cal-main>.cal-scroll:not(.oneday){padding:0 14px 8px}
+.dock-on .rz-dock{margin-bottom:2px}
+html.flat .sstrip{margin:0 20px 10px;background:rgba(229,72,77,.07);border:1px solid rgba(229,72,77,.14);border-radius:12px;padding:6px 10px 6px 12px}
+html.flat .sstrip .spill{box-shadow:none}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2714,7 +2728,7 @@ function vWork() {
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
   else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
-  if (dock) return `<div class="cal-wrap dock-on"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : dockHTML()}${body}</section></div>`;
+  if (dock) return `<div class="cal-wrap dock-on"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv || one ? '' : dockHTML()}${body}</section></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : monthNote()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
 const memoPreview = bl => (bl || []).filter(b => b.type !== 'link' && b.type !== 'image' && b.type !== 'table').map(b => plainText(b.text)).filter(Boolean).join(' · ');
@@ -3156,7 +3170,7 @@ function vJournal(inCal, dArg) {
   list.sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'event' ? -1 : 1) || (a.done - b.done) || ((b.star ? 1 : 0) - (a.star ? 1 : 0)) || priCmp(a, b) || (a.start || '99').localeCompare(b.start || '99'));
   const groups = {}; list.forEach(it => { const k = areaOf(it); (groups[k] = groups[k] || []).push(it); });
   const keys = Object.keys(groups).sort((a, b) => list.indexOf(groups[a][0]) - list.indexOf(groups[b][0]));
-  const st = it => doneOn(it) && it.date && it.date !== d ? `<span class="jst ok">완료</span><span class="jorig">${fmtShort(it.date)} 할일</span>` : it.kind === 'event' ? (it.done ? '<span class="jst ok">완료</span>' : '<span class="jst ev">일정</span>') : it.done ? '<span class="jst ok">완료</span>' : it.date === d ? '<span class="jst">진행 중</span>' : '<span class="jst">진행 중</span>';
+  const st = it => doneOn(it) && it.date && it.date !== d ? `<span class="jst ok">완료</span><span class="jorig">${fmtShort(it.date)} 할일</span>` : it.kind === 'event' ? (it.done ? '<span class="jst ok">완료</span>' : '<span class="jst ev">일정</span>') : it.done ? '<span class="jst ok">완료</span>' : '';
   const row = it => `<div class="jrow" style="${depthOf(it) ? `margin-left:${Math.min(depthOf(it), 3) * 18}px` : ''}"><div class="jrow-h">${it.kind === 'todo' ? `<button class="chk ${it.done ? 'on' : ''}" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : `<button class="chk ev ${it.done ? 'on' : ''}" style="--chip:${itemColor(it)}" data-act="evdone" data-id="${it.id}" aria-label="${it.done ? '완료 취소' : '완료 표시'}">${I.check}</button>`}<button class="stl" data-act="open" data-kind="item" data-id="${it.id}"><span>${it.star && !it.done ? '<span class="imp">❗</span>' : ''}${priT(it)}${it.start && it.date === d ? `<span class="jtime">${it.start}${it.finish ? '–' + it.finish : ''}</span>` : ''}${tT(it.title || '제목 없음')}${progHTML(it)}${pcOn(it) && !list.some(x => x.id === it.parentId) ? `<span class="pc-line">${pChip(it)}</span>` : ''}</span>${st(it)}</button>${cBtn(it, d)}<span class="subplus" role="button" tabindex="0" data-act="subadd" data-id="${it.id}" title="하위 할일 추가" aria-label="하위 할일 추가">${I.sub}</span></div>
     ${logsOn(it).map(c => `<div class="jlog jlog-ed"><span class="ilog-t">${hm(c.ts)}</span><div class="ilog-ed">${editorHTML('clogj:' + it.id + '~' + c.id, true)}</div></div>`).join('')}
     ${(ui.cOpen === 'cnew:' + it.id + '~' + d || (cDrafts['cnew:' + it.id + '~' + d] && blocksText(cDrafts['cnew:' + it.id + '~' + d]).trim())) ? `<div class="jadd">${cComposerOpen('cnew:' + it.id + '~' + d)}</div>` : ''}${subInline(it)}</div>`;
@@ -3167,7 +3181,7 @@ function vJournal(inCal, dArg) {
       ${(() => { const ps = S.projects.filter(p => p.start && p.start <= d && projEnd(p) >= d); return ps.length && !wkMode ? `<div class="projline jprojs">${ps.map(p => `<button class="tag ${pcls(p)}" data-act="open" data-kind="project" data-id="${p.id}">${tT(p.title)}</button>`).join('')}</div>` : ''; })()}
       ${(() => { if (d !== TODAY || wkMode) return ''; const late = S.items.filter(it => it.kind === 'todo' && it.date && it.date < d && !it.done && !it.cancel && !list.includes(it)).sort((a, b) => ((b.star ? 1 : 0) - (a.star ? 1 : 0)) || priCmp(a, b) || a.date.localeCompare(b.date)); return late.length ? `<div class="lbl jlate-l">지난 할일 <span class="muted">${late.length}건 · 끌어서 오늘로 옮기거나 완료해요</span></div><div class="card jlate">${late.map(it => `<div class="away-row">${trow(it, !isMob(), d)}<span class="jlate-d">${fmtShort(it.date)} 지남</span></div>`).join('')}</div>` : ''; })()}
       <div class="lbl">한 일 · 코멘트 <span class="muted">${list.length ? `${list.length}건 · 완료 ${nDone}` : ''}</span></div>
-      ${wkMode && !keys.length ? '' : keys.length ? keys.map(k => `<div class="card jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${(() => { const G = { list: groups[k], ghosts: new Set() }; return nestOrder(G.list).map(x => G.ghosts.has(x.id) ? `<div class="jrow ghost" style="${depthOf(x) ? `margin-left:${Math.min(depthOf(x), 3) * 18}px` : ''}">${ghostRow(x, 'j-ghost')}</div>` : row(x)).join(''); })()}</div>`).join('') : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
+      ${wkMode && !keys.length ? '' : keys.length ? '<div class="card jgroups">' + keys.map(k => `<div class="jgroup"><div class="cg-h">${k === '미분류' ? '미분류' : '# ' + esc(k)}</div>${(() => { const G = { list: groups[k], ghosts: new Set() }; return nestOrder(G.list).map(x => G.ghosts.has(x.id) ? `<div class="jrow ghost" style="${depthOf(x) ? `margin-left:${Math.min(depthOf(x), 3) * 18}px` : ''}">${ghostRow(x, 'j-ghost')}</div>` : row(x)).join(''); })()}</div>`).join('') + '</div>' : '<div class="card"><div class="empty">이 날 할일·일정이 없어요. 달력에서 할일을 만들거나, 할일 창의 ‘코멘트 · 이슈’에 적으면 여기 모여요.</div></div>'}
       ${!wkMode && rtRows(d) ? `<div class="card jrt" style="margin-top:14px">${rtRows(d)}</div>` : ''}
       ${dayRetros(d) ? `<div class="card" style="margin-top:14px">${dayRetros(d)}</div>` : ''}
     </section>
