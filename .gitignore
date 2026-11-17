@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+android/.gradle/
+android/local.properties
+android/**/build/
+*.jks
+*.keystore
+signing.properties
+*.apk.idsig
+editor/node_modules/
+node_modules/
