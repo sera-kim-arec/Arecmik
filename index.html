@@ -1940,6 +1940,12 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .dock-on .rz-dock{margin-bottom:2px}
 html.flat .sstrip{margin:0 20px 10px;background:rgba(229,72,77,.07);border:1px solid rgba(229,72,77,.14);border-radius:12px;padding:6px 10px 6px 12px}
 html.flat .sstrip .spill{box-shadow:none}
+/* ---- 기록 달력: 일기 첫 줄 + 습관 점 ---- */
+.tile .tln{font-size:11.5px;line-height:1.35;color:var(--fg2);text-align:left;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:auto;width:100%}
+.tile .thab{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.tile .thab i{width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
+.tile.has .thab{position:absolute;right:7px;top:9px;margin:0}
+.tile{position:relative}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2621,7 +2627,7 @@ function workNav() {
   ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="adot" style="--ac:${areaColor(a)}"></span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}` : ''}</div>` : ''}`;
 }
 function lifeNav() {
-  return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}${navBtn('binder', '한 줄 일기', I.pen)}${navBtn('habits', '습관', I.check, habitToday())}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
+  return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}${navBtn('habits', '습관', I.check, habitToday())}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
   <div class="sec"><div class="sec-head" data-drop="froot:life"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('life', null, 0)}</div>
   <div class="sec"><div class="sec-head"><span>컬렉션</span><button class="mini" data-act="newcoll" aria-label="새 컬렉션" title="새 컬렉션">${I.plus}</button></div>
@@ -2677,7 +2683,7 @@ function viewHTML() {
     case 'notes': return vNotes();
     case 'life': return vLife();
     case 'habits': return vHabits();
-    case 'binder': return vBinder();
+    case 'binder': ui.lmode = 'week'; ui.view = 'life'; return vLife();
     case 'posts': return vPosts();
     case 'collections': return vColl();
     case 'new-collection': return vNewColl();
@@ -3529,12 +3535,12 @@ const habits = () => (S.habits = S.habits || []).slice().sort((a, b) => (a.ord |
 const hOn = (h, d) => (h.log || []).includes(d);
 function habitToday() { const n = habits().length; if (!n) return ''; const k = habits().filter(h => hOn(h, TODAY)).length; return `<span class="cnt">${k}/${n}</span>`; }
 /* ---------- LIFE 한 줄 일기: 지난주 | 이번 주를 펼친 노트처럼. 줄은 그날 '일기' 글에 쌓임 ---------- */
-function vBinder() {
+function vBinder(modeSeg = '') {
   const base = ui.bweek || weekStart(TODAY); const pages = [addDays(base, -7), base];
   const lines = d => { const p = diaryPost(d); return p ? (p.blocks || []).map(b => plainText(b.text || '').replace(/^\d{1,2}:\d{2}\s+/, '')).filter(t => t.trim()) : []; };
   const day = d => { const dd = parse(d); const ls = lines(d); const p = diaryPost(d); return `<div class="bd-day ${d === TODAY ? 'today' : ''} ${d > TODAY ? 'fut' : ''}"><div class="bd-d"><b>${String(dd.getDate()).padStart(2, '0')}</b><small>${WD[dd.getDay()]}</small></div><div class="bd-lines">${ls.map(t => `<button class="bd-l" data-act="openpost" data-id="${p.id}">${esc(t)}</button>`).join('')}${d <= TODAY ? `<input class="bd-in" data-bdate="${d}" placeholder="${ls.length ? '' : '한 줄 남기기'}" autocomplete="off" aria-label="${fmtShort(d)} 한 줄 일기">` : ''}</div></div>`; };
   const page = (ws, i) => `<section class="bd-page"><div class="bd-ph">${i ? '이번 주' : '지난주'} <span class="muted">${fmtShort(ws)} – ${fmtShort(addDays(ws, 6))}</span></div>${[...Array(7)].map((_, k) => day(addDays(ws, k))).join('')}</section>`;
-  return `${topbar('<h1 class="h1">한 줄 일기</h1>', `<div class="pager"><button class="btn sm icon" data-act="bweek" data-v="-1" aria-label="이전 주">${I.left}</button><button class="btn sm" data-act="bweek" data-v="0">이번 주</button><button class="btn sm icon" data-act="bweek" data-v="1" aria-label="다음 주">${I.right}</button></div>`)}
+  return `${topbar(`<h1 class="h1">한 줄 일기</h1>${modeSeg}`, `<div class="pager"><button class="btn sm icon" data-act="bweek" data-v="-1" aria-label="이전 주">${I.left}</button><button class="btn sm" data-act="bweek" data-v="0">이번 주</button><button class="btn sm icon" data-act="bweek" data-v="1" aria-label="다음 주">${I.right}</button></div>`)}
   <div class="page binder"><div class="bd-book">${pages.map(page).join('')}</div><p class="hint" style="margin-top:10px">적은 줄은 그날의 LIFE › 일기 글에 쌓여요. 줄을 누르면 일기 글이 열려요.</p></div>`;
 }
 document.addEventListener('keydown', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('bd-in') || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); const d = t.dataset.bdate; if (!v || !d) return; addDiaryLine(d, v); ui.focusSel = `.bd-in[data-bdate="${d}"]`; render(); const el = document.querySelector(ui.focusSel); if (el) el.focus(); });
@@ -3558,13 +3564,15 @@ function vHabits() {
 document.addEventListener('keydown', e => { const t = e.target; if (!t || t.id !== 'habit-add' || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); if (!v) return; mutate(() => { S.habits = S.habits || []; S.habits.push({ id: uid(), name: v, color: HCOL[S.habits.length % HCOL.length], log: [], ord: Date.now() }); }); ui.focusId = 'habit-add'; render(); });
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.dataset || !t.dataset.hname) return; const h = (S.habits || []).find(x => x.id === t.dataset.hname); const v = t.value.trim(); if (!h || !v || v === h.name) return; mutate(() => { h.name = v; }); });
 function vLife() {
+  const modeSeg = `<div class="seg inline sm" role="group" aria-label="보기"><button class="${ui.lmode !== 'week' ? 'on' : ''}" data-act="lmode" data-v="month">월</button><button class="${ui.lmode === 'week' ? 'on' : ''}" data-act="lmode" data-v="week">주 · 한 줄 일기</button></div>`;
+  if (ui.lmode === 'week' && !isMob()) return vBinder(modeSeg);
   const { y, m, weeks } = monthRange(ui.lmonth);
   const days = []; weeks.forEach(w => { for (let i = 0; i < 7; i++) days.push(addDays(w, i)); });
   const tiles = days.map(d => {
     const recs = dayRecords(d); const cov = dayCover(recs); const dd = parse(d);
-    return `<div class="tile-wrap"><button class="tile ${cov ? 'has' : ''} ${dd.getMonth() + 1 !== m ? 'other' : ''} ${d === ui.lsel ? 'sel' : ''}" style="${cov ? coverStyle(cov) : ''}" data-act="lday" data-date="${d}" aria-label="${fmtMD(d)}${recs.length ? `, 기록 ${recs.length}개 열기` : ''}"><span class="n ${d === TODAY ? 'today' : ''}">${dd.getDate()}</span>${cov ? `<span class="lb">${esc(recLabel(recs))}</span>` : recs.length ? `<span class="tdot" title="기록 ${recs.length}개"></span>` : ''}</button><button class="tile-add" data-act="newpost" data-date="${d}" aria-label="${fmtMD(d)}에 글 쓰기" title="이 날에 글 쓰기">${I.plus}</button></div>`;
+    return `<div class="tile-wrap"><button class="tile ${cov ? 'has' : ''} ${dd.getMonth() + 1 !== m ? 'other' : ''} ${d === ui.lsel ? 'sel' : ''}" style="${cov ? coverStyle(cov) : ''}" data-act="lday" data-date="${d}" aria-label="${fmtMD(d)}${recs.length ? `, 기록 ${recs.length}개 열기` : ''}"><span class="n ${d === TODAY ? 'today' : ''}">${dd.getDate()}</span>${cov ? `<span class="lb">${esc(recLabel(recs))}</span>` : (() => { const dp = diaryPost(d); const ln = dp ? (dp.blocks || []).map(b => plainText(b.text || '').replace(/^\d{1,2}:\d{2}\s+/, '')).find(t => t.trim()) : ''; return ln ? `<span class="tln">${esc(ln)}</span>` : recs.length ? `<span class="tdot" title="기록 ${recs.length}개"></span>` : ''; })()}${(() => { const hs = habits().filter(h => hOn(h, d)); return hs.length ? `<span class="thab" title="${hs.map(h => esc(h.name)).join(', ')}">${hs.map(h => `<i style="background:${h.color}"></i>`).join('')}</span>` : ''; })()}</button><button class="tile-add" data-act="newpost" data-date="${d}" aria-label="${fmtMD(d)}에 글 쓰기" title="이 날에 글 쓰기">${I.plus}</button></div>`;
   }).join('');
-  return `${topbar(`<h1 class="h1">${y}년 ${m}월</h1><div class="pager"><button class="btn icon" data-act="lmonth" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="lmonth" data-d="1" aria-label="다음 달">${I.right}</button></div><button class="btn" data-act="ltoday">오늘</button>`,
+  return `${topbar(`<h1 class="h1">${y}년 ${m}월</h1><div class="pager"><button class="btn icon" data-act="lmonth" data-d="-1" aria-label="이전 달">${I.left}</button><button class="btn icon" data-act="lmonth" data-d="1" aria-label="다음 달">${I.right}</button></div><button class="btn" data-act="ltoday">오늘</button>${isMob() ? '' : modeSeg}`,
     `<span class="hint">날짜에 마우스를 올리면 + 로 글을 쓸 수 있어요</span>`)}
   ${isMob() ? `<div class="mlife-sel"><b>${fmtFull(ui.lsel || TODAY)}</b><span class="muted">기록 ${dayRecords(ui.lsel || TODAY).length}개</span><span class="grow"></span><button class="btn sm primary" data-act="newpost" data-date="${ui.lsel || TODAY}">${I.plus}이 날 글쓰기</button></div>` : ''}
   <div class="lpad"><div class="ldow">${dowNames().map(x => `<span class="${x === '일' ? 'sun' : x === '토' ? 'sat' : ''}">${x}</span>`).join('')}</div><div class="lgrid">${tiles}</div></div>`;
@@ -4565,6 +4573,7 @@ const ACT = {
   areacol: t => { const a = t.dataset.a; S.settings = { ...(S.settings || {}), areaColors: { ...((S.settings || {}).areaColors || {}), [a]: t.dataset.v } }; save(); render(); },
   cattoggle: () => { ui.catOpen = !ui.catOpen; render(); },
   areaadd: () => { ui.areaAdd = !ui.areaAdd; ui.focusId = ui.areaAdd ? 'area-new' : null; render(); },
+  lmode: t => { ui.lmode = t.dataset.v; render(); },
   bweek: t => { const v = +t.dataset.v; ui.bweek = v ? addDays(ui.bweek || weekStart(TODAY), v * 7) : null; render(); },
   hcheck: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); const d = t.dataset.date; if (!h || !d || d > TODAY) return; mutate(() => { h.log = h.log || []; const i = h.log.indexOf(d); if (i >= 0) h.log.splice(i, 1); else h.log.push(d); }); },
   hdel: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); if (!h || !confirm(`‘${h.name}’ 습관을 지울까요? 기록도 함께 지워져요.`)) return; mutate(() => { S.habits = S.habits.filter(x => x.id !== h.id); }, '습관을 지웠어요'); },
