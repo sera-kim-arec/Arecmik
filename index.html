@@ -1873,6 +1873,52 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .jf-grid .jf-day::after{content:'';position:absolute;left:0;right:0;bottom:0;height:36px;background:linear-gradient(transparent,var(--surface));pointer-events:none}
 .jf-grid .jf-memo{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 .jls:has(.jf-grid){max-width:1180px}
+/* ---- LIFE 습관 ---- */
+.page.habits{max-width:1100px}
+.hadd{display:flex;height:42px;font-size:15px;margin:2px 0 18px}.hadd input{flex:1;border:0;background:transparent;outline:none;font:inherit}
+.hw{border-radius:14px;background:var(--surface);border:1px solid var(--line);padding:6px 14px}
+.hw-r{display:grid;grid-template-columns:minmax(150px,1.6fr) repeat(7,minmax(36px,1fr)) 72px;align-items:center;min-height:46px;border-bottom:1px solid var(--line-soft)}
+.hw-r:last-child{border-bottom:0}
+.hw-h{min-height:52px;font-size:12px;color:var(--muted);text-align:center}
+.hw-h span{display:flex;flex-direction:column;align-items:center;line-height:1.2}
+.hw-h b{font-size:16px;color:var(--fg);font-weight:600;margin-top:2px}
+.hw-h .today b{color:var(--on-lemon);background:var(--lemon);border-radius:50%;width:28px;height:28px;display:grid;place-items:center}
+.hn{display:flex;align-items:center;gap:8px;min-width:0}
+.hn i,.hm-h i{width:8px;height:8px;border-radius:50%;flex:none}
+.hn input{all:unset;flex:1;min-width:0;font-size:14.5px;font-weight:600;color:var(--fg)}
+.hc{justify-self:center;width:28px;height:28px;border-radius:8px;border:1.5px dashed var(--line);background:transparent;display:grid;place-items:center;cursor:pointer;color:transparent;padding:0}
+.hc svg{width:15px;height:15px}
+.hc.on{background:var(--hc);border:0;color:#fff}
+.hc.today:not(.on){border-style:solid;border-color:var(--hc)}
+.hc.fut{opacity:.35;cursor:default}
+.hcnt{text-align:right;font-size:12.5px;color:var(--muted)}.hcnt b{font-size:16px;color:var(--fg)}
+.hm-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.hm{padding:14px!important}
+.hm-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}.hm-h b{font-size:14.5px}
+.hdel{all:unset;cursor:pointer;color:var(--faint);opacity:0;display:grid;place-items:center}.hdel svg{width:14px;height:14px}
+.hm:hover .hdel{opacity:1}
+.hm-g{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.hd{aspect-ratio:1;border:0;border-radius:7px;background:var(--sunken);font:inherit;font-size:11px;color:var(--muted);cursor:pointer;padding:0}
+.hd.on{background:var(--hc);color:#fff;font-weight:600}
+.hd.today{outline:2px solid var(--fg);outline-offset:-2px}
+.hd:disabled{opacity:.4;cursor:default}
+/* ---- LIFE 한 줄 일기 (바인더) ---- */
+.page.binder{max-width:1240px}
+.bd-book{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.bd-page{border-top:1.5px solid var(--fg2)}
+.bd-ph{font-weight:700;font-size:14px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.bd-ph .muted{font-weight:500;font-size:12.5px;margin-left:6px}
+.bd-day{display:grid;grid-template-columns:56px 1fr;min-height:92px;border-bottom:1px solid var(--line)}
+.bd-d{display:flex;flex-direction:column;align-items:center;padding-top:10px;border-right:1px solid var(--line-soft)}
+.bd-d b{font-size:18px;font-weight:600;line-height:1.2}.bd-d small{font-size:11px;color:var(--muted)}
+.bd-day.today .bd-d b{background:var(--fg);color:var(--surface);border-radius:8px;padding:0 6px}
+.bd-day.fut{opacity:.5}
+.bd-lines{display:flex;flex-direction:column;padding:4px 0 4px 14px;background-image:linear-gradient(transparent 29px,var(--line-soft) 29px,var(--line-soft) 30px,transparent 30px);background-size:100% 30px;background-position:0 4px}
+.bd-l{all:unset;cursor:pointer;line-height:30px;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-l:hover{color:var(--lemon-ink)}
+.bd-in{all:unset;line-height:30px;font-size:14.5px;color:var(--fg)}
+.bd-in::placeholder{color:var(--faint)}
+@media (max-width:900px){.bd-book{grid-template-columns:1fr}}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2063,7 +2109,7 @@ function starter() {
       { id: uid(), space: 'life', name: '일기', parent: null, ord: t + 2 },
       { id: uid(), space: 'life', name: '스크랩', parent: null, ord: t + 3 }
     ],
-    docs: [], posts: [], citems: [], routines: [], retros: [], rmonths: [],
+    docs: [], posts: [], citems: [], routines: [], retros: [], rmonths: [], habits: [],
     collections: [
       { id: uid(), name: '책', view: 'cards', ord: t + 4, fields: [{ id: uid(), name: '상태', type: 'select', options: ['위시리스트', '읽는 중', '다 읽음'] }, { id: uid(), name: '저자', type: 'text' }, { id: uid(), name: '별점', type: 'rating' }, { id: uid(), name: '다 읽은 날', type: 'date', onCal: true }, { id: uid(), name: '한 줄 메모', type: 'text' }] },
       { id: uid(), name: '영화', view: 'cards', ord: t + 5, fields: [{ id: uid(), name: '상태', type: 'select', options: ['위시리스트', '봤음'] }, { id: uid(), name: '감독', type: 'text' }, { id: uid(), name: '본 날', type: 'date', onCal: true }, { id: uid(), name: '별점', type: 'rating' }] }
@@ -2075,7 +2121,7 @@ const optCls = (f, v) => { const o = f.options || []; const i = o.indexOf(v); if
 /* ---------- sync (Firebase) ---------- */
 const FB_CONFIG = { apiKey: 'AIzaSyASyW3vWV3s7cgwEO_MenOZzX3qhgb852U', authDomain: 'arecmik-25699.firebaseapp.com', projectId: 'arecmik-25699', storageBucket: 'arecmik-25699.firebasestorage.app', messagingSenderId: '952722999275', appId: '1:952722999275:web:94b7c48055edd6e8d63bae' };
 const NS = 'arecmik2';
-const COLS = ['projects', 'items', 'folders', 'docs', 'posts', 'collections', 'citems', 'routines', 'retros', 'rmonths'];
+const COLS = ['projects', 'items', 'folders', 'docs', 'posts', 'collections', 'citems', 'routines', 'retros', 'rmonths', 'habits'];
 let fb = null, me = null, synced = {}, syncT = null, loaded = false, unsub = null;
 let syncText = '연결 중', syncCls = 'busy';
 function setSync(text, cls) {
@@ -2424,7 +2470,7 @@ const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'l
 const coverStyle = c => c && c.img ? `background-image:url('${c.img}')` : c ? `background-color:${c.tone}` : '';
 
 /* ---------- ui state ---------- */
-const VIEWS = ['work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area', 'journal', 'journals'];
+const VIEWS = ['habits', 'binder', 'work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area', 'journal', 'journals'];
 const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
@@ -2448,7 +2494,7 @@ function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-
 } catch (e) { /* storage blocked */ } }
 let uiSaveT = null;
 function keepUI() { clearTimeout(uiSaveT); uiSaveT = setTimeout(() => { try { const o = { day: TODAY }; UI_KEEP.forEach(k => { o[k] = ui[k]; }); localStorage.setItem('arecmik-ui', JSON.stringify(o)); } catch (e) { /* storage blocked */ } }, 300); }
-const isLife = () => ['life', 'posts', 'collections', 'new-collection', 'book'].includes(ui.view);
+const isLife = () => ['life', 'habits', 'binder', 'posts', 'collections', 'new-collection', 'book'].includes(ui.view);
 
 /* ---------- render ---------- */
 const app = $('#app'), layer = $('#layer'), pop = $('#pop');
@@ -2554,7 +2600,7 @@ function workNav() {
   ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="adot" style="--ac:${areaColor(a)}"></span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}` : ''}</div>` : ''}`;
 }
 function lifeNav() {
-  return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
+  return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}${navBtn('binder', '한 줄 일기', I.pen)}${navBtn('habits', '습관', I.check, habitToday())}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
   <div class="sec"><div class="sec-head" data-drop="froot:life"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('life', null, 0)}</div>
   <div class="sec"><div class="sec-head"><span>컬렉션</span><button class="mini" data-act="newcoll" aria-label="새 컬렉션" title="새 컬렉션">${I.plus}</button></div>
@@ -2609,6 +2655,8 @@ function viewHTML() {
     case 'projects': return vProjects();
     case 'notes': return vNotes();
     case 'life': return vLife();
+    case 'habits': return vHabits();
+    case 'binder': return vBinder();
     case 'posts': return vPosts();
     case 'collections': return vColl();
     case 'new-collection': return vNewColl();
@@ -3450,6 +3498,40 @@ function recLabel(recs) {
   recs.forEach(r => { const n = r.t === 'post' ? (folder(r.o.folder) || {}).name : r.c.name; if (n && !names.includes(n)) names.push(n); });
   return names.join(' · ');
 }
+/* ---------- LIFE 습관: 이번 주 체크 칸 + 습관마다 한 달 달력(한 날 칠하기, 14/17) ---------- */
+const HCOL = ['#3B82F6', '#34A853', '#8B5CF6', '#F59E0B', '#EC4899', '#14B8A6'];
+const habits = () => (S.habits = S.habits || []).slice().sort((a, b) => (a.ord || 0) - (b.ord || 0));
+const hOn = (h, d) => (h.log || []).includes(d);
+function habitToday() { const n = habits().length; if (!n) return ''; const k = habits().filter(h => hOn(h, TODAY)).length; return `<span class="cnt">${k}/${n}</span>`; }
+/* ---------- LIFE 한 줄 일기: 지난주 | 이번 주를 펼친 노트처럼. 줄은 그날 '일기' 글에 쌓임 ---------- */
+function vBinder() {
+  const base = ui.bweek || weekStart(TODAY); const pages = [addDays(base, -7), base];
+  const lines = d => { const p = diaryPost(d); return p ? (p.blocks || []).map(b => plainText(b.text || '').replace(/^\d{1,2}:\d{2}\s+/, '')).filter(t => t.trim()) : []; };
+  const day = d => { const dd = parse(d); const ls = lines(d); const p = diaryPost(d); return `<div class="bd-day ${d === TODAY ? 'today' : ''} ${d > TODAY ? 'fut' : ''}"><div class="bd-d"><b>${String(dd.getDate()).padStart(2, '0')}</b><small>${WD[dd.getDay()]}</small></div><div class="bd-lines">${ls.map(t => `<button class="bd-l" data-act="openpost" data-id="${p.id}">${esc(t)}</button>`).join('')}${d <= TODAY ? `<input class="bd-in" data-bdate="${d}" placeholder="${ls.length ? '' : '한 줄 남기기'}" autocomplete="off" aria-label="${fmtShort(d)} 한 줄 일기">` : ''}</div></div>`; };
+  const page = (ws, i) => `<section class="bd-page"><div class="bd-ph">${i ? '이번 주' : '지난주'} <span class="muted">${fmtShort(ws)} – ${fmtShort(addDays(ws, 6))}</span></div>${[...Array(7)].map((_, k) => day(addDays(ws, k))).join('')}</section>`;
+  return `${topbar('<h1 class="h1">한 줄 일기</h1>', `<div class="pager"><button class="btn sm icon" data-act="bweek" data-v="-1" aria-label="이전 주">${I.left}</button><button class="btn sm" data-act="bweek" data-v="0">이번 주</button><button class="btn sm icon" data-act="bweek" data-v="1" aria-label="다음 주">${I.right}</button></div>`)}
+  <div class="page binder"><div class="bd-book">${pages.map(page).join('')}</div><p class="hint" style="margin-top:10px">적은 줄은 그날의 LIFE › 일기 글에 쌓여요. 줄을 누르면 일기 글이 열려요.</p></div>`;
+}
+document.addEventListener('keydown', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('bd-in') || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); const d = t.dataset.bdate; if (!v || !d) return; addDiaryLine(d, v); ui.focusSel = `.bd-in[data-bdate="${d}"]`; render(); const el = document.querySelector(ui.focusSel); if (el) el.focus(); });
+function vHabits() {
+  const hs = habits(); const ws = weekStart(TODAY); const days = [...Array(7)].map((_, i) => addDays(ws, i));
+  const ym = TODAY.slice(0, 7); const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate();
+  const upto = +TODAY.slice(8); const mDays = [...Array(last)].map((_, i) => `${ym}-${String(i + 1).padStart(2, '0')}`);
+  const cnt = h => mDays.filter(d => d <= TODAY && hOn(h, d)).length;
+  const cell = (h, d) => `<button class="hc ${hOn(h, d) ? 'on' : ''} ${d === TODAY ? 'today' : ''} ${d > TODAY ? 'fut' : ''}" style="--hc:${h.color}" data-act="hcheck" data-id="${h.id}" data-date="${d}" ${d > TODAY ? 'disabled' : ''} aria-label="${esc(h.name)} ${fmtShort(d)} ${hOn(h, d) ? '했음' : '안 함'}">${I.check}</button>`;
+  const week = hs.length ? `<div class="hw"><div class="hw-r hw-h"><span></span>${days.map(d => `<span class="${d === TODAY ? 'today' : ''}"><small>${WD[parse(d).getDay()]}</small><b>${+d.slice(8)}</b></span>`).join('')}<span>이번 달</span></div>
+    ${hs.map(h => `<div class="hw-r"><span class="hn"><i style="background:${h.color}"></i><input data-hname="${h.id}" value="${esc(h.name)}" aria-label="습관 이름"></span>${days.map(d => cell(h, d)).join('')}<span class="hcnt"><b>${cnt(h)}</b>/${upto}</span></div>`).join('')}</div>` : '';
+  const lead = (new Date(y, m - 1, 1).getDay() - wsDay() + 7) % 7;
+  const month = h => `<div class="hm card"><div class="hm-h"><i style="background:${h.color}"></i><b>${esc(h.name)}</b><span class="grow"></span><span class="hcnt"><b>${cnt(h)}</b>/${upto}</span><button class="hdel" data-act="hdel" data-id="${h.id}" title="습관 지우기" aria-label="${esc(h.name)} 지우기">${I.x}</button></div>
+    <div class="hm-g">${[...Array(lead)].map(() => '<span></span>').join('')}${mDays.map(d => `<button class="hd ${hOn(h, d) ? 'on' : ''} ${d === TODAY ? 'today' : ''}" style="--hc:${h.color}" data-act="hcheck" data-id="${h.id}" data-date="${d}" ${d > TODAY ? 'disabled' : ''}>${+d.slice(8)}</button>`).join('')}</div></div>`;
+  return `${topbar(`<h1 class="h1">습관</h1><span class="muted">${m}월 · 오늘 ${hs.filter(h => hOn(h, TODAY)).length}/${hs.length}</span>`)}
+  <div class="page habits">
+    <label class="addline hadd">${I.plus}<input id="habit-add" placeholder="새 습관 적고 Enter (예: 물 2L, 스트레칭, 12시 전 취침)" autocomplete="off" aria-label="습관 추가"></label>
+    ${hs.length ? `<div class="lbl">이번 주</div>${week}<div class="lbl" style="margin-top:22px">${m}월</div><div class="hm-list">${hs.map(month).join('')}</div>` : '<div class="card"><div class="empty">매일 챙기고 싶은 습관을 위 칸에 적어 보세요. 한 날을 누르면 칠해지고, 한 달에 몇 번 했는지 보여줘요.</div></div>'}
+  </div>`;
+}
+document.addEventListener('keydown', e => { const t = e.target; if (!t || t.id !== 'habit-add' || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); if (!v) return; mutate(() => { S.habits = S.habits || []; S.habits.push({ id: uid(), name: v, color: HCOL[S.habits.length % HCOL.length], log: [], ord: Date.now() }); }); ui.focusId = 'habit-add'; render(); });
+document.addEventListener('change', e => { const t = e.target; if (!t || !t.dataset || !t.dataset.hname) return; const h = (S.habits || []).find(x => x.id === t.dataset.hname); const v = t.value.trim(); if (!h || !v || v === h.name) return; mutate(() => { h.name = v; }); });
 function vLife() {
   const { y, m, weeks } = monthRange(ui.lmonth);
   const days = []; weeks.forEach(w => { for (let i = 0; i < 7; i++) days.push(addDays(w, i)); });
@@ -4458,6 +4540,9 @@ const ACT = {
   areacol: t => { const a = t.dataset.a; S.settings = { ...(S.settings || {}), areaColors: { ...((S.settings || {}).areaColors || {}), [a]: t.dataset.v } }; save(); render(); },
   cattoggle: () => { ui.catOpen = !ui.catOpen; render(); },
   areaadd: () => { ui.areaAdd = !ui.areaAdd; ui.focusId = ui.areaAdd ? 'area-new' : null; render(); },
+  bweek: t => { const v = +t.dataset.v; ui.bweek = v ? addDays(ui.bweek || weekStart(TODAY), v * 7) : null; render(); },
+  hcheck: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); const d = t.dataset.date; if (!h || !d || d > TODAY) return; mutate(() => { h.log = h.log || []; const i = h.log.indexOf(d); if (i >= 0) h.log.splice(i, 1); else h.log.push(d); }); },
+  hdel: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); if (!h || !confirm(`‘${h.name}’ 습관을 지울까요? 기록도 함께 지워져요.`)) return; mutate(() => { S.habits = S.habits.filter(x => x.id !== h.id); }, '습관을 지웠어요'); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
   igdone: t => { const it = item(t.dataset.id); if (!it) return; const back = ui.igBack; ui.igBack = null; mutate(() => { it.done = true; if (it.kind === 'event') it.cancel = false; }, `‘${it.title || '할일'}’ 확인하고 완료`); if (back) { ui.modal = back; } else ui.modal = null; renderModal(); },
   igclose: () => { const back = ui.igBack; ui.igBack = null; ui.modal = back || null; renderModal(); },
