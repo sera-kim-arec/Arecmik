@@ -3551,9 +3551,17 @@ function vBinder(modeSeg = '') {
   const day = d => { const dd = parse(d); const ls = lines(d); const p = diaryPost(d); return `<div class="bd-day ${d === TODAY ? 'today' : ''} ${d > TODAY ? 'fut' : ''}"><div class="bd-d"><b>${String(dd.getDate()).padStart(2, '0')}</b><small>${WD[dd.getDay()]}</small></div><div class="bd-lines">${ls.map(t => `<button class="bd-l" data-act="openpost" data-id="${p.id}">${esc(t)}</button>`).join('')}${d <= TODAY ? `<input class="bd-in" data-bdate="${d}" placeholder="${ls.length ? '' : '한 줄 남기기'}" autocomplete="off" aria-label="${fmtShort(d)} 한 줄 일기">` : ''}</div></div>`; };
   const page = (ws, i) => `<section class="bd-page"><div class="bd-ph">${i ? '이번 주' : '지난주'} <span class="muted">${fmtShort(ws)} – ${fmtShort(addDays(ws, 6))}</span></div>${[...Array(7)].map((_, k) => day(addDays(ws, k))).join('')}</section>`;
   return `${topbar(`<h1 class="h1">한 줄 일기</h1>${modeSeg}`, `<div class="pager"><button class="btn sm icon" data-act="bweek" data-v="-1" aria-label="이전 주">${I.left}</button><button class="btn sm" data-act="bweek" data-v="0">이번 주</button><button class="btn sm icon" data-act="bweek" data-v="1" aria-label="다음 주">${I.right}</button></div>`)}
-  <div class="page binder"><div class="bd-book">${pages.map(page).join('')}</div><p class="hint" style="margin-top:10px">적은 줄은 그날의 LIFE › 일기 글에 쌓여요. 줄을 누르면 일기 글이 열려요.</p></div>`;
+  <div class="page binder"><div class="bd-book">${pages.map(page).join('')}</div><p class="hint" style="margin-top:10px">적은 줄은 그날의 LIFE › 일기 글에 쌓여요. 줄을 누르면 일기 글이 열려요.</p>
+  ${habits().length ? `<div class="lbl" style="margin-top:22px;display:flex;align-items:center">습관 <span class="muted" style="margin-left:6px">${fmtShort(base)} – ${fmtShort(addDays(base, 6))}</span><button class="hs-more" data-act="go" data-view="habits">습관 관리 ›</button></div>${habitWeek(base)}` : ''}</div>`;
 }
 document.addEventListener('keydown', e => { const t = e.target; if (!t || !t.classList || !t.classList.contains('bd-in') || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); const d = t.dataset.bdate; if (!v || !d) return; addDiaryLine(d, v); ui.focusSel = `.bd-in[data-bdate="${d}"]`; render(); const el = document.querySelector(ui.focusSel); if (el) el.focus(); });
+function habitWeek(ws) {
+  const hs = habits(); if (!hs.length) return ''; const days = [...Array(7)].map((_, i) => addDays(ws, i));
+  const cnt = h => days.filter(d => d <= TODAY && hOn(h, d)).length; const upto = days.filter(d => d <= TODAY).length;
+  const cell = (h, d) => `<button class="hc ${hOn(h, d) ? 'on' : ''} ${d === TODAY ? 'today' : ''} ${d > TODAY ? 'fut' : ''}" style="--hc:${h.color}" data-act="hcheck" data-id="${h.id}" data-date="${d}" ${d > TODAY ? 'disabled' : ''} aria-label="${esc(h.name)} ${fmtShort(d)} ${hOn(h, d) ? '했음' : '안 함'}">${I.check}</button>`;
+  return `<div class="hw"><div class="hw-r hw-h"><span></span>${days.map(d => `<span class="${d === TODAY ? 'today' : ''}"><small>${WD[parse(d).getDay()]}</small><b>${+d.slice(8)}</b></span>`).join('')}<span>이번 주</span></div>
+    ${hs.map(h => `<div class="hw-r"><span class="hn"><i style="background:${h.color}"></i><input data-hname="${h.id}" value="${esc(h.name)}" aria-label="습관 이름"></span>${days.map(d => cell(h, d)).join('')}<span class="hcnt"><b>${cnt(h)}</b>/${upto || 0}</span></div>`).join('')}</div>`;
+}
 function vHabits() {
   const hs = habits(); const ws = weekStart(TODAY); const days = [...Array(7)].map((_, i) => addDays(ws, i));
   const ym = TODAY.slice(0, 7); const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate();
