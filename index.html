@@ -2012,6 +2012,53 @@ html.flat .sstrip .spill{box-shadow:none}
 .oneday .jpin{margin:6px 0 14px}
 .oneday .jpage.incal>section>.lbl,.oneday .jpage.incal>aside>.lbl{margin:0 2px 8px;height:28px;display:flex;align-items:center;gap:6px}
 .oneday .jpage.incal .jnote-tabs button{height:26px}
+/* ---- 주 보기: 고른 날 칸 아래 '이 날 메모' ---- */
+.wk-scroll{display:flex;flex-direction:column}
+.wk-scroll>.cal{flex:1;min-height:0}
+.wk-scroll>.cal .wk{min-height:320px}
+.wk-memo{flex:none;min-height:150px;max-height:40vh;overflow:auto;margin:12px 0 4px;padding:10px 14px 8px;border-radius:14px;background:var(--sunken)}
+.wk-ml{font-size:12.5px;font-weight:700;color:var(--fg2);margin-bottom:4px;display:flex;gap:8px;align-items:baseline}
+.wk-ml .muted{font-weight:500;font-size:12px}
+.wk-memo .bk-text{font-size:13.5px}
+/* ---- 주 보기 정돈: 위쪽 비우고 오른쪽 세로 칸, 고른 날 칸 안에 메모 | 일기 ---- */
+.wk-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:14px;padding:0 14px 10px 14px}
+.wk-body>.cal-scroll{padding:0!important}
+.wk-body>.cal-scroll{min-height:0}
+.wk-rail{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-top:4px}
+.rl-sec{border-radius:14px;background:var(--sunken);padding:10px 12px}
+.rl-h{font-size:12.5px;font-weight:700;color:var(--fg2);margin-bottom:4px;display:flex;gap:6px}
+.rl-star{background:rgba(229,72,77,.06)}
+.rl-star .rl-h{color:#C2282E}
+.rl-row{display:flex;align-items:center;gap:8px;min-height:32px}
+.rl-row+.rl-row{border-top:1px solid rgba(229,72,77,.10)}
+.rl-t{all:unset;cursor:pointer;flex:1;min-width:0;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-d{font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.rl-d.late{color:#D2383E}.rl-d.today{color:var(--lemon-ink)}
+.rl-memo{padding:0}
+.rl-memo .mnote{margin:0!important;background:transparent!important;box-shadow:none!important;border:0!important;max-height:260px;overflow:auto}
+.rl-memo .mn-fold{display:none}
+.rl-memo .mnote .mn-tabs,.rl-memo .mnote>div:first-child{flex-wrap:wrap}
+.rl-tabs{padding:6px 6px 8px}
+.rl-tabs .ptab-card{background:transparent!important;box-shadow:none!important;border:0!important;margin:0!important;padding:0}
+.rl-tabs .ptab-card>.seg button{height:26px;font-size:12.5px}
+.wk-col{display:flex;flex-direction:column;min-width:0;position:relative;z-index:1}
+.wk-col>.items{flex:none}
+.wk-cm{margin:10px 6px 10px;padding:8px 10px 6px;border-radius:12px;background:var(--sunken);min-height:130px}
+.wk-tabs{display:flex;gap:4px;margin-bottom:4px}
+.wk-tabs button{all:unset;cursor:pointer;font-size:12px;font-weight:700;color:var(--muted);padding:3px 8px;border-radius:8px}
+.wk-tabs button.on{background:var(--surface);color:var(--fg)}
+.wk-cm .bk-text{font-size:13.5px}
+.wk-rail-on .wk-scroll>.cal .wk{min-height:0}
+.rail-shut .wk-body{grid-template-columns:minmax(0,1fr)}
+.rb-n{font-size:12px;font-weight:700;color:#D2383E;margin-left:2px}
+.rl-day{min-height:150px}
+.rl-day .rl-h{align-items:center}
+.rl-day .grow{flex:1}
+.rl-today{font-size:11.5px;color:var(--lemon-ink);font-weight:700}
+.rl-day .wk-tabs{margin:0}
+.rl-day .wk-tabs button{padding:2px 7px;font-size:11.5px}
+.rl-day .bk-text{font-size:13.5px}
+.wk-rail-on .cal-scroll .cal .wk:not(.sel){min-height:110px}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2161,6 +2208,7 @@ const COLORS = ['lemon', 'blue', 'green', 'violet', 'rose'];
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); if (m < 1) return '방금 수정'; if (m < 60) return `${m}분 전 수정`; const h = Math.round(m / 60); if (h < 24) return `${h}시간 전 수정`; return `${Math.round(h / 24)}일 전 수정`; };
 
 const I = {
+  rail: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M15 4.5v15"/></svg>',
   hbook: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4.5h10.5a2 2 0 012 2V20H7a2 2 0 01-2-2z"/><path d="M5 18a2 2 0 012-2h10.5M9 8.5h5"/></svg>',
   chat: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5h-2.5z"/></svg>',
   cal: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
@@ -2403,7 +2451,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: st.layout === 'panel' ? 'panel' : 'dock', accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: st.layout === 'panel' ? 'panel' : 'dock', rail: st.rail !== false, accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -2782,7 +2830,7 @@ function vWork() {
   if (isMob()) return vWorkM();
   if (ui.calView === 'day' && !ui.jdetail) ui.calView = 'month';
   const dock = settingsOf().layout === 'dock';
-  if (ui.calView === 'one' && !dock) ui.calView = 'month';
+  if (ui.calView === 'one') ui.calView = dock && !isMob() ? 'week' : 'month';
   const one = ui.calView === 'one';
   const wk = ui.calView === 'week'; const dayv = ui.calView === 'day';
   const { y, m, weeks } = monthRange(ui.month);
@@ -2791,15 +2839,18 @@ function vWork() {
   const sd = parse(ui.sel);
   const title = one || (dayv && ui.jdetail) ? `${sd.getMonth() + 1}월 ${sd.getDate()}일 <span class="muted" style="font-weight:600">${WD[sd.getDay()]}요일</span>` : dayv || wk ? `${a.getMonth() + 1}월 ${a.getDate()}일 – ${a.getMonth() === b.getMonth() ? '' : (b.getMonth() + 1) + '월 '}${b.getDate()}일` : `${y}년 ${m}월`;
   const nav = one || (dayv && ui.jdetail) ? 'dayn' : dayv || wk ? 'week' : 'month';
-  const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv || one ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv || one ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk && !dayv && !one ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button>${dock ? `<button class="${one ? 'on' : ''}" data-act="calview" data-v="one">하루</button>` : ''}</div>`;
+  const left = `<h1 class="h1">${title}</h1><div class="pager"><button class="btn icon" data-act="${nav}" data-d="-1" aria-label="${dayv || one ? '전날' : wk ? '이전 주' : '이전 달'}">${I.left}</button><button class="btn icon" data-act="${nav}" data-d="1" aria-label="${dayv || one ? '다음 날' : wk ? '다음 주' : '다음 달'}">${I.right}</button></div><button class="btn" data-act="today">오늘</button><div class="seg inline" role="group" aria-label="달력 보기"><button class="${!wk && !dayv && !one ? 'on' : ''}" data-act="calview" data-v="month">월</button><button class="${wk ? 'on' : ''}" data-act="calview" data-v="week">주</button></div>`;
   const jsrch = `<label class="search jsearch">${I.search}<input id="jq" type="search" placeholder="일지 검색" autocomplete="off" value="${esc(ui.jq || '')}" aria-label="일지 검색"></label>`;
   const right = dayv ? `${jsrch}<button class="btn primary" data-act="quick">${I.plus}새 항목</button>` : `${jsrch}${wk ? `<button class="btn ${ui.weekLog ? 'on-soft' : ''}" data-act="weeklog" aria-pressed="${!!ui.weekLog}">${I.note}한 일 보기</button>` : ''}<button class="btn ${settingsOf().hideWeekend ? '' : 'on-soft'}" data-act="weekend" aria-pressed="${!settingsOf().hideWeekend}" title="주말 보이기/숨기기">주말</button><button class="btn primary" data-act="quick">${I.plus}새 항목</button>`;
   let body;
   if (one && !(ui.jq || '').trim()) body = `<div class="cal-scroll jday-scroll oneday"><div id="jl-res">${vJournal(true)}</div></div>`;
   else if (dayv || (ui.jq || '').trim()) body = `<div class="cal-scroll jday-scroll"><div id="jl-res">${jBody()}</div></div>`;
   else if (wk && ui.weekLog) body = weekLogHTML(ws);
-  else if (wk) body = `<div class="cal-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`;
+  else if (wk) { const sd2 = parse(ui.sel); body = `<div class="cal-scroll wk-scroll"><div class="cal">${dowHTML(ws)}${weekRow(ws, true, 0)}</div></div>`; }
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
+  if (dock && !dayv && !isMob()) { const open = settingsOf().rail !== false; const nStar = S.items.filter(it => (it.star || (it.checks || []).length) && !it.done && !it.cancel).length;
+    const rb = `<button class="btn ${open ? 'on-soft' : ''}" data-act="railtoggle" title="${open ? '오른쪽 칸 접기' : '오른쪽 칸 펼치기'}" aria-pressed="${open}">${I.rail}${!open && nStar ? `<span class="rb-n">❗${nStar}</span>` : ''}</button>`;
+    return `<div class="cal-wrap dock-on wk-rail-on ${open ? '' : 'rail-shut'}"><section class="cal-main">${topbar(left, right.replace(/(<button class="btn primary" data-act="quick")/, rb + '$1'))}<div class="wk-body">${body}${open ? `<aside class="wk-rail">${railHTML()}</aside>` : ''}</div></section></div>`; }
   if (dock) return `<div class="cal-wrap dock-on"><section class="cal-main">${topbar(left, right)}${one ? '' : starStrip()}${dayv || one ? '' : dockHTML()}${body}</section></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : monthNote()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
@@ -2871,7 +2922,8 @@ function weekRow(ws, isSel, month) {
   });
   days.forEach((d, i) => {
     const list = [...dayItems(d), ...S.items.filter(it => it.kind === 'todo' && it.date && it.date !== d && (it.log || []).some(c => c.date === d))]; const max = isSel ? 99 : 3; const shown = list.slice(0, max);
-    h += `<div class="items" style="grid-column:${i + 1};grid-row:${nl + 2}" data-act="selday" data-date="${d}" data-drop="day:${d}">${routinesOn(d).map(r => rtChip(r, d)).join('')}${shown.map(it => chipHTML(it, d)).join('')}${list.length > max ? `<button class="more" data-act="selday" data-date="${d}">+${list.length - max}개 더</button>` : ''}</div>`;
+    const wmemo = false;
+    h += `${wmemo ? `<div class="wk-col" style="grid-column:${i + 1};grid-row:${nl + 2}">` : ''}<div class="items" ${wmemo ? '' : `style="grid-column:${i + 1};grid-row:${nl + 2}"`} data-act="selday" data-date="${d}" data-drop="day:${d}">${routinesOn(d).map(r => rtChip(r, d)).join('')}${shown.map(it => chipHTML(it, d)).join('')}${list.length > max ? `<button class="more" data-act="selday" data-date="${d}">+${list.length - max}개 더</button>` : ''}</div>${wmemo ? `<div class="wk-cm"><div class="wk-tabs"><button class="${ui.jnoteTab === 'diary' ? '' : 'on'}" data-act="jntab" data-v="memo">이 날 메모</button><button class="${ui.jnoteTab === 'diary' ? 'on' : ''}" data-act="jntab" data-v="diary">일기 <span class="muted">LIFE</span></button></div>${ui.jnoteTab === 'diary' ? editorHTML('jdiary:' + d, true) : editorHTML('jday:' + d, true)}</div></div>` : ''}`;
   });
   return h + '</div>';
 }
@@ -2974,6 +3026,14 @@ function panelTabs() {
   <div class="ptab-body">${tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}</div></div>`;
 }
 /* 위쪽 칸 배치: 왼쪽 고정 메모, 오른쪽 날짜 없는 할일·루틴·복기. 높이는 아래 막대를 끌어 조절 */
+function railHTML() {
+  const list = S.items.filter(it => (it.star || (it.checks || []).length) && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
+  const when = it => !it.date ? '' : `<span class="rl-d ${it.date < TODAY ? 'late' : it.date === TODAY ? 'today' : ''}">${it.date === TODAY ? '오늘' : it.date < TODAY ? fmtShort(it.date) + ' 지남' : fmtShort(it.date)}</span>`;
+  const star = list.length ? `<section class="rl-sec rl-star"><div class="rl-h">❗ 잊지 말 것 <span class="muted">${list.length}</span></div>${list.map(it => `<div class="rl-row">${it.kind === 'todo' ? `<button class="chk" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="rl-t" data-act="open" data-kind="item" data-id="${it.id}">${tT(it.title || '제목 없음')}</button>${when(it)}</div>`).join('')}</section>` : '';
+  const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month'; const memo = monthNote(); ui.mnOpen = keep;
+  const sd = parse(ui.sel); const dn = `<section class="rl-sec rl-day"><div class="rl-h">${sd.getMonth() + 1}월 ${sd.getDate()}일 ${WD[sd.getDay()]}${ui.sel === TODAY ? ' <span class="rl-today">오늘</span>' : ''}<span class="grow"></span><span class="wk-tabs"><button class="${ui.jnoteTab === 'diary' ? '' : 'on'}" data-act="jntab" data-v="memo">이 날 메모</button><button class="${ui.jnoteTab === 'diary' ? 'on' : ''}" data-act="jntab" data-v="diary">일기</button></span></div>${ui.jnoteTab === 'diary' ? editorHTML('jdiary:' + ui.sel, true) : editorHTML('jday:' + ui.sel, true)}</section>`;
+  return `${star}${dn}<section class="rl-sec rl-memo">${memo}</section><section class="rl-sec rl-tabs">${panelTabs()}</section>`;
+}
 function dockHTML() {
   const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month';
   const memo = monthNote(); ui.mnOpen = keep;
@@ -4627,13 +4687,13 @@ const ACT = {
   jwsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.focusId = 'jday-add'; render(); },
   dayn: t => { ui.sel = addDays(ui.sel, +t.dataset.d); ui.month = ui.sel.slice(0, 7); render(); },
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
+  railtoggle: () => { S.settings = { ...(S.settings || {}), rail: settingsOf().rail === false }; save(); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
   selday: (t, e) => {
     const d = t.dataset.date; const now = Date.now();
     if (lastSel && lastSel.d === d && now - lastSel.t < 450) { lastSel = null; if (isMob()) { const m = $('#m-add'); if (m) m.focus(); } else openQC(d); return; }
     lastSel = { d, t: now }; ui.sel = d; if (isMob()) ui.month = ui.sel.slice(0, 7);
-    if (!isMob() && settingsOf().layout === 'dock' && e && e.target && e.target.closest && e.target.closest('.num')) { ui.calView = 'one'; ui.jdetail = false; ui.month = d.slice(0, 7); }
     render();
   },
   subadd: (t, e) => { e.stopPropagation(); e.preventDefault(); ui.subFor = ui.subFor === t.dataset.id ? null : t.dataset.id; ui.focusId = ui.subFor ? 'subq' : null; render(); },
