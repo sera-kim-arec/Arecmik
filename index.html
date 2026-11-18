@@ -2170,6 +2170,25 @@ html.flat .btn.on-soft{background:var(--sunken);border-color:transparent;color:v
   html.flat .mcal{box-shadow:none;border-bottom:1px solid var(--line);border-radius:0}
 }
 
+
+/* ---- 폰: PC와 같은 그라데이션 바탕 + 반투명 유리 화면 ---- */
+@media (max-width:640px){
+  html.flat body,html.flat .app{background:linear-gradient(172deg,#566B7D 0%,#76828E 42%,#9C8878 78%,#B39C88 100%) fixed}
+  html.flat .main{--bg:transparent;--surface:rgba(255,255,255,.72);--sunken:rgba(120,130,145,.12);--panel:rgba(255,255,255,.5);--dim:transparent;background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(30px) saturate(140%);backdrop-filter:blur(30px) saturate(140%);margin:calc(6px + env(safe-area-inset-top,0px)) 6px 0;border-radius:22px 22px 0 0;min-height:calc(100dvh - 6px);box-shadow:0 8px 28px rgba(20,28,38,.18),0 0 0 1px rgba(255,255,255,.35)}
+  html.flat .main .topbar,html.flat .main .mtop{background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-bottom:0!important}
+  html.flat .main .topbar::before,html.flat .main .topbar::after{display:none}
+  html.flat .mcal{background:transparent;border-bottom:1px solid rgba(0,0,0,.06)}
+  html.flat .tabbar{background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(24px) saturate(150%);backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(20,28,38,.22)}
+  html.flat .tabbar .on,html.flat .tabbar [aria-current="page"]{color:var(--lemon)}
+  html.flat .tile{background:rgba(255,255,255,.55)}
+  html.flat .sstrip{margin-left:10px;margin-right:10px}
+}
+@media (max-width:640px) and (prefers-color-scheme: dark){ html.flat:not([data-theme="light"]) body,html.flat:not([data-theme="light"]) .app{background:radial-gradient(120% 60% at 0% 0%,rgba(255,255,255,.10),transparent 60%),linear-gradient(172deg,#3D5060 0%,#4F5864 42%,#66574B 78%,#76624F 100%) fixed}
+  html.flat:not([data-theme="light"]) .main{background:rgba(24,26,30,.62);--surface:rgba(255,255,255,.07);--sunken:rgba(255,255,255,.07);--panel:rgba(255,255,255,.05);box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+  html.flat:not([data-theme="light"]) .mcal{border-bottom-color:rgba(255,255,255,.08)}
+  html.flat:not([data-theme="light"]) .tabbar{background:rgba(30,32,38,.6);border-color:rgba(255,255,255,.1)}
+  html.flat:not([data-theme="light"]) .tile{background:rgba(255,255,255,.06)}
+}
 </style>
 
 </head>
