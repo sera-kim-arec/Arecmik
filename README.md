@@ -5,7 +5,7 @@
 다른 채팅에서 이어서 작업할 때는 [제품 방향과 사용자 선호](docs/product-direction.md)와 [작업 맥락](AGENTS.md)을 먼저 참고하세요.
 
 ## 구성
-- `index.html` — 앱 전체(바닐라 JS 한 파일). WORK(캘린더·할일·코멘트·메모·루틴·복기·카테고리·프로젝트·노트) / LIFE(일기·스크랩·컬렉션)
+- `index.html` — 앱 전체(바닐라 JS 한 파일). WORK(캘린더·할일·코멘트·메모·루틴·복기·카테고리·프로젝트·노트) / LIFE(기록 달력·목표·습관·일기·스크랩·컬렉션)
 - `sw.js`, `manifest.json`, `*-lemon.png` — 설치형 앱(PWA)
 - `widget*.html|js|css`, `widget-preview-*.png`, `icon-192.png` — 안드로이드 위젯 연결 화면
 - `android/`, `android-release.json`, `downloads/` — 안드로이드 앱 소스와 배포 APK

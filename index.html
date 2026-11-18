@@ -2281,6 +2281,42 @@ html.flat .btn.on-soft{background:var(--sunken);border-color:transparent;color:v
   html.flat:not([data-theme="light"]) .tabbar{background:rgba(30,32,38,.6);border-color:rgba(255,255,255,.1)}
   html.flat:not([data-theme="light"]) .tile{background:rgba(255,255,255,.06)}
 }
+/* ---- LIFE 목표 ---- */
+.page.goals{max-width:860px}
+.gc{padding:14px 16px!important;margin-bottom:14px}
+.gc-h,.gp-h{display:flex;align-items:center;gap:8px;min-width:0}
+.gdot{width:10px;height:10px;border-radius:50%;background:var(--gc);flex:none}
+.gc-n{all:unset;flex:1;min-width:0;font-size:16px;font-weight:700;color:var(--fg)}
+.gp-n,.gt-n{all:unset;flex:1;min-width:0;font-size:14px;color:var(--fg)}
+.gp-n{font-weight:600}
+.g-k{font-size:12.5px;color:var(--muted);white-space:nowrap}.g-k b{font-size:15px;color:var(--fg)}
+.g-dd{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}.g-dd.late{color:#D2383E}
+.gt-date{border:0;background:transparent;font:inherit;font-size:12px;color:var(--muted);width:118px;padding:0;cursor:pointer}
+.gt-date.ge{width:22px;color:transparent;opacity:.45}.gt-date.ge::-webkit-datetime-edit{display:none}.gt-date.ge:hover{opacity:.9}
+.g-tw{all:unset;cursor:pointer;width:20px;height:20px;display:grid;place-items:center;color:var(--muted);flex:none}
+.g-x{all:unset;cursor:pointer;color:var(--faint);opacity:0;display:grid;place-items:center;padding:2px}.g-x svg{width:12px;height:12px}
+.gc-h:hover>.g-x,.gp-h:hover>.g-x,.gt:hover>.g-x,.gh-chip:hover>.g-x{opacity:1}
+.gbar{height:6px;border-radius:3px;background:var(--sunken);overflow:hidden;margin:10px 0 2px}.gbar i{display:block;height:100%;border-radius:3px}
+.gbar.sm{width:64px;height:4px;margin:0;flex:none}
+.gh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 4px}
+.gh-chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 6px 0 6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600}
+.gh-chip small{font-weight:500;color:var(--muted);font-size:11.5px}
+.gh-chip .hs-c{padding:0;cursor:pointer;background:transparent}.gh-chip .hs-c.on{background:var(--hc);color:#fff}
+.gh-add,.g-add{display:flex;align-items:center;gap:6px;color:var(--faint);font-size:13px}
+.gh-add input,.g-add input{border:0;background:transparent;outline:none;font:inherit;color:var(--fg);flex:1;min-width:0}
+.gh-add{min-width:200px;flex:1}
+.gps{border-top:1px solid var(--line-soft);margin-top:8px;padding-top:4px}
+.gp{padding:4px 0;border-bottom:1px solid var(--line-soft)}
+.gp-h{min-height:36px}
+.gp-b{padding:0 0 4px 26px}
+.gt{display:flex;align-items:center;gap:8px;min-height:32px}
+.gt-c{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--hc);background:transparent;display:grid;place-items:center;padding:0;cursor:pointer;color:transparent;flex:none}
+.gt-c svg{width:11px;height:11px}.gt-c.on{background:var(--hc);color:#fff}
+.gt.done .gt-n{text-decoration:line-through;color:var(--muted)}
+.gt-d{font-size:12px;color:var(--muted);white-space:nowrap}
+.g-add{min-height:32px}
+.gp-add{min-height:40px;padding-left:4px}
+@media (max-width:640px){.gt-date{width:auto;max-width:96px}.gbar.sm{display:none}.g-x{opacity:.6}.gp-b{padding-left:10px}}
 </style>
 
 </head>
@@ -2319,6 +2355,7 @@ const COLORS = ['lemon', 'blue', 'green', 'violet', 'rose'];
 const ago = t => { const m = Math.round((Date.now() - t) / 60000); if (m < 1) return '방금 수정'; if (m < 60) return `${m}분 전 수정`; const h = Math.round(m / 60); if (h < 24) return `${h}시간 전 수정`; return `${Math.round(h / 24)}일 전 수정`; };
 
 const I = {
+  goal: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>',
   clock: '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
   rail: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M15 4.5v15"/></svg>',
   hbook: '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4.5h10.5a2 2 0 012 2V20H7a2 2 0 01-2-2z"/><path d="M5 18a2 2 0 012-2h10.5M9 8.5h5"/></svg>',
@@ -2362,7 +2399,7 @@ function starter() {
       { id: uid(), space: 'life', name: '일기', parent: null, ord: t + 2 },
       { id: uid(), space: 'life', name: '스크랩', parent: null, ord: t + 3 }
     ],
-    docs: [], posts: [], citems: [], routines: [], retros: [], rmonths: [], habits: [],
+    docs: [], posts: [], citems: [], routines: [], retros: [], rmonths: [], habits: [], goals: [],
     collections: [
       { id: uid(), name: '책', view: 'cards', ord: t + 4, fields: [{ id: uid(), name: '상태', type: 'select', options: ['위시리스트', '읽는 중', '다 읽음'] }, { id: uid(), name: '저자', type: 'text' }, { id: uid(), name: '별점', type: 'rating' }, { id: uid(), name: '다 읽은 날', type: 'date', onCal: true }, { id: uid(), name: '한 줄 메모', type: 'text' }] },
       { id: uid(), name: '영화', view: 'cards', ord: t + 5, fields: [{ id: uid(), name: '상태', type: 'select', options: ['위시리스트', '봤음'] }, { id: uid(), name: '감독', type: 'text' }, { id: uid(), name: '본 날', type: 'date', onCal: true }, { id: uid(), name: '별점', type: 'rating' }] }
@@ -2374,7 +2411,7 @@ const optCls = (f, v) => { const o = f.options || []; const i = o.indexOf(v); if
 /* ---------- sync (Firebase) ---------- */
 const FB_CONFIG = { apiKey: 'AIzaSyASyW3vWV3s7cgwEO_MenOZzX3qhgb852U', authDomain: 'arecmik-25699.firebaseapp.com', projectId: 'arecmik-25699', storageBucket: 'arecmik-25699.firebasestorage.app', messagingSenderId: '952722999275', appId: '1:952722999275:web:94b7c48055edd6e8d63bae' };
 const NS = 'arecmik2';
-const COLS = ['projects', 'items', 'folders', 'docs', 'posts', 'collections', 'citems', 'routines', 'retros', 'rmonths', 'habits'];
+const COLS = ['projects', 'items', 'folders', 'docs', 'posts', 'collections', 'citems', 'routines', 'retros', 'rmonths', 'habits', 'goals'];
 let fb = null, me = null, synced = {}, syncT = null, loaded = false, unsub = null;
 let syncText = '연결 중', syncCls = 'busy';
 function setSync(text, cls) {
@@ -2723,7 +2760,7 @@ const firstText = bl => { const b = (bl || []).find(x => x.text && x.type !== 'l
 const coverStyle = c => c && c.img ? `background-image:url('${c.img}')` : c ? `background-color:${c.tone}` : '';
 
 /* ---------- ui state ---------- */
-const VIEWS = ['habits', 'binder', 'work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area', 'journal', 'journals'];
+const VIEWS = ['goals', 'habits', 'binder', 'work', 'projects', 'notes', 'life', 'posts', 'collections', 'new-collection', 'mtodo', 'retro', 'book', 'area', 'journal', 'journals'];
 const MQ = window.matchMedia('(max-width: 640px)');
 const isMob = () => MQ.matches;
 MQ.addEventListener && MQ.addEventListener('change', () => { if (loaded) { render(); renderModal(); } });
@@ -2737,7 +2774,7 @@ const ui = {
   search: '', modal: null, modalBack: null, confirm: null, newFolder: null, focusId: null, navOpen: false
 };
 /* 새로고침해도 보던 화면 그대로 (이 기기 브라우저에만 저장) */
-const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'mnTab', 'catOpen', 'open', 'weekLog'];
+const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'mnTab', 'catOpen', 'open', 'weekLog', 'gopen'];
 function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-ui') || 'null'); if (!o) return; const hv = location.hash.slice(1);
   const ok = { noteFolder: v => !v || !!folder(v), noteDoc: v => !v || !!doc(v), lifeFolder: v => !v || !!folder(v), postId: v => !v || !!post(v), collId: v => !v || !!(S.collections || []).find(c => c.id === v), ciId: v => !v || !!citem(v) };
   UI_KEEP.forEach(k => { if (!(k in o)) return; if (ok[k] && !ok[k](o[k])) return; ui[k] = o[k]; });
@@ -2747,7 +2784,7 @@ function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-
 } catch (e) { /* storage blocked */ } }
 let uiSaveT = null;
 function keepUI() { clearTimeout(uiSaveT); uiSaveT = setTimeout(() => { try { const o = { day: TODAY }; UI_KEEP.forEach(k => { o[k] = ui[k]; }); localStorage.setItem('arecmik-ui', JSON.stringify(o)); } catch (e) { /* storage blocked */ } }, 300); }
-const isLife = () => ['life', 'habits', 'binder', 'posts', 'collections', 'new-collection', 'book'].includes(ui.view);
+const isLife = () => ['life', 'goals', 'habits', 'binder', 'posts', 'collections', 'new-collection', 'book'].includes(ui.view);
 
 /* ---------- render ---------- */
 const app = $('#app'), layer = $('#layer'), pop = $('#pop');
@@ -2853,7 +2890,7 @@ function workNav() {
   ${retroAreas().map(a => { const n = S.items.filter(it => it.area === a && !it.done && !it.cancel).length; const x = areaRetros(a).length; return `<button class="nav-item area-item ${ui.view === 'area' && ui.area === a ? 'on' : ''}" data-act="area" data-v="${esc(a)}"><span class="adot" style="--ac:${areaColor(a)}"></span><span>${esc(a)}</span>${x ? `<span class="aw" title="지난 실수">⚠${x}</span>` : ''}${n ? `<span class="cnt">${n}</span>` : ''}</button>`; }).join('') || '<p class="hint" style="margin:2px 12px 6px">할일 제목에 #교육 처럼 적으면 카테고리가 생겨요.</p>'}` : ''}</div>` : ''}`;
 }
 function lifeNav() {
-  return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}${navBtn('habits', '습관', I.check, habitToday())}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
+  return `<nav class="nav">${navBtn('life', '기록 달력', I.cal)}${navBtn('goals', '목표', I.goal, goalCount())}${navBtn('habits', '습관', I.check, habitToday())}<button class="nav-item" data-act="newpost">${I.pen}<span>새 글</span></button></nav>
   <div class="sec"><div class="sec-head" data-drop="froot:life"><span>폴더</span><button class="mini" data-act="newfolder" data-space="life" data-parent="" aria-label="새 폴더" title="새 폴더">${I.plus}</button></div>
   ${tree('life', null, 0)}</div>
   <div class="sec"><div class="sec-head"><span>컬렉션</span><button class="mini" data-act="newcoll" aria-label="새 컬렉션" title="새 컬렉션">${I.plus}</button></div>
@@ -2908,6 +2945,7 @@ function viewHTML() {
     case 'projects': return vProjects();
     case 'notes': return vNotes();
     case 'life': return vLife();
+    case 'goals': return vGoals();
     case 'habits': return vHabits();
     case 'binder': ui.lmode = 'week'; ui.view = 'life'; return vLife();
     case 'posts': return vPosts();
@@ -3912,6 +3950,53 @@ function vHabits() {
 }
 document.addEventListener('keydown', e => { const t = e.target; if (!t || t.id !== 'habit-add' || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); if (!v) return; mutate(() => { S.habits = S.habits || []; S.habits.push({ id: uid(), name: v, color: HCOL[S.habits.length % HCOL.length], log: [], ord: Date.now() }); }); ui.focusId = 'habit-add'; render(); });
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.dataset || !t.dataset.hname) return; const h = (S.habits || []).find(x => x.id === t.dataset.hname); const v = t.value.trim(); if (!h || !v || v === h.name) return; mutate(() => { h.name = v; }); });
+/* ---------- LIFE 목표: 목표 → 프로젝트(마감·진행률) → 할일(체크리스트, 날짜는 기록용) + 연결 습관 ---------- */
+const goals = () => (S.goals = S.goals || []).slice().sort((a, b) => (a.ord || 0) - (b.ord || 0));
+const goal = id => (S.goals || []).find(g => g.id === id);
+const gProj = (g, pid) => (g.projects || []).find(p => p.id === pid);
+const gTasks = g => (g.projects || []).flatMap(p => p.tasks || []);
+const gPct = ts => ts.length ? Math.round(ts.filter(t => t.done).length / ts.length * 100) : 0;
+const dLeft = d => { if (!d) return ''; const n = Math.round((parse(d) - parse(TODAY)) / 864e5); return n > 0 ? `D-${n}` : n === 0 ? 'D-day' : `D+${-n}`; };
+function goalCount() { const n = goals().filter(g => !g.done).length; return n ? `<span class="cnt">${n}</span>` : ''; }
+function vGoals() {
+  const gs = goals(); const ws = weekStart(TODAY); const wd = [...Array(7)].map((_, i) => addDays(ws, i)).filter(d => d <= TODAY);
+  const hab = (g, h) => `<span class="gh-chip" style="--hc:${h.color}"><button class="hs-c ${hOn(h, TODAY) ? 'on' : ''}" data-act="hcheck" data-id="${h.id}" data-date="${TODAY}" aria-label="${esc(h.name)} 오늘 ${hOn(h, TODAY) ? '했음' : '안 함'}">${I.check}</button><span>${esc(h.name)}</span><small>이번 주 ${wd.filter(d => hOn(h, d)).length}/${wd.length}</small><button class="g-x" data-act="gunhab" data-g="${g.id}" data-id="${h.id}" aria-label="연결 끊기" title="연결 끊기">${I.x}</button></span>`;
+  const task = (g, p, t) => `<div class="gt ${t.done ? 'done' : ''}"><button class="gt-c ${t.done ? 'on' : ''}" style="--hc:${g.color}" data-act="gtcheck" data-g="${g.id}" data-p="${p.id}" data-id="${t.id}" aria-label="${t.done ? '완료 취소' : '완료'}">${I.check}</button><input class="gt-n" data-gtname="${g.id}:${p.id}:${t.id}" value="${esc(t.text)}" aria-label="할일">${t.done && t.doneAt ? `<span class="gt-d" title="완료한 날">✓ ${fmtShort(t.doneAt)}</span>` : `<input type="date" class="gt-date ${t.date ? '' : 'ge'}" data-gtdate="${g.id}:${p.id}:${t.id}" value="${t.date || ''}" title="날짜 (기록용, 선택)" aria-label="날짜">`}<button class="g-x" data-act="gtdel" data-g="${g.id}" data-p="${p.id}" data-id="${t.id}" aria-label="할일 지우기">${I.x}</button></div>`;
+  const proj = (g, p) => { const ts = p.tasks || []; const k = ts.filter(t => t.done).length; const open = (ui.gopen || {})[p.id] !== false; const pc = gPct(ts);
+    return `<div class="gp ${p.done ? 'done' : ''}"><div class="gp-h"><button class="g-tw" data-act="gpfold" data-id="${p.id}" aria-label="${open ? '접기' : '펼치기'}">${open ? I.chevD : I.chevR}</button><input class="gp-n" data-gpname="${g.id}:${p.id}" value="${esc(p.name)}" aria-label="프로젝트 이름"><span class="gbar sm"><i style="width:${pc}%;background:${g.color}"></i></span><span class="g-k">${k}/${ts.length}</span><input type="date" class="gt-date ${p.due ? '' : 'ge'}" data-gpdue="${g.id}:${p.id}" value="${p.due || ''}" title="마감" aria-label="마감">${p.due ? `<span class="g-dd ${p.due < TODAY && k < ts.length ? 'late' : ''}">${dLeft(p.due)}</span>` : ''}<button class="g-x" data-act="gpdel" data-g="${g.id}" data-id="${p.id}" aria-label="프로젝트 지우기">${I.x}</button></div>
+      ${open ? `<div class="gp-b">${ts.filter(t => !t.done).map(t => task(g, p, t)).join('')}<label class="g-add">${I.plus}<input data-gtadd="${g.id}:${p.id}" placeholder="할일 적고 Enter" autocomplete="off" aria-label="할일 추가"></label>${ts.filter(t => t.done).sort((a, b) => (b.doneAt || '').localeCompare(a.doneAt || '')).map(t => task(g, p, t)).join('')}</div>` : ''}</div>`; };
+  const card = g => { const ts = gTasks(g); const pc = gPct(ts); const hs = (g.habits || []).map(id => (S.habits || []).find(h => h.id === id)).filter(Boolean);
+    return `<section class="gc card" style="--gc:${g.color}"><div class="gc-h"><i class="gdot"></i><input class="gc-n" data-gname="${g.id}" value="${esc(g.name)}" aria-label="목표 이름"><span class="g-k">${ts.length ? `<b>${pc}%</b>` : ''}</span><input type="date" class="gt-date ${g.due ? '' : 'ge'}" data-gdue="${g.id}" value="${g.due || ''}" title="목표 시점" aria-label="목표 시점">${g.due ? `<span class="g-dd">${dLeft(g.due)}</span>` : ''}<button class="g-x" data-act="gdel" data-id="${g.id}" aria-label="목표 지우기" title="목표 지우기">${I.x}</button></div>
+      ${ts.length ? `<div class="gbar"><i style="width:${pc}%;background:${g.color}"></i></div>` : ''}
+      <div class="gh">${hs.map(h => hab(g, h)).join('')}<label class="gh-add">${I.plus}<input data-ghab="${g.id}" list="gh-list" placeholder="습관 연결 (없으면 새로 만들어요)" autocomplete="off" aria-label="습관 연결"></label></div>
+      <div class="gps">${(g.projects || []).map(p => proj(g, p)).join('')}<label class="g-add gp-add">${I.plus}<input data-gpadd="${g.id}" placeholder="새 프로젝트 적고 Enter (예: 기초 문법 끝내기)" autocomplete="off" aria-label="프로젝트 추가"></label></div></section>`; };
+  return `${topbar(`<h1 class="h1">목표</h1><span class="muted">${gs.length ? `${gs.length}개` : ''}</span>`)}
+  <div class="page goals">
+    <label class="addline hadd">${I.plus}<input id="goal-add" placeholder="새 목표 적고 Enter (예: 영어 왕초보 탈출, 루틴·건강)" autocomplete="off" aria-label="목표 추가"></label>
+    <datalist id="gh-list">${habits().map(h => `<option value="${esc(h.name)}">`).join('')}</datalist>
+    ${gs.length ? gs.map(card).join('') : '<div class="card"><div class="empty">이루고 싶은 목표를 위 칸에 적어 보세요. 목표 안에 프로젝트와 할일을 나누고, 매일 할 습관을 연결하면 진행률이 보여요.</div></div>'}
+  </div>`;
+}
+function gRef(s) { const [gi, pi, ti] = (s || '').split(':'); const g = goal(gi); const p = g && pi ? gProj(g, pi) : null; const t = p && ti ? (p.tasks || []).find(x => x.id === ti) : null; return { g, p, t }; }
+function gFocus(sel) { const el = document.querySelector(sel); if (el) el.focus(); }
+document.addEventListener('keydown', e => {
+  const t = e.target; if (!t || !t.dataset || e.key !== 'Enter' || e.isComposing) return;
+  const v = (t.value || '').trim(); const d = t.dataset;
+  if (t.id === 'goal-add') { e.preventDefault(); if (!v) return; mutate(() => { S.goals = S.goals || []; S.goals.push({ id: uid(), name: v, color: HCOL[S.goals.length % HCOL.length], due: '', habits: [], projects: [], ord: Date.now() }); }); gFocus('#goal-add'); return; }
+  if (d.gpadd) { e.preventDefault(); const g = goal(d.gpadd); if (!v || !g) return; mutate(() => { g.projects = g.projects || []; g.projects.push({ id: uid(), name: v, due: '', tasks: [] }); }); gFocus(`[data-gpadd="${g.id}"]`); return; }
+  if (d.gtadd) { e.preventDefault(); const { g, p } = gRef(d.gtadd); if (!v || !p) return; mutate(() => { p.tasks = p.tasks || []; p.tasks.push({ id: uid(), text: v, date: '', done: false }); }); gFocus(`[data-gtadd="${d.gtadd}"]`); return; }
+  if (d.ghab) { e.preventDefault(); const g = goal(d.ghab); if (!v || !g) return; mutate(() => { S.habits = S.habits || []; let h = S.habits.find(x => x.name === v); if (!h) { h = { id: uid(), name: v, color: g.color, log: [], ord: Date.now() }; S.habits.push(h); } g.habits = g.habits || []; if (!g.habits.includes(h.id)) g.habits.push(h.id); }); gFocus(`[data-ghab="${g.id}"]`); return; }
+  if (d.gname || d.gpname || d.gtname) { e.preventDefault(); t.blur(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target; if (!t || !t.dataset) return; const d = t.dataset; const v = (t.value || '').trim();
+  if (d.gname) { const g = goal(d.gname); if (g && v && v !== g.name) mutate(() => { g.name = v; }); }
+  else if (d.gdue) { const g = goal(d.gdue); if (g) mutate(() => { g.due = v; }); }
+  else if (d.gpname) { const { p } = gRef(d.gpname); if (p && v && v !== p.name) mutate(() => { p.name = v; }); }
+  else if (d.gpdue) { const { p } = gRef(d.gpdue); if (p) mutate(() => { p.due = v; }); }
+  else if (d.gtname) { const { t: x } = gRef(d.gtname); if (x && v && v !== x.text) mutate(() => { x.text = v; }); }
+  else if (d.gtdate) { const { t: x } = gRef(d.gtdate); if (x) mutate(() => { x.date = v; }); }
+});
 function vLife() {
   const modeSeg = `<div class="seg inline sm" role="group" aria-label="보기"><button class="${ui.lmode !== 'week' ? 'on' : ''}" data-act="lmode" data-v="month">월</button><button class="${ui.lmode === 'week' ? 'on' : ''}" data-act="lmode" data-v="week">주 · 한 줄 일기</button></div>`;
   if (ui.lmode === 'week' && !isMob()) return vBinder(modeSeg);
@@ -4968,6 +5053,12 @@ const ACT = {
   lmode: t => { ui.lmode = t.dataset.v; render(); },
   bweek: t => { const v = +t.dataset.v; ui.bweek = v ? addDays(ui.bweek || weekStart(TODAY), v * 7) : null; render(); },
   hcheck: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); const d = t.dataset.date; if (!h || !d || d > TODAY) return; mutate(() => { h.log = h.log || []; const i = h.log.indexOf(d); if (i >= 0) h.log.splice(i, 1); else h.log.push(d); }); },
+  gdel: t => { const g = goal(t.dataset.id); if (!g || !confirm(`‘${g.name}’ 목표를 지울까요? 안의 프로젝트·할일도 함께 지워져요. (연결한 습관은 남아요)`)) return; mutate(() => { S.goals = S.goals.filter(x => x.id !== g.id); }, '목표를 지웠어요'); },
+  gpdel: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.id); if (!p || ((p.tasks || []).length && !confirm(`‘${p.name}’ 프로젝트와 할일 ${p.tasks.length}개를 지울까요?`))) return; mutate(() => { g.projects = g.projects.filter(x => x.id !== p.id); }); },
+  gpfold: t => { ui.gopen = ui.gopen || {}; ui.gopen[t.dataset.id] = ui.gopen[t.dataset.id] === false; render(); },
+  gtcheck: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.p); const x = p && (p.tasks || []).find(y => y.id === t.dataset.id); if (!x) return; mutate(() => { x.done = !x.done; x.doneAt = x.done ? TODAY : ''; }); },
+  gtdel: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.p); if (!p) return; mutate(() => { p.tasks = (p.tasks || []).filter(y => y.id !== t.dataset.id); }); },
+  gunhab: t => { const g = goal(t.dataset.g); if (!g) return; mutate(() => { g.habits = (g.habits || []).filter(id => id !== t.dataset.id); }); },
   hdel: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); if (!h || !confirm(`‘${h.name}’ 습관을 지울까요? 기록도 함께 지워져요.`)) return; mutate(() => { S.habits = S.habits.filter(x => x.id !== h.id); }, '습관을 지웠어요'); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
   igdone: t => { const it = item(t.dataset.id); if (!it) return; const back = ui.igBack; ui.igBack = null; mutate(() => { it.done = true; if (it.kind === 'event') it.cancel = false; }, `‘${it.title || '할일'}’ 확인하고 완료`); if (back) { ui.modal = back; } else ui.modal = null; renderModal(); },
