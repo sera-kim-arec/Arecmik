@@ -1839,7 +1839,7 @@ html.raised .tabbar button.on .ti{background:var(--bg);box-shadow:var(--nm-out-s
 .chip:has(.tm){flex-wrap:wrap;row-gap:0}
 .wk .chip:has(.tm) .tt,.wk.sel .chip:has(.tm) .tt{flex:1 1 4.5em;min-width:4.5em}
 
-/* ---- 위쪽 칸 배치 (설정 → 디자인 → 달력 화면 배치) ---- */
+/* ---- 위쪽 칸 배치 (지금은 하루 상세에서만 일부 사용) ---- */
 .dock{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;height:var(--dock-h,112px);padding:0 20px;box-sizing:border-box;flex:none}
 .dock>div{overflow:auto;min-height:0;border-radius:14px;background:var(--sunken);overscroll-behavior:contain}
 .dock .mnote,.dock .mnote.open{background:transparent!important;box-shadow:none!important;border:0!important;margin:0!important;border-radius:0}
@@ -2021,7 +2021,9 @@ html.flat .sstrip .spill{box-shadow:none}
 .wk-ml .muted{font-weight:500;font-size:12px}
 .wk-memo .bk-text{font-size:13.5px}
 /* ---- 주 보기 정돈: 위쪽 비우고 오른쪽 세로 칸, 고른 날 칸 안에 메모 | 일기 ---- */
-.wk-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:14px;padding:0 14px 10px 14px}
+.wk-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 10px var(--rail-w,280px);gap:2px;padding:0 14px 10px 14px}
+.rz-rail{align-self:stretch}
+.rz-rail:hover::after,.rz-rail.on::after{background:var(--lemon)}
 .wk-body>.cal-scroll{padding:0!important}
 .wk-body>.cal-scroll{min-height:0}
 .wk-rail{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-top:4px}
@@ -2869,7 +2871,7 @@ function vWork() {
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
   if (dock && !dayv && !isMob()) { const open = settingsOf().rail !== false; const nStar = S.items.filter(it => (it.star || (it.checks || []).length) && !it.done && !it.cancel).length;
     const rb = `<button class="btn ${open ? 'on-soft' : ''}" data-act="railtoggle" title="${open ? '오른쪽 칸 접기' : '오른쪽 칸 펼치기'}" aria-pressed="${open}">${I.rail}${!open && nStar ? `<span class="rb-n">❗${nStar}</span>` : ''}</button>`;
-    return `<div class="cal-wrap dock-on wk-rail-on ${open ? '' : 'rail-shut'}"><section class="cal-main">${topbar(left, right.replace(/(<button class="btn primary" data-act="quick")/, rb + '$1'))}<div class="wk-body">${body}${open ? `<aside class="wk-rail">${railHTML()}</aside>` : ''}</div></section></div>`; }
+    return `<div class="cal-wrap dock-on wk-rail-on ${open ? '' : 'rail-shut'}"><section class="cal-main">${topbar(left, right.replace(/(<button class="btn primary" data-act="quick")/, rb + '$1'))}<div class="wk-body">${body}${open ? `<div class="rz rz-rail" data-rz="rail" role="separator" aria-orientation="vertical" aria-label="오른쪽 칸 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div><aside class="wk-rail">${railHTML()}</aside>` : ''}</div></section></div>`; }
   if (dock) return `<div class="cal-wrap dock-on"><section class="cal-main">${topbar(left, right)}${one ? '' : starStrip()}${dayv || one ? '' : dockHTML()}${body}</section></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : monthNote()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
@@ -5693,22 +5695,23 @@ document.addEventListener('drop', e => {
 });
 
 /* pane widths: drag the edges of the sidebar and the right panel */
-const PANE = { side: { v: '--side-w', def: 252, min: 200, max: 420 }, panel: { v: '--panel-w', def: 360, min: 290, max: 640 }, dock: { v: '--dock-h', def: 112, min: 60, max: 520 } };
+const PANE = { side: { v: '--side-w', def: 252, min: 200, max: 420 }, panel: { v: '--panel-w', def: 360, min: 290, max: 640 }, dock: { v: '--dock-h', def: 112, min: 60, max: 520 }, rail: { v: '--rail-w', def: 280, min: 220, max: 560 } };
 function setPane(k, w, keep) {
   const c = PANE[k]; w = Math.round(Math.max(c.min, Math.min(c.max, w)));
   document.documentElement.style.setProperty(c.v, w + 'px');
   if (keep) { try { localStorage.setItem('arecmik-pane-' + k, String(w)); } catch (e) { /* storage blocked */ } }
 }
 Object.keys(PANE).forEach(k => { try { const w = +localStorage.getItem('arecmik-pane-' + k); if (w) setPane(k, w); } catch (e) { /* storage blocked */ } });
-let paneDrag = null, dockTop = 0;
+let paneDrag = null, dockTop = 0, railRight = 0;
 document.addEventListener('pointerdown', e => {
   const h = e.target.closest && e.target.closest('[data-rz]'); if (!h || e.button !== 0) return;
   e.preventDefault(); paneDrag = h.dataset.rz; h.classList.add('on'); document.body.classList.add('resizing');
+  if (paneDrag === 'rail') { const rl = document.querySelector('.wk-rail'); railRight = rl ? rl.getBoundingClientRect().right : window.innerWidth; }
   if (paneDrag === 'dock') { const dk = document.querySelector('.dock'); dockTop = dk ? dk.getBoundingClientRect().top : 0; }
 });
 document.addEventListener('pointermove', e => {
   if (!paneDrag) return;
-  setPane(paneDrag, paneDrag === 'side' ? e.clientX : paneDrag === 'dock' ? e.clientY - dockTop : window.innerWidth - e.clientX);
+  setPane(paneDrag, paneDrag === 'side' ? e.clientX : paneDrag === 'dock' ? e.clientY - dockTop : paneDrag === 'rail' ? railRight - e.clientX : window.innerWidth - e.clientX);
 });
 document.addEventListener('pointerup', () => {
   if (!paneDrag) return; const k = paneDrag; paneDrag = null; document.body.classList.remove('resizing');
