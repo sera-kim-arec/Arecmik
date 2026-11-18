@@ -2138,6 +2138,19 @@ html.flat .tm-pop{background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(
 .ft-b{all:unset;position:absolute;top:2px;bottom:2px;border-radius:5px;background:var(--c);cursor:pointer;opacity:.85;min-width:4px}
 .ft-b:hover{opacity:1;box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 30%,transparent)}
 .ft-s{font-size:12.5px;color:var(--fg2);text-align:right;font-variant-numeric:tabular-nums}
+.fv{border-radius:14px;background:var(--surface);border:1px solid var(--line);padding:8px 12px 12px}
+.fv-hd,.fv-body{display:grid;grid-template-columns:36px repeat(7,minmax(0,1fr));gap:6px}
+.fv-hd span{text-align:center;font-size:13px;font-weight:600;padding:4px 0 8px}.fv-hd small{color:var(--muted);font-weight:500}
+.fv-hd .today{color:var(--lemon-ink)}.fv-hd .we{color:var(--muted)}
+.fv-body{height:520px;position:relative}
+.fv-hours{position:relative}.fv-hours span{position:absolute;right:4px;transform:translateY(-50%);font-size:11px;color:var(--muted)}
+.fv-col{position:relative;border-radius:8px;background:repeating-linear-gradient(180deg,var(--line-soft) 0 1px,transparent 1px calc(100%/12))}
+.fv-col.today{background-color:color-mix(in srgb,var(--lemon) 5%,transparent)}
+.fv-b{all:unset;box-sizing:border-box;position:absolute;left:3px;right:3px;border-radius:6px;background:color-mix(in srgb,var(--c) 75%,transparent);cursor:pointer;overflow:hidden;padding:2px 5px;min-height:6px}
+.fv-b span{font-size:11px;font-weight:600;color:#fff;line-height:1.25;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fv-b:hover{background:var(--c)}
+.fv-sum{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:11.5px;color:var(--fg2)}
+.fv{padding-bottom:28px}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -3439,22 +3452,21 @@ function journalDays() {
 }
 /* ---------- 집중 시간표: 이번 달 하루 한 줄, 집중한 시간을 막대로 ---------- */
 function vFocusTable(seg) {
-  const ym = ui.fmonth || TODAY.slice(0, 7); const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate();
-  const recs = []; S.items.forEach(it => (it.focus || []).forEach(f => { if ((f.date || '').startsWith(ym)) recs.push({ it, ...f }); }));
+  const ws = ui.fweek || weekStart(TODAY); const days = [...Array(7)].map((_, k) => addDays(ws, k)); const we = days[6];
+  const recs = []; S.items.forEach(it => (it.focus || []).forEach(f => { if (f.date >= ws && f.date <= we) recs.push({ it, ...f }); }));
   const H0 = 8, H1 = 20; const pct = t => { const d = new Date(t); const h = d.getHours() + d.getMinutes() / 60; return Math.max(0, Math.min(100, (h - H0) / (H1 - H0) * 100)); };
-  const total = recs.reduce((a, r) => a + (r.e - r.s), 0); const byCat = {}; recs.forEach(r => { const k = r.it.area || '미분류'; byCat[k] = (byCat[k] || 0) + (r.e - r.s); });
   const dur = ms => { const mm = Math.round(ms / 60000); return mm >= 60 ? `${Math.floor(mm / 60)}시간${mm % 60 ? ' ' + (mm % 60) + '분' : ''}` : `${mm}분`; };
-  const days = [...Array(last)].map((_, i) => `${ym}-${String(i + 1).padStart(2, '0')}`).filter(d => d <= TODAY || recs.some(r => r.date === d)).reverse();
-  const row = d => { const rs = recs.filter(r => r.date === d); const dd = parse(d); const sum = rs.reduce((a, r) => a + (r.e - r.s), 0);
-    return `<div class="ft-r ${d === TODAY ? 'today' : ''} ${isWeekend(d) ? 'we' : ''}"><span class="ft-d">${dd.getDate()} <small>${WD[dd.getDay()]}</small></span><div class="ft-line">${rs.map(r => `<button class="ft-b" style="left:${pct(r.s)}%;width:${Math.max(.8, pct(r.e) - pct(r.s))}%;--c:${r.it.area ? areaColor(r.it.area) : 'var(--faint)'}" data-act="open" data-kind="item" data-id="${r.it.id}" title="${esc(r.it.title)} · ${hm(r.s)}–${hm(r.e)} (${dur(r.e - r.s)})"></button>`).join('')}</div><span class="ft-s">${sum ? dur(sum) : ''}</span></div>`; };
-  const prev = `${m === 1 ? y - 1 : y}-${String(m === 1 ? 12 : m - 1).padStart(2, '0')}`, next = `${m === 12 ? y + 1 : y}-${String(m === 12 ? 1 : m + 1).padStart(2, '0')}`;
+  const total = recs.reduce((a, r) => a + (r.e - r.s), 0); const byCat = {}; recs.forEach(r => { const k = r.it.area || '미분류'; byCat[k] = (byCat[k] || 0) + (r.e - r.s); });
+  const col = d => { const rs = recs.filter(r => r.date === d); const sum = rs.reduce((a, r) => a + (r.e - r.s), 0); return `<div class="fv-col ${d === TODAY ? 'today' : ''}">${rs.map(r => `<button class="fv-b" style="top:${pct(r.s)}%;height:${Math.max(1.2, pct(r.e) - pct(r.s))}%;--c:${r.it.area ? areaColor(r.it.area) : 'var(--faint)'}" data-act="open" data-kind="item" data-id="${r.it.id}" title="${esc(r.it.title)} · ${hm(r.s)}–${hm(r.e)} (${dur(r.e - r.s)})"><span>${esc(r.it.title)}</span></button>`).join('')}<span class="fv-sum">${sum ? dur(sum) : ''}</span></div>`; };
+  const a = parse(ws), b = parse(we);
   return `${topbar(`<h1 class="h1">업무일지</h1>`, `${seg}`)}
   <div class="page ftable">
-    <div class="ft-top"><div class="pager"><button class="btn icon sm" data-act="fmonth" data-v="${prev}" aria-label="이전 달">${I.left}</button><b>${m}월 집중</b><button class="btn icon sm" data-act="fmonth" data-v="${next}" aria-label="다음 달" ${next > TODAY.slice(0, 7) ? 'disabled' : ''}>${I.right}</button></div>
+    <div class="ft-top"><div class="pager"><button class="btn icon sm" data-act="fweek" data-v="-1" aria-label="이전 주">${I.left}</button><b>${a.getMonth() + 1}/${a.getDate()} – ${b.getMonth() + 1}/${b.getDate()} 집중</b><button class="btn icon sm" data-act="fweek" data-v="1" aria-label="다음 주" ${addDays(ws, 7) > TODAY ? 'disabled' : ''}>${I.right}</button>${ws !== weekStart(TODAY) ? '<button class="btn sm" data-act="fweek" data-v="0">이번 주</button>' : ''}</div>
       <span class="ft-tot">합계 <b>${total ? dur(total) : '0분'}</b></span>
-      <span class="ft-cats">${Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<span class="ft-cat"><i style="background:${k === '미분류' ? 'var(--faint)' : areaColor(k)}"></i>${esc(k)} ${dur(v)}</span>`).join('')}</span></div>
-    <div class="ft-r ft-h"><span class="ft-d"></span><div class="ft-line">${[...Array(H1 - H0 + 1)].map((_, i) => `<span style="left:${i / (H1 - H0) * 100}%">${H0 + i}</span>`).join('')}</div><span class="ft-s"></span></div>
-    ${recs.length ? days.map(row).join('') : '<div class="card"><div class="empty">아직 집중 기록이 없어요. 할일의 ▶로 집중을 시작하고 끝내면 여기에 쌓여요.</div></div>'}
+      <span class="ft-cats">${Object.entries(byCat).sort((x, y) => y[1] - x[1]).map(([k, v]) => `<span class="ft-cat"><i style="background:${k === '미분류' ? 'var(--faint)' : areaColor(k)}"></i>${esc(k)} ${dur(v)}</span>`).join('')}</span></div>
+    <div class="fv"><div class="fv-hd"><span></span>${days.map(d => { const dd = parse(d); return `<span class="${d === TODAY ? 'today' : ''} ${isWeekend(d) ? 'we' : ''}"><small>${WD[dd.getDay()]}</small> ${dd.getDate()}</span>`; }).join('')}</div>
+      <div class="fv-body"><div class="fv-hours">${[...Array(H1 - H0 + 1)].map((_, k) => `<span style="top:${k / (H1 - H0) * 100}%">${H0 + k}</span>`).join('')}</div>${days.map(col).join('')}</div></div>
+    ${recs.length ? '' : '<p class="hint" style="margin-top:10px">이 주에는 집중 기록이 없어요. 할일의 ▶로 집중을 시작하고 끝내면 여기에 쌓여요.</p>'}
   </div>`;
 }
 function vJournals() {
@@ -5095,7 +5107,7 @@ const ACT = {
   evstate: t => { const it = item(ui.modal.id); if (!it) return; const v = t.dataset.v; mutate(() => { it.done = v === 'done'; it.cancel = v === 'cancel'; }, v === 'cancel' ? '일정을 취소로 표시했어요' : v === 'done' ? '일정을 완료로 표시했어요' : '예정으로 되돌렸어요'); },
   evdone: (t, e) => { e.stopPropagation(); const it = item(t.dataset.id); if (!it) return; if (!it.done && ckOn(it)) { ui.igBack = null; ui.modalBack = null; openModal('igate', it.id); return; } mutate(() => { it.done = !it.done; if (it.done) it.cancel = false; }, it.done ? '완료를 취소했어요' : `‘${it.title || '일정'}’ 완료`); },
   postpone: t => { const it = item(ui.modal.id); if (!it || !it.date) return; const base = it.date < TODAY ? TODAY : it.date; const to = addDays(base, +t.dataset.d); mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); },
-  fmonth: t => { ui.fmonth = t.dataset.v; render(); },
+  fweek: t => { const v = +t.dataset.v; ui.fweek = v ? addDays(ui.fweek || weekStart(TODAY), v * 7) : null; render(); },
   dlgmore: () => { S.settings = { ...(S.settings || {}), dlgMore: !settingsOf().dlgMore }; save(); renderModal(); },
   setkind: t => {
     const it = item(ui.modal.id); const k = t.dataset.k; if (!it || it.kind === k) return;
