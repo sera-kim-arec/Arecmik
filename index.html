@@ -2103,6 +2103,24 @@ html.flat .tm-pop{background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(
 .mvd.old{color:#D2383E}
 /* 마우스를 올리면 오른쪽 버튼(▶ 💬 ↳)이 나오니, 그 자리의 ↷·진행률은 잠깐 숨김 */
 @media (hover:hover){ .chip:hover>.mvi,.chip:hover>.prog,.chip:hover>.pg{visibility:hidden} }
+/* ---- 간단한 할일 상세 ---- */
+.dialog.dlg-todo{display:flex!important;flex-direction:column!important;width:min(620px,94vw)!important;max-width:620px}
+.dlg-todo>.dlg-head,.dlg-todo>.dlg-body{width:auto!important;max-width:none!important;border:0!important}
+.dlg-todo .title-input{margin-bottom:10px}
+.tchips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;padding-bottom:6px}
+.tch{all:unset;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:1px;height:46px;padding:4px 10px;border-radius:10px;background:var(--sunken);cursor:pointer;min-width:0}
+.tch>span{font-size:11px;color:var(--muted);font-weight:600}
+.tch input,.tch select{border:0;background:transparent;font:inherit;font-size:13.5px;color:var(--fg);height:22px;padding:0;outline:none;width:100%;min-width:0}
+.tch-star{font-size:13.5px;color:var(--muted)}.tch-star.on{color:#C2282E;background:rgba(229,72,77,.08)}
+.tch-cat{display:flex;align-items:center;gap:10px;padding:2px 0 6px}
+.tch-cat>span{font-size:11px;color:var(--muted);font-weight:600;flex:none}
+.dlg-more-b{all:unset;cursor:pointer;display:flex;gap:8px;align-items:baseline;margin-top:18px;padding:8px 2px;font-size:13px;font-weight:700;color:var(--fg2);border-top:1px solid var(--line-soft);width:100%}
+.dlg-more-b .muted{font-weight:500;font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlg-more{padding-top:4px}
+.fx{display:flex;flex-direction:column}
+.fx-r{display:flex;gap:12px;font-size:13px;color:var(--fg2);padding:3px 2px;font-variant-numeric:tabular-nums}
+.fx-r span:first-child{color:var(--muted);width:40px}
+.fx-r b{font-weight:600;margin-left:auto}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2515,7 +2533,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: 'dock', rail: st.rail !== false, accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: 'dock', rail: st.rail !== false, dlgMore: !!st.dlgMore, accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -3108,6 +3126,13 @@ function panelTabs() {
 const FOCUS_MIN = 30;
 let focusState = (() => { try { return JSON.parse(localStorage.getItem('arecmik-focus') || 'null'); } catch (e) { return null; } })();
 const saveFocus = () => { try { localStorage.setItem('arecmik-focus', JSON.stringify(focusState)); } catch (e) { /* storage blocked */ } };
+function logFocus(it) {
+  if (!focusState || focusState.id !== it.id || !focusState.start) return;
+  const ms = Date.now() - focusState.start; const m = Math.round(ms / 60000); if (m < 1) return;
+  const txt = `⏱ 집중 ${m >= 60 ? Math.floor(m / 60) + '시간 ' : ''}${m % 60 ? (m % 60) + '분' : ''}`.trim();
+  it.spent = (it.spent || 0) + ms; it.focus = it.focus || []; it.focus.push({ date: TODAY, s: focusState.start, e: Date.now() });
+}
+const spentText = it => { const m = Math.round((it.spent || 0) / 60000); return m ? (m >= 60 ? `${Math.floor(m / 60)}시간 ${m % 60 ? m % 60 + '분' : ''}` : `${m}분`).trim() : ''; };
 function focusCands() {
   const sc = it => { const late = it.date && it.date < TODAY, today = it.date === TODAY; return (it.star && late ? 0 : it.star && today ? 1 : today && it.pri === 1 ? 2 : today && it.start ? 3 : today ? 4 : late ? 5 : it.star ? 6 : 9); };
   return S.items.filter(it => it.kind === 'todo' && !it.done && !it.cancel && !kidsOf(it.id).some(k => !k.done) && (it.star || (it.date && it.date <= TODAY)))
@@ -3123,7 +3148,7 @@ function focusHTML() {
   if (!it) return `<section class="rl-sec fc"><div class="rl-h">지금 이거</div><div class="fc-empty">오늘 할 일을 다 했어요 🍋</div></section>`;
   const on = focusState && focusState.id === it.id; const timed = on && !!focusState.end; const left = timed ? focusState.end - Date.now() : 0; const over = timed && left <= 0;
   const par = it.parentId && item(it.parentId);
-  const meta = [it.date ? (it.date < TODAY ? fmtShort(it.date) + ' 지남' : it.date === TODAY ? '오늘' : fmtShort(it.date)) : '', it.start || '', it.area || '', par ? par.title : ''].filter(Boolean).map(esc).join(' · ');
+  const meta = [it.date ? (it.date < TODAY ? fmtShort(it.date) + ' 지남' : it.date === TODAY ? '오늘' : fmtShort(it.date)) : '', it.start || '', it.area || '', par ? par.title : '', spentText(it) ? '지금까지 ' + spentText(it) : ''].filter(Boolean).map(esc).join(' · ');
   return `<section class="rl-sec fc ${on ? 'on' : ''}"><div class="rl-h">${on ? '집중하는 중' : '지금 이거'}<span class="grow"></span><span class="muted">${on ? `나머지 ${Math.max(0, n - 1)}개` : '추천'}</span></div>
     <button class="fc-t" data-act="open" data-kind="item" data-id="${it.id}">${it.star ? '<span class="imp">❗</span>' : ''}${esc(it.title || '제목 없음')}</button>${meta ? `<div class="fc-m">${meta}</div>` : ''}
     ${on ? `<div class="fc-time ${over ? 'over' : ''} ${timed ? '' : 'up'}" id="fc-time">${over ? '시간 끝!' : timed ? fmtLeft(left) : fmtLeft(Date.now() - focusState.start)}</div><div class="fc-sub">${timed ? `${FOCUS_MIN}분 타이머 · 끝날 때 한 번만 알려요` : '흐른 시간 · 알림 없이 조용히'}</div>` : ''}
@@ -4326,6 +4351,7 @@ function dlgHeadTop(kindLabel, kindCls, delAct, id) {
 }
 function dlgItem(it) {
   const ev = it.kind === 'event';
+  if (!ev) return dlgTodo(it);
   return `<div class="dialog" role="dialog" aria-modal="true" aria-label="${esc(it.title || '항목')}">
   <div class="dlg-head">${dlgHeadTop(ev ? '일정' : it.parentId ? '하위 할일' : '할일', ev ? 'ev' : '', 'item:', it.id)}
     ${it.parentId && item(it.parentId) ? `<button class="parent-link" data-act="openparent" data-id="${it.parentId}">↳ ${esc(item(it.parentId).title || '제목 없음')}<span>상위 항목 열기</span></button>` : ''}
@@ -4353,6 +4379,41 @@ function dlgItem(it) {
       ${(it.log || []).slice().sort((a, b) => b.ts - a.ts).map(c => `<div class="ilog-i"><span class="ilog-t">${fmtShort(c.date)}<br>${hm(c.ts)}</span><div class="ilog-ed">${editorHTML('clog:' + it.id + '~' + c.id, true)}</div><button class="bn-x" data-act="ilogdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}</div>
     ${subsHTML(it)}${linksHTML('item:' + it.id, 'item:' + it.id)}<div class="lbl" style="padding-top:14px">메모</div>${editorHTML('item:' + it.id)}</div></div>`;
 }
+function dlgTodo(it) {
+  const more = !!settingsOf().dlgMore;
+  return `<div class="dialog dlg-todo" role="dialog" aria-modal="true" aria-label="${esc(it.title || '할일')}">
+  <div class="dlg-head">${dlgHeadTop(it.parentId ? '하위 할일' : '할일', '', 'item:', it.id).replace('<span class="grow"></span>', `<span class="grow"></span><button class="btn sm ${it.done ? 'on-soft' : ''}" data-act="toggle" data-id="${it.id}">${I.check}${it.done ? '완료함' : '완료'}</button>`)}
+    ${it.parentId && item(it.parentId) ? `<button class="parent-link" data-act="openparent" data-id="${it.parentId}">↳ ${esc(item(it.parentId).title || '제목 없음')}<span>상위 항목 열기</span></button>` : ''}
+    <input class="title-input" id="dlg-title" data-f="title" value="${esc(it.title)}" placeholder="제목" aria-label="제목">${areaWarn(it)}
+    <div class="tchips">
+      <label class="tch"><span>날짜</span><input type="date" id="f-date" data-f="date" value="${it.date || ''}"></label>
+      ${it.date ? `<label class="tch"><span>시간</span><input type="time" id="f-start" data-f="start" value="${it.start || ''}"></label>
+      <label class="tch"><span>알림</span><select id="f-remind" data-f="remind">${remindOptions(it)}</select></label>` : ''}
+      <label class="tch"><span>우선순위</span><select data-tpri="${it.id}">${[[0, '없음'], [1, '높음'], [2, '보통'], [3, '낮음']].map(([v, l]) => `<option value="${v}" ${(it.pri || 0) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <button class="tch tch-star ${it.star ? 'on' : ''}" data-act="star" data-id="${it.id}"><span>잊지 말 것</span>${it.star ? '켜짐' : '끔'}</button>
+    </div>
+    <div class="tch-cat"><span>카테고리</span>${catPick('item:' + it.id, it.area)}</div>
+    </div>
+  <div class="dlg-body">
+    <div class="lbl" style="padding-top:2px">메모</div>${editorHTML('item:' + it.id)}
+    ${subsHTML(it).replace(/<p class="hint"[^]*?<\/p>/, '')}
+    <div class="lbl" style="padding-top:12px">코멘트</div>
+    <div class="ilog">${cComposer('cnewd:' + it.id + '~' + TODAY)}
+      ${(it.log || []).slice().sort((a, b) => b.ts - a.ts).map(c => `<div class="ilog-i"><span class="ilog-t">${fmtShort(c.date)}<br>${hm(c.ts)}</span><div class="ilog-ed">${editorHTML('clog:' + it.id + '~' + c.id, true)}</div><button class="bn-x" data-act="ilogdel" data-id="${it.id}" data-c="${c.id}" aria-label="지우기">${I.x}</button></div>`).join('')}</div>
+    ${(it.focus || []).length ? `<div class="lbl" style="padding-top:12px">집중 기록</div><div class="fx">${it.focus.slice().reverse().map(f => { const m = Math.max(1, Math.round((f.e - f.s) / 60000)); return `<div class="fx-r"><span>${fmtShort(f.date)}</span><span>${hm(f.s)}–${hm(f.e)}</span><b>${m}분</b></div>`; }).join('')}</div>` : ''}
+    <button class="dlg-more-b" data-act="dlgmore">${more ? '▾' : '▸'} 더 보기 <span class="muted">잊지 말 것 메모 · 미루기 · 프로젝트 · 연결 · 일정으로 · 히스토리 · 복기</span></button>
+    ${more ? `<div class="dlg-more"><div class="fgrid">
+      ${it.date ? `<label>미루기</label><div class="frow"><button class="btn sm" data-act="postpone" data-d="1">내일로</button><button class="btn sm" data-act="postpone" data-d="7">다음 주로</button><label class="btn sm ghost mv-pick">다른 날…<input type="date" id="f-move" min="${addDays(it.date, 1)}" aria-label="옮길 날짜"></label></div>` : ''}
+      <label for="f-proj">프로젝트</label><div class="frow"><select id="f-proj" class="inp" data-f="projectId">${projOptions(it.projectId)}</select></div>
+      <label>종류</label><div class="frow"><button class="btn sm" data-act="setkind" data-k="event">일정으로 바꾸기</button></div>
+      <label>히스토리</label><div class="frow"><button class="btn sm" data-act="histsend" data-id="${it.id}">✦ Claude에게 히스토리 남기기</button></div>
+      <label>복기</label><div class="frow"><button class="btn sm" data-act="xnew" data-item="${it.id}">${I.plus}복기 남기기</button></div>
+    </div>
+    <div class="lbl" style="padding-top:10px">❗ 꼭 잊지 말 것</div><div class="ck-edit">${editorHTML('ick:' + it.id, true)}</div>
+    ${linksHTML('item:' + it.id, 'item:' + it.id)}</div>` : ''}
+  </div></div>`;
+}
+document.addEventListener('change', e => { const t = e.target; if (t && t.dataset && t.dataset.tpri) ACT.setpri({ dataset: { id: t.dataset.tpri, v: t.value } }); });
 function remindOptions(it) {
   const st = settingsOf(); const r = it.remind || '';
   const opts = it.start
@@ -4818,9 +4879,9 @@ const ACT = {
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
   chiptm: (t, e) => { e.stopPropagation(); e.preventDefault(); const open = document.querySelector('.tm-pop'); if (open && open.dataset.id === t.dataset.id) { open.remove(); return; } tmPop(t, t.dataset.id); },
   fstart: t => { const it = focusItem(); if (!it) return; focusState = { id: it.id, start: (focusState && focusState.id === it.id && focusState.start) || Date.now(), end: t && t.dataset && t.dataset.v === 't' ? Date.now() + FOCUS_MIN * 60000 : null }; saveFocus(); render(); },
-  fstop: () => { focusState = null; saveFocus(); render(); },
+  fstop: () => { const it = focusState && item(focusState.id); if (it) mutate(() => logFocus(it)); focusState = null; saveFocus(); render(); },
   fnext: () => { const it = focusItem(); if (!it) return; ui.focusSkip = [...(ui.focusSkip || []), it.id]; if (focusCands().every(x => ui.focusSkip.includes(x.id))) ui.focusSkip = []; render(); },
-  fdone: () => { const it = focusItem(); if (!it) return; const keep = !!focusState; mutate(() => { it.done = true; it.doneAt = Date.now(); }); if (keep) { const nx = focusItem(); focusState = null; saveFocus(); } toast('완료! 다음 거 올라왔어요', true); render(); },
+  fdone: () => { const it = focusItem(); if (!it) return; const keep = !!focusState; mutate(() => { logFocus(it); it.done = true; it.doneAt = Date.now(); }); if (keep) { const nx = focusItem(); focusState = null; saveFocus(); } toast('완료! 다음 거 올라왔어요', true); render(); },
   railtoggle: () => { S.settings = { ...(S.settings || {}), rail: settingsOf().rail === false }; save(); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
@@ -4995,6 +5056,7 @@ const ACT = {
   evstate: t => { const it = item(ui.modal.id); if (!it) return; const v = t.dataset.v; mutate(() => { it.done = v === 'done'; it.cancel = v === 'cancel'; }, v === 'cancel' ? '일정을 취소로 표시했어요' : v === 'done' ? '일정을 완료로 표시했어요' : '예정으로 되돌렸어요'); },
   evdone: (t, e) => { e.stopPropagation(); const it = item(t.dataset.id); if (!it) return; if (!it.done && ckOn(it)) { ui.igBack = null; ui.modalBack = null; openModal('igate', it.id); return; } mutate(() => { it.done = !it.done; if (it.done) it.cancel = false; }, it.done ? '완료를 취소했어요' : `‘${it.title || '일정'}’ 완료`); },
   postpone: t => { const it = item(ui.modal.id); if (!it || !it.date) return; const base = it.date < TODAY ? TODAY : it.date; const to = addDays(base, +t.dataset.d); mutate(() => { moveItem(it, to); it.cancel = false; ui.sel = to; ui.month = to.slice(0, 7); }, `${fmtShort(to)}로 미뤘어요`); },
+  dlgmore: () => { S.settings = { ...(S.settings || {}), dlgMore: !settingsOf().dlgMore }; save(); renderModal(); },
   setkind: t => {
     const it = item(ui.modal.id); const k = t.dataset.k; if (!it || it.kind === k) return;
     mutate(() => {
