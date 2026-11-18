@@ -2283,40 +2283,65 @@ html.flat .btn.on-soft{background:var(--sunken);border-color:transparent;color:v
 }
 /* ---- LIFE 목표 ---- */
 .page.goals{max-width:860px}
-.gc{padding:14px 16px!important;margin-bottom:14px}
+.gsum{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px}
+.gs-i{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px 0 10px;border-radius:15px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600}
+.gs-i b{font-weight:700;color:var(--muted);font-size:12.5px}.gs-i .gdot{width:8px;height:8px}
+.gs-i:hover{border-color:var(--gc)}
+.gc{padding:12px 16px!important;margin-bottom:12px;scroll-margin-top:12px}
 .gc-h,.gp-h{display:flex;align-items:center;gap:8px;min-width:0}
+.gc-h{min-height:34px}
 .gdot{width:10px;height:10px;border-radius:50%;background:var(--gc);flex:none}
-.gc-n{all:unset;flex:1;min-width:0;font-size:16px;font-weight:700;color:var(--fg)}
-.gp-n,.gt-n{all:unset;flex:1;min-width:0;font-size:14px;color:var(--fg)}
-.gp-n{font-weight:600}
-.g-k{font-size:12.5px;color:var(--muted);white-space:nowrap}.g-k b{font-size:15px;color:var(--fg)}
+.gc-n,.gp-n,.gt-n,.gname-b{all:unset;flex:1;min-width:0;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-n{font-size:16.5px;font-weight:700}
+.gp-n{font-size:14px;font-weight:600}
+.gt-n{font-size:14px}
+.gname-b{cursor:pointer}
+.g-k{font-size:12.5px;color:var(--muted);white-space:nowrap}.g-k b{font-size:15px;color:var(--fg)}.g-k small{font-size:11.5px}
+.gp-h .g-k{font-size:12px}
 .g-dd{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}.g-dd.late{color:#D2383E}
-.gt-date{border:0;background:transparent;font:inherit;font-size:12px;color:var(--muted);width:118px;padding:0;cursor:pointer}
-.gt-date.ge{width:22px;color:transparent;opacity:.45}.gt-date.ge::-webkit-datetime-edit{display:none}.gt-date.ge:hover{opacity:.9}
-.g-tw{all:unset;cursor:pointer;width:20px;height:20px;display:grid;place-items:center;color:var(--muted);flex:none}
-.g-x{all:unset;cursor:pointer;color:var(--faint);opacity:0;display:grid;place-items:center;padding:2px}.g-x svg{width:12px;height:12px}
-.gc-h:hover>.g-x,.gp-h:hover>.g-x,.gt:hover>.g-x,.gh-chip:hover>.g-x{opacity:1}
-.gbar{height:6px;border-radius:3px;background:var(--sunken);overflow:hidden;margin:10px 0 2px}.gbar i{display:block;height:100%;border-radius:3px}
-.gbar.sm{width:64px;height:4px;margin:0;flex:none}
-.gh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 4px}
-.gh-chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 6px 0 6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600}
+.gt-date{border:0;background:transparent;font:inherit;font-size:12px;color:var(--muted);width:112px;padding:0;cursor:pointer;flex:none}
+.gt-date.ge{width:20px;color:transparent;opacity:0}.gt-date.ge::-webkit-datetime-edit{display:none}
+.g-x,.g-plus{all:unset;cursor:pointer;color:var(--faint);opacity:0;display:grid;place-items:center;width:20px;height:20px;border-radius:6px;flex:none}
+.g-x svg{width:12px;height:12px}.g-plus svg{width:14px;height:14px}
+.g-x:hover{color:#D2383E}.g-plus:hover{color:var(--fg);background:var(--sunken)}
+.gc-h:hover>.g-x,.gc-h:hover>.g-plus,.gc-h:hover>.ge,.gp-h:hover>.g-x,.gp-h:hover>.g-plus,.gp-h:hover>.ge,.gt:hover>.g-x,.gt:hover>.ge,.gh-chip:hover>.g-x{opacity:1}
+.gc-h:hover>.ge,.gp-h:hover>.ge,.gt:hover>.ge{opacity:.55}
+.g-tw{all:unset;cursor:pointer;width:18px;height:20px;display:grid;place-items:center;color:var(--faint);flex:none}.g-tw:hover{color:var(--fg)}
+.gbar{height:5px;border-radius:3px;background:var(--sunken);overflow:hidden;margin:8px 0 4px}.gbar i{display:block;height:100%;border-radius:3px;transition:width .25s}
+.gbar.sm{width:56px;height:4px;margin:0;flex:none}
+.gnext{display:flex;align-items:center;gap:8px;margin:8px 0 2px;padding:8px 10px;border-radius:10px;background:var(--sunken);min-width:0}
+.gn-l{font-size:11.5px;font-weight:700;color:var(--gc);flex:none}
+.gn-t{font-size:14px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gn-p{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
+.gh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 2px}
+.gh-chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px 0 6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600}
 .gh-chip small{font-weight:500;color:var(--muted);font-size:11.5px}
 .gh-chip .hs-c{padding:0;cursor:pointer;background:transparent}.gh-chip .hs-c.on{background:var(--hc);color:#fff}
-.gh-add,.g-add{display:flex;align-items:center;gap:6px;color:var(--faint);font-size:13px}
-.gh-add input,.g-add input{border:0;background:transparent;outline:none;font:inherit;color:var(--fg);flex:1;min-width:0}
-.gh-add{min-width:200px;flex:1}
-.gps{border-top:1px solid var(--line-soft);margin-top:8px;padding-top:4px}
-.gp{padding:4px 0;border-bottom:1px solid var(--line-soft)}
+.gh-new,.g-empty{all:unset;cursor:pointer;font-size:12.5px;color:var(--faint);height:28px;padding:0 10px;border-radius:14px;border:1px dashed var(--line);display:inline-flex;align-items:center}
+.gh-new:hover,.g-empty:hover{color:var(--fg);border-color:var(--fg2)}
+.g-empty{border:0;padding:0 2px;height:30px}
+.gps-e{display:flex;margin-top:6px}
+.g-add{display:flex;align-items:center;gap:6px;color:var(--faint);font-size:13.5px;min-height:32px}
+.g-add input{border:0;background:transparent;outline:none;font:inherit;color:var(--fg);flex:1;min-width:0}
+.gh-in{flex:1;min-width:220px;min-height:28px}
+.gps{border-top:1px solid var(--line-soft);margin-top:10px}
+.gp{padding:3px 0;border-bottom:1px solid var(--line-soft)}.gp:last-of-type{border-bottom:0}
+.gps>.g-add{padding-left:4px}
 .gp-h{min-height:36px}
 .gp-b{padding:0 0 4px 26px}
-.gt{display:flex;align-items:center;gap:8px;min-height:32px}
+.gt{display:flex;align-items:center;gap:8px;min-height:32px;min-width:0}
 .gt-c{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--hc);background:transparent;display:grid;place-items:center;padding:0;cursor:pointer;color:transparent;flex:none}
 .gt-c svg{width:11px;height:11px}.gt-c.on{background:var(--hc);color:#fff}
 .gt.done .gt-n{text-decoration:line-through;color:var(--muted)}
 .gt-d{font-size:12px;color:var(--muted);white-space:nowrap}
-.g-add{min-height:32px}
-.gp-add{min-height:40px;padding-left:4px}
-@media (max-width:640px){.gt-date{width:auto;max-width:96px}.gbar.sm{display:none}.g-x{opacity:.6}.gp-b{padding-left:10px}}
+.gs-scrim{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:300}
+.gs-sheet{position:fixed;left:0;right:0;bottom:0;z-index:301;background:var(--panel);border-radius:18px 18px 0 0;padding:14px 18px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;box-shadow:0 -8px 30px rgba(0,0,0,.15)}
+.gs-h{display:flex;align-items:center}.gs-h b{font-size:16px}
+.gs-f{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--muted)}.gs-f .inp{font-size:15px}
+.gs-habs{display:flex;flex-wrap:wrap;gap:6px}.g-x.on{opacity:1}
+.gs-del{color:#D2383E;justify-content:center}
+@media (min-width:641px){.gs-sheet{left:50%;right:auto;bottom:auto;top:50%;transform:translate(-50%,-50%);width:420px;border-radius:16px}}
+@media (max-width:640px){.page.goals{padding-bottom:110px}.g-plus{opacity:.7}.gp-b{padding-left:8px}.gbar.sm{display:none}.gc{padding:12px 14px!important}.gn-p{display:none}}
 </style>
 
 </head>
@@ -2774,7 +2799,7 @@ const ui = {
   search: '', modal: null, modalBack: null, confirm: null, newFolder: null, focusId: null, navOpen: false
 };
 /* 새로고침해도 보던 화면 그대로 (이 기기 브라우저에만 저장) */
-const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'mnTab', 'catOpen', 'open', 'weekLog', 'gopen'];
+const UI_KEEP = ['view', 'calView', 'jdetail', 'sel', 'month', 'panelTab', 'noteFolder', 'noteDoc', 'lmonth', 'lsel', 'lifeFolder', 'postId', 'collId', 'ciId', 'btab', 'area', 'rmonth', 'jnoteTab', 'mnOpen', 'mnTab', 'catOpen', 'open', 'weekLog', 'gopen', 'gfold'];
 function restoreUI() { try { const o = JSON.parse(localStorage.getItem('arecmik-ui') || 'null'); if (!o) return; const hv = location.hash.slice(1);
   const ok = { noteFolder: v => !v || !!folder(v), noteDoc: v => !v || !!doc(v), lifeFolder: v => !v || !!folder(v), postId: v => !v || !!post(v), collId: v => !v || !!(S.collections || []).find(c => c.id === v), ciId: v => !v || !!citem(v) };
   UI_KEEP.forEach(k => { if (!(k in o)) return; if (ok[k] && !ok[k](o[k])) return; ui[k] = o[k]; });
@@ -2811,6 +2836,7 @@ function render() {
   else if (keep && keep.id) { const el = document.getElementById(keep.id); if (el) { el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (err) { /* not a text input */ } } }
   const nf = $('#nf'); if (nf) nf.focus();
   alignFoot();
+  { let gl = document.getElementById('gs-layer'); if (!gl) { gl = document.createElement('div'); gl.id = 'gs-layer'; document.body.appendChild(gl); } gl.innerHTML = ui.view === 'goals' ? gSheet() : ''; }
 }
 function alignFoot() {
   const f = $('.side-foot'); const side = $('.side');
@@ -3950,44 +3976,80 @@ function vHabits() {
 }
 document.addEventListener('keydown', e => { const t = e.target; if (!t || t.id !== 'habit-add' || e.key !== 'Enter' || e.isComposing) return; e.preventDefault(); const v = t.value.trim(); if (!v) return; mutate(() => { S.habits = S.habits || []; S.habits.push({ id: uid(), name: v, color: HCOL[S.habits.length % HCOL.length], log: [], ord: Date.now() }); }); ui.focusId = 'habit-add'; render(); });
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.dataset || !t.dataset.hname) return; const h = (S.habits || []).find(x => x.id === t.dataset.hname); const v = t.value.trim(); if (!h || !v || v === h.name) return; mutate(() => { h.name = v; }); });
-/* ---------- LIFE 목표: 목표 → 프로젝트(마감·진행률) → 할일(체크리스트, 날짜는 기록용) + 연결 습관 ---------- */
+/* ---------- LIFE 목표: 목표 → 프로젝트(마감·진행률) → 할일(체크리스트, 날짜는 기록용) + 연결 습관 ----------
+   입력 줄은 + 를 눌렀을 때만, 날짜는 있을 때만 보임. 카드 맨 위에 '다음' 할일 하나. 모바일은 이름을 누르면 아래 시트에서 고치고 지움 */
 const goals = () => (S.goals = S.goals || []).slice().sort((a, b) => (a.ord || 0) - (b.ord || 0));
 const goal = id => (S.goals || []).find(g => g.id === id);
 const gProj = (g, pid) => (g.projects || []).find(p => p.id === pid);
 const gTasks = g => (g.projects || []).flatMap(p => p.tasks || []);
-const gPct = ts => ts.length ? Math.round(ts.filter(t => t.done).length / ts.length * 100) : 0;
+const gHabits = g => (g.habits || []).map(id => (S.habits || []).find(h => h.id === id)).filter(Boolean);
 const dLeft = d => { if (!d) return ''; const n = Math.round((parse(d) - parse(TODAY)) / 864e5); return n > 0 ? `D-${n}` : n === 0 ? 'D-day' : `D+${-n}`; };
-function goalCount() { const n = goals().filter(g => !g.done).length; return n ? `<span class="cnt">${n}</span>` : ''; }
+const gWeekDays = () => { const ws = weekStart(TODAY); return [...Array(7)].map((_, i) => addDays(ws, i)).filter(d => d <= TODAY); };
+function gProgress(g) {
+  const ts = gTasks(g); if (ts.length) { const k = ts.filter(t => t.done).length; return { pct: Math.round(k / ts.length * 100), label: `할일 ${k}/${ts.length}` }; }
+  const hs = gHabits(g); if (hs.length) { const wd = gWeekDays(); const k = hs.reduce((n, h) => n + wd.filter(d => hOn(h, d)).length, 0); return { pct: Math.round(k / (hs.length * wd.length) * 100), label: '이번 주 습관' }; }
+  return null;
+}
+function gNext(g) {
+  const c = []; (g.projects || []).forEach((p, pi) => (p.tasks || []).forEach((t, ti) => { if (!t.done) c.push({ p, t, k: (t.date || '9999') + String(pi).padStart(3, '0') + String(ti).padStart(4, '0') }); }));
+  c.sort((a, b) => a.k.localeCompare(b.k)); return c[0] || null;
+}
+function goalCount() { const n = goals().length; return n ? `<span class="cnt">${n}</span>` : ''; }
 function vGoals() {
-  const gs = goals(); const ws = weekStart(TODAY); const wd = [...Array(7)].map((_, i) => addDays(ws, i)).filter(d => d <= TODAY);
-  const hab = (g, h) => `<span class="gh-chip" style="--hc:${h.color}"><button class="hs-c ${hOn(h, TODAY) ? 'on' : ''}" data-act="hcheck" data-id="${h.id}" data-date="${TODAY}" aria-label="${esc(h.name)} 오늘 ${hOn(h, TODAY) ? '했음' : '안 함'}">${I.check}</button><span>${esc(h.name)}</span><small>이번 주 ${wd.filter(d => hOn(h, d)).length}/${wd.length}</small><button class="g-x" data-act="gunhab" data-g="${g.id}" data-id="${h.id}" aria-label="연결 끊기" title="연결 끊기">${I.x}</button></span>`;
-  const task = (g, p, t) => `<div class="gt ${t.done ? 'done' : ''}"><button class="gt-c ${t.done ? 'on' : ''}" style="--hc:${g.color}" data-act="gtcheck" data-g="${g.id}" data-p="${p.id}" data-id="${t.id}" aria-label="${t.done ? '완료 취소' : '완료'}">${I.check}</button><input class="gt-n" data-gtname="${g.id}:${p.id}:${t.id}" value="${esc(t.text)}" aria-label="할일">${t.done && t.doneAt ? `<span class="gt-d" title="완료한 날">✓ ${fmtShort(t.doneAt)}</span>` : `<input type="date" class="gt-date ${t.date ? '' : 'ge'}" data-gtdate="${g.id}:${p.id}:${t.id}" value="${t.date || ''}" title="날짜 (기록용, 선택)" aria-label="날짜">`}<button class="g-x" data-act="gtdel" data-g="${g.id}" data-p="${p.id}" data-id="${t.id}" aria-label="할일 지우기">${I.x}</button></div>`;
-  const proj = (g, p) => { const ts = p.tasks || []; const k = ts.filter(t => t.done).length; const open = (ui.gopen || {})[p.id] !== false; const pc = gPct(ts);
-    return `<div class="gp ${p.done ? 'done' : ''}"><div class="gp-h"><button class="g-tw" data-act="gpfold" data-id="${p.id}" aria-label="${open ? '접기' : '펼치기'}">${open ? I.chevD : I.chevR}</button><input class="gp-n" data-gpname="${g.id}:${p.id}" value="${esc(p.name)}" aria-label="프로젝트 이름"><span class="gbar sm"><i style="width:${pc}%;background:${g.color}"></i></span><span class="g-k">${k}/${ts.length}</span><input type="date" class="gt-date ${p.due ? '' : 'ge'}" data-gpdue="${g.id}:${p.id}" value="${p.due || ''}" title="마감" aria-label="마감">${p.due ? `<span class="g-dd ${p.due < TODAY && k < ts.length ? 'late' : ''}">${dLeft(p.due)}</span>` : ''}<button class="g-x" data-act="gpdel" data-g="${g.id}" data-id="${p.id}" aria-label="프로젝트 지우기">${I.x}</button></div>
-      ${open ? `<div class="gp-b">${ts.filter(t => !t.done).map(t => task(g, p, t)).join('')}<label class="g-add">${I.plus}<input data-gtadd="${g.id}:${p.id}" placeholder="할일 적고 Enter" autocomplete="off" aria-label="할일 추가"></label>${ts.filter(t => t.done).sort((a, b) => (b.doneAt || '').localeCompare(a.doneAt || '')).map(t => task(g, p, t)).join('')}</div>` : ''}</div>`; };
-  const card = g => { const ts = gTasks(g); const pc = gPct(ts); const hs = (g.habits || []).map(id => (S.habits || []).find(h => h.id === id)).filter(Boolean);
-    return `<section class="gc card" style="--gc:${g.color}"><div class="gc-h"><i class="gdot"></i><input class="gc-n" data-gname="${g.id}" value="${esc(g.name)}" aria-label="목표 이름"><span class="g-k">${ts.length ? `<b>${pc}%</b>` : ''}</span><input type="date" class="gt-date ${g.due ? '' : 'ge'}" data-gdue="${g.id}" value="${g.due || ''}" title="목표 시점" aria-label="목표 시점">${g.due ? `<span class="g-dd">${dLeft(g.due)}</span>` : ''}<button class="g-x" data-act="gdel" data-id="${g.id}" aria-label="목표 지우기" title="목표 지우기">${I.x}</button></div>
-      ${ts.length ? `<div class="gbar"><i style="width:${pc}%;background:${g.color}"></i></div>` : ''}
-      <div class="gh">${hs.map(h => hab(g, h)).join('')}<label class="gh-add">${I.plus}<input data-ghab="${g.id}" list="gh-list" placeholder="습관 연결 (없으면 새로 만들어요)" autocomplete="off" aria-label="습관 연결"></label></div>
-      <div class="gps">${(g.projects || []).map(p => proj(g, p)).join('')}<label class="g-add gp-add">${I.plus}<input data-gpadd="${g.id}" placeholder="새 프로젝트 적고 Enter (예: 기초 문법 끝내기)" autocomplete="off" aria-label="프로젝트 추가"></label></div></section>`; };
-  return `${topbar(`<h1 class="h1">목표</h1><span class="muted">${gs.length ? `${gs.length}개` : ''}</span>`)}
+  const gs = goals(); const mob = isMob(); const wd = gWeekDays(); const add = ui.gadd || '';
+  const x = (act, data, label) => mob ? '' : `<button class="g-x" data-act="${act}" ${data} aria-label="${label}" title="${label}">${I.x}</button>`;
+  const dateIn = (attr, v, title) => mob && !v ? '' : `<input type="date" class="gt-date ${v ? '' : 'ge'}" ${attr} value="${v || ''}" title="${title}" aria-label="${title}">`;
+  const name = (cls, attr, v, sheet, label) => mob ? `<button class="${cls} gname-b" data-act="gsheet" data-v="${sheet}">${esc(v)}</button>` : `<input class="${cls}" ${attr} value="${esc(v)}" aria-label="${label}">`;
+  const addIn = (key, attr, ph) => add === key ? `<label class="g-add">${I.plus}<input ${attr} data-gakey="${key}" placeholder="${ph}" autocomplete="off" aria-label="${ph}"></label>` : '';
+  const chk = (g, p, t) => `<button class="gt-c ${t.done ? 'on' : ''}" style="--hc:${g.color}" data-act="gtcheck" data-g="${g.id}" data-p="${p.id}" data-id="${t.id}" aria-label="${t.done ? '완료 취소' : '완료'}">${I.check}</button>`;
+  const task = (g, p, t) => `<div class="gt ${t.done ? 'done' : ''}">${chk(g, p, t)}${name('gt-n', `data-gtname="${g.id}:${p.id}:${t.id}"`, t.text, `t:${g.id}:${p.id}:${t.id}`, '할일')}${t.done ? `<span class="gt-d" title="완료한 날">✓ ${fmtShort(t.doneAt || TODAY)}</span>` : dateIn(`data-gtdate="${g.id}:${p.id}:${t.id}"`, t.date, '날짜 (기록용, 선택)')}${x('gtdel', `data-g="${g.id}" data-p="${p.id}" data-id="${t.id}"`, '할일 지우기')}</div>`;
+  const proj = (g, p) => { const ts = p.tasks || []; const k = ts.filter(t => t.done).length; const open = (ui.gopen || {})[p.id] !== false; const pc = ts.length ? Math.round(k / ts.length * 100) : 0; const key = `t:${g.id}:${p.id}`;
+    return `<div class="gp"><div class="gp-h"><button class="g-tw" data-act="gpfold" data-id="${p.id}" aria-label="${open ? '접기' : '펼치기'}">${open ? I.chevD : I.chevR}</button>${name('gp-n', `data-gpname="${g.id}:${p.id}"`, p.name, `p:${g.id}:${p.id}`, '프로젝트 이름')}${ts.length ? `<span class="gbar sm"><i style="width:${pc}%;background:${g.color}"></i></span><span class="g-k">${k}/${ts.length}</span>` : ''}${p.due ? `<span class="g-dd ${p.due < TODAY && k < ts.length ? 'late' : ''}">${dLeft(p.due)}</span>` : ''}${dateIn(`data-gpdue="${g.id}:${p.id}"`, p.due, '마감')}<button class="g-plus" data-act="gaddopen" data-v="${key}" aria-label="할일 추가" title="할일 추가">${I.plus}</button>${x('gpdel', `data-g="${g.id}" data-id="${p.id}"`, '프로젝트 지우기')}</div>
+      ${open || add === key ? `<div class="gp-b">${ts.filter(t => !t.done).map(t => task(g, p, t)).join('')}${addIn(key, `data-gtadd="${g.id}:${p.id}"`, '할일 적고 Enter')}${!ts.length && add !== key ? `<button class="g-empty" data-act="gaddopen" data-v="${key}">+ 할일 추가</button>` : ''}${ts.filter(t => t.done).sort((a, b) => (b.doneAt || '').localeCompare(a.doneAt || '')).map(t => task(g, p, t)).join('')}</div>` : ''}</div>`; };
+  const card = g => { const pr = gProgress(g); const hs = gHabits(g); const nx = gNext(g); const fold = !!(ui.gfold || {})[g.id]; const ps = g.projects || [];
+    const head = `<div class="gc-h"><button class="g-tw" data-act="gfold" data-id="${g.id}" aria-label="${fold ? '펼치기' : '접기'}">${fold ? I.chevR : I.chevD}</button><i class="gdot"></i>${name('gc-n', `data-gname="${g.id}"`, g.name, `g:${g.id}`, '목표 이름')}${pr ? `<span class="g-k" title="${pr.label}"><small>${pr.label}</small> <b>${pr.pct}%</b></span>` : ''}${g.due ? `<span class="g-dd">${dLeft(g.due)}</span>` : ''}${dateIn(`data-gdue="${g.id}"`, g.due, '목표 시점')}<button class="g-plus" data-act="gaddopen" data-v="p:${g.id}" aria-label="프로젝트 추가" title="프로젝트 추가">${I.plus}</button>${x('gdel', `data-id="${g.id}"`, '목표 지우기')}</div>`;
+    const bar = pr ? `<div class="gbar"><i style="width:${pr.pct}%;background:${g.color}"></i></div>` : '';
+    const next = nx ? `<div class="gnext"><span class="gn-l">다음</span>${chk(g, nx.p, nx.t)}${mob ? `<button class="gn-t gname-b" data-act="gsheet" data-v="t:${g.id}:${nx.p.id}:${nx.t.id}">${esc(nx.t.text)}</button>` : `<span class="gn-t">${esc(nx.t.text)}</span>`}<span class="gn-p">${esc(nx.p.name)}${nx.t.date ? ` · ${fmtShort(nx.t.date)}` : ''}</span></div>` : '';
+    if (fold) return `<section class="gc card" id="gc-${g.id}" style="--gc:${g.color}">${head}${bar}${next}</section>`;
+    const habRow = `<div class="gh">${hs.map(h => `<span class="gh-chip" style="--hc:${h.color}"><button class="hs-c ${hOn(h, TODAY) ? 'on' : ''}" data-act="hcheck" data-id="${h.id}" data-date="${TODAY}" aria-label="${esc(h.name)} 오늘 ${hOn(h, TODAY) ? '했음' : '안 함'}">${I.check}</button><span>${esc(h.name)}</span><small>${wd.filter(d => hOn(h, d)).length}/${wd.length}</small>${x('gunhab', `data-g="${g.id}" data-id="${h.id}"`, '연결 끊기')}</span>`).join('')}${add === `h:${g.id}` ? `<label class="g-add gh-in">${I.plus}<input data-ghab="${g.id}" data-gakey="h:${g.id}" list="gh-list" placeholder="습관 이름 · Enter (없으면 새로 만들어요)" autocomplete="off" aria-label="습관 연결"></label>` : `<button class="gh-new" data-act="gaddopen" data-v="h:${g.id}">+ 습관</button>`}</div>`;
+    const body = ps.length || add === `p:${g.id}` ? `<div class="gps">${ps.map(p => proj(g, p)).join('')}${addIn(`p:${g.id}`, `data-gpadd="${g.id}"`, '프로젝트 이름 적고 Enter')}</div>` : `<button class="g-empty gps-e" data-act="gaddopen" data-v="p:${g.id}">+ 프로젝트 추가</button>`;
+    return `<section class="gc card" id="gc-${g.id}" style="--gc:${g.color}">${head}${bar}${next}${habRow}${body}</section>`; };
+  const sum = gs.length > 1 ? `<div class="gsum">${gs.map(g => { const pr = gProgress(g); return `<button class="gs-i" style="--gc:${g.color}" data-act="gjump" data-id="${g.id}"><i class="gdot"></i><span>${esc(g.name)}</span>${pr ? `<b>${pr.pct}%</b>` : ''}</button>`; }).join('')}</div>` : '';
+  return `${topbar(`<h1 class="h1">목표</h1>`)}
   <div class="page goals">
-    <label class="addline hadd">${I.plus}<input id="goal-add" placeholder="새 목표 적고 Enter (예: 영어 왕초보 탈출, 루틴·건강)" autocomplete="off" aria-label="목표 추가"></label>
-    <datalist id="gh-list">${habits().map(h => `<option value="${esc(h.name)}">`).join('')}</datalist>
+    <label class="addline hadd">${I.plus}<input id="goal-add" placeholder="새 목표 적고 Enter (예: 영어 왕초보 탈출)" autocomplete="off" aria-label="목표 추가"></label>
+    ${sum}<datalist id="gh-list">${habits().map(h => `<option value="${esc(h.name)}">`).join('')}</datalist>
     ${gs.length ? gs.map(card).join('') : '<div class="card"><div class="empty">이루고 싶은 목표를 위 칸에 적어 보세요. 목표 안에 프로젝트와 할일을 나누고, 매일 할 습관을 연결하면 진행률이 보여요.</div></div>'}
   </div>`;
+}
+/* 모바일: 이름을 누르면 아래에서 올라오는 시트 — 이름·날짜 고치기, 습관 연결 끊기, 지우기 */
+function gSheet() {
+  const s = ui.gsheet; if (!s) return ''; const [ty, ...ids] = s.split(':'); const { g, p, t } = gRef(ids.join(':')); const o = ty === 'g' ? g : ty === 'p' ? p : t;
+  if (!o) { ui.gsheet = null; return ''; }
+  const ref = ids.join(':'); const lab = { g: ['목표', '목표 시점', 'due', 'gdel', `data-id="${g.id}"`], p: ['프로젝트', '마감', 'due', 'gpdel', `data-g="${g.id}" data-id="${ids[1]}"`], t: ['할일', '날짜 (기록용)', 'date', 'gtdel', `data-g="${g.id}" data-p="${ids[1]}" data-id="${ids[2]}"`] }[ty];
+  const nm = ty === 't' ? o.text : o.name; const dk = ty === 'g' ? 'gdue' : ty === 'p' ? 'gpdue' : 'gtdate';
+  return `<div class="gs-scrim" data-act="gsclose"></div><div class="gs-sheet" role="dialog" aria-label="${lab[0]} 고치기"><div class="gs-h"><b>${lab[0]}</b><span class="grow"></span><button class="btn sm" data-act="gsclose">닫기</button></div>
+    <label class="gs-f"><span>이름</span><input class="inp" data-gsname="${ty}:${ref}" value="${esc(nm)}" autocomplete="off"></label>
+    <label class="gs-f"><span>${lab[1]}</span><input type="date" class="inp" data-${dk}="${ref}" value="${o[lab[2]] || ''}"></label>
+    ${ty === 'g' && gHabits(g).length ? `<div class="gs-f"><span>연결한 습관</span><div class="gs-habs">${gHabits(g).map(h => `<span class="gh-chip" style="--hc:${h.color}"><span>${esc(h.name)}</span><button class="g-x on" data-act="gunhab" data-g="${g.id}" data-id="${h.id}" aria-label="${esc(h.name)} 연결 끊기">${I.x}</button></span>`).join('')}</div></div>` : ''}
+    <button class="btn gs-del" data-act="${lab[3]}" ${lab[4]}>${lab[0]} 지우기</button></div>`;
 }
 function gRef(s) { const [gi, pi, ti] = (s || '').split(':'); const g = goal(gi); const p = g && pi ? gProj(g, pi) : null; const t = p && ti ? (p.tasks || []).find(x => x.id === ti) : null; return { g, p, t }; }
 function gFocus(sel) { const el = document.querySelector(sel); if (el) el.focus(); }
 document.addEventListener('keydown', e => {
-  const t = e.target; if (!t || !t.dataset || e.key !== 'Enter' || e.isComposing) return;
-  const v = (t.value || '').trim(); const d = t.dataset;
+  const t = e.target; if (!t || !t.dataset) return; const d = t.dataset;
+  if (e.key === 'Escape' && ui.view === 'goals') { if (d.gakey) { ui.gadd = null; render(); return; } if (ui.gsheet) { ui.gsheet = null; render(); return; } }
+  if (e.key !== 'Enter' || e.isComposing) return; const v = (t.value || '').trim();
   if (t.id === 'goal-add') { e.preventDefault(); if (!v) return; mutate(() => { S.goals = S.goals || []; S.goals.push({ id: uid(), name: v, color: HCOL[S.goals.length % HCOL.length], due: '', habits: [], projects: [], ord: Date.now() }); }); gFocus('#goal-add'); return; }
   if (d.gpadd) { e.preventDefault(); const g = goal(d.gpadd); if (!v || !g) return; mutate(() => { g.projects = g.projects || []; g.projects.push({ id: uid(), name: v, due: '', tasks: [] }); }); gFocus(`[data-gpadd="${g.id}"]`); return; }
-  if (d.gtadd) { e.preventDefault(); const { g, p } = gRef(d.gtadd); if (!v || !p) return; mutate(() => { p.tasks = p.tasks || []; p.tasks.push({ id: uid(), text: v, date: '', done: false }); }); gFocus(`[data-gtadd="${d.gtadd}"]`); return; }
+  if (d.gtadd) { e.preventDefault(); const { p } = gRef(d.gtadd); if (!v || !p) return; mutate(() => { p.tasks = p.tasks || []; p.tasks.push({ id: uid(), text: v, date: '', done: false }); }); gFocus(`[data-gtadd="${d.gtadd}"]`); return; }
   if (d.ghab) { e.preventDefault(); const g = goal(d.ghab); if (!v || !g) return; mutate(() => { S.habits = S.habits || []; let h = S.habits.find(x => x.name === v); if (!h) { h = { id: uid(), name: v, color: g.color, log: [], ord: Date.now() }; S.habits.push(h); } g.habits = g.habits || []; if (!g.habits.includes(h.id)) g.habits.push(h.id); }); gFocus(`[data-ghab="${g.id}"]`); return; }
-  if (d.gname || d.gpname || d.gtname) { e.preventDefault(); t.blur(); }
+  if (d.gname || d.gpname || d.gtname || d.gsname) { e.preventDefault(); t.blur(); }
 });
+/* 빈 입력 줄은 다른 곳을 누르면 닫힘 */
+document.addEventListener('focusout', e => { const t = e.target; if (!t || !t.dataset || !t.dataset.gakey || (t.value || '').trim()) return; const k = t.dataset.gakey; setTimeout(() => { const a = document.activeElement; if (ui.gadd === k && !(a && a.dataset && a.dataset.gakey === k)) { ui.gadd = null; render(); } }, 150); });
+/* 시트의 이름 칸은 글자마다 저장(다시 그리지 않음) → 닫을 때 반영 */
+document.addEventListener('input', e => { const t = e.target; if (!t || !t.dataset || !t.dataset.gsname) return; const [ty, ...ids] = t.dataset.gsname.split(':'); const { g, p, t: x } = gRef(ids.join(':')); const v = t.value.trim(); if (!v) return; if (ty === 'g' && g) g.name = v; else if (ty === 'p' && p) p.name = v; else if (ty === 't' && x) x.text = v; save(); });
 document.addEventListener('change', e => {
   const t = e.target; if (!t || !t.dataset) return; const d = t.dataset; const v = (t.value || '').trim();
   if (d.gname) { const g = goal(d.gname); if (g && v && v !== g.name) mutate(() => { g.name = v; }); }
@@ -5053,11 +5115,16 @@ const ACT = {
   lmode: t => { ui.lmode = t.dataset.v; render(); },
   bweek: t => { const v = +t.dataset.v; ui.bweek = v ? addDays(ui.bweek || weekStart(TODAY), v * 7) : null; render(); },
   hcheck: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); const d = t.dataset.date; if (!h || !d || d > TODAY) return; mutate(() => { h.log = h.log || []; const i = h.log.indexOf(d); if (i >= 0) h.log.splice(i, 1); else h.log.push(d); }); },
-  gdel: t => { const g = goal(t.dataset.id); if (!g || !confirm(`‘${g.name}’ 목표를 지울까요? 안의 프로젝트·할일도 함께 지워져요. (연결한 습관은 남아요)`)) return; mutate(() => { S.goals = S.goals.filter(x => x.id !== g.id); }, '목표를 지웠어요'); },
-  gpdel: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.id); if (!p || ((p.tasks || []).length && !confirm(`‘${p.name}’ 프로젝트와 할일 ${p.tasks.length}개를 지울까요?`))) return; mutate(() => { g.projects = g.projects.filter(x => x.id !== p.id); }); },
+  gdel: t => { const g = goal(t.dataset.id); if (!g || !confirm(`‘${g.name}’ 목표를 지울까요? 안의 프로젝트·할일도 함께 지워져요. (연결한 습관은 남아요)`)) return; ui.gsheet = null; mutate(() => { S.goals = S.goals.filter(x => x.id !== g.id); }, '목표를 지웠어요'); },
+  gpdel: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.id); if (!p || ((p.tasks || []).length && !confirm(`‘${p.name}’ 프로젝트와 할일 ${p.tasks.length}개를 지울까요?`))) return; ui.gsheet = null; mutate(() => { g.projects = g.projects.filter(x => x.id !== p.id); }); },
   gpfold: t => { ui.gopen = ui.gopen || {}; ui.gopen[t.dataset.id] = ui.gopen[t.dataset.id] === false; render(); },
+  gfold: t => { ui.gfold = ui.gfold || {}; ui.gfold[t.dataset.id] = !ui.gfold[t.dataset.id]; render(); },
+  gjump: t => { ui.gfold = ui.gfold || {}; ui.gfold[t.dataset.id] = false; render(); const el = document.getElementById('gc-' + t.dataset.id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+  gaddopen: t => { const k = t.dataset.v; ui.gadd = k; if (k.startsWith('t:')) { ui.gopen = ui.gopen || {}; ui.gopen[k.split(':')[2]] = true; } render(); gFocus(`[data-gakey="${k}"]`); },
+  gsheet: t => { ui.gsheet = t.dataset.v; render(); },
+  gsclose: () => { ui.gsheet = null; render(); },
   gtcheck: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.p); const x = p && (p.tasks || []).find(y => y.id === t.dataset.id); if (!x) return; mutate(() => { x.done = !x.done; x.doneAt = x.done ? TODAY : ''; }); },
-  gtdel: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.p); if (!p) return; mutate(() => { p.tasks = (p.tasks || []).filter(y => y.id !== t.dataset.id); }); },
+  gtdel: t => { const g = goal(t.dataset.g); const p = g && gProj(g, t.dataset.p); if (!p) return; ui.gsheet = null; mutate(() => { p.tasks = (p.tasks || []).filter(y => y.id !== t.dataset.id); }); },
   gunhab: t => { const g = goal(t.dataset.g); if (!g) return; mutate(() => { g.habits = (g.habits || []).filter(id => id !== t.dataset.id); }); },
   hdel: t => { const h = (S.habits || []).find(x => x.id === t.dataset.id); if (!h || !confirm(`‘${h.name}’ 습관을 지울까요? 기록도 함께 지워져요.`)) return; mutate(() => { S.habits = S.habits.filter(x => x.id !== h.id); }, '습관을 지웠어요'); },
   setpri: t => { const it = item(t.dataset.id); if (!it) return; const v = +t.dataset.v; mutate(() => { if (v) it.pri = v; else delete it.pri; }); },
