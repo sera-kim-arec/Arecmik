@@ -2067,6 +2067,21 @@ html.flat .sstrip .spill{box-shadow:none}
 .sgrp>.chip+.chip .subic{color:var(--lemon-ink)}
 .sg-p{all:unset;cursor:pointer;display:block;font-size:11px;font-weight:600;color:var(--muted);padding:2px 8px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;box-sizing:border-box}
 .sg-p:hover{color:var(--fg)}
+/* ---- 지금 이거 / 집중 모드 ---- */
+.fc{background:var(--surface);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--lemon) 35%,transparent)}
+.fc .rl-h{color:var(--lemon-ink)}.fc .grow{flex:1}.fc .rl-h .muted{font-weight:500}
+.fc-t{all:unset;cursor:pointer;display:block;font-size:16px;font-weight:700;line-height:1.35;margin:2px 0}
+.fc-m{font-size:12px;color:var(--muted);margin-bottom:6px}
+.fc-b{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.fc-b .btn{height:30px;font-size:12.5px;padding:0 10px}
+.fc-time{font-size:30px;font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums;margin:4px 0 2px;color:var(--lemon-ink)}
+.fc-time.over{font-size:18px;color:#D2383E}
+.fc-empty{font-size:13.5px;color:var(--muted);padding:4px 0}
+.fc.on{box-shadow:0 0 0 2px var(--lemon),0 8px 24px rgba(0,122,255,.15)}
+.focus-on .wk-body>.cal-scroll,.focus-on .wk-rail>.rl-sec:not(.fc){opacity:.22;filter:saturate(.4);transition:opacity .3s}
+.focus-on .wk-body>.cal-scroll:hover,.focus-on .wk-rail>.rl-sec:not(.fc):hover{opacity:.6}
+.fc-time.up{color:var(--fg)}
+.fc-sub{font-size:11.5px;color:var(--muted);margin-bottom:2px}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2877,7 +2892,7 @@ function vWork() {
   else body = `<div class="cal-scroll"><div class="cal">${dowHTML(weeks[0])}${weeks.map(w => weekRow(w, w === selWeek, m)).join('')}</div></div>`;
   if (dock && !dayv && !isMob()) { const open = settingsOf().rail !== false; const nStar = S.items.filter(it => (it.star || (it.checks || []).length) && !it.done && !it.cancel).length;
     const rb = `<button class="btn ${open ? 'on-soft' : ''}" data-act="railtoggle" title="${open ? '오른쪽 칸 접기' : '오른쪽 칸 펼치기'}" aria-pressed="${open}">${I.rail}${!open && nStar ? `<span class="rb-n">❗${nStar}</span>` : ''}</button>`;
-    return `<div class="cal-wrap dock-on wk-rail-on ${open ? '' : 'rail-shut'}"><section class="cal-main">${topbar(left, right.replace(/(<button class="btn primary" data-act="quick")/, rb + '$1'))}<div class="wk-body">${body}${open ? `<div class="rz rz-rail" data-rz="rail" role="separator" aria-orientation="vertical" aria-label="오른쪽 칸 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div><aside class="wk-rail">${railHTML()}</aside>` : ''}</div></section></div>`; }
+    return `<div class="cal-wrap dock-on wk-rail-on ${open ? '' : 'rail-shut'} ${focusState && open ? 'focus-on' : ''}"><section class="cal-main">${topbar(left, right.replace(/(<button class="btn primary" data-act="quick")/, rb + '$1'))}<div class="wk-body">${body}${open ? `<div class="rz rz-rail" data-rz="rail" role="separator" aria-orientation="vertical" aria-label="오른쪽 칸 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div><aside class="wk-rail">${railHTML()}</aside>` : ''}</div></section></div>`; }
   if (dock) return `<div class="cal-wrap dock-on"><section class="cal-main">${topbar(left, right)}${one ? '' : starStrip()}${dayv || one ? '' : dockHTML()}${body}</section></div>`;
   return `<div class="cal-wrap"><section class="cal-main">${topbar(left, right)}${starStrip()}${dayv ? '' : monthNote()}${body}</section><div class="rz rz-panel" data-rz="panel" role="separator" aria-orientation="vertical" aria-label="오른쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 두 번 누르면 원래대로"></div>${panelWork()}</div>`;
 }
@@ -3067,13 +3082,39 @@ function panelTabs() {
   <div class="ptab-body">${tab === 'routine' ? routineCard() : tab === 'retro' ? retroPanel() : inboxCard()}</div></div>`;
 }
 /* 위쪽 칸 배치: 왼쪽 고정 메모, 오른쪽 날짜 없는 할일·루틴·복기. 높이는 아래 막대를 끌어 조절 */
+/* ---------- 지금 이거: 할일 하나만 골라 주고, 시작하면 나머지를 흐리게 (집중 모드) ---------- */
+const FOCUS_MIN = 30;
+let focusState = (() => { try { return JSON.parse(localStorage.getItem('arecmik-focus') || 'null'); } catch (e) { return null; } })();
+const saveFocus = () => { try { localStorage.setItem('arecmik-focus', JSON.stringify(focusState)); } catch (e) { /* storage blocked */ } };
+function focusCands() {
+  const sc = it => { const late = it.date && it.date < TODAY, today = it.date === TODAY; return (it.star && late ? 0 : it.star && today ? 1 : today && it.pri === 1 ? 2 : today && it.start ? 3 : today ? 4 : late ? 5 : it.star ? 6 : 9); };
+  return S.items.filter(it => it.kind === 'todo' && !it.done && !it.cancel && !kidsOf(it.id).some(k => !k.done) && (it.star || (it.date && it.date <= TODAY)))
+    .sort((a, b) => sc(a) - sc(b) || (a.start || '99').localeCompare(b.start || '99') || (a.date || '').localeCompare(b.date || ''));
+}
+function focusItem() {
+  if (focusState && focusState.id) { const it = item(focusState.id); if (it && !it.done) return it; focusState = null; saveFocus(); }
+  const skip = ui.focusSkip || []; const c = focusCands(); return c.find(it => !skip.includes(it.id)) || c[0] || null;
+}
+const fmtLeft = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+function focusHTML() {
+  const it = focusItem(); const n = focusCands().length;
+  if (!it) return `<section class="rl-sec fc"><div class="rl-h">지금 이거</div><div class="fc-empty">오늘 할 일을 다 했어요 🍋</div></section>`;
+  const on = focusState && focusState.id === it.id; const timed = on && !!focusState.end; const left = timed ? focusState.end - Date.now() : 0; const over = timed && left <= 0;
+  const par = it.parentId && item(it.parentId);
+  const meta = [it.date ? (it.date < TODAY ? fmtShort(it.date) + ' 지남' : it.date === TODAY ? '오늘' : fmtShort(it.date)) : '', it.start || '', it.area || '', par ? par.title : ''].filter(Boolean).map(esc).join(' · ');
+  return `<section class="rl-sec fc ${on ? 'on' : ''}"><div class="rl-h">${on ? '집중하는 중' : '지금 이거'}<span class="grow"></span><span class="muted">${on ? `나머지 ${n - 1}개` : `후보 ${n}개`}</span></div>
+    <button class="fc-t" data-act="open" data-kind="item" data-id="${it.id}">${it.star ? '<span class="imp">❗</span>' : ''}${esc(it.title || '제목 없음')}</button>${meta ? `<div class="fc-m">${meta}</div>` : ''}
+    ${on ? `<div class="fc-time ${over ? 'over' : ''} ${timed ? '' : 'up'}" id="fc-time">${over ? '시간 끝!' : timed ? fmtLeft(left) : fmtLeft(Date.now() - focusState.start)}</div><div class="fc-sub">${timed ? `${FOCUS_MIN}분 타이머 · 끝날 때 한 번만 알려요` : '흐른 시간 · 알림 없이 조용히'}</div>` : ''}
+    <div class="fc-b">${on ? `<button class="btn primary sm" data-act="fdone">${I.check}완료</button>${over ? `<button class="btn sm" data-act="fstart" data-v="t">${FOCUS_MIN}분 더</button>` : ''}<button class="btn sm" data-act="fstop">그만</button>` : `<button class="btn primary sm" data-act="fstart">▶ 시작</button><button class="btn sm" data-act="fstart" data-v="t" title="${FOCUS_MIN}분 뒤 한 번만 알려요">⏱ ${FOCUS_MIN}분</button><button class="btn sm" data-act="fnext">다른 거</button><button class="btn sm" data-act="fdone">완료</button>`}</div></section>`;
+}
+setInterval(() => { const el = document.getElementById('fc-time'); if (!el || !focusState) return; if (!focusState.end) { el.textContent = fmtLeft(Date.now() - focusState.start); return; } const left = focusState.end - Date.now(); if (left <= 0 && !el.classList.contains('over')) { render(); toast(`${FOCUS_MIN}분 지났어요. 계속하거나 완료해요`); return; } if (left > 0) el.textContent = fmtLeft(left); }, 1000);
 function railHTML() {
   const list = S.items.filter(it => (it.star || (it.checks || []).length) && !it.done && !it.cancel).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.start || '99').localeCompare(b.start || '99'));
   const when = it => !it.date ? '' : `<span class="rl-d ${it.date < TODAY ? 'late' : it.date === TODAY ? 'today' : ''}">${it.date === TODAY ? '오늘' : it.date < TODAY ? fmtShort(it.date) + ' 지남' : fmtShort(it.date)}</span>`;
   const star = list.length ? `<section class="rl-sec rl-star"><div class="rl-h">❗ 잊지 말 것 <span class="muted">${list.length}</span></div>${list.map(it => `<div class="rl-row">${it.kind === 'todo' ? `<button class="chk" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="rl-t" data-act="open" data-kind="item" data-id="${it.id}">${tT(it.title || '제목 없음')}</button>${when(it)}</div>`).join('')}</section>` : '';
   const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month'; const memo = monthNote(); ui.mnOpen = keep;
   const sd = parse(ui.sel); const dn = `<section class="rl-sec rl-day"><div class="rl-h">${sd.getMonth() + 1}월 ${sd.getDate()}일 ${WD[sd.getDay()]}${ui.sel === TODAY ? ' <span class="rl-today">오늘</span>' : ''}<span class="grow"></span><span class="wk-tabs"><button class="${ui.jnoteTab === 'diary' ? '' : 'on'}" data-act="jntab" data-v="memo">이 날 메모</button><button class="${ui.jnoteTab === 'diary' ? 'on' : ''}" data-act="jntab" data-v="diary">일기</button></span></div>${ui.jnoteTab === 'diary' ? editorHTML('jdiary:' + ui.sel, true) : editorHTML('jday:' + ui.sel, true)}</section>`;
-  return `${star}${dn}<section class="rl-sec rl-memo">${memo}</section><section class="rl-sec rl-tabs">${panelTabs()}</section>`;
+  return `${focusHTML()}${star}${dn}<section class="rl-sec rl-memo">${memo}</section><section class="rl-sec rl-tabs">${panelTabs()}</section>`;
 }
 function dockHTML() {
   const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month';
@@ -4727,6 +4768,10 @@ const ACT = {
   jwsel: t => { ui.sel = t.dataset.date; ui.month = ui.sel.slice(0, 7); ui.focusId = 'jday-add'; render(); },
   dayn: t => { ui.sel = addDays(ui.sel, +t.dataset.d); ui.month = ui.sel.slice(0, 7); render(); },
   week: t => { ui.sel = addDays(ui.sel, 7 * (+t.dataset.d)); ui.month = ui.sel.slice(0, 7); render(); },
+  fstart: t => { const it = focusItem(); if (!it) return; focusState = { id: it.id, start: (focusState && focusState.id === it.id && focusState.start) || Date.now(), end: t && t.dataset && t.dataset.v === 't' ? Date.now() + FOCUS_MIN * 60000 : null }; saveFocus(); render(); },
+  fstop: () => { focusState = null; saveFocus(); render(); },
+  fnext: () => { const it = focusItem(); if (!it) return; ui.focusSkip = [...(ui.focusSkip || []), it.id]; if (focusCands().every(x => ui.focusSkip.includes(x.id))) ui.focusSkip = []; render(); },
+  fdone: () => { const it = focusItem(); if (!it) return; const keep = !!focusState; mutate(() => { it.done = true; it.doneAt = Date.now(); }); if (keep) { const nx = focusItem(); focusState = null; saveFocus(); } toast('완료! 다음 거 올라왔어요', true); render(); },
   railtoggle: () => { S.settings = { ...(S.settings || {}), rail: settingsOf().rail === false }; save(); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
