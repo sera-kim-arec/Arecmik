@@ -2671,7 +2671,7 @@ function render() {
   if (!doneSeen && S && S.items) stampDone();
   document.documentElement.classList.toggle('raised', settingsOf().depth === 'raised'); document.documentElement.classList.toggle('flat', settingsOf().depth === 'flat');
   { const fs = settingsOf().fontScale; if (fs === 100) { delete document.documentElement.dataset.fs; document.documentElement.style.removeProperty('--fs'); } else { document.documentElement.dataset.fs = fs; document.documentElement.style.setProperty('--fs', fs / 100); } }
-  { const ac = settingsOf().accent || 'lemon'; if (ac === 'lemon') delete document.documentElement.dataset.accent; else document.documentElement.dataset.accent = ac; }
+  delete document.documentElement.dataset.accent;
   const main = $('.main'); const st = main ? main.scrollTop : 0;
   const cs = $('.cal-scroll'); const sl = cs ? cs.scrollLeft : 0;
   const side = $('.side'); const ss = side ? side.scrollTop : 0;
@@ -4330,7 +4330,6 @@ function dlgSettings() {
     
     
     <div class="set-row"><div><b>글자 크기</b><span class="hint">글씨와 항목 크기가 함께 바뀌어요</span></div><div class="seg inline" role="radiogroup" aria-label="글자 크기">${[[90, '작게'], [100, '보통'], [110, '크게'], [120, '아주 크게']].map(([v, l]) => `<button role="radio" aria-checked="${settingsOf().fontScale === v}" class="${settingsOf().fontScale === v ? 'on' : ''}" data-act="setfs" data-v="${v}">${l}</button>`).join('')}</div></div>
-    <div class="set-row"><div><b>강조 색</b><span class="hint">오늘 표시, 고른 탭, 체크, 주요 버튼 색이 바뀌어요</span></div><div class="accents">${[['lemon', '#F5D547', '레몬'], ['peach', '#FFB38A', '피치'], ['rose', '#F7A1B5', '로즈'], ['sky', '#8CC4F5', '하늘'], ['lavender', '#BBA6F2', '라벤더'], ['mint', '#93D9C3', '민트']].map(([k, c, l]) => `<button class="acc ${(settingsOf().accent || 'lemon') === k ? 'on' : ''}" style="--a:${c}" data-act="setaccent" data-v="${k}" title="${l}" aria-label="${l}" aria-pressed="${(settingsOf().accent || 'lemon') === k}"></button>`).join('')}</div></div>
     <div class="set-sec" style="margin-top:22px">달력</div>
     <div class="set-row"><div><b>한 주 시작</b><span class="hint">WORK·LIFE 달력 모두에 적용돼요</span></div><div class="seg inline"><button class="${settingsOf().weekStart === 'sun' ? 'on' : ''}" data-act="setweek" data-v="sun">일요일</button><button class="${settingsOf().weekStart === 'mon' ? 'on' : ''}" data-act="setweek" data-v="mon">월요일</button></div></div>
     <div class="set-row"><div><b>WORK 달력에 주말 보이기</b><span class="hint">달력 위 ‘주말’ 버튼으로도 바꿀 수 있어요</span></div><div class="seg inline"><button class="${!settingsOf().hideWeekend ? 'on' : ''}" data-act="setwe" data-v="show">보이기</button><button class="${settingsOf().hideWeekend ? 'on' : ''}" data-act="setwe" data-v="hide">숨기기</button></div></div>
