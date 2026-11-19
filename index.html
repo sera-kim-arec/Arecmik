@@ -1332,6 +1332,8 @@ body{letter-spacing:-.003em;line-height:1.5;font-weight:450;text-rendering:optim
 .jd-back{margin:2px 0 10px 4px;align-self:flex-start}
 .ed.all .bk{background:color-mix(in srgb, var(--lemon) 28%, transparent);border-radius:4px}
 .ed.all .bk-text{caret-color:transparent}
+.ed .bk.pick{background:color-mix(in srgb, var(--lemon) 28%, transparent);border-radius:4px}
+.ed.picking .bk-text{user-select:none;caret-color:transparent}
 .jsearch{display:flex;width:150px;margin-right:2px}
 .jsearch input{flex:1;min-width:0}
 .jday-scroll .jls{padding-top:6px}
@@ -5690,7 +5692,7 @@ function onBlockInput(el) {
   touch(key); ensureCaretVisible();
 }
 /* 기사 붙여넣기: 문단·제목·목록·인용·이미지를 블록으로 */
-const MD_LINE = /^(\s*)(#{1,6}\s+|[-*+•]\s+\[( |x|X)\]\s+|[-*+•]\s+|\d+[.)]\s+|>\s?)/;
+const MD_LINE = /^(\s*)(#{1,6}\s+|[-*+•]\s+\[( |x|X)\]\s+|[☐□☑✅✔■]\s*|[-*+•]\s+|\d+[.)]\s+|>\s?)/;
 const looksMD = t => /\n/.test(t) && (t.split('\n').some(l => MD_LINE.test(l) || /^\s*(```|---+\s*$|\*\*\*+\s*$)/.test(l)) || /\*\*[^*\n]+\*\*/.test(t));
 function mdToBlocks(text) {
   const out = []; const lines = String(text || '').replace(/\r/g, '').split('\n'); let code = null;
@@ -5705,6 +5707,7 @@ function mdToBlocks(text) {
     if (!m) b = B('p', rest);
     else if (/^#/.test(m[2])) b = B('h', rest);
     else if (/\[/.test(m[2])) { b = B('todo', rest); b.done = /x/i.test(m[3]); }
+    else if (/^[☐□☑✅✔■]/.test(m[2])) { b = B('todo', rest); b.done = /^[☑✅✔■]/.test(m[2]); }
     else if (/^[-*+•]/.test(m[2])) b = B('bullet', rest);
     else if (/^\d/.test(m[2])) b = B('num', rest);
     else b = B('quote', rest);
@@ -5747,6 +5750,7 @@ function richPaste(el, cd) {
   const src = (html.match(/<!--StartFragment-->/) && (cd.getData('text/x-moz-url') || '')) || ''; 
   const blocks = htmlToBlocks(html, (html.match(/SourceURL:([^\r\n]+)/) || [])[1] || src || undefined);
   if (!(blocks.length > 1 || blocks.some(x => x.type === 'image'))) return false;
+  { const plainN = (cd.getData('text/plain') || '').split('\n').filter(l => l.trim()).length; if (!blocks.some(x => x.type === 'image') && plainN > blocks.length) return false; }
   snapshot(); const i = bl.indexOf(b); const replace = !b.text && b.type === 'p';
   const [ek, eid] = key.split(':'); const po = ek === 'post' && post(eid);
   if (po) {
@@ -5791,7 +5795,7 @@ document.addEventListener('paste', e => {
   const text = cd.getData('text/plain') || '';
   const key = el.closest('[data-ed]').dataset.ed; const { b } = findBlock(key, el.dataset.bid);
   if (b && !b.text && isURL(text.trim()) && b.type !== 'link' && b.type !== 'code') { b.type = 'link'; b.text = text.trim(); touch(key); rerenderEditor(key, b.id, 'end'); toast('링크를 스크랩 카드로 바꿨어요'); return; }
-  if (b && b.type !== 'code' && !el.classList.contains('tcell') && looksMD(text)) {
+  if (b && b.type !== 'code' && !el.classList.contains('tcell') && (looksMD(text) || /\n/.test(text.replace(/\r/g, '').trim()))) {
     const { bl } = findBlock(key, el.dataset.bid); const blocks = mdToBlocks(text); const base = b.indent || 0;
     if (blocks.length) { snapshot(); blocks.forEach(x => { if (x.indent !== undefined) x.indent += base; }); const i = bl.indexOf(b); const replace = !b.text && b.type === 'p';
       bl.splice(replace ? i : i + 1, replace ? 1 : 0, ...blocks); touch(key); rerenderEditor(key, blocks[blocks.length - 1].id, 'end'); toast(`서식을 살려 붙여넣었어요 · ${blocks.length}줄`, true); return; }
@@ -5965,24 +5969,61 @@ function toggleInlineCode(el, color) {
   b.text = r.text; touch(key); rerenderEditor(key, b.id, r.caret);
 }
 /* Ctrl+A: first press selects the line, the next press selects the whole memo */
-let edAll = null;
-function clearEdAll() { if (!edAll) return; document.querySelectorAll('.ed.all').forEach(x => x.classList.remove('all')); edAll = null; }
-function edAllText(key) { return (edBlocks(key) || []).map(b => { const ind = '  '.repeat(b.indent || 0); const t = b.type === 'table' ? (b.rows || []).map(r => r.join('\t')).join('\n') : plainText(b.text || ''); return ind + (b.type === 'bullet' ? '• ' : b.type === 'todo' ? (b.done ? '☑ ' : '☐ ') : b.type === 'num' ? '- ' : b.type === 'quote' ? '> ' : '') + t; }).join('\n'); }
+let edAll = null;   // 메모 전체 선택 중인 에디터
+let edPick = null;  // 드래그로 여러 줄을 고른 상태 { key, ids }
+let dragPick = null;
+function clearEdAll() {
+  if (edAll) document.querySelectorAll('.ed.all').forEach(x => x.classList.remove('all'));
+  if (edPick || dragPick) { document.querySelectorAll('.bk.pick').forEach(x => x.classList.remove('pick')); document.querySelectorAll('.ed.picking').forEach(x => x.classList.remove('picking')); }
+  edAll = null; edPick = null;
+}
+function blocksPlain(list) { return (list || []).map(b => { const ind = '  '.repeat(b.indent || 0); const t = b.type === 'table' ? (b.rows || []).map(r => r.join('\t')).join('\n') : plainText(b.text || ''); return ind + (b.type === 'bullet' ? '• ' : b.type === 'todo' ? (b.done ? '☑ ' : '☐ ') : b.type === 'num' ? '- ' : b.type === 'quote' ? '> ' : '') + t; }).join('\n'); }
+function edAllText(key) { return blocksPlain(edBlocks(key)); }
 document.addEventListener('keydown', e => {
-  if (!edAll) return; const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase();
-  if (mod && (k === 'c' || k === 'x')) { e.preventDefault(); const txt = edAllText(edAll); try { navigator.clipboard.writeText(txt); } catch (err) { /* clipboard blocked */ } if (k === 'c') { toast('메모 전체를 복사했어요'); return; } }
-  if ((mod && k === 'x') || e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); const key = edAll; clearEdAll(); const bl = edBlocks(key); if (!bl) return; snapshot(); bl.splice(0, bl.length, B('p', '')); touch(key); rerenderEditor(key, bl[0].id, 0); toast('메모를 모두 지웠어요', true); return; }
-  if (mod && k === 'a') { e.preventDefault(); return; }
+  if (!edAll && !edPick) return; const mod = e.ctrlKey || e.metaKey; const k = e.key.toLowerCase();
+  const key = edAll || edPick.key; const bl = edBlocks(key); if (!bl) { clearEdAll(); return; }
+  const ids = edAll ? null : new Set(edPick.ids); const picked = bl.filter(b => !ids || ids.has(b.id));
+  if (mod && k === 'a') { e.preventDefault(); if (edPick) { const ed = document.querySelector(`[data-ed="${key}"]`); clearEdAll(); if (ed) { edAll = key; ed.classList.add('all'); } } return; }
+  if (mod && (k === 'c' || k === 'x')) { e.preventDefault(); try { navigator.clipboard.writeText(blocksPlain(picked)); } catch (err) { /* clipboard blocked */ } if (k === 'c') { toast(edAll ? '메모 전체를 복사했어요' : `${picked.length}줄을 복사했어요`); return; } }
+  if ((mod && k === 'x') || e.key === 'Backspace' || e.key === 'Delete') {
+    e.preventDefault(); const all = !!edAll; clearEdAll(); snapshot();
+    const last = bl.indexOf(picked[picked.length - 1]); const after = bl.slice(last + 1).find(b => !picked.includes(b));
+    for (let j = bl.length - 1; j >= 0; j--) if (picked.includes(bl[j])) bl.splice(j, 1);
+    if (!bl.length) bl.push(B('p', ''));
+    touch(key); rerenderEditor(key, (after || bl[bl.length - 1]).id, 0);
+    toast(all ? '메모를 모두 지웠어요' : `${picked.length}줄을 지웠어요`, true); return;
+  }
   if (['Shift', 'Control', 'Meta', 'Alt'].includes(e.key)) return;
   clearEdAll();
 }, true);
 document.addEventListener('mousedown', () => clearEdAll(), true);
+/* 여러 줄 드래그 선택: 한 줄 안에서는 글자 선택, 다른 줄로 넘어가면 줄 단위로 고름 */
+document.addEventListener('mousedown', e => {
+  dragPick = null; if (e.button !== 0) return;
+  const t = e.target.closest && e.target.closest('.bk-text'); const ed = t && t.closest('[data-ed]');
+  if (!ed || t.classList.contains('tcell')) return;
+  dragPick = { key: ed.dataset.ed, from: t.dataset.bid, ed };
+});
+document.addEventListener('mousemove', e => {
+  if (!dragPick || !(e.buttons & 1)) return;
+  const hit = document.elementFromPoint(e.clientX, e.clientY); const bk = hit && hit.closest && hit.closest('.bk[data-bid]');
+  if (!bk || !dragPick.ed.contains(bk)) return;
+  const bl = edBlocks(dragPick.key); if (!bl) return;
+  const a = bl.findIndex(x => x.id === dragPick.from), b = bl.findIndex(x => x.id === bk.dataset.bid); if (a < 0 || b < 0) return;
+  document.querySelectorAll('.bk.pick').forEach(x => x.classList.remove('pick'));
+  if (a === b) { if (edPick) { edPick = null; dragPick.ed.classList.remove('picking'); } return; }
+  const [lo, hi] = a < b ? [a, b] : [b, a]; const ids = bl.slice(lo, hi + 1).map(x => x.id);
+  ids.forEach(id => { const n = dragPick.ed.querySelector(`.bk[data-bid="${id}"]`); if (n) n.classList.add('pick'); });
+  edPick = { key: dragPick.key, ids }; dragPick.ed.classList.add('picking');
+  getSelection().removeAllRanges(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+});
+document.addEventListener('mouseup', () => { if (dragPick && edPick) toast(`${edPick.ids.length}줄 선택 · Ctrl+C 복사 · Ctrl+X 잘라내기 · Delete 지우기`); dragPick = null; });
 document.addEventListener('mousedown', e => { if (e.target.closest && e.target.closest('.jg-kind, .jadd-seg')) e.preventDefault(); }, true);
 function onBlockKey(e, el) {
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'a') {
     const sel = getSelection(); const t = serText(el); const len = sel.rangeCount ? sel.toString().length : 0;
     const ed = el.closest('[data-ed]'); const many = ed && ed.querySelectorAll('.bk-text').length > 1;
-    if (many && (!t.length || len >= el.textContent.length)) { e.preventDefault(); clearEdAll(); edAll = ed.dataset.ed; ed.classList.add('all'); sel.removeAllRanges(); el.blur(); return; }
+    if (many) { e.preventDefault(); clearEdAll(); edAll = ed.dataset.ed; ed.classList.add('all'); sel.removeAllRanges(); el.blur(); toast('메모 전체 선택 · Ctrl+C 복사 · Ctrl+X 잘라내기 · Delete 지우기'); return; }
   }
   if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'e') { e.preventDefault(); toggleInlineCode(el); return; }
   if (mention && !mention.anchor && mention.bid === el.dataset.bid && mention.opts) {
