@@ -2186,6 +2186,13 @@ button.fv-m{cursor:pointer}
 .rtbox.all{opacity:.6}
 .rp-more{all:unset;cursor:pointer;display:block;text-align:center;font-size:12.5px;font-weight:600;color:var(--muted);padding:8px 0 2px}
 .rp-more:hover{color:var(--fg)}
+.rl-fold{all:unset;cursor:pointer;width:22px;height:22px;display:grid;place-items:center;border-radius:6px;color:var(--muted);font-size:12px;flex:none}
+.rl-fold:hover{background:var(--sunken);color:var(--fg)}
+.rl-sec.folded>:not(.rl-h){display:none!important}
+.rl-sec.folded{min-height:0!important;padding-top:8px;padding-bottom:8px}
+.rl-sec.folded .rl-h{margin:0}
+.rl-memo>.rl-h,.rl-tabs>.rl-h{padding:10px 12px 0;margin:0}
+.rl-tabs>.rl-h{padding:4px 6px 4px}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -2660,7 +2667,7 @@ async function boot() {
 /* ---------- reminders ---------- */
 const REMIND_MIN = [[0, '정시'], [5, '5분 전'], [10, '10분 전'], [15, '15분 전'], [30, '30분 전'], [60, '1시간 전'], [1440, '하루 전']];
 const UNTIMED = [['off', '알림 없음'], ['am9', '그날 오전 9시'], ['pm6', '전날 오후 6시']];
-function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: 'dock', rail: st.rail !== false, dlgMore: !!st.dlgMore, accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
+function settingsOf() { const st = (S && S.settings) || {}; return { remindMin: st.remindMin ?? 15, untimed: st.untimed || 'am9', weekStart: st.weekStart || 'sun', hideWeekend: !!st.hideWeekend, depth: 'flat', layout: 'dock', rail: st.rail !== false, dlgMore: !!st.dlgMore, railFold: st.railFold || {}, accent: st.accent || 'lemon', fontScale: [90, 100, 110, 120].includes(+st.fontScale) ? +st.fontScale : 100, areaColors: st.areaColors || {} }; }
 const wsDay = () => settingsOf().weekStart === 'mon' ? 1 : 0;
 const dowNames = () => { const n = ['일', '월', '화', '수', '목', '금', '토']; const k = wsDay(); return [...n.slice(k), ...n.slice(0, k)]; };
 const isWeekend = d => { const g = parse(d).getDay(); return g === 0 || g === 6; };
@@ -3319,7 +3326,13 @@ function railHTML() {
   const loose = (S.routines || []).filter(r => (r.freq === 'weekly' && (r.dow === '' || r.dow == null)) || (r.freq === 'monthly' && !r.dom));
   const pend = loose.filter(r => !rDone(r)).map(r => { const end = r.freq === 'weekly' ? addDays(weekStart(TODAY), 6) : iso(new Date(+TODAY.slice(0, 4), +TODAY.slice(5, 7), 0)); return { r, left: diff(TODAY, end) }; }).sort((a, b) => a.left - b.left);
   const lr = pend.length ? `<section class="rl-sec rl-loose"><div class="rl-h">${I.repeat} 이번 주 · 이번 달 루틴 <span class="muted">${pend.length}</span></div>${pend.map(({ r, left }) => `<div class="rl-row"><button class="chk" data-act="rcheck" data-id="${r.id}" aria-label="했어요">${I.check}</button><button class="rl-t" data-act="ropen" data-id="${r.id}">${esc(r.title)}</button><span class="rl-d ${left <= 2 ? 'late' : ''}">${r.freq === 'weekly' ? '이번 주' : '이번 달'} · ${left === 0 ? '오늘까지' : left + '일 남음'}</span></div>`).join('')}</section>` : '';
-  return `${focusHTML()}${star}${lr}<section class="rl-sec rl-memo">${memo}</section><section class="rl-sec rl-tabs">${panelTabs()}</section>${dn}`;
+  const F = (settingsOf().railFold || {});
+  const fold = (k, html) => { if (!html) return ''; const btn = `<button class="rl-fold" data-act="railfold" data-k="${k}" aria-label="${F[k] ? '펼치기' : '접기'}" aria-expanded="${!F[k]}">${F[k] ? '▸' : '▾'}</button>`;
+    html = html.replace('<section class="rl-sec', `<section data-k="${k}" class="${F[k] ? 'folded ' : ''}rl-sec`);
+    return /<div class="rl-h">/.test(html) ? html.replace(/(<div class="rl-h">[^]*?)(<\/div>)/, `$1${/class="grow"/.test(html.split('</div>')[0]) ? '' : '<span class="grow"></span>'}${btn}$2`) : html; };
+  const head = (k, t) => `<div class="rl-h">${t}<span class="grow"></span></div>`;
+  const tabsN = S.items.filter(i => i.kind === 'todo' && !i.date && !i.done).length;
+  return `${focusHTML()}${fold('star', star)}${fold('loose', lr)}${fold('memo', `<section class="rl-sec rl-memo">${head('memo', '📌 메모')}${memo}</section>`)}${fold('tabs', `<section class="rl-sec rl-tabs">${head('tabs', `할일 · 루틴 · 복기 <span class="muted">${tabsN || ''}</span>`)}${panelTabs()}</section>`)}${fold('day', dn)}`;
 }
 function dockHTML() {
   const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month';
@@ -5120,6 +5133,7 @@ const ACT = {
   fstop: () => { const it = focusState && item(focusState.id); if (it) mutate(() => logFocus(it)); focusState = null; saveFocus(); render(); },
   fnext: () => { const it = focusItem(); if (!it) return; ui.focusSkip = [...(ui.focusSkip || []), it.id]; if (focusCands().every(x => ui.focusSkip.includes(x.id))) ui.focusSkip = []; render(); },
   fdone: () => { const it = focusItem(); if (!it) return; const keep = !!focusState; mutate(() => { logFocus(it); it.done = true; it.doneAt = Date.now(); }); if (keep) { const nx = focusItem(); focusState = null; saveFocus(); } toast('완료! 다음 거 올라왔어요', true); render(); },
+  railfold: t => { const k = t.dataset.k; const f = { ...(settingsOf().railFold || {}) }; f[k] = !f[k]; S.settings = { ...(S.settings || {}), railFold: f }; save(); render(); },
   railtoggle: () => { S.settings = { ...(S.settings || {}), rail: settingsOf().rail === false }; save(); render(); },
   weeklog: () => { ui.weekLog = !ui.weekLog; render(); },
   today: () => { ui.month = TODAY.slice(0, 7); ui.sel = TODAY; render(); },
