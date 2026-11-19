@@ -2184,6 +2184,8 @@ button.fv-m{cursor:pointer}
 .rtbox-h svg{width:11px;height:11px}.rtbox-h b{color:var(--fg2)}
 .rtbox .chip.rt{background:transparent}
 .rtbox.all{opacity:.6}
+.rp-more{all:unset;cursor:pointer;display:block;text-align:center;font-size:12.5px;font-weight:600;color:var(--muted);padding:8px 0 2px}
+.rp-more:hover{color:var(--fg)}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -3697,7 +3699,7 @@ function retroPanel() {
   const by = {}; list.forEach(r => { const k = r.area || '미분류'; (by[k] = by[k] || []).push(r); });
   return `<div class="card"><div class="card-title">실수 · 피드백 <span class="hint" style="font-weight:500">이번 달 ${list.length}건</span><span class="grow"></span><button class="btn sm ghost" data-act="go" data-view="retro">대시보드</button></div>
     <label class="addline">${I.plus}<input id="rp-add" placeholder="무슨 일이 있었나 적고 Enter" autocomplete="off" aria-label="실수 적기"></label>
-    ${Object.keys(by).length ? Object.keys(by).map(k => `<div class="cg"><div class="cg-h">${esc(k)} <span class="muted">${by[k].length}</span></div>${by[k].map(retroRow).join('')}</div>`).join('') : '<div class="empty">이번 달 기록이 없어요.</div>'}</div>`;
+    ${list.length ? `${list.slice(0, 3).map(retroRow).join('')}${list.length > 3 ? `<button class="rp-more" data-act="go" data-view="retro">이번 달 ${list.length}건 모두 보기 ›</button>` : ''}` : '<div class="empty">이번 달 기록이 없어요.</div>'}</div>`;
 }
 const areaRetros = a => a ? (S.retros || []).filter(r => r.area === a && (r.next || r.what)).sort((x, y) => (y.date || '').localeCompare(x.date || '')) : [];
 function areaWarn(it) {
