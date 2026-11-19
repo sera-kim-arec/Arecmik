@@ -2174,6 +2174,11 @@ button.fv-m{cursor:pointer}
 .fv-m b{font-weight:700;font-variant-numeric:tabular-nums}
 .fv-m.hb i{font-size:7px}
 .fv-m:hover{z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.chip.rt .rtck{width:15px;height:15px;flex:none;margin-right:2px}
+.chip.rt{background:color-mix(in srgb,var(--muted) 8%,transparent);border-radius:7px}
+.chip.rt.done{opacity:.55}
+.rl-loose .rl-row+.rl-row{border-top:1px solid var(--line-soft)}
+.rl-loose .rl-h svg{width:13px;height:13px}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -3304,7 +3309,10 @@ function railHTML() {
   const star = list.length ? `<section class="rl-sec rl-star"><div class="rl-h">❗ 잊지 말 것 <span class="muted">${list.length}</span></div>${list.map(it => `<div class="rl-row">${it.kind === 'todo' ? `<button class="chk" data-act="toggle" data-id="${it.id}" aria-label="완료 표시">${I.check}</button>` : '<span class="sdot"></span>'}<button class="rl-t" data-act="open" data-kind="item" data-id="${it.id}">${tT(it.title || '제목 없음')}</button>${when(it)}</div>`).join('')}</section>` : '';
   const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month'; const memo = monthNote(); ui.mnOpen = keep;
   const sd = parse(ui.sel); const dn = `<section class="rl-sec rl-day"><div class="rl-h">${sd.getMonth() + 1}월 ${sd.getDate()}일 ${WD[sd.getDay()]}${ui.sel === TODAY ? ' <span class="rl-today">오늘</span>' : ''}<span class="grow"></span><span class="wk-tabs"><button class="${ui.jnoteTab === 'diary' ? '' : 'on'}" data-act="jntab" data-v="memo">일지</button><button class="${ui.jnoteTab === 'diary' ? 'on' : ''}" data-act="jntab" data-v="diary">일기</button></span></div>${ui.jnoteTab === 'diary' ? editorHTML('jdiary:' + ui.sel, true) : editorHTML('jday:' + ui.sel, true)}</section>`;
-  return `${focusHTML()}${star}<section class="rl-sec rl-memo">${memo}</section><section class="rl-sec rl-tabs">${panelTabs()}</section>${dn}`;
+  const loose = (S.routines || []).filter(r => (r.freq === 'weekly' && (r.dow === '' || r.dow == null)) || (r.freq === 'monthly' && !r.dom));
+  const pend = loose.filter(r => !rDone(r)).map(r => { const end = r.freq === 'weekly' ? addDays(weekStart(TODAY), 6) : iso(new Date(+TODAY.slice(0, 4), +TODAY.slice(5, 7), 0)); return { r, left: diff(TODAY, end) }; }).sort((a, b) => a.left - b.left);
+  const lr = pend.length ? `<section class="rl-sec rl-loose"><div class="rl-h">${I.repeat} 이번 주 · 이번 달 루틴 <span class="muted">${pend.length}</span></div>${pend.map(({ r, left }) => `<div class="rl-row"><button class="chk" data-act="rcheck" data-id="${r.id}" aria-label="했어요">${I.check}</button><button class="rl-t" data-act="ropen" data-id="${r.id}">${esc(r.title)}</button><span class="rl-d ${left <= 2 ? 'late' : ''}">${r.freq === 'weekly' ? '이번 주' : '이번 달'} · ${left === 0 ? '오늘까지' : left + '일 남음'}</span></div>`).join('')}</section>` : '';
+  return `${focusHTML()}${star}${lr}<section class="rl-sec rl-memo">${memo}</section><section class="rl-sec rl-tabs">${panelTabs()}</section>${dn}`;
 }
 function dockHTML() {
   const keep = ui.mnOpen; if (!ui.mnOpen) ui.mnOpen = ui.mnTab === 'all' ? 'all' : 'month';
@@ -3381,8 +3389,8 @@ function retroNudge() {
   if (!retrosIn(pm).length) return false; const o = (S.rmonths || []).find(x => x.id === pm);
   return !(o && (o.blocks || []).some(b => (b.text || '').trim()));
 }
-function routinesOn(d) { return (S.routines || []).filter(r => r.freq !== 'daily' && r.freq !== 'any' && rDueOn(r, d) === d); }
-function rtChip(r, d) { const done = rDoneFor(r, d); const ck = !done && (r.changes || []).length; return `<div class="chip rt ${done ? 'done' : ''} ${ck ? 'has-ck' : ''}" data-act="ropen" data-id="${r.id}" title="루틴 · ${esc(rWhen(r))}"><span class="rti">${I.repeat}</span><span class="tt">${esc(r.title)}</span>${ck ? `<span class="chip-ck">${ckLines(r.changes)}</span>` : ''}</div>`; }
+function routinesOn(d) { return (S.routines || []).filter(r => (r.freq === 'daily' && d === TODAY && !(r.skipOff && isOffDay(d))) || (r.freq !== 'daily' && r.freq !== 'any' && rDueOn(r, d) === d)); }
+function rtChip(r, d) { const done = rDoneFor(r, d); const ck = !done && (r.changes || []).length; return `<div class="chip rt ${done ? 'done' : ''} ${ck ? 'has-ck' : ''}" data-act="ropen" data-id="${r.id}" title="루틴 · ${esc(rWhen(r))}">${d === TODAY ? `<button class="chk rtck ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button>` : `<span class="rti">${I.repeat}</span>`}<span class="tt">${esc(r.title)}</span>${ck ? `<span class="chip-ck">${ckLines(r.changes)}</span>` : ''}</div>`; }
 function rtRows(d) { const rs = routinesOn(d); if (!rs.length) return ''; return `<div class="lbl">루틴</div><div class="dretro">${rs.map(r => { const done = rDoneFor(r, d); return `<div class="dr rtrow ${done ? 'done' : ''}"><button class="chk ${done ? 'on' : ''}" data-act="rcheck" data-id="${r.id}" aria-label="${done ? '이번 기록 취소' : '했어요'}">${I.check}</button><button class="dr-t" data-act="ropen" data-id="${r.id}" style="border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;padding:0">${esc(r.title)}${(r.changes || []).length && !done ? `<span class="rch" style="display:block">${ckLines(r.changes)}</span>` : ''}</button></div>`; }).join('')}</div>`; }
 function routineCard() {
   const n = (S.routines || []).length; const due = (S.routines || []).filter(rDue).length;
