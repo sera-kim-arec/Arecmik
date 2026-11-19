@@ -2179,6 +2179,11 @@ button.fv-m{cursor:pointer}
 .chip.rt.done{opacity:.55}
 .rl-loose .rl-row+.rl-row{border-top:1px solid var(--line-soft)}
 .rl-loose .rl-h svg{width:13px;height:13px}
+.rtbox{margin:2px 0 6px;padding:4px 4px 3px;border-radius:9px;border:1px dashed color-mix(in srgb,var(--muted) 45%,transparent)}
+.rtbox-h{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--muted);padding:0 4px 2px}
+.rtbox-h svg{width:11px;height:11px}.rtbox-h b{color:var(--fg2)}
+.rtbox .chip.rt{background:transparent}
+.rtbox.all{opacity:.6}
 /* ===================== 평평 (flat) look — 설정 → 디자인 → 평평 =====================
    Things 3 느낌: 흰 바탕, 그림자 대신 얇은 선, 동그란 체크, 레몬은 포인트에만. 구조·배치는 그대로. */
 html.flat{
@@ -3127,7 +3132,7 @@ function weekRow(ws, isSel, month) {
   days.forEach((d, i) => {
     const list = [...dayItems(d), ...S.items.filter(it => it.kind === 'todo' && it.date && it.date !== d && (it.log || []).some(c => c.date === d))]; const max = isSel ? 99 : 3; const shown = list.slice(0, max);
     const wmemo = false;
-    h += `${wmemo ? `<div class="wk-col" style="grid-column:${i + 1};grid-row:${nl + 2}">` : ''}<div class="items" ${wmemo ? '' : `style="grid-column:${i + 1};grid-row:${nl + 2}"`} data-act="selday" data-date="${d}" data-drop="day:${d}">${routinesOn(d).map(r => rtChip(r, d)).join('')}${subGroups(shown, d)}${list.length > max ? `<button class="more" data-act="selday" data-date="${d}">+${list.length - max}개 더</button>` : ''}</div>${wmemo ? `<div class="wk-cm"><div class="wk-tabs"><button class="${ui.jnoteTab === 'diary' ? '' : 'on'}" data-act="jntab" data-v="memo">이 날 메모</button><button class="${ui.jnoteTab === 'diary' ? 'on' : ''}" data-act="jntab" data-v="diary">일기 <span class="muted">LIFE</span></button></div>${ui.jnoteTab === 'diary' ? editorHTML('jdiary:' + d, true) : editorHTML('jday:' + d, true)}</div></div>` : ''}`;
+    h += `${wmemo ? `<div class="wk-col" style="grid-column:${i + 1};grid-row:${nl + 2}">` : ''}<div class="items" ${wmemo ? '' : `style="grid-column:${i + 1};grid-row:${nl + 2}"`} data-act="selday" data-date="${d}" data-drop="day:${d}">${(() => { const rs = routinesOn(d); if (!rs.length) return ''; const k = rs.filter(r => rDoneFor(r, d)).length; return `<div class="rtbox ${k === rs.length ? 'all' : ''}"><div class="rtbox-h">${I.repeat}루틴 <b>${k}/${rs.length}</b></div>${rs.map(r => rtChip(r, d)).join('')}</div>`; })()}${subGroups(shown, d)}${list.length > max ? `<button class="more" data-act="selday" data-date="${d}">+${list.length - max}개 더</button>` : ''}</div>${wmemo ? `<div class="wk-cm"><div class="wk-tabs"><button class="${ui.jnoteTab === 'diary' ? '' : 'on'}" data-act="jntab" data-v="memo">이 날 메모</button><button class="${ui.jnoteTab === 'diary' ? 'on' : ''}" data-act="jntab" data-v="diary">일기 <span class="muted">LIFE</span></button></div>${ui.jnoteTab === 'diary' ? editorHTML('jdiary:' + d, true) : editorHTML('jday:' + d, true)}</div></div>` : ''}`;
   });
   return h + '</div>';
 }
